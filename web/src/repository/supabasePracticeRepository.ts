@@ -71,6 +71,11 @@ function mapRoutine(row: DbRoutine): Routine {
     .map(s => ({
       exercise_id: s.seed_exercise_id ?? s.source_exercise_id ?? `snapshot-${s.sort_order}`,
       duration_minutes: s.snapshot_duration_minutes,
+      snapshot: {
+        title: s.snapshot_title,
+        instructions: s.snapshot_instructions,
+        chart_id: s.snapshot_chart_id,
+      },
     }));
   return {
     id: row.id,
@@ -161,33 +166,31 @@ export class SupabasePracticeRepository {
     }[]
   ): Promise<Routine> {
     const vis = routine.visibility.toLowerCase();
-    const { data: rt, error: rtErr } = await this.client
-      .from('user_routines')
-      .upsert({
-        id: routine.id.startsWith('local-') ? undefined : routine.id,
-        owner_id: this.userId,
-        title: routine.title,
-        description: routine.description ?? '',
-        level: routine.level,
-        duration_minutes: routine.duration_minutes,
-        visibility: vis,
-        applicable_instruments: routine.applicable_instruments,
-      })
-      .select('*')
-      .single();
-    if (rtErr) throw rtErr;
-    const routineId = (rt as { id: string }).id;
+    const routinePayload = {
+      id: routine.id.startsWith('local-') ? null : routine.id,
+      title: routine.title,
+      description: routine.description ?? '',
+      level: routine.level,
+      duration_minutes: routine.duration_minutes,
+      visibility: vis,
+      applicable_instruments: routine.applicable_instruments,
+    };
+    const stepsPayload = stepSnapshots.map(s => ({
+      sort_order: s.sort_order,
+      snapshot_title: s.snapshot_title,
+      snapshot_instructions: s.snapshot_instructions,
+      snapshot_duration_minutes: s.snapshot_duration_minutes,
+      snapshot_chart_id: s.snapshot_chart_id ?? '',
+      seed_exercise_id: s.seed_exercise_id ?? '',
+      source_exercise_id: s.source_exercise_id ?? '',
+    }));
 
-    await this.client.from('routine_steps').delete().eq('routine_id', routineId);
-    if (stepSnapshots.length) {
-      const { error: stErr } = await this.client.from('routine_steps').insert(
-        stepSnapshots.map(s => ({
-          routine_id: routineId,
-          ...s,
-        }))
-      );
-      if (stErr) throw stErr;
-    }
+    const { data: rpcData, error: rpcErr } = await this.client.rpc('save_user_routine_with_steps', {
+      p_routine: routinePayload,
+      p_steps: stepsPayload,
+    });
+    if (rpcErr) throw rpcErr;
+    const routineId = (rpcData as { id: string }).id;
 
     const { data, error } = await this.client
       .from('user_routines')

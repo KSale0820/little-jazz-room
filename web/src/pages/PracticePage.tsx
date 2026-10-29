@@ -5,6 +5,7 @@ import { CatSprite } from '../features/cats/CatCompanion';
 import { chartsById, exercisesById } from '../data/seed';
 import { formatChartMeta } from '../lib/chords';
 import { commitStepElapsed, sessionDurationSeconds } from '../lib/practiceSessionTimer';
+import { resolvePlayableStep } from '../lib/routinePlayback';
 import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
 
@@ -19,6 +20,7 @@ export function PracticePage() {
     activeRoutineId,
     addSession,
     showToast,
+    teamSignedIn,
     catId,
     catMotion,
     focusMode,
@@ -30,12 +32,12 @@ export function PracticePage() {
   const [accumulatedSeconds, setAccumulatedSeconds] = useState(0);
 
   const currentStep = routine?.steps[stepIndex] ?? null;
-  const stepExercise = useMemo(() => {
+  const playableStep = useMemo(() => {
     if (!currentStep) return null;
-    return exercisesById[currentStep.exercise_id] ?? exercises.find(e => e.id === currentStep.exercise_id) ?? null;
+    return resolvePlayableStep(currentStep, exercises, exercisesById);
   }, [currentStep, exercises]);
 
-  const defaultChartId = stepExercise?.chart_id ?? charts[0]?.id ?? 'blues-f-12';
+  const defaultChartId = playableStep?.chart_id ?? charts[0]?.id ?? 'blues-f-12';
   const [chartId, setChartId] = useState(defaultChartId);
   const [panel, setPanel] = useState<'chords' | 'player'>('player');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
@@ -56,17 +58,17 @@ export function PracticePage() {
   }, [activeRoutineId, routine?.id]);
 
   const chart = chartsById[chartId] ?? charts[0]!;
-  const stepMinutes = currentStep?.duration_minutes ?? stepExercise?.duration_minutes ?? 0;
+  const stepMinutes = currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0;
   const stepTargetSeconds = stepMinutes * 60;
 
   useEffect(() => {
-    if (stepExercise?.chart_id) {
-      setChartId(stepExercise.chart_id);
-      const c = chartsById[stepExercise.chart_id];
+    if (playableStep?.chart_id) {
+      setChartId(playableStep.chart_id);
+      const c = chartsById[playableStep.chart_id];
       if (c) setChartKey(c.concert_key);
       setSelectedBar(0);
     }
-  }, [stepExercise?.id, stepExercise?.chart_id]);
+  }, [playableStep?.exercise_id, playableStep?.chart_id]);
 
   useEffect(() => {
     if (running) {
@@ -107,20 +109,24 @@ export function PracticePage() {
     setStepIndex(i => Math.max(0, Math.min(routine.steps.length - 1, i + delta)));
   };
 
-  const finish = () => {
+  const finish = async () => {
     setRunning(false);
     const durationSeconds = sessionDurationSeconds(accumulatedSeconds, stepSeconds);
-    addSession({
-      id: `sess-${Date.now()}`,
-      finishedAt: new Date().toISOString(),
-      durationSeconds,
-      routineId: activeRoutineId ?? undefined,
-      exerciseId: stepExercise?.id,
-    });
-    setAccumulatedSeconds(0);
-    setStepSeconds(0);
-    showToast('Session saved on this device.');
-    navigate('/profile');
+    try {
+      await addSession({
+        id: `sess-${Date.now()}`,
+        finishedAt: new Date().toISOString(),
+        durationSeconds,
+        routineId: activeRoutineId ?? undefined,
+        exerciseId: playableStep?.exercise_id,
+      });
+      setAccumulatedSeconds(0);
+      setStepSeconds(0);
+      showToast(teamSignedIn ? 'Session saved to your team account.' : 'Session saved on this device.');
+      navigate('/profile');
+    } catch {
+      showToast('Could not save session. Try again when online.');
+    }
   };
 
   const stepTimeLabel = `${String(Math.floor(stepSeconds / 60)).padStart(2, '0')}:${String(stepSeconds % 60).padStart(2, '0')}`;
@@ -141,7 +147,7 @@ export function PracticePage() {
               <h3>{routine.title}</h3>
               <small>
                 Exercise {stepIndex + 1} of {routine.steps.length}
-                {stepExercise ? ` · ${stepExercise.title}` : ''}
+                {playableStep ? ` · ${playableStep.title}` : ''}
               </small>
             </div>
             <span className="mutebadge">{stepMinutes} min suggested</span>
@@ -244,9 +250,9 @@ export function PracticePage() {
       {panel === 'player' && (
         <div id="playerPanel">
           <div className="simple">
-            <h3>{stepExercise?.title ?? 'Practice instructions'}</h3>
+            <h3>{playableStep?.title ?? 'Practice instructions'}</h3>
             <p className="placeholder" style={{ marginTop: 8 }}>
-              {stepExercise?.instructions ??
+              {playableStep?.instructions ??
                 'Select a routine in Explore or follow the chart study on the Chords tab.'}
             </p>
             <small className="muted">

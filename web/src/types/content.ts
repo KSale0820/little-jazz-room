@@ -57,6 +57,12 @@ export interface Exercise {
 export interface RoutineStep {
   exercise_id: string;
   duration_minutes: number;
+  /** Populated for cloud routines so steps stay playable without source exercise access. */
+  snapshot?: {
+    title: string;
+    instructions: string;
+    chart_id: string | null;
+  };
 }
 
 export interface Routine {

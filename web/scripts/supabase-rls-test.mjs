@@ -66,6 +66,74 @@ try {
   if (bRead) fail('User B read A private routine', privateId);
   else pass('User B cannot read A private routine');
 
+  const { error: bForgeRpc } = await clientB.rpc('save_user_routine_with_steps', {
+    p_routine: {
+      id: privateId,
+      title: 'Forged',
+      duration_minutes: 5,
+      visibility: 'private',
+      applicable_instruments: ['All'],
+    },
+    p_steps: [
+      {
+        sort_order: 0,
+        snapshot_title: 'Bad',
+        snapshot_instructions: 'Nope',
+        snapshot_duration_minutes: 5,
+        snapshot_chart_id: '',
+        seed_exercise_id: '',
+        source_exercise_id: '',
+      },
+    ],
+  });
+  if (!bForgeRpc) fail('User B RPC on A routine blocked', 'unexpected success');
+  else pass('User B RPC on A routine blocked');
+
+  const rpcRoutineId = randomUUID();
+  const { error: aRpcErr } = await clientA.rpc('save_user_routine_with_steps', {
+    p_routine: {
+      id: rpcRoutineId,
+      title: 'RPC atomic save',
+      description: 'test',
+      level: 'Beginner',
+      duration_minutes: 10,
+      visibility: 'private',
+      applicable_instruments: ['All'],
+    },
+    p_steps: [
+      {
+        sort_order: 0,
+        snapshot_title: 'Step one',
+        snapshot_instructions: 'Play',
+        snapshot_duration_minutes: 5,
+        snapshot_chart_id: '',
+        seed_exercise_id: 'swing-2-4',
+        source_exercise_id: '',
+      },
+      {
+        sort_order: 1,
+        snapshot_title: 'Step two',
+        snapshot_instructions: 'Rest',
+        snapshot_duration_minutes: 5,
+        snapshot_chart_id: '',
+        seed_exercise_id: '',
+        source_exercise_id: '',
+      },
+    ],
+  });
+  if (aRpcErr) fail('User A RPC save routine', aRpcErr.message);
+  else pass('User A RPC save routine');
+
+  const { data: rpcSteps } = await clientA
+    .from('routine_steps')
+    .select('sort_order, snapshot_title')
+    .eq('routine_id', rpcRoutineId)
+    .order('sort_order');
+  if ((rpcSteps ?? []).length !== 2) fail('RPC wrote both steps', JSON.stringify(rpcSteps));
+  else pass('RPC wrote both steps');
+
+  await clientA.from('user_routines').delete().eq('id', rpcRoutineId);
+
   const publicId = randomUUID();
   await clientA.from('user_routines').insert({
     id: publicId,

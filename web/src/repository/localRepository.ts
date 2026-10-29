@@ -12,6 +12,17 @@ const RT_KEY = 'little-jazz-room:local-routines:v1';
 const SESS_KEY = 'little-jazz-room:practice-sessions:v1';
 const DRAFT_KEY = 'little-jazz-room:create-draft:v1';
 
+/** Logged-out browser profile; each authenticated user gets their own scope id. */
+export const LOCAL_SCOPE_ANONYMOUS = 'anonymous';
+
+export function localStorageScopeForUser(userId: string | null | undefined): string {
+  return userId ?? LOCAL_SCOPE_ANONYMOUS;
+}
+
+function scopedKey(base: string, scope: string): string {
+  return `${base}:${scope}`;
+}
+
 function readJson<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
@@ -38,6 +49,7 @@ export interface CreateDraft {
 }
 
 export interface LocalRepository {
+  scope: string;
   listLocalExercises(): LocalExercise[];
   saveLocalExercise(exercise: LocalExercise): void;
   deleteLocalExercise(id: string): void;
@@ -50,53 +62,59 @@ export interface LocalRepository {
   writeCreateDraft(draft: CreateDraft): void;
 }
 
-export function createLocalRepository(): LocalRepository {
+export function createLocalRepository(scope: string = LOCAL_SCOPE_ANONYMOUS): LocalRepository {
+  const exKey = scopedKey(EX_KEY, scope);
+  const rtKey = scopedKey(RT_KEY, scope);
+  const sessKey = scopedKey(SESS_KEY, scope);
+  const draftKey = scopedKey(DRAFT_KEY, scope);
+
   return {
+    scope,
     listLocalExercises() {
-      return readJson<LocalExercise[]>(EX_KEY, []);
+      return readJson<LocalExercise[]>(exKey, []);
     },
     saveLocalExercise(exercise) {
-      const list = readJson<LocalExercise[]>(EX_KEY, []);
+      const list = readJson<LocalExercise[]>(exKey, []);
       const idx = list.findIndex(e => e.id === exercise.id);
       if (idx >= 0) list[idx] = exercise;
       else list.push(exercise);
-      writeJson(EX_KEY, list);
+      writeJson(exKey, list);
     },
     deleteLocalExercise(id) {
       writeJson(
-        EX_KEY,
-        readJson<LocalExercise[]>(EX_KEY, []).filter(e => e.id !== id)
+        exKey,
+        readJson<LocalExercise[]>(exKey, []).filter(e => e.id !== id)
       );
     },
     listLocalRoutines() {
-      return readJson<LocalRoutine[]>(RT_KEY, []);
+      return readJson<LocalRoutine[]>(rtKey, []);
     },
     saveLocalRoutine(routine) {
-      const list = readJson<LocalRoutine[]>(RT_KEY, []);
+      const list = readJson<LocalRoutine[]>(rtKey, []);
       const idx = list.findIndex(r => r.id === routine.id);
       if (idx >= 0) list[idx] = routine;
       else list.push(routine);
-      writeJson(RT_KEY, list);
+      writeJson(rtKey, list);
     },
     deleteLocalRoutine(id) {
       writeJson(
-        RT_KEY,
-        readJson<LocalRoutine[]>(RT_KEY, []).filter(r => r.id !== id)
+        rtKey,
+        readJson<LocalRoutine[]>(rtKey, []).filter(r => r.id !== id)
       );
     },
     listSessions() {
-      return readJson<PracticeSessionRecord[]>(SESS_KEY, []);
+      return readJson<PracticeSessionRecord[]>(sessKey, []);
     },
     addSession(session) {
-      const list = readJson<PracticeSessionRecord[]>(SESS_KEY, []);
+      const list = readJson<PracticeSessionRecord[]>(sessKey, []);
       list.unshift(session);
-      writeJson(SESS_KEY, list.slice(0, 200));
+      writeJson(sessKey, list.slice(0, 200));
     },
     readCreateDraft() {
-      return readJson<CreateDraft | null>(DRAFT_KEY, null);
+      return readJson<CreateDraft | null>(draftKey, null);
     },
     writeCreateDraft(draft) {
-      writeJson(DRAFT_KEY, draft);
+      writeJson(draftKey, draft);
     },
   };
 }

@@ -25,6 +25,17 @@ export function CreatePage() {
       ? draft.stepExerciseIds
       : ['swing-2-4', 'thirds-sevenths', 'question-answer']
   );
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const d = repo.readCreateDraft();
+    setTitle(d?.title ?? 'My First Jazz Routine');
+    setDescription(d?.description ?? '');
+    setVisibility(d?.visibility ?? 'Private');
+    setStepIds(
+      d?.stepExerciseIds?.length ? d.stepExerciseIds : ['swing-2-4', 'thirds-sevenths', 'question-answer']
+    );
+  }, [repo.scope]);
 
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [exTitle, setExTitle] = useState('');
@@ -64,7 +75,7 @@ export function CreatePage() {
     setStepIds(next);
   };
 
-  const saveExercise = () => {
+  const saveExercise = async () => {
     if (!exTitle.trim() || !exInstructions.trim()) {
       showToast('Exercise needs a title and instructions.');
       return;
@@ -91,18 +102,28 @@ export function CreatePage() {
       chart_id: exChartId || null,
       applicable_instruments: ['All'],
     };
-    repo.saveLocalExercise(exercise);
     if (!stepIds.includes(id)) setStepIds([...stepIds, id]);
-    refreshLocal();
-    if (teamSignedIn) {
-      void saveExerciseToCloud(exercise);
-    } else {
-      showToast('Exercise saved on this device.');
+    setSaving(true);
+    try {
+      if (teamSignedIn) {
+        const saved = await saveExerciseToCloud(exercise);
+        repo.saveLocalExercise({ ...exercise, id: saved.id });
+        refreshLocal();
+        showToast('Exercise saved to your team account.');
+      } else {
+        repo.saveLocalExercise(exercise);
+        refreshLocal();
+        showToast('Exercise saved on this device.');
+      }
+      setShowExerciseForm(false);
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Could not save exercise.');
+    } finally {
+      setSaving(false);
     }
-    setShowExerciseForm(false);
   };
 
-  const saveRoutine = () => {
+  const saveRoutine = async () => {
     const steps = stepIds.map(id => {
       const ex = exercises.find(e => e.id === id) ?? exercisesById[id];
       return { exercise_id: id, duration_minutes: ex?.duration_minutes ?? 5 };
@@ -118,16 +139,31 @@ export function CreatePage() {
       steps,
       applicable_instruments: ['All'],
     };
-    repo.saveLocalRoutine(routine);
-    refreshLocal();
-    if (teamSignedIn) {
-      void saveRoutineToCloud(routine, stepIds);
-    } else {
-      showToast('Routine saved locally.');
+    setSaving(true);
+    try {
+      if (teamSignedIn) {
+        const saved = await saveRoutineToCloud(routine, stepIds);
+        repo.saveLocalRoutine({
+          ...routine,
+          id: saved.id,
+          steps: saved.steps,
+          visibility: saved.visibility,
+        });
+        refreshLocal();
+        showToast('Routine saved to your team account.');
+      } else {
+        repo.saveLocalRoutine(routine);
+        refreshLocal();
+        showToast('Routine saved locally.');
+      }
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Could not save routine.');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const publishRoutine = () => {
+  const publishRoutine = async () => {
     if (visibility === 'Unlisted') {
       showToast('Unlisted sharing stays Preview until Phase 3 token security is verified.');
       return;
@@ -140,7 +176,7 @@ export function CreatePage() {
       showToast('Set visibility to Public before publishing.');
       return;
     }
-    saveRoutine();
+    await saveRoutine();
   };
 
   return (
@@ -254,7 +290,7 @@ export function CreatePage() {
             ))}
           </select>
           <div className="row" style={{ marginTop: 10 }}>
-            <button type="button" className="btn primary" onClick={saveExercise}>
+            <button type="button" className="btn primary" onClick={saveExercise} disabled={saving}>
               Save exercise
             </button>
             <button type="button" className="btn" onClick={() => setShowExerciseForm(false)}>
@@ -276,7 +312,7 @@ export function CreatePage() {
         <option>Unlisted</option>
         <option>Public</option>
       </select>
-      <button type="button" className="btn primary wide" style={{ marginTop: 15 }} onClick={saveRoutine}>
+      <button type="button" className="btn primary wide" style={{ marginTop: 15 }} onClick={() => void saveRoutine()} disabled={saving}>
         {teamSignedIn ? 'Save routine to team cloud' : 'Save routine locally'}
       </button>
       <button type="button" className="btn wide" style={{ marginTop: 8 }} onClick={publishRoutine}>

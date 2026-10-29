@@ -4,11 +4,15 @@
 
 ## Implemented in repo
 
-- Versioned migrations: `supabase/migrations/20251029000001_initial_schema.sql`, `20251029000002_rls_policies.sql`
+- Versioned migrations: `supabase/migrations/20251029000001_initial_schema.sql`, `20251029000002_rls_policies.sql`, `20251029000003_save_routine_rpc.sql`
 - RLS on all app tables; anonymous **SELECT** only on **public** routines + their step snapshots
 - Team email/password sign-in UI (`/signin`), `/signup` → sign-in redirect, sign-out
 - Supabase adapter: profiles (cat), exercises, routines + snapshots, practice sessions, audio metadata table
-- **Local-first fallback** when `VITE_SUPABASE_*` is unset (Phase 1 unchanged)
+- **Local fallback** scoped per user id (or `anonymous` when signed out); legacy unscoped keys are ignored
+- Atomic routine save via `save_user_routine_with_steps` RPC (owner-checked, transactional)
+- Practice player resolves **step snapshots** when source exercises are unavailable
+- Cloud saves and session finish **await** persistence before success toasts
+- Vitest: `routinePlayback.test.ts`, `localRepositoryScope.test.ts`; RLS script covers RPC forge + atomic save
 - Scripts: `web/scripts/provision-team-user.mjs`, `web/scripts/supabase-rls-test.mjs`
 - Setup guide: `PHASE2-SUPABASE-SETUP.md`
 - Env template: `web/.env.example`
@@ -41,7 +45,7 @@ Report any failures before Phase 3.
 - Remix flow with attribution and independent snapshot copies in UI
 - Cloudflare deploy env vars
 - Password change flow (document as post-demo if needed)
-- Full `SUPABASE-SECURITY-TESTS.md` matrix (forged steps, unlisted token positive/negative) — partial coverage in `test:rls` only
+- Full `SUPABASE-SECURITY-TESTS.md` matrix (unlisted token positive/negative) — partial coverage in `test:rls` only
 
 ## Files touched (Phase 2)
 
