@@ -18,7 +18,7 @@ const viewports = [
   { name: '1280x900', width: 1280, height: 900, mobile: false },
 ];
 const lighting = process.env.LIGHT ?? 'sunshine';
-const seeded = process.env.SEED === '1';
+const seedLevel = Number(process.env.SEED ?? 0);
 const suffix = process.env.SUFFIX ?? '';
 const panels = (process.env.PANELS ?? 'music-stand,notebook,plants,lighting').split(',').filter(Boolean);
 const panelButton = { 'music-stand': /Sheet music stand/, notebook: /Bookshelf notebook/, plants: /^Plants/, lighting: /^Room lighting$/ };
@@ -35,14 +35,14 @@ for (const vp of viewports) {
   await page.addInitScript(([l, seed]) => {
     localStorage.setItem('little-jazz-room:room-lighting:v1', l);
     if (seed) {
-      const sessions = Array.from({ length: 12 }, (_, d) => ({
+      const sessions = Array.from({ length: seed >= 2 ? 22 : 12 }, (_, d) => ({
         id: `seed-${d}`,
         finishedAt: new Date(Date.now() - d * 86400000).toISOString(),
         durationSeconds: (d === 0 ? 20 : 25) * 60,
       }));
       localStorage.setItem('little-jazz-room:practice-sessions:v1:anonymous', JSON.stringify(sessions));
     }
-  }, [lighting, seeded]);
+  }, [lighting, seedLevel]);
   await page.goto(base + '/', { waitUntil: 'networkidle' });
   await page.waitForTimeout(700);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);

@@ -90,7 +90,7 @@ export function JazzRoomScene({ lighting, plantStage, catOverlay, overlays, note
   } as CSSProperties;
 
   return (
-    <div ref={ref} className="jazz-room-scene" data-mode={lighting} data-layout={frame.mode} data-ready={measured} style={style}>
+    <div ref={ref} className="jazz-room-scene" data-mode={lighting} data-layout={frame.mode} data-ready={measured} data-panned={compact && Math.abs(scrollLeft - frame.initialScrollLeft) > 12} style={style}>
       <div ref={scrollerRef} className="room-scroller">
         <div className="room-art-frame">
           <div className="room-art-layer" aria-hidden="true">

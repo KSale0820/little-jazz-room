@@ -205,19 +205,21 @@
 .plant-growth { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .plant-glow { opacity: 0; transition: opacity 0.8s ease; }
 .plant-growth[data-stage='2'] .plant-glow { opacity: 0.35; }
-.plant-growth[data-stage='3'] .plant-glow { opacity: 0.9; }
+.plant-growth[data-stage='3'] .plant-glow { opacity: 0.55; }
 .pg { opacity: 0; transition: opacity 0.8s ease; }
 .plant-growth[data-stage='0'] .pg.s0,
 .plant-growth[data-stage='1'] .pg.s0, .plant-growth[data-stage='1'] .pg.s1,
 .plant-growth[data-stage='2'] .pg.s0, .plant-growth[data-stage='2'] .pg.s1, .plant-growth[data-stage='2'] .pg.s2,
 .plant-growth[data-stage='3'] .pg { opacity: 1; }
-.plant-leaves path { fill: #7dbb52; stroke: #3d7a30; stroke-width: 1; }
-.vine { stroke: #4f8c3c; stroke-width: 1.8; }
-.bud { fill: #f6c46b; stroke: #c98d2e; stroke-width: 0.8; }
-.bloom circle { fill: #ffd2dc; stroke: #e58aa3; stroke-width: 0.7; }
-.bloom.gold circle { fill: #ffe9a0; stroke: #d9a93a; }
-.bloom .core { fill: #f2a43a; stroke: #c27a1c; }
-.sparkle { fill: #fffbe0; transform-box: fill-box; transform-origin: center; animation: sparkle 3.6s ease-in-out infinite; }
+.plant-growth { opacity: 0.88; mix-blend-mode: normal; filter: saturate(0.8) drop-shadow(0 1px 1px rgba(30, 24, 8, 0.35)); }
+.plant-leaves path { fill: #5f7f3e; stroke: #3a5428; stroke-width: 0.8; }
+.plant-leaves path:nth-of-type(even) { fill: #6c8a45; }
+.vine { stroke: #4a6a30; stroke-width: 1.2; }
+.bud { fill: #d9a65a; stroke: #9a6d2e; stroke-width: 0.6; }
+.bloom circle { fill: #ecc3c4; stroke: #c78890; stroke-width: 0.5; }
+.bloom.gold circle { fill: #ecd391; stroke: #b98d3a; }
+.bloom .core { fill: #d58f3a; stroke: #9e6420; }
+.sparkle { fill: #f6e8b8; opacity: 0.8; transform-box: fill-box; transform-origin: center; animation: sparkle 3.6s ease-in-out infinite; }
 .plant-sparkles .sparkle:nth-child(2) { animation-delay: 1.2s; }
 .plant-sparkles .sparkle:nth-child(3) { animation-delay: 2.2s; }
 @keyframes sparkle { 0%, 100% { transform: scale(0.6); } 50% { transform: scale(1.5); } }
@@ -280,3 +282,6 @@
   .pg, .plant-glow { transition: none; }
   .sparkle { animation: none !important; }
 }
+
+/* Hide the speech bubble once the room has been panned so it never clips at the edge. */
+.jazz-room-scene[data-panned='true'] .home-cat-bubble { display: none; }
