@@ -1,4 +1,117 @@
-/* App shell layout hooks */
 .app-root {
   width: 100%;
+  min-height: 100dvh;
+}
+
+.app-sidebar {
+  display: none;
+}
+
+.app-main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.app-shell {
+  position: relative;
+  width: min(390px, 100%);
+  max-width: 100%;
+  min-height: 100dvh;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+.app-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+  color: #1a2e45;
+}
+
+.app-brand span {
+  font-size: 12px;
+  color: #677469;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #41504a;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.sidebar-nav a.current {
+  background: #e6eee5;
+  color: #2d6a4f;
+}
+
+@media (min-width: 900px) {
+  .app-root {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 0;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 20px 24px 32px;
+    align-items: start;
+  }
+
+  .app-sidebar {
+    display: block;
+    position: sticky;
+    top: 20px;
+    padding: 16px 12px;
+    border-radius: 16px;
+    border: 1px solid #e5e0d4;
+    background: #fffdf8;
+  }
+
+  .app-main {
+    justify-content: stretch;
+  }
+
+  .app-shell {
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    min-height: calc(100dvh - 40px);
+    border: 1px solid #e5e0d4;
+    border-radius: 18px;
+    box-shadow: 0 16px 40px #1d2b1e12;
+  }
+
+  .phone-status {
+    display: none;
+  }
+
+  .bottom-nav {
+    display: none;
+  }
+
+  .viewport {
+    padding-bottom: 24px;
+  }
+}
+
+@media (max-width: 899px) {
+  .app-shell {
+    min-height: 100dvh;
+  }
+
+  .viewport {
+    min-height: calc(100dvh - 72px);
+  }
 }

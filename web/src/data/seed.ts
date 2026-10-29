@@ -5,7 +5,14 @@ export const seedContent = raw as unknown as SeedContent;
 
 export const seedExercises = seedContent.exercises;
 export const seedCharts = seedContent.charts;
-export const seedRoutines = seedContent.routines;
+export const seedRoutines = seedContent.routines.map(r => {
+  const raw = r as (typeof seedContent.routines)[number] & { difficulty?: string; level?: string };
+  return {
+    ...raw,
+    level: raw.level ?? raw.difficulty ?? 'Beginner',
+    visibility: raw.visibility ?? 'public',
+  };
+});
 export const seedPaths = seedContent.paths;
 export const seedInstruments = seedContent.instruments;
 

@@ -110,8 +110,8 @@ small,
 .app-root {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-bottom: 24px;
+  align-items: stretch;
+  padding-bottom: 0;
 }
 
 .phone-frame {
@@ -145,6 +145,12 @@ small,
   padding-bottom: 78px;
   scrollbar-width: thin;
   overflow-x: hidden;
+}
+
+@media (min-width: 900px) {
+  .viewport {
+    padding-bottom: 16px;
+  }
 }
 
 .page {
@@ -346,17 +352,10 @@ small,
   font-weight: 800;
 }
 
-.phone-route-hint {
-  position: absolute;
-  bottom: 2px;
-  left: 0;
-  right: 0;
-  z-index: 8;
-  text-align: center;
-  font-size: 9px;
-  color: #9aa39c;
-  margin: 0;
-  pointer-events: none;
+@media (min-width: 900px) {
+  .desktop-sidebar {
+    display: block;
+  }
 }
 
 .pix {
@@ -633,6 +632,16 @@ textarea.field {
   background: #d4e5d0;
 }
 
+.calendar-dow {
+  font-weight: 700;
+  color: #708075;
+  padding: 4px 0 !important;
+}
+
+.calendar-pad {
+  visibility: hidden;
+}
+
 .mutelink {
   border: 0;
   background: none;
@@ -692,31 +701,6 @@ textarea.field {
 @media (min-width: 560px) {
   .phone-frame {
     width: min(500px, 100%);
-  }
-}
-
-@media (min-width: 900px) {
-  .app-root {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 24px;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 16px 24px 32px;
-  }
-
-  .site-header {
-    display: none;
-  }
-
-  .phone-frame {
-    flex: 0 0 390px;
-    height: min(820px, calc(100dvh - 48px));
-  }
-
-  .desktop-sidebar {
-    display: block;
   }
 }
 

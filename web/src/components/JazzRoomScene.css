@@ -7,13 +7,51 @@
 }
 
 .jazz-room-scene.home-hero {
-  height: clamp(280px, 42vh, 360px);
+  height: clamp(280px, 42vh, 380px);
   min-height: 280px;
 }
 
 .jazz-room-scene.home-hero::after {
   inset: 62% 0 0;
   background: linear-gradient(transparent, #fbf8f0f0);
+}
+
+.room-hotspots {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.room-hotspot {
+  position: absolute;
+  pointer-events: auto;
+  border: 1px solid #ffffff88;
+  background: #fffef8c9;
+  color: #1a3a2f;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 8px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px #1a2b1e18;
+  max-width: 42%;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.room-hotspot.piano {
+  left: 4%;
+  bottom: 22%;
+}
+
+.room-hotspot.stand {
+  left: 38%;
+  top: 38%;
+}
+
+.room-hotspot.notebook {
+  right: 5%;
+  bottom: 28%;
 }
 
 .jazz-room-photo {

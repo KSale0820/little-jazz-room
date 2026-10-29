@@ -11,16 +11,35 @@ const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 
 export function PracticePage() {
   const navigate = useNavigate();
-  const { charts, exercises, routines, activeRoutineId, repo, showToast, catId, catMotion, focusMode, setFocusMode } =
-    useApp();
+  const {
+    charts,
+    exercises,
+    routines,
+    activeRoutineId,
+    addSession,
+    showToast,
+    catId,
+    catMotion,
+    focusMode,
+    setFocusMode,
+  } = useApp();
 
-  const routine = activeRoutineId ? routines.find(r => r.id === activeRoutineId) ?? null : null;
-  const firstStep = routine?.steps[0];
-  const stepExercise = firstStep ? exercisesById[firstStep.exercise_id] ?? exercises.find(e => e.id === firstStep.exercise_id) : null;
+  const routine = activeRoutineId ? (routines.find(r => r.id === activeRoutineId) ?? null) : null;
+  const [stepIndex, setStepIndex] = useState(0);
+
+  useEffect(() => {
+    setStepIndex(0);
+  }, [activeRoutineId, routine?.id]);
+
+  const currentStep = routine?.steps[stepIndex] ?? null;
+  const stepExercise = useMemo(() => {
+    if (!currentStep) return null;
+    return exercisesById[currentStep.exercise_id] ?? exercises.find(e => e.id === currentStep.exercise_id) ?? null;
+  }, [currentStep, exercises]);
 
   const defaultChartId = stepExercise?.chart_id ?? charts[0]?.id ?? 'blues-f-12';
   const [chartId, setChartId] = useState(defaultChartId);
-  const [panel, setPanel] = useState<'chords' | 'player'>('chords');
+  const [panel, setPanel] = useState<'chords' | 'player'>('player');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
   const [chartKey, setChartKey] = useState('F');
   const [selectedBar, setSelectedBar] = useState(0);
@@ -30,13 +49,17 @@ export function PracticePage() {
   const timerRef = useRef<number | null>(null);
 
   const chart = chartsById[chartId] ?? charts[0]!;
+  const stepMinutes = currentStep?.duration_minutes ?? stepExercise?.duration_minutes ?? 0;
+  const stepTargetSeconds = stepMinutes * 60;
 
   useEffect(() => {
     if (stepExercise?.chart_id) {
       setChartId(stepExercise.chart_id);
-      setChartKey(chartsById[stepExercise.chart_id]?.concert_key ?? chartKey);
+      const c = chartsById[stepExercise.chart_id];
+      if (c) setChartKey(c.concert_key);
+      setSelectedBar(0);
     }
-  }, [stepExercise?.chart_id]);
+  }, [stepExercise?.id, stepExercise?.chart_id]);
 
   useEffect(() => {
     if (running) {
@@ -69,9 +92,16 @@ export function PracticePage() {
 
   const toggleTimer = () => setRunning(r => !r);
 
+  const goStep = (delta: number) => {
+    if (!routine) return;
+    setRunning(false);
+    setSeconds(0);
+    setStepIndex(i => Math.max(0, Math.min(routine.steps.length - 1, i + delta)));
+  };
+
   const finish = () => {
     setRunning(false);
-    repo.addSession({
+    addSession({
       id: `sess-${Date.now()}`,
       finishedAt: new Date().toISOString(),
       durationSeconds: seconds,
@@ -84,6 +114,7 @@ export function PracticePage() {
   };
 
   const timeLabel = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+  const targetLabel = `${String(Math.floor(stepTargetSeconds / 60)).padStart(2, '0')}:${String(stepTargetSeconds % 60).padStart(2, '0')}`;
 
   return (
     <section className="page practice-page pad tight" aria-label="Practice">
@@ -91,6 +122,37 @@ export function PracticePage() {
         <h2>Practice</h2>
         <span className="mutebadge">No audio loaded</span>
       </div>
+
+      {routine ? (
+        <div className="box routine-player-head">
+          <div className="between">
+            <div>
+              <h3>{routine.title}</h3>
+              <small>
+                Exercise {stepIndex + 1} of {routine.steps.length}
+                {stepExercise ? ` · ${stepExercise.title}` : ''}
+              </small>
+            </div>
+            <span className="mutebadge">{stepMinutes} min suggested</span>
+          </div>
+          <div className="routine-step-nav between" style={{ marginTop: 10 }}>
+            <button type="button" className="btn tiny" disabled={stepIndex === 0} onClick={() => goStep(-1)}>
+              Previous exercise
+            </button>
+            <button
+              type="button"
+              className="btn tiny"
+              disabled={!routine || stepIndex >= routine.steps.length - 1}
+              onClick={() => goStep(1)}
+            >
+              Next exercise
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="muted">Choose a routine in Explore to follow ordered exercises.</p>
+      )}
+
       <div className="tabs" role="tablist">
         <button
           type="button"
@@ -171,11 +233,15 @@ export function PracticePage() {
       {panel === 'player' && (
         <div id="playerPanel">
           <div className="simple">
-            <h3>Practice instructions</h3>
+            <h3>{stepExercise?.title ?? 'Practice instructions'}</h3>
             <p className="placeholder" style={{ marginTop: 8 }}>
               {stepExercise?.instructions ??
-                'Select a routine in Explore or follow the chart study above.'}
+                'Select a routine in Explore or follow the chart study on the Chords tab.'}
             </p>
+            <small className="muted">
+              Suggested duration: {stepMinutes} min · Timer {timeLabel}
+              {stepTargetSeconds > 0 ? ` / ${targetLabel}` : ''}
+            </small>
           </div>
           <div className="simple">
             <h3>Backing recording</h3>
@@ -187,9 +253,10 @@ export function PracticePage() {
               type="button"
               className="btn"
               style={{ marginTop: 9 }}
-              onClick={() => showToast('Recorded stems · Preview only (not active).')}
+              disabled
+              title="Preview only until recordings exist"
             >
-              Recorded stems · Preview
+              Recorded stems · Preview (disabled)
             </button>
           </div>
         </div>

@@ -60,4 +60,18 @@
   .chord-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+
+  .measure {
+    min-height: 88px;
+  }
+
+  .chords {
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 900px) {
+  .chord-grid {
+    max-width: 100%;
+  }
 }

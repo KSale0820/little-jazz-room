@@ -1,7 +1,6 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import { PixelIcon, type NavRoute } from './PixelIcon';
 import { useApp } from '../context/AppContext';
-import { JAZZ_CATS } from '../features/cats/CatCompanion';
 import './AppShell.css';
 
 const NAV: { to: string; route: NavRoute; label: string }[] = [
@@ -13,32 +12,19 @@ const NAV: { to: string; route: NavRoute; label: string }[] = [
 ];
 
 export function AppShell() {
-  const { toast, catId } = useApp();
-  const location = useLocation();
-  const catName = JAZZ_CATS.find(c => c.id === catId)?.name ?? 'Luna';
-  const routeHint =
-    location.pathname === '/'
-      ? `Home (${catName})`
-      : NAV.find(n => n.to === location.pathname)?.label ?? '';
+  const { toast } = useApp();
 
   return (
     <div className="app-root">
       <a className="skip-link" href="#main-viewport">
         Skip to content
       </a>
-      <header className="site-header">
-        <h1>Little Jazz Room</h1>
-        <p>Light music-first practice · local Phase 1 prototype</p>
-      </header>
-      <main className="phone-frame">
-        <div className="phone-status" aria-hidden>
-          <span>9:41</span>
-          <span>◼︎ ▮ ▰</span>
+      <aside className="app-sidebar" aria-label="Main navigation">
+        <div className="app-brand">
+          <strong>Little Jazz Room</strong>
+          <span>Phase 1 · local practice</span>
         </div>
-        <div className="viewport" id="main-viewport">
-          <Outlet />
-        </div>
-        <nav className="bottom-nav" aria-label="Main navigation">
+        <nav className="sidebar-nav">
           {NAV.map(({ to, route, label }) => (
             <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => (isActive ? 'current' : undefined)}>
               <PixelIcon route={route} />
@@ -46,12 +32,26 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
-        {routeHint ? (
-          <p className="phone-route-hint" aria-hidden>
-            {routeHint}
-          </p>
-        ) : null}
-      </main>
+      </aside>
+      <div className="app-main">
+        <main className="app-shell">
+          <div className="phone-status" aria-hidden>
+            <span>9:41</span>
+            <span>◼︎ ▮ ▰</span>
+          </div>
+          <div className="viewport" id="main-viewport">
+            <Outlet />
+          </div>
+          <nav className="bottom-nav" aria-label="Main navigation">
+            {NAV.map(({ to, route, label }) => (
+              <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => (isActive ? 'current' : undefined)}>
+                <PixelIcon route={route} />
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+        </main>
+      </div>
       {toast ? (
         <div className="toast-message" role="status">
           {toast}

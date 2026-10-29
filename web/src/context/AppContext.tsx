@@ -6,11 +6,13 @@ import {
   mergeRoutines,
   type LocalRepository,
 } from '../repository/localRepository';
-import type { Exercise, Routine } from '../types/content';
+import type { Exercise, PracticeSessionRecord, Routine } from '../types/content';
 import { useCatSelection } from '../features/cats/CatCompanion';
 
 interface AppContextValue {
   repo: LocalRepository;
+  sessions: PracticeSessionRecord[];
+  addSession: (session: PracticeSessionRecord) => void;
   exercises: Exercise[];
   routines: Routine[];
   paths: typeof seedPaths;
@@ -49,12 +51,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const repo = useMemo(() => createLocalRepository(), []);
   const { catId, chooseCat, saveError: catSaveError } = useCatSelection();
   const [tick, setTick] = useState(0);
+  const [sessionTick, setSessionTick] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const [focusMode, setFocusModeState] = useState(() => readBool(FOCUS_KEY, false));
   const [catMotion, setCatMotionState] = useState(() => readBool(MOTION_KEY, true));
   const [activeRoutineId, setActiveRoutineId] = useState<string | null>('daily-warm-up');
 
   const refreshLocal = () => setTick(t => t + 1);
+
+  const sessions = useMemo(() => repo.listSessions(), [repo, sessionTick]);
+
+  const addSession = (session: PracticeSessionRecord) => {
+    repo.addSession(session);
+    setSessionTick(t => t + 1);
+  };
 
   const exercises = useMemo(
     () => mergeExercises(seedExercises, repo.listLocalExercises()),
@@ -64,6 +74,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     () => mergeRoutines(seedRoutines, repo.listLocalRoutines()),
     [repo, tick]
   );
+
+  useEffect(() => {
+    if (!activeRoutineId) return;
+    if (!routines.some(r => r.id === activeRoutineId)) {
+      setActiveRoutineId(routines[0]?.id ?? null);
+    }
+  }, [routines, activeRoutineId]);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -94,6 +111,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value: AppContextValue = {
     repo,
+    sessions,
+    addSession,
     exercises,
     routines,
     paths: seedPaths,

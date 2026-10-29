@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { exercisesById } from '../data/seed';
+import { exerciseMatchesInstrument, routineMatchesInstrument } from '../lib/instrumentFilter';
 import { useApp } from '../context/AppContext';
 
 type ExploreTab = 'routines' | 'exercises' | 'challenges';
@@ -16,7 +18,7 @@ const CATEGORIES = [
 ];
 
 export function ExplorePage() {
-  const { exercises, routines, paths, charts, showToast, setActiveRoutineId } = useApp();
+  const { exercises, routines, paths, charts, setActiveRoutineId } = useApp();
   const navigate = useNavigate();
   const [tab, setTab] = useState<ExploreTab>('routines');
   const [query, setQuery] = useState('');
@@ -26,22 +28,17 @@ export function ExplorePage() {
   const filteredRoutines = useMemo(() => {
     const q = query.toLowerCase();
     return routines.filter(r => {
+      if (instrument !== 'All' && !routineMatchesInstrument(r, exercisesById, instrument)) return false;
       if (q && !r.title.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [routines, query]);
+  }, [routines, query, instrument]);
 
   const filteredExercises = useMemo(() => {
     const q = query.toLowerCase();
     return exercises.filter(ex => {
       if (categoryFilter && ex.category !== categoryFilter) return false;
-      if (instrument !== 'All') {
-        const mat = ex.suggested_material.toLowerCase();
-        const inst = instrument.toLowerCase();
-        if (!mat.includes(inst.split(' ')[0]!) && ex.category !== instrument) {
-          /* soft filter — show all when no match for demo */
-        }
-      }
+      if (instrument !== 'All' && !exerciseMatchesInstrument(ex, instrument)) return false;
       if (q && !(`${ex.title} ${ex.category} ${ex.level}`.toLowerCase().includes(q))) return false;
       return true;
     });
@@ -83,10 +80,7 @@ export function ExplorePage() {
             key={inst}
             type="button"
             className={`chip ${instrument === inst ? 'selected' : ''}`}
-            onClick={() => {
-              setInstrument(inst);
-              showToast(`Instrument filter: ${inst} (catalog preview)`);
-            }}
+            onClick={() => setInstrument(inst)}
           >
             {inst === 'Alto Saxophone' ? 'Alto Sax' : inst === 'Tenor Saxophone' ? 'Tenor Sax' : inst}
           </button>
@@ -139,10 +133,10 @@ export function ExplorePage() {
           </>
         )}
         {tab === 'routines' && filteredRoutines.length === 0 && (
-          <p className="muted">No matches. Try another search.</p>
+          <p className="muted">No matches for this filter. Try another instrument or search.</p>
         )}
         {tab === 'exercises' && filteredExercises.length === 0 && (
-          <p className="muted">No matches. Try another search.</p>
+          <p className="muted">No matches for this filter. Try another instrument or search.</p>
         )}
       </div>
       <div className="box">
@@ -168,7 +162,6 @@ export function ExplorePage() {
               setTab('exercises');
               setCategoryFilter(c.name);
               setQuery('');
-              showToast(`${c.name} exercises selected`);
             }}
           >
             <strong>{c.name}</strong>
