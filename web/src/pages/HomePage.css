@@ -20,16 +20,16 @@
 .home-room-stage {
   position: relative;
   /* Basis keeps the piano on screen (art scale about 0.69, i.e. 1.41 x the column width); shrinks on short phones. */
-  flex: 0 1 calc(min(100vw, 390px) * 1.41);
+  flex: 1 1 0;
   min-height: 0;
+  max-height: calc(min(100vw, 899px) * 1.62);
   overflow: hidden;
 }
 
 /* ── Header: a band on phones, an overlay on the room on desktop ── */
 .home-header {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 56px;
-  max-height: 160px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -224,7 +224,7 @@
     overflow: hidden;
     justify-content: flex-start;
   }
-  .home-room-stage { flex: 1 1 0; }
+  .home-room-stage { flex: 1 1 0; max-height: none; }
   .home-header {
     position: absolute;
     z-index: 6;
