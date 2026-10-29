@@ -157,11 +157,17 @@ small,
   margin-top: 5px;
 }
 
-.app-root {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding-bottom: 0;
+@media (max-width: 899px) {
+  .phone-status {
+    display: flex;
+  }
+
+  .app-root {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding-bottom: 0;
+  }
 }
 
 .phone-frame {
@@ -181,7 +187,7 @@ small,
   height: 24px;
   padding: 6px 20px 0;
   font-size: 10px;
-  display: flex;
+  display: none;
   justify-content: space-between;
   position: absolute;
   z-index: 8;
