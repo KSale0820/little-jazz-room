@@ -1,0 +1,15 @@
+.jazz-cat-sprite { image-rendering: pixelated; object-fit: contain; transform-origin: center bottom; }
+.jazz-cat-animated { animation: jazz-cat-breathe 5.5s ease-in-out infinite; }
+@keyframes jazz-cat-breathe { 0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)} }
+.jazz-cat-section { color:#254638; background:#fffdf7; border:1px solid #deddd0; border-radius:16px; padding:14px; }
+.jazz-cat-section h2{font-size:18px;margin:0 0 5px}.jazz-cat-section p{font-size:12px;color:#6c776c}
+.jazz-cat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.jazz-cat-grid button{background:#fcfaf4;border:1px solid #dbded3;border-radius:10px;padding:6px 2px;min-width:0;cursor:pointer;color:inherit}
+.jazz-cat-grid button[aria-pressed="true"]{background:#e7f1e8;border:2px solid #3b7758}
+.jazz-cat-grid button:focus-visible{outline:3px solid #345b47;outline-offset:2px}
+.jazz-cat-grid img{display:block;margin:auto}.jazz-cat-grid strong,.jazz-cat-grid small{display:block;line-height:1.4}.jazz-cat-grid strong{font-size:11px}.jazz-cat-grid small{font-size:9px;color:#637367}
+.jazz-cat-description{margin:0}
+@media (prefers-reduced-motion:reduce){.jazz-cat-sprite{animation:none!important}}
+
+/* Keep sprites at equal canvas size: anatomy is scaled within each asset, not via CSS transforms. */
+.jazz-cat-grid button small{font-size:10px;line-height:1.3;min-height:2.2em}

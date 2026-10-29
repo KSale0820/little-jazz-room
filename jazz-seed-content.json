@@ -1,0 +1,3657 @@
+{
+  "license_notice": "Original chord-only educational studies of common jazz forms; standards named as related repertoire are not exact/authorized lead sheets. No copyrighted melodies, lyrics, or backing recordings are bundled.",
+  "instruments": [
+    "Piano",
+    "Guitar",
+    "Alto Saxophone",
+    "Tenor Saxophone",
+    "Trumpet",
+    "Bass",
+    "Drums"
+  ],
+  "exercises": [
+    {
+      "id": "listen-form",
+      "title": "Hear the Form",
+      "category": "Ear Training",
+      "level": "Beginner",
+      "duration_minutes": 3,
+      "instructions": "Clap once at the start of each 4-bar phrase while listening or counting. Name the beginning of each 12-bar chorus.",
+      "suggested_material": "12-bar blues; listen first; audio optional",
+      "suggested_bpm": null,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "blues-f-12"
+    },
+    {
+      "id": "swing-2-4",
+      "title": "Swing on Two and Four",
+      "category": "Rhythm",
+      "level": "Beginner",
+      "duration_minutes": 4,
+      "instructions": "Set metronome clicks on beats 2 and 4. Clap or play quarter notes, then swing eighths without rushing.",
+      "suggested_material": "Metronome: 2 and 4",
+      "suggested_bpm": 70,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": null
+    },
+    {
+      "id": "blues-scale",
+      "title": "F Blues Scale Vocabulary",
+      "category": "Technique",
+      "level": "Beginner",
+      "duration_minutes": 4,
+      "instructions": "Play F, Ab, Bb, B, C, Eb, F slowly. Make two-bar questions and answers using only these notes.",
+      "suggested_material": "F blues; original teaching pattern",
+      "suggested_bpm": 80,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "blues-f-12"
+    },
+    {
+      "id": "chord-roots",
+      "title": "Sing the Roots",
+      "category": "Ear Training",
+      "level": "Beginner",
+      "duration_minutes": 3,
+      "instructions": "Look at the progression; sing the root of each new chord before playing it. Repeat without looking.",
+      "suggested_material": "Original F blues changes",
+      "suggested_bpm": 70,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "blues-f-12"
+    },
+    {
+      "id": "thirds-sevenths",
+      "title": "Guide Tones Through ii–V–I",
+      "category": "Harmony",
+      "level": "Beginner",
+      "duration_minutes": 5,
+      "instructions": "Over Dm7 → G7 → Cmaj7, play each third and seventh. Move each voice by the smallest distance possible.",
+      "suggested_material": "Dm7 G7 Cmaj7",
+      "suggested_bpm": 75,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "ii-v-i-c"
+    },
+    {
+      "id": "seventh-arpeggios",
+      "title": "Seventh-Chord Arpeggio Paths",
+      "category": "Technique",
+      "level": "Beginner",
+      "duration_minutes": 4,
+      "instructions": "Play 1–3–5–7 and back for m7, dominant 7, and maj7 chords. Connect to the nearest tone of the next chord.",
+      "suggested_material": "ii–V–I in C",
+      "suggested_bpm": 80,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "ii-v-i-c"
+    },
+    {
+      "id": "chord-tone-solo",
+      "title": "Solo Using Only Chord Tones",
+      "category": "Improvisation",
+      "level": "Beginner",
+      "duration_minutes": 5,
+      "instructions": "Improvise one 12-bar chorus using only chord roots, thirds, fifths, and sevenths. End phrases with space.",
+      "suggested_material": "12-bar F jazz blues",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "blues-f-12"
+    },
+    {
+      "id": "question-answer",
+      "title": "Two-Bar Call and Response",
+      "category": "Improvisation",
+      "level": "Beginner",
+      "duration_minutes": 4,
+      "instructions": "Play a short two-bar phrase, leave two beats of silence, then answer with a related two-bar phrase.",
+      "suggested_material": "F blues, no melody recording required",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "blues-f-12"
+    },
+    {
+      "id": "blues-form",
+      "title": "Count a 12-Bar Blues",
+      "category": "Repertoire",
+      "level": "Beginner",
+      "duration_minutes": 4,
+      "instructions": "Count measures 1–12 aloud while clapping beat 2 and 4. Identify IV at measure 5 and the turnaround at measures 11–12.",
+      "suggested_material": "Original jazz blues form",
+      "suggested_bpm": 90,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "blues-f-12"
+    },
+    {
+      "id": "shell-voicings",
+      "title": "Rootless Guide-Tone Shells",
+      "category": "Harmony",
+      "level": "Intermediate",
+      "duration_minutes": 5,
+      "instructions": "On piano or guitar, voice just 3rd and 7th of each ii–V–I chord. Keep movement minimal; bass can play roots separately.",
+      "suggested_material": "Dm7 G7 Cmaj7",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "ii-v-i-c"
+    },
+    {
+      "id": "rhythm-variation",
+      "title": "Motif and Rhythmic Variation",
+      "category": "Improvisation",
+      "level": "Intermediate",
+      "duration_minutes": 5,
+      "instructions": "Improvise a two-bar motif, then repeat it with a changed rhythm, preserving one recognizable interval or accent.",
+      "suggested_material": "ii–V–I / blues",
+      "suggested_bpm": 92,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": null
+    },
+    {
+      "id": "four-bar-lick",
+      "title": "Transcribe a Four-Bar Phrase",
+      "category": "Ear Training",
+      "level": "Intermediate",
+      "duration_minutes": 7,
+      "instructions": "Listen to an authorized recording. Sing a four-bar phrase, locate pitches slowly, then reproduce the rhythm without sheet music.",
+      "suggested_material": "Bring your own licensed audio; no default recording",
+      "suggested_bpm": null,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": null
+    },
+    {
+      "id": "walking-bass",
+      "title": "Walking Bass: Roots and Approach Tones",
+      "category": "Technique",
+      "level": "Beginner",
+      "duration_minutes": 5,
+      "instructions": "Play one quarter note per beat. Start with chord roots on beat 1 and approach the next root by step or chromatic neighbor.",
+      "suggested_material": "F blues form",
+      "suggested_bpm": 100,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "blues-f-12"
+    },
+    {
+      "id": "comping-space",
+      "title": "Comping with Space",
+      "category": "Harmony",
+      "level": "Intermediate",
+      "duration_minutes": 5,
+      "instructions": "Play sparse 2–4 note voicings with clear rests. Avoid constant quarter-note attacks; listen for where a soloist could breathe.",
+      "suggested_material": "Original blues or ii–V–I chart",
+      "suggested_bpm": 95,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": null
+    },
+    {
+      "id": "one-chorus",
+      "title": "Build a One-Chorus Solo",
+      "category": "Improvisation",
+      "level": "Intermediate",
+      "duration_minutes": 6,
+      "instructions": "Chorus 1: rhythmic motif. Chorus 2: guide-tone targets. Chorus 3: combine, leaving at least one full bar of rest. Record a note afterward.",
+      "suggested_material": "12-bar original blues",
+      "suggested_bpm": 100,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "blues-f-12"
+    },
+    {
+      "id": "melody-by-ear",
+      "title": "Learn a Short Original Melody by Ear",
+      "category": "Repertoire",
+      "level": "Beginner",
+      "duration_minutes": 6,
+      "instructions": "Listen to a user-provided or original four-bar phrase; sing it before playing, then repeat it in two keys.",
+      "suggested_material": "No copyrighted melody bundled",
+      "suggested_bpm": null,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": null
+    },
+    {
+      "id": "listen-bass",
+      "title": "Listen to the Bass Line",
+      "category": "Ear Training",
+      "level": "Beginner",
+      "duration_minutes": 4,
+      "instructions": "During a licensed recording, focus only on bass. Hum the roots and note where the line approaches the next chord.",
+      "suggested_material": "User-selected audio; optional",
+      "suggested_bpm": null,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": null
+    },
+    {
+      "id": "free-play",
+      "title": "Three Minutes of Musical Play",
+      "category": "Improvisation",
+      "level": "Beginner",
+      "duration_minutes": 3,
+      "instructions": "Explore a phrase, groove, or voicing that interests you. No scoring or right answer; end by noting one discovery.",
+      "suggested_material": "Backing optional",
+      "suggested_bpm": null,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": null
+    },
+    {
+      "id": "blues-bb-forms",
+      "title": "B♭ Blues: Say the Changes",
+      "category": "Harmony",
+      "level": "Beginner",
+      "duration_minutes": 5,
+      "instructions": "Count three 4-bar phrases while naming each chord’s root. Play the third of each dominant seventh chord, then improvise one two-bar phrase.",
+      "suggested_material": "Jazz Blues in B♭",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "jazz-blues-bb-12"
+    },
+    {
+      "id": "rhythm-bridge",
+      "title": "Rhythm Changes: Hear the Bridge",
+      "category": "Repertoire",
+      "level": "Intermediate",
+      "duration_minutes": 8,
+      "instructions": "Play the A-section progression once, then isolate bars 17–24. Follow D7 → G7 → C7 → F7 roots and return to the A section.",
+      "suggested_material": "Rhythm Changes in B♭ (AABA Study)",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "rhythm-bb-32"
+    },
+    {
+      "id": "bossa-minor",
+      "title": "Minor Bossa: Guide Tones",
+      "category": "Harmony",
+      "level": "Beginner",
+      "duration_minutes": 7,
+      "instructions": "Play thirds and sevenths of each chord in a relaxed straight-eighth-note feel. Loop bars 9–12 before playing all 16 bars.",
+      "suggested_material": "Minor Bossa in C Minor (16-bar Study)",
+      "suggested_bpm": 100,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "minor-bossa-cm-16"
+    },
+    {
+      "id": "major-minor-cycle",
+      "title": "Relative Major to Minor",
+      "category": "Harmony",
+      "level": "Beginner",
+      "duration_minutes": 6,
+      "instructions": "Play roots then guide tones through the 8-bar cycle. Identify the move from G major to E minor, keeping time at a slow swing tempo.",
+      "suggested_material": "Major-to-Minor ii–V Cycle (16-bar Study)",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "major-minor-cycle-em-16"
+    },
+    {
+      "id": "modal-space",
+      "title": "Modal Motif: Leave Space",
+      "category": "Harmony",
+      "level": "Beginner",
+      "duration_minutes": 6,
+      "instructions": "Create a two-note motif in D Dorian. Repeat it with rhythmic variation and adapt the motif when the harmony shifts up a semitone.",
+      "suggested_material": "Two-Center Modal Study in D (16 bars)",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "modal-d-16"
+    },
+    {
+      "id": "songbook-form",
+      "title": "Recognize ABAC Form",
+      "category": "Repertoire",
+      "level": "Intermediate",
+      "duration_minutes": 7,
+      "instructions": "Mark the end of each 8-bar section. Compare bars 9–16 and 25–32, then improvise one chorus using only chord tones.",
+      "suggested_material": "Songbook Changes in C (ABAC Study)",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "songbook-c-abac-32"
+    },
+    {
+      "id": "bright-swing",
+      "title": "AABA: Track the Bridge",
+      "category": "Repertoire",
+      "level": "Intermediate",
+      "duration_minutes": 7,
+      "instructions": "Count the four 8-bar sections out loud. In the bridge, play chord roots on beat 1 and seventh-to-third voice leading without stopping.",
+      "suggested_material": "Bright Swing in C (AABA Study)",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "bright-c-aaba-32"
+    },
+    {
+      "id": "minor-blues",
+      "title": "Minor Blues in Three Phrases",
+      "category": "Harmony",
+      "level": "Beginner",
+      "duration_minutes": 6,
+      "instructions": "Play a chorus with the minor pentatonic scale, then one with only chord tones. Note where bars 9–10 increase harmonic tension.",
+      "suggested_material": "Minor Jazz Blues in C",
+      "suggested_bpm": 85,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "minor-blues-cm-12"
+    },
+    {
+      "id": "ballad-voice",
+      "title": "Slow Ballad: Smooth Voice Leading",
+      "category": "Harmony",
+      "level": "Intermediate",
+      "duration_minutes": 7,
+      "instructions": "Keep the tempo slow. Play only third and seventh notes with minimal motion, leaving a beat of silence after each chord change.",
+      "suggested_material": "Ballad Turnarounds in E♭ (16-bar Study)",
+      "suggested_bpm": 65,
+      "audio_asset_id": null,
+      "visibility": "public",
+      "is_seed": true,
+      "chart_id": "ballad-eb-16"
+    }
+  ],
+  "routines": [
+    {
+      "id": "first-improv",
+      "title": "First Jazz Improvisation",
+      "difficulty": "Beginner",
+      "goal": "Improvisation",
+      "duration_minutes": 15,
+      "steps": [
+        {
+          "exercise_id": "blues-form",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "blues-scale",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "question-answer",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "free-play",
+          "duration_minutes": 3
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "daily-warm-up",
+      "title": "Daily Jazz Warm-Up",
+      "difficulty": "Beginner",
+      "goal": "Technique",
+      "duration_minutes": 10,
+      "steps": [
+        {
+          "exercise_id": "swing-2-4",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "seventh-arpeggios",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "free-play",
+          "duration_minutes": 3
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "12bar-blues",
+      "title": "12-Bar Blues from Zero",
+      "difficulty": "Beginner",
+      "goal": "Repertoire",
+      "duration_minutes": 20,
+      "steps": [
+        {
+          "exercise_id": "listen-form",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "blues-form",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "chord-roots",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "chord-tone-solo",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "one-chorus",
+          "duration_minutes": 5
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "ii-v-i-workout",
+      "title": "ii–V–I Workout",
+      "difficulty": "Beginner",
+      "goal": "Harmony",
+      "duration_minutes": 15,
+      "steps": [
+        {
+          "exercise_id": "seventh-arpeggios",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "thirds-sevenths",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "question-answer",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "free-play",
+          "duration_minutes": 3
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "rhythm-time",
+      "title": "Swing and Timing Practice",
+      "difficulty": "Beginner",
+      "goal": "Rhythm",
+      "duration_minutes": 10,
+      "steps": [
+        {
+          "exercise_id": "swing-2-4",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "rhythm-variation",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "free-play",
+          "duration_minutes": 3
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "intermediate-solo",
+      "title": "Intermediate Soloing Practice",
+      "difficulty": "Intermediate",
+      "goal": "Improvisation",
+      "duration_minutes": 30,
+      "steps": [
+        {
+          "exercise_id": "four-bar-lick",
+          "duration_minutes": 7
+        },
+        {
+          "exercise_id": "thirds-sevenths",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "rhythm-variation",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "chord-tone-solo",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "one-chorus",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "free-play",
+          "duration_minutes": 3
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "walking-bass",
+      "title": "Walking Bass Basics",
+      "difficulty": "Beginner",
+      "goal": "Technique",
+      "duration_minutes": 15,
+      "steps": [
+        {
+          "exercise_id": "chord-roots",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "walking-bass",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "blues-form",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "free-play",
+          "duration_minutes": 3
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "comping-basics",
+      "title": "Comping with Space",
+      "difficulty": "Intermediate",
+      "goal": "Harmony",
+      "duration_minutes": 15,
+      "steps": [
+        {
+          "exercise_id": "thirds-sevenths",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "comping-space",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "rhythm-variation",
+          "duration_minutes": 5
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "ear-training",
+      "title": "Ear Training Mini Session",
+      "difficulty": "Beginner",
+      "goal": "Ear Training",
+      "duration_minutes": 15,
+      "steps": [
+        {
+          "exercise_id": "listen-form",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "chord-roots",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "listen-bass",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "question-answer",
+          "duration_minutes": 5
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "no-backing",
+      "title": "No-Backing-Track Challenge",
+      "difficulty": "Beginner",
+      "goal": "Rhythm",
+      "duration_minutes": 10,
+      "steps": [
+        {
+          "exercise_id": "swing-2-4",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "blues-form",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "free-play",
+          "duration_minutes": 3
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "jazz-standards-starter",
+      "title": "Jazz Standards Starter Pack",
+      "difficulty": "Beginner",
+      "goal": "Repertoire",
+      "duration_minutes": 14,
+      "steps": [
+        {
+          "exercise_id": "listen-form",
+          "duration_minutes": 3
+        },
+        {
+          "exercise_id": "blues-bb-forms",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "major-minor-cycle",
+          "duration_minutes": 6
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "first-minor-bossa",
+      "title": "First Minor Bossa",
+      "difficulty": "Beginner",
+      "goal": "Rhythm & Harmony",
+      "duration_minutes": 15,
+      "steps": [
+        {
+          "exercise_id": "bossa-minor",
+          "duration_minutes": 7
+        },
+        {
+          "exercise_id": "thirds-sevenths",
+          "duration_minutes": 5
+        },
+        {
+          "exercise_id": "chord-roots",
+          "duration_minutes": 3
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "rhythm-changes-starter",
+      "title": "Rhythm Changes Starter",
+      "difficulty": "Intermediate",
+      "goal": "Repertoire",
+      "duration_minutes": 19,
+      "steps": [
+        {
+          "exercise_id": "swing-2-4",
+          "duration_minutes": 4
+        },
+        {
+          "exercise_id": "rhythm-bridge",
+          "duration_minutes": 8
+        },
+        {
+          "exercise_id": "bright-swing",
+          "duration_minutes": 7
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    },
+    {
+      "id": "forms-and-ballads",
+      "title": "Song Forms & Ballad Language",
+      "difficulty": "Intermediate",
+      "goal": "Harmony",
+      "duration_minutes": 20,
+      "steps": [
+        {
+          "exercise_id": "songbook-form",
+          "duration_minutes": 7
+        },
+        {
+          "exercise_id": "ballad-voice",
+          "duration_minutes": 7
+        },
+        {
+          "exercise_id": "modal-space",
+          "duration_minutes": 6
+        }
+      ],
+      "practice_modes": [
+        "silent",
+        "metronome",
+        "recorded"
+      ],
+      "is_seed": true
+    }
+  ],
+  "paths": [
+    {
+      "id": "first-7-days",
+      "title": "Your First Week of Jazz",
+      "level": "Beginner",
+      "sessions": [
+        "daily-warm-up",
+        "12bar-blues",
+        "rhythm-time",
+        "ii-v-i-workout",
+        "first-improv",
+        "ear-training",
+        "no-backing"
+      ],
+      "guidance": "Seven suggested sessions, not consecutive-day requirements. Repeat any day. Short sessions count."
+    },
+    {
+      "id": "first-standard",
+      "title": "Learn a Tune by Ear",
+      "level": "Beginner/Intermediate",
+      "sessions": [
+        "ear-training",
+        "walking-bass",
+        "ii-v-i-workout",
+        "comping-basics",
+        "intermediate-solo"
+      ],
+      "guidance": "Use an original or rights-cleared tune. Hear → sing → changes → voice-lead → improvise."
+    },
+    {
+      "id": "time-feel",
+      "title": "Better Swing and Time Feel",
+      "level": "Beginner/Intermediate",
+      "sessions": [
+        "rhythm-time",
+        "no-backing",
+        "daily-warm-up",
+        "rhythm-time"
+      ],
+      "guidance": "Alternate 2-and-4 metronome, no-click phrases and playing with a band."
+    }
+  ],
+  "initial_recordings": [],
+  "charts": [
+    {
+      "id": "blues-f-12",
+      "title": "12-Bar Jazz Blues in F",
+      "concert_key": "F",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "swing",
+      "form": "blues-12",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "C",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "B",
+              "quality": "dim7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "F",
+              "quality": "7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "G",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "C",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "F",
+              "quality": "7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "G",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "C",
+              "quality": "7"
+            }
+          ]
+        }
+      ],
+      "license": "Original educational example; chord progressions only; no melody or audio"
+    },
+    {
+      "id": "ii-v-i-c",
+      "title": "ii–V–I in C",
+      "concert_key": "C",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "swing",
+      "form": "custom",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        }
+      ],
+      "license": "Original educational example; chord progressions only; no melody or audio"
+    },
+    {
+      "id": "jazz-blues-bb-12",
+      "title": "Jazz Blues in B♭",
+      "concert_key": "Bb",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "swing",
+      "form": "blues-12",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "F",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "E",
+              "quality": "dim7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "Bb",
+              "quality": "7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "C",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "Bb",
+              "quality": "7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "C",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        }
+      ],
+      "related_standards": [
+        "Blue Monk",
+        "Billie’s Bounce",
+        "C Jam Blues"
+      ],
+      "difficulty": "Beginner",
+      "practice_focus": "Hear the I–IV–V form, add turnaround and one-bar call-and-response.",
+      "representation": "original_common_form_study_not_song_transcription",
+      "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    },
+    {
+      "id": "rhythm-bb-32",
+      "title": "Rhythm Changes in B♭ (AABA Study)",
+      "concert_key": "Bb",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "swing",
+      "form": "aaba-32",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 13,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 14,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 17,
+          "section": "B",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 18,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 19,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 20,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 21,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 22,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 23,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 24,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 25,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 26,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 27,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 28,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 29,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 30,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 31,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 32,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        }
+      ],
+      "related_standards": [
+        "I Got Rhythm",
+        "Oleo",
+        "Anthropology"
+      ],
+      "difficulty": "Intermediate",
+      "practice_focus": "Practice 8-bar A sections and the circle-of-fifths dominant bridge.",
+      "representation": "original_common_form_study_not_song_transcription",
+      "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    },
+    {
+      "id": "minor-bossa-cm-16",
+      "title": "Minor Bossa in C Minor (16-bar Study)",
+      "concert_key": "C",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "bossa",
+      "form": "custom",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7b5"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Ab",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Db",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Db",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 13,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7b5"
+            }
+          ]
+        },
+        {
+          "number": 14,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        }
+      ],
+      "related_standards": [
+        "Blue Bossa"
+      ],
+      "difficulty": "Beginner",
+      "practice_focus": "Minor ii–V–i plus chromatic key-center movement; not Blue Bossa’s definitive published chart.",
+      "representation": "original_common_form_study_not_song_transcription",
+      "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    },
+    {
+      "id": "major-minor-cycle-em-16",
+      "title": "Major-to-Minor ii–V Cycle (16-bar Study)",
+      "concert_key": "E",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "swing",
+      "form": "custom",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F#",
+              "quality": "m7b5"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "B",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "E",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "E",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 13,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F#",
+              "quality": "m7b5"
+            }
+          ]
+        },
+        {
+          "number": 14,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "B",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "E",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "E",
+              "quality": "m7"
+            }
+          ]
+        }
+      ],
+      "related_standards": [
+        "Autumn Leaves"
+      ],
+      "difficulty": "Beginner",
+      "practice_focus": "Move from relative-major ii–V–I into minor ii–V–i; sing thirds and sevenths.",
+      "representation": "original_common_form_study_not_song_transcription",
+      "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    },
+    {
+      "id": "modal-d-16",
+      "title": "Two-Center Modal Study in D (16 bars)",
+      "concert_key": "D",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "swing",
+      "form": "custom",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 13,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 14,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        }
+      ],
+      "related_standards": [
+        "So What",
+        "Impressions"
+      ],
+      "difficulty": "Beginner",
+      "practice_focus": "Improvise melodic motifs over long modal stretches; no rapid harmonic changes.",
+      "representation": "original_common_form_study_not_song_transcription",
+      "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    },
+    {
+      "id": "songbook-c-abac-32",
+      "title": "Songbook Changes in C (ABAC Study)",
+      "concert_key": "C",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "swing",
+      "form": "abac-32",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "E",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": "B",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "E",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 13,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 14,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 17,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 18,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "E",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 19,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 20,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 21,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 22,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 23,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 24,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 25,
+          "section": "C",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 26,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 27,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 28,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 29,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 30,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 31,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "D",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 32,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        }
+      ],
+      "related_standards": [
+        "All of Me",
+        "On the Sunny Side of the Street"
+      ],
+      "difficulty": "Intermediate",
+      "practice_focus": "Anticipate secondary dominants and contrast endings of the two B/C strains.",
+      "representation": "original_common_form_study_not_song_transcription",
+      "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    },
+    {
+      "id": "bright-c-aaba-32",
+      "title": "Bright Swing in C (AABA Study)",
+      "concert_key": "C",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "swing",
+      "form": "aaba-32",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 13,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 14,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 17,
+          "section": "B",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 18,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 19,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 20,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 21,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "E",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 22,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 23,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 24,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 25,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 26,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 27,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 28,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 29,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 30,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 31,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 32,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        }
+      ],
+      "related_standards": [
+        "Take the A Train",
+        "Satin Doll"
+      ],
+      "difficulty": "Intermediate",
+      "practice_focus": "Mark sections of a 32-bar song and target 3rds on the bridge.",
+      "representation": "original_common_form_study_not_song_transcription",
+      "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    },
+    {
+      "id": "minor-blues-cm-12",
+      "title": "Minor Jazz Blues in C",
+      "concert_key": "C",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "swing",
+      "form": "blues-12",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Ab",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        }
+      ],
+      "related_standards": [
+        "Mr. P.C.",
+        "Equinox"
+      ],
+      "difficulty": "Beginner",
+      "practice_focus": "Contrast minor blues and dominant blues; resolve tension at the turnaround.",
+      "representation": "original_common_form_study_not_song_transcription",
+      "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    },
+    {
+      "id": "ballad-eb-16",
+      "title": "Ballad Turnarounds in E♭ (16-bar Study)",
+      "concert_key": "Eb",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "ballad",
+      "form": "custom",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Ab",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Ab",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 13,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 14,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "Eb",
+              "quality": "maj7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "C",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "F",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        }
+      ],
+      "related_standards": [
+        "Misty",
+        "Body and Soul"
+      ],
+      "difficulty": "Intermediate",
+      "practice_focus": "Practice space, smooth voice leading, and slow dominant resolution.",
+      "representation": "original_common_form_study_not_song_transcription",
+      "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    }
+  ],
+  "repertoire_guides": [
+    {
+      "standard": "Blue Monk",
+      "practice_chart_id": "jazz-blues-bb-12",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Billie’s Bounce",
+      "practice_chart_id": "jazz-blues-bb-12",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "C Jam Blues",
+      "practice_chart_id": "jazz-blues-bb-12",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "I Got Rhythm",
+      "practice_chart_id": "rhythm-bb-32",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Oleo",
+      "practice_chart_id": "rhythm-bb-32",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Anthropology",
+      "practice_chart_id": "rhythm-bb-32",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Blue Bossa",
+      "practice_chart_id": "minor-bossa-cm-16",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Autumn Leaves",
+      "practice_chart_id": "major-minor-cycle-em-16",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "So What",
+      "practice_chart_id": "modal-d-16",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Impressions",
+      "practice_chart_id": "modal-d-16",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "All of Me",
+      "practice_chart_id": "songbook-c-abac-32",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "On the Sunny Side of the Street",
+      "practice_chart_id": "songbook-c-abac-32",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Take the A Train",
+      "practice_chart_id": "bright-c-aaba-32",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Satin Doll",
+      "practice_chart_id": "bright-c-aaba-32",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Mr. P.C.",
+      "practice_chart_id": "minor-blues-cm-12",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Equinox",
+      "practice_chart_id": "minor-blues-cm-12",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Misty",
+      "practice_chart_id": "ballad-eb-16",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    },
+    {
+      "standard": "Body and Soul",
+      "practice_chart_id": "ballad-eb-16",
+      "relationship": "harmonic_form_study_not_exact_song_chart",
+      "note": "Common-form practice reference only; user must obtain a lawful authorized lead sheet or provide rights-cleared changes for the exact tune."
+    }
+  ]
+}

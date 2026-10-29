@@ -1,0 +1,63 @@
+.chord-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid #c3c9c1;
+  border-left: 1px solid #c3c9c1;
+  background: #fff;
+}
+
+.measure {
+  border-right: 1px solid #c3c9c1;
+  border-bottom: 1px solid #c3c9c1;
+  min-height: 81px;
+  background: #fff;
+  position: relative;
+  padding: 13px 5px 8px;
+  text-align: left;
+  color: #1a2620;
+  cursor: pointer;
+}
+
+.measure-num {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  font-size: 9px;
+  color: #829188;
+}
+
+.measure.looped {
+  background: #f2f8ef;
+}
+
+.measure.chosen {
+  background: #e7f3df;
+  box-shadow: inset 0 0 0 2px #9dbb93;
+}
+
+.chords {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-family: Georgia, serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.3px;
+}
+
+.chords.two {
+  font-size: 14px;
+  gap: 8px;
+}
+
+.chords span {
+  white-space: nowrap;
+}
+
+@media (min-width: 560px) {
+  .chord-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

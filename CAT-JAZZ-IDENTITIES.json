@@ -1,0 +1,58 @@
+[
+  {
+    "id": "luna",
+    "instrument": "Piano",
+    "signature_accessory": "None required",
+    "scene_prop": "Grand piano or upright piano; paws on keys only in approved character art",
+    "personality_direction": "Confident and curious"
+  },
+  {
+    "id": "milo",
+    "instrument": "Tenor saxophone",
+    "signature_accessory": "Small sunglasses",
+    "scene_prop": "Tenor saxophone beside cat or separately posed; avoid a second tail mistaken for a sax neck",
+    "personality_direction": "Thoughtful with a little swagger"
+  },
+  {
+    "id": "maple",
+    "instrument": "Upright bass",
+    "signature_accessory": "Optional slim neck scarf",
+    "scene_prop": "Upright bass anchored to floor; never let an extra tail appear near the neck",
+    "personality_direction": "Bright and energetic"
+  },
+  {
+    "id": "mochi",
+    "instrument": "Drums",
+    "signature_accessory": "Tiny drumsticks only in performance scene",
+    "scene_prop": "Small kit and two sticks; natural sitting stance; never add extra front paws",
+    "personality_direction": "Playful kitten"
+  },
+  {
+    "id": "pepper",
+    "instrument": "Trumpet",
+    "signature_accessory": "Burgundy neckerchief",
+    "scene_prop": "Trumpet alongside cat as a recognizable brass instrument; senior fluffy silhouette",
+    "personality_direction": "Soulful and wise"
+  },
+  {
+    "id": "patches",
+    "instrument": "Jazz guitar",
+    "signature_accessory": "Optional simple collar",
+    "scene_prop": "Single hollow-body guitar; body and picking paw must remain plausible",
+    "personality_direction": "Friendly groove"
+  },
+  {
+    "id": "chai",
+    "instrument": "Vocals",
+    "signature_accessory": "Small pendant collar",
+    "scene_prop": "Vintage microphone on separate stand; no additional pseudo-limbs",
+    "personality_direction": "Expressive vocalist"
+  },
+  {
+    "id": "biscuit",
+    "instrument": "Turntables / listening",
+    "signature_accessory": "Headphones",
+    "scene_prop": "Turntable deck on console with headphones resting naturally; no spurious paws",
+    "personality_direction": "Relaxed record collector"
+  }
+]
