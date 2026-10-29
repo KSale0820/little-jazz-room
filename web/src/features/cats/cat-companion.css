@@ -1,101 +1,131 @@
-.jazz-cat-sprite { image-rendering: auto; object-fit: contain; transform-origin: center bottom; }
-.jazz-cat-animated { animation: jazz-cat-breathe 5.5s ease-in-out infinite; }
-@keyframes jazz-cat-breathe { 0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)} }
+/* ── Sprite base ─────────────────────────────────────────────── */
+.jazz-cat-sprite {
+  image-rendering: auto;
+  object-fit: contain;
+  transform-origin: center bottom;
+}
+.jazz-cat-animated {
+  animation: jazz-cat-breathe 5.5s ease-in-out infinite;
+}
+@keyframes jazz-cat-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jazz-cat-sprite { animation: none !important; }
+}
 
+/* ── Chooser section ─────────────────────────────────────────── */
 .jazz-cat-section.board-style {
-  color: #1e3347;
-  background: #fffdf9;
-  border: 1px solid #d9dde8;
+  color: var(--evergreen);
+  background: var(--paper);
+  border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 16px 12px 14px;
-  box-shadow: 0 8px 24px #1a2b1e0a;
+  padding: 14px 12px 16px;
+  box-shadow: 0 4px 18px #1a2b1e09;
 }
 
 .jazz-cat-section h2 {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 19px;
-  margin: 0 0 4px;
-  color: #1e3347;
-}
-
-.jazz-cat-lede {
-  font-size: 12px;
-  color: #5c6a78;
-  margin: 0 0 12px;
-}
-
-.jazz-cat-grid.board-cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin: 0;
-}
-
-.board-cat-card {
-  background: #fff;
-  border: 1px solid #d8dee8;
-  border-radius: 14px;
-  padding: 0;
-  overflow: hidden;
-  cursor: pointer;
-  text-align: left;
-  color: inherit;
-  box-shadow: 0 4px 14px #1a2b1e08;
-  display: flex;
-  flex-direction: column;
-}
-
-.board-cat-card[aria-pressed='true'] {
-  border: 2px solid #2f6a52;
-  box-shadow: 0 0 0 2px #2f6a5222;
-}
-
-.board-cat-card:focus-visible {
-  outline: 3px solid #345b47;
-  outline-offset: 2px;
-}
-
-.board-cat-art {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  object-position: center 20%;
-  display: block;
-  background: #f3efe6;
-}
-
-.board-cat-meta {
-  padding: 8px 10px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.board-cat-meta strong {
-  font-size: 14px;
-  color: #1e3347;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  margin: 0 0 3px;
+  color: var(--evergreen);
   font-weight: 700;
 }
 
-.board-cat-instrument {
-  font-size: 11px;
-  color: #4a5c6e;
+.jazz-cat-lede {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  margin: 0 0 12px;
 }
 
-.board-cat-personality {
-  font-size: 10px;
-  font-weight: 650;
-  color: #2f6a52;
-  letter-spacing: 0.02em;
-  text-transform: capitalize;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .jazz-cat-sprite { animation: none !important; }
+/* ── Cat grid ────────────────────────────────────────────────── */
+.jazz-cat-grid.board-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
 }
 
 @media (min-width: 420px) {
   .jazz-cat-grid.board-cards {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+}
+
+/* ── Individual cat card ─────────────────────────────────────── */
+.board-cat-card {
+  background: #faf8f3;
+  border: 1.5px solid #e4dfd4;
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: center;
+  color: inherit;
+  box-shadow: 0 2px 10px #1a2b1e07;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.15s, border-color 0.15s, transform 0.12s;
+}
+
+.board-cat-card:hover {
+  box-shadow: 0 6px 20px #1a2b1e14;
+  border-color: #c5d4c0;
+  transform: translateY(-2px);
+}
+
+/* Selected state */
+.board-cat-card[aria-pressed='true'] {
+  border: 2px solid var(--sage);
+  box-shadow: 0 0 0 3px #2f6a5220, 0 4px 14px #1a2b1e14;
+  background: #f0f7f0;
+}
+
+.board-cat-card:focus-visible {
+  outline: 3px solid var(--sage);
+  outline-offset: 2px;
+}
+
+/* Cat image — full body, contained in a warm cream square */
+.board-cat-art {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;   /* show full body, not crop */
+  object-position: center bottom;
+  display: block;
+  background: #f3efe6;
+  padding: 8% 10% 4%;   /* breathing room around the cat */
+  box-sizing: border-box;
+}
+
+/* Meta info below the image */
+.board-cat-meta {
+  padding: 7px 8px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--paper);
+  border-top: 1px solid #ede9e0;
+}
+
+.board-cat-meta strong {
+  font-size: 0.82rem;
+  color: var(--evergreen);
+  font-weight: 700;
+  font-family: var(--font-serif);
+}
+
+.board-cat-instrument {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+  line-height: 1.3;
+}
+
+.board-cat-personality {
+  font-size: 0.65rem;
+  font-weight: 650;
+  color: var(--sage);
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
 }

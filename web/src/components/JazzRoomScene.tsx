@@ -9,27 +9,32 @@ const HOTSPOT_META: Record<
   RoomHotspot,
   { hint: string; label: string; className: string }
 > = {
-  piano:    { hint: 'Practice', label: 'Piano — open practice',                     className: 'piano' },
-  stand:    { hint: 'Explore',  label: 'Music stand — browse routines',              className: 'stand' },
-  notebook: { hint: 'Saved',    label: 'Notebook — saved routines and progress',     className: 'notebook' },
+  piano:    { hint: 'Practice', label: 'Piano — open practice',                className: 'piano' },
+  stand:    { hint: 'Explore',  label: 'Music stand — browse routines',        className: 'stand' },
+  notebook: { hint: 'Saved',    label: 'Notebook — saved routines and goals',  className: 'notebook' },
 };
 
 interface JazzRoomSceneProps {
   lighting: ResolvedLighting;
-  /** Cat companion rendered over the floor area */
+  /** Illustrated cat companion rendered over the floor area */
   catOverlay: ReactNode;
   onHotspot: (target: RoomHotspot) => void;
 }
 
 /**
- * Pure room art + cat + interactive hotspots.
- * Title and controls live in the card below — not inside this image.
+ * Room art with interactive hotspots and a cat companion overlay.
+ *
+ * Accessibility note: the outer element is NOT aria-hidden because it contains
+ * focusable hotspot buttons. Only the decorative background image is hidden.
  */
 export function JazzRoomScene({ lighting, catOverlay, onHotspot }: JazzRoomSceneProps) {
   return (
-    <div className="jazz-room-scene home-hero" data-mode={lighting} aria-hidden="true">
+    <div className="jazz-room-scene home-hero" data-mode={lighting}>
+      {/* Decorative background — hidden from screen readers */}
       <RoomArt lighting={lighting} />
-      <div className="room-hotspots" role="region" aria-label="Room shortcuts" aria-hidden="false">
+
+      {/* Interactive hotspots — must NOT be inside an aria-hidden container */}
+      <nav className="room-hotspots" aria-label="Room shortcuts">
         {(Object.keys(HOTSPOT_META) as RoomHotspot[]).map(key => {
           const meta = HOTSPOT_META[key];
           return (
@@ -43,7 +48,9 @@ export function JazzRoomScene({ lighting, catOverlay, onHotspot }: JazzRoomScene
             />
           );
         })}
-      </div>
+      </nav>
+
+      {/* Cat companion — interactive (tap to choose cat) */}
       <div className="home-cat-stage">{catOverlay}</div>
     </div>
   );

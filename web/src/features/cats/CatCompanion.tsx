@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { catFloorUrl, catPortraitUrl, catPortraitUrls, catSpriteUrl } from '../../assets/visualManifest';
+import { catFloorUrl, catPortraitUrls, catSpriteUrl } from '../../assets/visualManifest';
 import './cat-companion.css';
 
 export const JAZZ_CATS = [
@@ -82,27 +82,35 @@ export function CatSprite({ catId, size = 96, className = '', decorative = false
 
 export function CatChooser({ catId, onSelect }:
   { catId: CatId; onSelect: (id: CatId) => void | Promise<void> }) {
-  return <section aria-labelledby="choose-cat-heading" className="jazz-cat-section board-style">
-    <h2 id="choose-cat-heading">Choose your jazz cat</h2>
-    <p className="jazz-cat-lede">All eight companions are free. Change your cat any time.</p>
-    <div className="jazz-cat-grid board-cards" role="group" aria-label="Jazz cat companions">
-      {JAZZ_CATS.map(cat => (
-        <button
-          type="button"
-          key={cat.id}
-          className="board-cat-card"
-          aria-pressed={catId === cat.id}
-          aria-label={`${cat.name}, ${cat.instrument}, ${cat.personality}`}
-          onClick={() => { void onSelect(cat.id); }}
-        >
-          <img className="board-cat-art" src={catPortraitUrl(cat.id)} alt="" aria-hidden />
-          <div className="board-cat-meta">
-            <strong>{cat.name}</strong>
-            <span className="board-cat-instrument">{cat.instrument}</span>
-            <span className="board-cat-personality">{cat.personality}</span>
-          </div>
-        </button>
-      ))}
-    </div>
-  </section>;
+  return (
+    <section aria-labelledby="choose-cat-heading" className="jazz-cat-section board-style">
+      <h2 id="choose-cat-heading">Choose your jazz cat</h2>
+      <p className="jazz-cat-lede">All eight companions are free. Change any time.</p>
+      <div className="jazz-cat-grid board-cards" role="group" aria-label="Jazz cat companions">
+        {JAZZ_CATS.map(cat => (
+          <button
+            type="button"
+            key={cat.id}
+            className="board-cat-card"
+            aria-pressed={catId === cat.id}
+            aria-label={`${cat.name}, ${cat.instrument}, ${cat.personality}`}
+            onClick={() => { void onSelect(cat.id); }}
+          >
+            {/* Full-body illustrated PNG — shows coat, build, and jazz accessories */}
+            <img
+              className="board-cat-art"
+              src={catFloorUrl(cat.id)}
+              alt=""
+              aria-hidden
+            />
+            <div className="board-cat-meta">
+              <strong>{cat.name}</strong>
+              <span className="board-cat-instrument">{cat.instrument}</span>
+              <span className="board-cat-personality">{cat.personality}</span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
 }
