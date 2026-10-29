@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-/** Captures the interactive Home room at supported viewports. Output: docs/screenshots/home-room-redesign/ */
+/** Captures the interactive Home room at supported viewports. Output: OUT_DIR (default docs/screenshots/_local, git-ignored) */
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const webRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
-const out = join(webRoot, 'docs', 'screenshots', 'home-room-redesign');
+const out = process.env.OUT_DIR ?? join(webRoot, 'docs', 'screenshots', '_local');
 const base = process.env.APP_URL ?? 'http://localhost:5174';
 mkdirSync(out, { recursive: true });
 
@@ -20,8 +20,8 @@ const viewports = [
 const lighting = process.env.LIGHT ?? 'sunshine';
 const seeded = process.env.SEED === '1';
 const suffix = process.env.SUFFIX ?? '';
-const panels = (process.env.PANELS ?? 'music-stand,notebook,plants').split(',').filter(Boolean);
-const panelButton = { 'music-stand': /Music stand/, notebook: /Bookshelf notebook/, plants: /^Plants/ };
+const panels = (process.env.PANELS ?? 'music-stand,notebook,plants,lighting').split(',').filter(Boolean);
+const panelButton = { 'music-stand': /Sheet music stand/, notebook: /Bookshelf notebook/, plants: /^Plants/, lighting: /^Room lighting$/ };
 
 const browser = await chromium.launch();
 for (const vp of viewports) {
@@ -49,7 +49,7 @@ for (const vp of viewports) {
   console.log(vp.name, 'horizontal overflow:', overflow);
   await page.screenshot({ path: join(out, `home-${vp.name}${suffix}.png`) });
   for (const p of panels) {
-    await page.getByRole('button', { name: panelButton[p] }).click();
+    await page.getByRole('button', { name: panelButton[p] }).click({ position: { x: 24, y: 24 } });
     await page.waitForTimeout(500);
     await page.screenshot({ path: join(out, `home-${vp.name}-${p}${suffix}.png`) });
     await page.keyboard.press('Escape');

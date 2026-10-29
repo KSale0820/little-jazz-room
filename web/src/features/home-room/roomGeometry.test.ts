@@ -5,6 +5,7 @@ import {
   ROOM_ZONES,
   computeImageLayout,
   computeRoomFrame,
+  scrollLeftForZone,
   visibleZones,
   zoneVisibleFraction,
 } from './roomGeometry';
@@ -35,15 +36,35 @@ describe('zones', () => {
   });
 
   it.each([
-    [375, 560],
-    [390, 640],
-    [430, 700],
-    [768, 900],
-    [1000, 800],
-  ])('every zone is visible at %i x %i', (cw, ch) => {
+    [375, 450],
+    [390, 540],
+    [390, 400],
+    [1000, 780],
+  ])('every zone is reachable at %i x %i', (cw, ch) => {
     const frame = computeRoomFrame(cw, ch);
-    const ids = visibleZones(frame.layout, cw, frame.artHeight).map(z => z.id).sort();
+    const ids = visibleZones(frame.layout, frame.contentWidth, frame.contentHeight).map(z => z.id).sort();
     expect(ids).toEqual(['notebook', 'piano', 'plants', 'stand']);
+  });
+
+  it('never stretches the art on phones and keeps the piano on screen at first view', () => {
+    const frame = computeRoomFrame(390, 540);
+    expect(frame.layout.width / frame.layout.height).toBeCloseTo(ROOM_ART_WIDTH / ROOM_ART_HEIGHT);
+    expect(frame.layout.height).toBeCloseTo(540);
+    const piano = ROOM_ZONES.find(z => z.id === 'piano')!;
+    const x0 = piano.x * frame.layout.width - frame.initialScrollLeft;
+    const x1 = (piano.x + piano.w) * frame.layout.width - frame.initialScrollLeft;
+    expect(x0).toBeGreaterThanOrEqual(0);
+    expect(x1).toBeLessThanOrEqual(390);
+  });
+
+  it('scrolls to centre a zone and clamps at the edges', () => {
+    const frame = computeRoomFrame(390, 540);
+    const notebook = ROOM_ZONES.find(z => z.id === 'notebook')!;
+    const left = scrollLeftForZone(notebook, frame.layout, 390);
+    expect(left).toBeLessThanOrEqual(frame.layout.width - 390);
+    expect(left).toBeGreaterThan(frame.initialScrollLeft);
+    const plants = ROOM_ZONES.find(z => z.id === 'plants')!;
+    expect(scrollLeftForZone(plants, frame.layout, 390)).toBeGreaterThanOrEqual(0);
   });
 
   it('drops zones that are cropped out', () => {
@@ -56,7 +77,7 @@ describe('zones', () => {
 
 describe('computeRoomFrame', () => {
   it('uses a compact composition under 900px and the wide one above', () => {
-    expect(computeRoomFrame(390, 700).mode).toBe('compact');
+    expect(computeRoomFrame(390, 540).mode).toBe('compact');
     expect(computeRoomFrame(1000, 800).mode).toBe('wide');
   });
 });

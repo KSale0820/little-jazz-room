@@ -1,4 +1,4 @@
-/* ── Room scene: art + hotspots share one geometry wrapper ───── */
+/* ── Room scene: art, hotspots and companion share one geometry wrapper ── */
 .jazz-room-scene {
   position: relative;
   overflow: hidden;
@@ -6,58 +6,27 @@
   width: 100%;
   height: 100%;
   min-height: 0;
-  background: #6a4a30;
+  background: #4a2f1c;
   visibility: hidden;
 }
 .jazz-room-scene[data-ready='true'] {
   visibility: visible;
 }
 
-/* Compact layout: warm wooden foreground floor under the art, with a rug for the companion. */
-.room-backdrop {
-  display: none;
+.room-scroller {
   position: absolute;
-  inset: var(--art-pane-h) 0 0 0;
-  z-index: 0;
-  background:
-    radial-gradient(ellipse 62% 36% at 50% 62%, rgba(255, 196, 120, 0.34), transparent 70%),
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 46px),
-    linear-gradient(#5a3520 0%, #6d4527 38%, #4a2c19 100%);
-}
-.room-backdrop::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 7%;
-  width: min(86%, 340px);
-  height: 54%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background:
-    radial-gradient(ellipse at 50% 50%, #ead9b6 0 46%, transparent 47%),
-    radial-gradient(ellipse at 50% 50%, #9c4a38 0 62%, transparent 63%),
-    radial-gradient(ellipse at 50% 50%, #dcc7a0 0 72%, transparent 73%),
-    radial-gradient(ellipse at 50% 50%, #55766a 0 86%, transparent 87%),
-    radial-gradient(ellipse at 50% 50%, #7a3a2e 0 100%, transparent 101%);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
-  opacity: 0.95;
-}
-.jazz-room-scene[data-layout='compact'] .room-backdrop {
-  display: block;
-}
-.room-reflection {
-  display: none;
-}
-.jazz-room-scene[data-mode='night'] .room-backdrop { filter: brightness(0.72) saturate(0.85) hue-rotate(-8deg); }
-.jazz-room-scene[data-mode='twilight'] .room-backdrop { filter: brightness(0.88) saturate(0.95); }
-
-.room-art-pane {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: var(--art-pane-h);
+  inset: 0;
   overflow: hidden;
-  z-index: 1;
 }
+/* Phones: the room is wider than the screen and pans; no scrollbar, no page-level overflow. */
+.jazz-room-scene[data-layout='compact'] .room-scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.room-scroller::-webkit-scrollbar { display: none; }
 
 .room-art-frame {
   position: absolute;
@@ -66,11 +35,13 @@
   width: var(--art-w);
   height: var(--art-h);
 }
-
-.room-art-layer {
-  position: absolute;
-  inset: 0;
+.jazz-room-scene[data-layout='compact'] .room-art-frame {
+  position: relative;
+  left: 0;
+  top: 0;
 }
+
+.room-art-layer { position: absolute; inset: 0; }
 
 .jazz-room-photo {
   width: 100%;
@@ -78,28 +49,34 @@
   object-fit: cover;
   display: block;
 }
+.jazz-room-scene[data-mode='twilight'] .jazz-room-photo { filter: brightness(1.04); }
+.jazz-room-scene[data-mode='night'] .jazz-room-photo { filter: brightness(1.18) saturate(1); }
 
-.jazz-room-scene[data-mode='twilight'] .jazz-room-photo {
-  filter: brightness(1.04);
-}
-.jazz-room-scene[data-mode='night'] .jazz-room-photo {
-  filter: brightness(1.18) saturate(1);
-}
-
-/* Soft transition from the art into the extended floor (compact layout only). */
-.room-art-fade {
-  display: none;
+/* Edge chips that reveal the parts of the room off screen (compact only). */
+.room-pan {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 46px;
-  background: linear-gradient(transparent, #5a3520 92%);
-  pointer-events: none;
+  z-index: 5;
+  top: 46%;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 40px;
+  padding: 0 13px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--evergreen);
+  background: #fffdf5ee;
+  border: 1px solid #ffffffb0;
+  box-shadow: 0 4px 14px #1d2b1e40;
+  cursor: pointer;
+  animation: pan-nudge 3.2s ease-in-out infinite;
 }
-.jazz-room-scene[data-layout='compact'] .room-art-fade {
-  display: block;
-}
+.room-pan span { font-size: 1.15rem; line-height: 1; }
+.room-pan-right { right: 0; border-radius: 999px 0 0 999px; }
+.room-pan-left { left: 0; border-radius: 0 999px 999px 0; animation-name: pan-nudge-left; }
+.room-pan:focus-visible { outline: 3px solid var(--sage); outline-offset: 2px; }
+@keyframes pan-nudge { 0%, 70%, 100% { transform: translateX(0); } 85% { transform: translateX(-5px); } }
+@keyframes pan-nudge-left { 0%, 70%, 100% { transform: translateX(0); } 85% { transform: translateX(5px); } }
 
 /* ── Lighting overlays — only touch the room, never the UI ───── */
 .room-light {
@@ -224,46 +201,52 @@
   background: rgba(255, 238, 180, 0.38);
 }
 
-/* ── Plant growth overlay ────────────────────────────────────── */
-.plant-growth {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
-}
-.plant-glow ellipse { fill: url(#plant-glow-grad); opacity: 0; transition: opacity 0.8s; }
-.plant-growth[data-stage='1'] .plant-glow ellipse { opacity: 0.35; }
-.plant-growth[data-stage='2'] .plant-glow ellipse { opacity: 0.6; }
-.plant-growth[data-stage='3'] .plant-glow ellipse { opacity: 0.9; }
-.plant-leaves { opacity: 0; transition: opacity 0.8s ease; }
-.plant-leaves path { fill: #6fae4b; stroke: #3f7d33; stroke-width: 0.8; }
-.plant-bud { fill: #f6c46b; stroke: #c98d2e; stroke-width: 0.6; }
-.plant-bloom circle { fill: #ffd8e0; stroke: #e690a6; stroke-width: 0.6; }
-.plant-bloom > circle:first-child { fill: #ffe38a; stroke: #d9a93a; }
-.plant-growth[data-stage='1'] .plant-leaves-1,
-.plant-growth[data-stage='2'] .plant-leaves-1,
-.plant-growth[data-stage='2'] .plant-leaves-2,
-.plant-growth[data-stage='3'] .plant-leaves { opacity: 1; }
-.plant-growth[data-stage='1'] .plant-leaves-1 { opacity: 0.9; }
+/* ── Plant growth overlay: each stage adds visible foliage ───── */
+.plant-growth { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.plant-glow { opacity: 0; transition: opacity 0.8s ease; }
+.plant-growth[data-stage='2'] .plant-glow { opacity: 0.35; }
+.plant-growth[data-stage='3'] .plant-glow { opacity: 0.9; }
+.pg { opacity: 0; transition: opacity 0.8s ease; }
+.plant-growth[data-stage='0'] .pg.s0,
+.plant-growth[data-stage='1'] .pg.s0, .plant-growth[data-stage='1'] .pg.s1,
+.plant-growth[data-stage='2'] .pg.s0, .plant-growth[data-stage='2'] .pg.s1, .plant-growth[data-stage='2'] .pg.s2,
+.plant-growth[data-stage='3'] .pg { opacity: 1; }
+.plant-leaves path { fill: #7dbb52; stroke: #3d7a30; stroke-width: 1; }
+.vine { stroke: #4f8c3c; stroke-width: 1.8; }
+.bud { fill: #f6c46b; stroke: #c98d2e; stroke-width: 0.8; }
+.bloom circle { fill: #ffd2dc; stroke: #e58aa3; stroke-width: 0.7; }
+.bloom.gold circle { fill: #ffe9a0; stroke: #d9a93a; }
+.bloom .core { fill: #f2a43a; stroke: #c27a1c; }
+.sparkle { fill: #fffbe0; transform-box: fill-box; transform-origin: center; animation: sparkle 3.6s ease-in-out infinite; }
+.plant-sparkles .sparkle:nth-child(2) { animation-delay: 1.2s; }
+.plant-sparkles .sparkle:nth-child(3) { animation-delay: 2.2s; }
+@keyframes sparkle { 0%, 100% { transform: scale(0.6); } 50% { transform: scale(1.5); } }
 
-/* ── Companion ───────────────────────────────────────────────── */
-.room-cat-stage {
+/* ── Companion: seated on the rug in image space, lit like the room ── */
+.room-cat {
   position: absolute;
   z-index: 4;
-  left: 50%;
-  bottom: 6px;
-  width: min(60%, 250px);
-  transform: translateX(-52%);
+  left: var(--cat-x);
+  top: var(--cat-y);
+  width: var(--cat-w);
+  transform: translate(-50%, -100%);
   pointer-events: none;
 }
-.jazz-room-scene[data-layout='wide'] .room-cat-stage {
-  left: 40%;
-  bottom: 14px;
-  width: min(27%, 330px);
-  transform: translateX(-50%);
+.room-cat::before {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -2%;
+  height: 11%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(25, 12, 4, 0.55), transparent 70%);
+  filter: blur(2px);
 }
+.room-cat > button { position: relative; }
+.jazz-room-scene[data-mode='sunshine'] .room-cat .jazz-cat-sprite { filter: none; }
+.jazz-room-scene[data-mode='twilight'] .room-cat .jazz-cat-sprite { filter: sepia(0.18) saturate(1.05) brightness(0.93); }
+.jazz-room-scene[data-mode='night'] .room-cat .jazz-cat-sprite { filter: brightness(0.82) saturate(0.88) sepia(0.12) hue-rotate(-6deg); }
 
 /* ── Practice flourish ───────────────────────────────────────── */
 .room-notes {
@@ -294,5 +277,6 @@
   .room-notes span { animation: none; opacity: 1; }
   .room-hotspot,
   .room-light,
-  .plant-leaves { transition: none; }
+  .pg, .plant-glow { transition: none; }
+  .sparkle { animation: none !important; }
 }

@@ -61,36 +61,47 @@ export type RoomMode = 'compact' | 'wide';
 
 export interface RoomFrame {
   mode: RoomMode;
-  /** Height of the artwork pane (mobile: top part of the scene, rest is floor). */
-  artHeight: number;
   layout: ImageLayout;
+  /** Clip rectangle that zones must fall inside: the viewport (wide) or the whole pannable art (compact). */
+  contentWidth: number;
+  contentHeight: number;
+  /** Compact only: scrollLeft that centres the piano and companion on first view. */
+  initialScrollLeft: number;
 }
 
-export const WIDE_BREAKPOINT = 900;
-
-/** Fraction of the artwork's width kept visible in the compact (phone/tablet) composition. */
-const COMPACT_VISIBLE_FRACTION = 0.6;
-const COMPACT_POSITION_X = 0.22;
+const WIDE_BREAKPOINT = 900;
 const WIDE_POSITION_X = 0.2;
+/** Where the companion sits on the rug (feet at x, y; width as a fraction of the art). Compact keeps it in front of the piano so one screen holds both. */
+export const CAT_ANCHOR = {
+  wide: { x: 0.53, y: 0.955, w: 0.2 },
+  compact: { x: 0.43, y: 0.955, w: 0.17 },
+} as const;
 
+/** Horizontal focal point (piano + companion) of the artwork, as a fraction of its width. */
+export const ROOM_FOCAL_X = 0.4;
+
+/**
+ * Wide: object-fit: cover of the art in the container.
+ * Compact: the art is scaled uniformly to the container height (never stretched or extended)
+ * and the room pans horizontally inside its own scroller.
+ */
 export function computeRoomFrame(cw: number, ch: number): RoomFrame {
   if (cw >= WIDE_BREAKPOINT) {
     const layout = computeImageLayout(ROOM_ART_WIDTH, ROOM_ART_HEIGHT, cw, ch, WIDE_POSITION_X, 0.5);
-    return { mode: 'wide', artHeight: ch, layout };
+    return { mode: 'wide', layout, contentWidth: cw, contentHeight: ch, initialScrollLeft: 0 };
   }
-  const scale = cw / (ROOM_ART_WIDTH * COMPACT_VISIBLE_FRACTION);
+  const scale = Math.max(ch / ROOM_ART_HEIGHT, cw / ROOM_ART_WIDTH);
   const width = ROOM_ART_WIDTH * scale;
   const height = ROOM_ART_HEIGHT * scale;
-  // Keep the floor edge of the art flush with the pane bottom; crop ceiling if short.
-  const artHeight = Math.min(height, Math.max(ch * 0.82, 0));
-  const layout: ImageLayout = {
-    scale,
-    width,
-    height,
-    left: (cw - width) * COMPACT_POSITION_X,
-    top: artHeight - height,
-  };
-  return { mode: 'compact', artHeight, layout };
+  const layout: ImageLayout = { scale, width, height, left: 0, top: 0 };
+  const initialScrollLeft = Math.max(0, Math.min(width - cw, ROOM_FOCAL_X * width - cw / 2));
+  return { mode: 'compact', layout, contentWidth: width, contentHeight: height, initialScrollLeft };
+}
+
+/** Scroll position that centres a zone horizontally (compact layout). */
+export function scrollLeftForZone(zone: RoomZone, layout: ImageLayout, cw: number): number {
+  const center = (zone.x + zone.w / 2) * layout.width;
+  return Math.max(0, Math.min(layout.width - cw, center - cw / 2));
 }
 
 /** Fraction of the zone's area that lies inside the container. */

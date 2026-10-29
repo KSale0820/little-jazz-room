@@ -8,6 +8,7 @@
   padding-top: 24px;
   background: var(--cream);
   position: relative;
+  justify-content: flex-end;
 }
 
 /* Home fills the viewport; the scene scrolls nothing. */
@@ -18,82 +19,61 @@
 
 .home-room-stage {
   position: relative;
-  flex: 1 1 auto;
+  /* Basis keeps the piano on screen (art scale about 0.69, i.e. 1.41 x the column width); shrinks on short phones. */
+  flex: 0 1 calc(min(100vw, 390px) * 1.41);
   min-height: 0;
   overflow: hidden;
 }
 
-/* ── Title chip + lighting button ───────────────────────────── */
-.home-title-chip {
-  position: absolute;
-  z-index: 6;
-  top: 10px;
-  left: 10px;
+/* ── Header: a band on phones, an overlay on the room on desktop ── */
+.home-header {
+  flex: 1 1 auto;
+  min-height: 56px;
+  max-height: 160px;
   display: flex;
-  flex-direction: column;
-  padding: 5px 12px 6px;
-  border-radius: 12px;
-  background: #fffdf5e6;
-  border: 1px solid #ffffffa0;
-  box-shadow: 0 3px 12px #1d2b1e2e;
-  backdrop-filter: blur(3px);
-  max-width: calc(100% - 70px);
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 12px 8px;
 }
+.home-title-chip { display: flex; flex-direction: column; min-width: 0; }
 .home-title {
   font-family: var(--font-serif);
-  font-size: 0.95rem;
+  font-size: 1.35rem;
   font-weight: 700;
   line-height: 1.15;
   color: var(--evergreen);
 }
 .home-greeting {
-  font-size: 0.7rem;
-  line-height: 1.25;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.3;
   color: var(--ink-muted);
 }
-
+.home-next {
+  margin: 4px 0 0;
+  font-size: 0.74rem;
+  font-weight: 650;
+  color: var(--sage);
+  line-height: 1.3;
+}
 .home-light-btn {
-  position: absolute;
-  z-index: 6;
-  top: 56px;
-  left: 10px;
-  width: 36px;
-  height: 36px;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1px solid #ffffffa0;
-  background: #fffdf5e6;
+  border: 1px solid var(--border);
+  background: #fffdf5;
   color: var(--evergreen);
-  box-shadow: 0 3px 12px #1d2b1e2e;
+  box-shadow: 0 2px 8px #1d2b1e1f;
   cursor: pointer;
 }
-.home-light-btn svg { width: 19px; height: 19px; }
+.home-light-btn svg { width: 20px; height: 20px; }
 .home-light-btn:hover { background: #fff; }
 .home-light-btn:focus-visible { outline: 3px solid var(--sage); outline-offset: 2px; }
-
-.home-hint {
-  position: absolute;
-  z-index: 5;
-  left: 50%;
-  top: 14px;
-  transform: translateX(-50%);
-  margin: 0;
-  display: none;
-  padding: 4px 12px;
-  font-size: 0.7rem;
-  font-weight: 650;
-  color: var(--evergreen);
-  background: #fffdf5d9;
-  border-radius: 999px;
-  white-space: nowrap;
-  animation: hint-fade 9s ease forwards;
-  pointer-events: none;
-}
-@keyframes hint-fade {
-  0%, 70% { opacity: 1; }
-  100% { opacity: 0; visibility: hidden; }
-}
+.home-hint { display: none; }
 
 /* ── Companion ───────────────────────────────────────────────── */
 .home-cat-btn {
@@ -104,7 +84,7 @@
   background: transparent;
   cursor: pointer;
   pointer-events: auto;
-  filter: drop-shadow(0 8px 10px rgba(30, 18, 8, 0.45));
+  filter: drop-shadow(0 2px 3px rgba(30, 18, 8, 0.35));
   transition: transform 0.18s ease;
   -webkit-tap-highlight-color: transparent;
 }
@@ -114,7 +94,6 @@
   display: block;
   width: 100% !important;
   height: auto !important;
-  max-height: 36vh;
   object-fit: contain;
   object-position: center bottom;
 }
@@ -235,7 +214,7 @@
 .home-hud-practice:active { transform: translateY(1px); box-shadow: 0 1px 0 #254a3a; }
 .home-hud-practice:focus-visible { outline: 3px solid var(--evergreen); outline-offset: 2px; }
 
-/* ── Desktop: the room fills the main area ───────────────────── */
+/* ── Desktop: the room fills the main area; the header floats over it ── */
 @media (min-width: 900px) {
   .page.home-room-page {
     height: calc(100dvh - 50px);
@@ -243,16 +222,53 @@
     padding-top: 0;
     border-radius: 20px;
     overflow: hidden;
+    justify-content: flex-start;
   }
-  .home-title-chip { top: 14px; left: 14px; padding: 7px 14px 8px; }
+  .home-room-stage { flex: 1 1 0; }
+  .home-header {
+    position: absolute;
+    z-index: 6;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    min-height: 0;
+    max-height: none;
+    padding: 0;
+    align-items: flex-start;
+    pointer-events: none;
+  }
+  .home-header > * { pointer-events: auto; }
+  .home-title-chip {
+    padding: 7px 14px 8px;
+    border-radius: 12px;
+    background: #fffdf5e6;
+    border: 1px solid #ffffffa0;
+    box-shadow: 0 3px 12px #1d2b1e2e;
+    backdrop-filter: blur(3px);
+  }
   .home-title { font-size: 1.1rem; }
-  .home-greeting { font-size: 0.78rem; }
-  .home-light-btn { top: 14px; left: auto; right: 14px; }
-  .home-hint { display: block; top: 18px; }
+  .home-next { display: none; }
+  .home-light-btn { width: 36px; height: 36px; border-color: #ffffffa0; background: #fffdf5e6; box-shadow: 0 3px 12px #1d2b1e2e; }
+  .home-hint {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    font-weight: 650;
+    color: var(--evergreen);
+    background: #fffdf5d9;
+    border-radius: 999px;
+    white-space: nowrap;
+    animation: hint-fade 9s ease forwards;
+    pointer-events: none;
+  }
   .home-hud { padding: 12px 18px; gap: 20px; }
   .home-hud-goal { max-width: 420px; }
   .home-hud-streak { margin-left: auto; font-size: 0.8rem; }
-  .home-cat-sprite { max-height: 34vh; }
 }
 
 @media (prefers-reduced-motion: reduce) {

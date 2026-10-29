@@ -140,7 +140,31 @@ export function HomePage() {
 
   return (
     <section className="page home-room-page" aria-label="Home">
-      <h1 className="screen-reader-only">My Jazz Room</h1>
+      <header className="home-header">
+        <div className="home-title-chip">
+          <h1 className="home-title">My Jazz Room</h1>
+          <p className="home-greeting">{greeting}</p>
+          <p className="home-next">
+            {todayRoutine ? `Up next · ${todayRoutine.title} · ${todayRoutine.duration_minutes} min` : 'Pick a routine from the sheet music or the shelf'}
+          </p>
+        </div>
+        <button
+          type="button"
+          className="home-light-btn"
+          aria-label="Room lighting"
+          aria-haspopup="dialog"
+          aria-expanded={activePanel === 'lighting'}
+          onClick={() => togglePanel('lighting')}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+          </svg>
+        </button>
+        <p className="home-hint" aria-hidden="true">
+          Tap the piano, shelf, sheet music or plants
+        </p>
+      </header>
       <div className="home-room-stage">
         <JazzRoomScene
           lighting={lighting}
@@ -162,30 +186,6 @@ export function HomePage() {
               >
                 <CatSprite catId={catId} size={220} animated={catMotion} variant="floor" decorative className="home-cat-sprite" />
               </button>
-            </>
-          }
-          overlays={
-            <>
-              <div className="home-title-chip">
-                <span className="home-title">My Jazz Room</span>
-                <span className="home-greeting">{greeting}</span>
-              </div>
-              <button
-                type="button"
-                className="home-light-btn"
-                aria-label="Room lighting"
-                aria-haspopup="dialog"
-                aria-expanded={activePanel === 'lighting'}
-                onClick={() => togglePanel('lighting')}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                  <circle cx="12" cy="12" r="4" />
-                  <path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
-                </svg>
-              </button>
-              <p className="home-hint" aria-hidden="true">
-                Tap the piano, shelf, stand or plants
-              </p>
             </>
           }
         />
