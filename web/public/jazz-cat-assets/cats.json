@@ -7,8 +7,7 @@
     "age": "Adult",
     "build": "Medium",
     "shape": "medium",
-    "instrument": "Piano",
-    "signature_accessory": "None required"
+    "instrument": "Piano"
   },
   {
     "id": "milo",
@@ -18,8 +17,7 @@
     "age": "Adult",
     "build": "Slim",
     "shape": "slim",
-    "instrument": "Tenor saxophone",
-    "signature_accessory": "Small sunglasses"
+    "instrument": "Tenor saxophone"
   },
   {
     "id": "maple",
@@ -29,8 +27,7 @@
     "age": "Young adult",
     "build": "Lean",
     "shape": "young",
-    "instrument": "Upright bass",
-    "signature_accessory": "Optional slim neck scarf"
+    "instrument": "Upright bass"
   },
   {
     "id": "mochi",
@@ -40,8 +37,7 @@
     "age": "Kitten",
     "build": "Tiny",
     "shape": "kitten",
-    "instrument": "Drums",
-    "signature_accessory": "Tiny drumsticks only in performance scene"
+    "instrument": "Drums"
   },
   {
     "id": "pepper",
@@ -51,8 +47,7 @@
     "age": "Senior",
     "build": "Fluffy",
     "shape": "senior",
-    "instrument": "Trumpet",
-    "signature_accessory": "Burgundy neckerchief"
+    "instrument": "Trumpet"
   },
   {
     "id": "patches",
@@ -62,8 +57,7 @@
     "age": "Adult",
     "build": "Chubby",
     "shape": "chubby",
-    "instrument": "Jazz guitar",
-    "signature_accessory": "Optional simple collar"
+    "instrument": "Jazz guitar"
   },
   {
     "id": "chai",
@@ -73,8 +67,7 @@
     "age": "Adult",
     "build": "Slender",
     "shape": "long",
-    "instrument": "Vocals",
-    "signature_accessory": "Small pendant collar"
+    "instrument": "Vocals"
   },
   {
     "id": "biscuit",
@@ -84,7 +77,6 @@
     "age": "Adult",
     "build": "Large",
     "shape": "large",
-    "instrument": "Turntables / listening",
-    "signature_accessory": "Headphones"
+    "instrument": "Turntables / listening"
   }
 ]
