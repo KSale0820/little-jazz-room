@@ -1,4 +1,4 @@
-.jazz-cat-sprite { image-rendering: pixelated; object-fit: contain; transform-origin: center bottom; }
+.jazz-cat-sprite { image-rendering: auto; object-fit: contain; transform-origin: center bottom; }
 .jazz-cat-animated { animation: jazz-cat-breathe 5.5s ease-in-out infinite; }
 @keyframes jazz-cat-breathe { 0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)} }
 .jazz-cat-section { color:#254638; background:#fffdf7; border:1px solid #deddd0; border-radius:16px; padding:14px; }

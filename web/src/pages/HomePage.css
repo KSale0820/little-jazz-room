@@ -1,0 +1,211 @@
+.home-page {
+  padding-bottom: 8px;
+  background: var(--cream);
+}
+
+.home-hero .jazz-room-photo {
+  object-fit: cover;
+  object-position: center top;
+}
+
+.home-hero-header h1 {
+  font-family: var(--font-sans);
+  font-size: 26px;
+  font-weight: 800;
+  color: #1a2e45;
+  letter-spacing: -0.03em;
+}
+
+.home-hero-header p {
+  font-size: 15px;
+  font-weight: 500;
+  color: #243548;
+  margin-top: 2px;
+}
+
+.home-settings {
+  position: absolute;
+  z-index: 6;
+  top: 6px;
+  right: 12px;
+}
+
+.home-settings-wrap {
+  position: relative;
+}
+
+.home-gear-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #e8e4dc;
+  background: #fffefaf2;
+  display: grid;
+  place-items: center;
+  color: #2a4055;
+  box-shadow: 0 2px 8px #1a2b1e15;
+}
+
+.home-gear-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.home-settings-panel {
+  position: absolute;
+  right: 0;
+  top: 42px;
+  width: 148px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #e5e0d6;
+  background: #fffdf9;
+  box-shadow: 0 8px 24px #1a2b1e20;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home-settings-panel label {
+  font-size: 10px;
+  color: #5a6a78;
+}
+
+.home-settings-panel select {
+  width: 100%;
+  font-size: 11px;
+  border: 1px solid #e0ddd4;
+  border-radius: 8px;
+  padding: 6px;
+  background: #fff;
+}
+
+.home-cat-stage {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 8%;
+  transform: translateX(-50%);
+  width: 42%;
+  max-width: 160px;
+  pointer-events: none;
+}
+
+.home-cat-btn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  width: 100%;
+  cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(0 6px 10px #2a201a40);
+}
+
+.home-cat-sprite {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 140px;
+}
+
+.home-goal-card {
+  position: relative;
+  z-index: 5;
+  margin: -28px 14px 0;
+  padding: 16px 16px 18px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 10px 32px #1a2b1e12, 0 1px 0 #e8e4dc;
+}
+
+.home-goal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.home-goal-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a2e45;
+}
+
+.home-goal-minutes {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5c6a78;
+}
+
+.home-progress {
+  height: 10px;
+  border-radius: 99px;
+  background: #eceae4;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.home-progress > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #2d6a4f, #3d7a5c);
+  border-radius: 99px;
+  transition: width 0.35s ease;
+}
+
+.home-stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  color: #1a2e45;
+  font-size: 15px;
+}
+
+.home-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.home-stat strong {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.home-stat-icon {
+  font-size: 18px;
+}
+
+.home-stat-icon.note {
+  color: #c47a2c;
+  font-weight: 700;
+}
+
+.home-start-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  padding: 15px 16px;
+  background: #2d6a4f;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px #2d6a4f45;
+}
+
+.home-start-btn:active {
+  transform: scale(0.99);
+}
+
+.home-play-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+}

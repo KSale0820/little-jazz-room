@@ -1,6 +1,7 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { PixelIcon, type NavRoute } from './PixelIcon';
 import { useApp } from '../context/AppContext';
+import { JAZZ_CATS } from '../features/cats/CatCompanion';
 import './AppShell.css';
 
 const NAV: { to: string; route: NavRoute; label: string }[] = [
@@ -12,7 +13,13 @@ const NAV: { to: string; route: NavRoute; label: string }[] = [
 ];
 
 export function AppShell() {
-  const { toast } = useApp();
+  const { toast, catId } = useApp();
+  const location = useLocation();
+  const catName = JAZZ_CATS.find(c => c.id === catId)?.name ?? 'Luna';
+  const routeHint =
+    location.pathname === '/'
+      ? `Home (${catName})`
+      : NAV.find(n => n.to === location.pathname)?.label ?? '';
 
   return (
     <div className="app-root">
@@ -39,6 +46,11 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
+        {routeHint ? (
+          <p className="phone-route-hint" aria-hidden>
+            {routeHint}
+          </p>
+        ) : null}
       </main>
       {toast ? (
         <div className="toast-message" role="status">

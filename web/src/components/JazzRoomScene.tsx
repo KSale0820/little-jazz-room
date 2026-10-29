@@ -1,34 +1,31 @@
 import type { ResolvedLighting } from '../lib/roomLighting';
+import type { ReactNode } from 'react';
 import './JazzRoomScene.css';
 
-const ROOM_SRC: Record<ResolvedLighting, string> = {
-  sunshine: '/room/home-room-base.png',
-  twilight: '/room/home-room-twilight.png',
-  night: '/room/home-room-night.png',
+const HERO_SRC: Record<ResolvedLighting, string> = {
+  sunshine: '/room/home-hero-sunshine.png',
+  twilight: '/room/home-hero-twilight.png',
+  night: '/room/home-hero-night.png',
 };
 
 interface JazzRoomSceneProps {
   lighting: ResolvedLighting;
-  lightingControl: React.ReactNode;
-  catOverlay: React.ReactNode;
+  greeting: string;
+  settingsControl: ReactNode;
+  catOverlay: ReactNode;
 }
 
-/** Static illustrated room from revised-cat-board-1 (cat added as separate overlay). */
-export function JazzRoomScene({ lighting, lightingControl, catOverlay }: JazzRoomSceneProps) {
+/** Full-bleed illustrated home hero from approved Home mock. */
+export function JazzRoomScene({ lighting, greeting, settingsControl, catOverlay }: JazzRoomSceneProps) {
   return (
-    <div className="jazz-room-scene" data-mode={lighting}>
-      <img
-        className="jazz-room-photo"
-        src={ROOM_SRC[lighting]}
-        alt=""
-        aria-hidden
-      />
-      <div className="scene-header">
+    <div className="jazz-room-scene home-hero" data-mode={lighting}>
+      <img className="jazz-room-photo" src={HERO_SRC[lighting]} alt="" aria-hidden />
+      <div className="scene-header home-hero-header">
         <h1>My Jazz Room</h1>
-        <p>Good to see you. Let&apos;s make music.</p>
+        <p>{greeting}</p>
       </div>
-      <div className="lighting-control">{lightingControl}</div>
-      {catOverlay}
+      <div className="home-settings">{settingsControl}</div>
+      <div className="home-cat-stage">{catOverlay}</div>
     </div>
   );
 }
