@@ -1,78 +1,67 @@
 .jazz-room-scene {
   position: relative;
-  height: 320px;
+  height: 340px;
   overflow: hidden;
-  --room-wall-top: #e8dcc8;
-  --room-wall-bottom: #d4c4ad;
-  --room-floor-a: #c9b59a;
-  --room-floor-b: #b8a388;
-  --room-window: #87aecf;
-  --room-skyline: #5a6a78;
+  border-radius: 0;
+  background: #e8dcc8;
 }
 
-.jazz-room-scene[data-mode='twilight'] {
-  --room-wall-top: #c9b8c4;
-  --room-wall-bottom: #9a8798;
-  --room-floor-a: #8f7d86;
-  --room-floor-b: #7a6a72;
-  --room-window: #c48a6a;
-  --room-skyline: #4a3d48;
-}
-
-.jazz-room-scene[data-mode='night'] {
-  --room-wall-top: #5a6578;
-  --room-wall-bottom: #3d4655;
-  --room-floor-a: #4a4038;
-  --room-floor-b: #3a322c;
-  --room-window: #2a3550;
-  --room-skyline: #1a2030;
-}
-
-.jazz-room-art {
+.jazz-room-photo {
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
+  object-position: center 40%;
+  display: block;
 }
 
 .jazz-room-scene::after {
   content: '';
   position: absolute;
-  inset: 60% 0 0;
-  background: linear-gradient(transparent, #fbf8f0b0);
+  inset: 55% 0 0;
+  background: linear-gradient(transparent, #fbf8f0e8);
   pointer-events: none;
+}
+
+.jazz-room-scene[data-mode='twilight'] .jazz-room-photo {
+  filter: saturate(0.85) brightness(0.9);
+}
+
+.jazz-room-scene[data-mode='night'] .jazz-room-photo {
+  filter: saturate(0.6) brightness(0.72);
 }
 
 .scene-header {
   position: absolute;
   z-index: 2;
-  top: 38px;
+  top: 36px;
   left: 16px;
-  text-shadow: 0 1px 8px #fff9;
+  text-shadow: 0 1px 10px #fff, 0 0 18px #fff9;
 }
 
 .scene-header h1 {
-  font-size: 29px;
-  color: #234335;
+  font-size: 28px;
+  color: #1e3a2f;
+  letter-spacing: -0.02em;
 }
 
 .scene-header p {
   font-size: 13px;
-  color: #233d33;
+  color: #2a4a3c;
   margin-top: 4px;
 }
 
 .lighting-control {
   position: absolute;
   z-index: 4;
-  top: 16px;
+  top: 14px;
   right: 12px;
-  padding: 5px 7px;
-  border-radius: 9px;
+  padding: 6px 8px;
+  border-radius: 10px;
   border: 1px solid #ece5d8;
-  background: #fffaf3df;
+  background: #fffaf3e8;
   font-size: 11px;
   width: 92px;
+  backdrop-filter: blur(4px);
 }
 
 .lighting-control label {
@@ -89,74 +78,28 @@
   color: #305b48;
 }
 
-.hotspot {
-  position: absolute;
-  z-index: 4;
-  padding: 6px 8px;
-  border: 1px solid #fff8ddaa;
-  background: #fcf7e3dd;
-  color: #244736;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  box-shadow: 0 4px 8px #2223;
-}
-
-.hotspot.piano {
-  left: 13px;
-  top: 47%;
-}
-
-.hotspot.book {
-  left: 43%;
-  top: 49%;
-}
-
-.hotspot.notebook {
-  right: 10px;
-  top: 70%;
-}
-
 .scene-cat {
   position: absolute;
   z-index: 5;
-  right: 3%;
-  bottom: 7%;
-  width: 132px;
-  height: 112px;
+  right: 2%;
+  bottom: 4%;
+  width: 140px;
+  height: 120px;
   display: grid;
-  place-items: center;
+  place-items: end center;
   border: 0;
   cursor: pointer;
   background: transparent;
-  filter: drop-shadow(0 3px 2px #352b3255);
-}
-
-.scene-cat::before {
-  content: '';
-  position: absolute;
-  bottom: 3px;
-  width: 132px;
-  height: 42px;
-  border-radius: 55% 52% 48% 51%;
-  background: #caa68f;
-  box-shadow: 0 2px 0 #896c67, 0 5px 8px #3c262844;
-}
-
-.jazz-room-scene[data-mode='twilight'] .scene-cat::before {
-  background: #ac8795;
-}
-
-.jazz-room-scene[data-mode='night'] .scene-cat::before {
-  background: #68778a;
+  filter: drop-shadow(0 4px 6px #352b3240);
 }
 
 .scene-cat img {
-  position: relative;
+  max-height: 112px;
+  width: auto;
 }
 
 @media (min-width: 560px) {
   .jazz-room-scene {
-    height: 350px;
+    height: 360px;
   }
 }

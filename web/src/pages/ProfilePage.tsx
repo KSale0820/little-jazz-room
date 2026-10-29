@@ -56,7 +56,7 @@ export function ProfilePage() {
             aria-label="Choose your jazz cat"
             onClick={() => chooserRef.current?.scrollIntoView({ behavior: 'smooth' })}
           >
-            <CatSprite catId={catId} size={64} animated={catMotion} />
+            <CatSprite catId={catId} size={64} animated={catMotion} variant="portrait" />
           </button>
         </div>
       </div>

@@ -54,9 +54,6 @@ export function HomePage() {
             </select>
           </>
         }
-        onPiano={() => navigate('/practice')}
-        onMusicStand={() => navigate('/explore')}
-        onNotebook={() => navigate('/profile')}
         catOverlay={
           <button
             type="button"
@@ -65,7 +62,7 @@ export function HomePage() {
             title="Choose your jazz cat"
             onClick={() => navigate('/profile', { state: { scrollToCat: true } })}
           >
-            <CatSprite catId={catId} size={98} animated={catMotion} decorative />
+            <CatSprite catId={catId} size={110} animated={catMotion} variant="portrait" />
           </button>
         }
       />
@@ -142,15 +139,15 @@ export function HomePage() {
           </div>
           <small>40% toward your goal (sample progress)</small>
         </div>
-        <div className="room-fallbacks" aria-label="Room object shortcuts">
+        <div className="room-fallbacks screen-reader-only" aria-label="Room shortcuts">
           <button type="button" className="btn" onClick={() => navigate('/practice')}>
-            Open Practice (piano)
+            Open Practice
           </button>
           <button type="button" className="btn" onClick={() => navigate('/explore')}>
-            Browse exercises (music stand)
+            Browse exercises
           </button>
           <button type="button" className="btn" onClick={() => navigate('/profile')}>
-            Saved routines (notebook)
+            Saved routines
           </button>
         </div>
       </div>
