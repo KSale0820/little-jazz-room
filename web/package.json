@@ -8,10 +8,13 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",
+    "test:rls": "node scripts/supabase-rls-test.mjs",
+    "provision:user": "node scripts/provision-team-user.mjs",
     "typecheck": "tsc -b",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.8",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.5"

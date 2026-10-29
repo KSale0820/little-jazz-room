@@ -11,7 +11,8 @@ import {
 import type { LocalExercise, LocalRoutine, Visibility } from '../types/content';
 
 export function CreatePage() {
-  const { repo, exercises, charts, refreshLocal, showToast } = useApp();
+  const { repo, exercises, charts, refreshLocal, showToast, teamSignedIn, saveRoutineToCloud, saveExerciseToCloud } =
+    useApp();
   const location = useLocation();
   const editId = (location.state as { editExerciseId?: string } | null)?.editExerciseId;
 
@@ -70,7 +71,11 @@ export function CreatePage() {
     }
     const existing = editId ? exercises.find(e => e.id === editId) : undefined;
     const id =
-      existing && 'is_seed' in existing && existing.is_seed === false ? editId! : newLocalExerciseId();
+      existing && 'is_seed' in existing && existing.is_seed === false
+        ? editId!
+        : teamSignedIn
+          ? crypto.randomUUID()
+          : newLocalExerciseId();
     const exercise: LocalExercise = {
       id,
       title: exTitle.trim(),
@@ -89,8 +94,12 @@ export function CreatePage() {
     repo.saveLocalExercise(exercise);
     if (!stepIds.includes(id)) setStepIds([...stepIds, id]);
     refreshLocal();
+    if (teamSignedIn) {
+      void saveExerciseToCloud(exercise);
+    } else {
+      showToast('Exercise saved on this device.');
+    }
     setShowExerciseForm(false);
-    showToast('Exercise saved on this device.');
   };
 
   const saveRoutine = () => {
@@ -99,7 +108,7 @@ export function CreatePage() {
       return { exercise_id: id, duration_minutes: ex?.duration_minutes ?? 5 };
     });
     const routine: LocalRoutine = {
-      id: newLocalRoutineId(),
+      id: teamSignedIn ? crypto.randomUUID() : newLocalRoutineId(),
       title: title.trim() || 'Untitled routine',
       description,
       level: 'Beginner',
@@ -111,7 +120,27 @@ export function CreatePage() {
     };
     repo.saveLocalRoutine(routine);
     refreshLocal();
-    showToast('Routine saved locally.');
+    if (teamSignedIn) {
+      void saveRoutineToCloud(routine, stepIds);
+    } else {
+      showToast('Routine saved locally.');
+    }
+  };
+
+  const publishRoutine = () => {
+    if (visibility === 'Unlisted') {
+      showToast('Unlisted sharing stays Preview until Phase 3 token security is verified.');
+      return;
+    }
+    if (!teamSignedIn) {
+      showToast('Sign in with your team account to publish.');
+      return;
+    }
+    if (visibility !== 'Public') {
+      showToast('Set visibility to Public before publishing.');
+      return;
+    }
+    saveRoutine();
   };
 
   return (
@@ -248,20 +277,15 @@ export function CreatePage() {
         <option>Public</option>
       </select>
       <button type="button" className="btn primary wide" style={{ marginTop: 15 }} onClick={saveRoutine}>
-        Save routine locally
+        {teamSignedIn ? 'Save routine to team cloud' : 'Save routine locally'}
       </button>
-      <button
-        type="button"
-        className="btn wide"
-        style={{ marginTop: 8 }}
-        onClick={() =>
-          showToast('Preview only: public sharing requires Supabase and authentication (Phase 2).')
-        }
-      >
-        Publish Routine (Preview)
+      <button type="button" className="btn wide" style={{ marginTop: 8 }} onClick={publishRoutine}>
+        {visibility === 'Unlisted' ? 'Publish Unlisted (Preview)' : 'Publish public routine'}
       </button>
       <p className="muted" style={{ margin: '10px 0' }}>
-        Local prototype only. Cloud publish requires Phase 2 team authentication.
+        {teamSignedIn
+          ? 'Private data stays in your account. Public routines are visible to anonymous visitors. Unlisted links remain disabled until Phase 3.'
+          : 'Without signing in, routines stay on this device only. Team sign-in enables cloud save and public publish.'}
       </p>
     </section>
   );

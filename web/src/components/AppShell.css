@@ -106,6 +106,30 @@
   }
 }
 
+.team-auth-panel {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.team-auth-label {
+  color: #5a6a78;
+}
+
+.mobile-auth-bar {
+  position: absolute;
+  z-index: 9;
+  top: 28px;
+  right: 10px;
+}
+
+@media (min-width: 900px) {
+  .mobile-auth-bar {
+    display: none;
+  }
+}
+
 @media (max-width: 899px) {
   .app-shell {
     min-height: 100dvh;
@@ -113,5 +137,9 @@
 
   .viewport {
     min-height: calc(100dvh - 72px);
+  }
+
+  .app-sidebar .team-auth-panel {
+    display: none;
   }
 }

@@ -1,0 +1,23 @@
+.sign-in-page {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.team-beta-note {
+  font-size: 13px;
+  color: #5a6a78;
+  margin: 8px 0 16px;
+  line-height: 1.45;
+}
+
+.sign-in-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sign-in-error {
+  color: #8b3a3a;
+  font-size: 13px;
+}
