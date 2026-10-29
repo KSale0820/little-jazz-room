@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:rls": "node scripts/supabase-rls-test.mjs",
     "test:rls:secure": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-RlsTest.ps1",
+    "screenshots": "node scripts/capture-app-screenshots.mjs",
     "provision:user": "node scripts/provision-team-user.mjs",
     "typecheck": "tsc -b",
     "preview": "vite preview"
@@ -26,6 +27,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "oxlint": "^1.89.0",
+    "playwright": "^1.49.1",
     "typescript": "~7.0.2",
     "vite": "^8.3.5",
     "vitest": "^3.2.4"
