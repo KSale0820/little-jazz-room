@@ -50,6 +50,8 @@ export interface Exercise {
   visibility: string;
   is_seed?: boolean;
   chart_id: string | null;
+  /** Catalog instrument ids from seed `instruments`, or `All` for any instrument. */
+  applicable_instruments: string[];
 }
 
 export interface RoutineStep {
@@ -66,6 +68,7 @@ export interface Routine {
   visibility: string;
   is_seed?: boolean;
   steps: RoutineStep[];
+  applicable_instruments: string[];
 }
 
 export interface PracticePath {

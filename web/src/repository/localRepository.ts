@@ -104,14 +104,24 @@ export function createLocalRepository(): LocalRepository {
 export function mergeExercises(seed: Exercise[], local: LocalExercise[]): Exercise[] {
   const map = new Map<string, Exercise>();
   for (const e of seed) map.set(e.id, e);
-  for (const e of local) map.set(e.id, e);
+  for (const e of local) {
+    map.set(e.id, {
+      ...e,
+      applicable_instruments: e.applicable_instruments?.length ? e.applicable_instruments : ['All'],
+    });
+  }
   return [...map.values()];
 }
 
 export function mergeRoutines(seed: Routine[], local: LocalRoutine[]): Routine[] {
   const map = new Map<string, Routine>();
   for (const r of seed) map.set(r.id, r);
-  for (const r of local) map.set(r.id, r);
+  for (const r of local) {
+    map.set(r.id, {
+      ...r,
+      applicable_instruments: r.applicable_instruments?.length ? r.applicable_instruments : ['All'],
+    });
+  }
   return [...map.values()];
 }
 

@@ -8,6 +8,7 @@ import {
   computeGentleStreak,
   longTermProgressPercent,
   minutesToday,
+  PRACTICE_MILESTONE_MINUTES,
   totalPracticeMinutes,
 } from '../lib/practiceStats';
 import {
@@ -180,12 +181,14 @@ export function HomePage() {
             <CatSprite catId={catId} size={33} animated={catMotion} className="tiny-cat" />
           </div>
           <p className="muted goal-text">
-            Play confident solos over ii–V–I progressions with {cat.name}.
+            Log steady practice time on this device — {cat.name} is here for company, not a grade.
           </p>
           <div className="bar">
             <i style={{ width: `${longTermPct}%` }} />
           </div>
-          <small>{longTermPct}% toward your gentle milestone (300 min on this device)</small>
+          <small>
+            {longTermPct}% of your {PRACTICE_MILESTONE_MINUTES}-minute practice milestone (total time logged)
+          </small>
         </div>
       </div>
     </section>

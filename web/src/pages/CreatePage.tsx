@@ -84,6 +84,7 @@ export function CreatePage() {
       visibility: 'private',
       is_seed: false,
       chart_id: exChartId || null,
+      applicable_instruments: ['All'],
     };
     repo.saveLocalExercise(exercise);
     if (!stepIds.includes(id)) setStepIds([...stepIds, id]);
@@ -106,6 +107,7 @@ export function CreatePage() {
       visibility: visibility.toLowerCase(),
       is_seed: false,
       steps,
+      applicable_instruments: ['All'],
     };
     repo.saveLocalRoutine(routine);
     refreshLocal();

@@ -1,5 +1,8 @@
 import type { PracticeSessionRecord } from '../types/content';
 
+/** Gentle long-term progress: total logged practice minutes on this device. */
+export const PRACTICE_MILESTONE_MINUTES = 300;
+
 export function computeGentleStreak(sessions: PracticeSessionRecord[]): number {
   const days = new Set(sessions.map(s => new Date(s.finishedAt).toDateString()));
   let streak = 0;
@@ -23,8 +26,9 @@ export function totalPracticeMinutes(sessions: PracticeSessionRecord[]): number 
   return sessions.reduce((n, s) => n + Math.round(s.durationSeconds / 60), 0);
 }
 
-/** Sample long-term progress toward a gentle 300-minute milestone. */
 export function longTermProgressPercent(sessions: PracticeSessionRecord[]): number {
-  const target = 300;
-  return Math.min(100, Math.round((totalPracticeMinutes(sessions) / target) * 100));
+  return Math.min(
+    100,
+    Math.round((totalPracticeMinutes(sessions) / PRACTICE_MILESTONE_MINUTES) * 100)
+  );
 }

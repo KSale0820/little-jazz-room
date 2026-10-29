@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { exercisesById } from '../data/seed';
 import { exerciseMatchesInstrument, routineMatchesInstrument } from '../lib/instrumentFilter';
 import { useApp } from '../context/AppContext';
 
@@ -28,7 +27,7 @@ export function ExplorePage() {
   const filteredRoutines = useMemo(() => {
     const q = query.toLowerCase();
     return routines.filter(r => {
-      if (instrument !== 'All' && !routineMatchesInstrument(r, exercisesById, instrument)) return false;
+      if (instrument !== 'All' && !routineMatchesInstrument(r, instrument)) return false;
       if (q && !r.title.toLowerCase().includes(q)) return false;
       return true;
     });

@@ -22,7 +22,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "blues-f-12"
+      "chart_id": "blues-f-12",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "swing-2-4",
@@ -36,7 +39,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": null
+      "chart_id": null,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "blues-scale",
@@ -50,7 +56,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "blues-f-12"
+      "chart_id": "blues-f-12",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "chord-roots",
@@ -64,7 +73,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "blues-f-12"
+      "chart_id": "blues-f-12",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "thirds-sevenths",
@@ -78,7 +90,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "ii-v-i-c"
+      "chart_id": "ii-v-i-c",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "seventh-arpeggios",
@@ -92,7 +107,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "ii-v-i-c"
+      "chart_id": "ii-v-i-c",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "chord-tone-solo",
@@ -106,7 +124,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "blues-f-12"
+      "chart_id": "blues-f-12",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "question-answer",
@@ -120,7 +141,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "blues-f-12"
+      "chart_id": "blues-f-12",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "blues-form",
@@ -134,7 +158,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "blues-f-12"
+      "chart_id": "blues-f-12",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "shell-voicings",
@@ -148,7 +175,11 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "ii-v-i-c"
+      "chart_id": "ii-v-i-c",
+      "applicable_instruments": [
+        "Piano",
+        "Guitar"
+      ]
     },
     {
       "id": "rhythm-variation",
@@ -162,7 +193,12 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": null
+      "chart_id": null,
+      "applicable_instruments": [
+        "Drums",
+        "Bass",
+        "Piano"
+      ]
     },
     {
       "id": "four-bar-lick",
@@ -176,7 +212,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": null
+      "chart_id": null,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "walking-bass",
@@ -190,7 +229,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "blues-f-12"
+      "chart_id": "blues-f-12",
+      "applicable_instruments": [
+        "Bass"
+      ]
     },
     {
       "id": "comping-space",
@@ -204,7 +246,11 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": null
+      "chart_id": null,
+      "applicable_instruments": [
+        "Piano",
+        "Guitar"
+      ]
     },
     {
       "id": "one-chorus",
@@ -218,7 +264,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "blues-f-12"
+      "chart_id": "blues-f-12",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "melody-by-ear",
@@ -232,7 +281,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": null
+      "chart_id": null,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "listen-bass",
@@ -246,7 +298,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": null
+      "chart_id": null,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "free-play",
@@ -260,7 +315,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": null
+      "chart_id": null,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "blues-bb-forms",
@@ -274,7 +332,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "jazz-blues-bb-12"
+      "chart_id": "jazz-blues-bb-12",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "rhythm-bridge",
@@ -288,7 +349,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "rhythm-bb-32"
+      "chart_id": "rhythm-bb-32",
+      "applicable_instruments": [
+        "Drums"
+      ]
     },
     {
       "id": "bossa-minor",
@@ -302,7 +366,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "minor-bossa-cm-16"
+      "chart_id": "minor-bossa-cm-16",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "major-minor-cycle",
@@ -316,7 +383,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "major-minor-cycle-em-16"
+      "chart_id": "major-minor-cycle-em-16",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "modal-space",
@@ -330,7 +400,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "modal-d-16"
+      "chart_id": "modal-d-16",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "songbook-form",
@@ -344,7 +417,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "songbook-c-abac-32"
+      "chart_id": "songbook-c-abac-32",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "bright-swing",
@@ -358,7 +434,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "bright-c-aaba-32"
+      "chart_id": "bright-c-aaba-32",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "minor-blues",
@@ -372,7 +451,10 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "minor-blues-cm-12"
+      "chart_id": "minor-blues-cm-12",
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "ballad-voice",
@@ -386,7 +468,14 @@
       "audio_asset_id": null,
       "visibility": "public",
       "is_seed": true,
-      "chart_id": "ballad-eb-16"
+      "chart_id": "ballad-eb-16",
+      "applicable_instruments": [
+        "Piano",
+        "Guitar",
+        "Alto Saxophone",
+        "Tenor Saxophone",
+        "Trumpet"
+      ]
     }
   ],
   "routines": [
@@ -419,7 +508,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "daily-warm-up",
@@ -446,7 +538,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "12bar-blues",
@@ -481,7 +576,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "ii-v-i-workout",
@@ -512,7 +610,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "rhythm-time",
@@ -539,7 +640,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "intermediate-solo",
@@ -578,7 +682,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "walking-bass",
@@ -609,7 +716,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "Bass"
+      ]
     },
     {
       "id": "comping-basics",
@@ -636,7 +746,11 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "Piano",
+        "Guitar"
+      ]
     },
     {
       "id": "ear-training",
@@ -667,7 +781,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "no-backing",
@@ -693,7 +810,10 @@
         "silent",
         "metronome"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "jazz-standards-starter",
@@ -720,7 +840,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "first-minor-bossa",
@@ -747,7 +870,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "rhythm-changes-starter",
@@ -774,7 +900,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     },
     {
       "id": "forms-and-ballads",
@@ -801,7 +930,10 @@
         "metronome",
         "recorded"
       ],
-      "is_seed": true
+      "is_seed": true,
+      "applicable_instruments": [
+        "All"
+      ]
     }
   ],
   "paths": [

@@ -1,36 +1,36 @@
 import type { Exercise, Routine } from '../types/content';
 
-const FILTER_KEYWORDS: Record<string, string[]> = {
-  Piano: ['piano', 'comping', 'voicing', 'keys', 'keyboard'],
-  Guitar: ['guitar', 'chord melody', 'fret'],
-  'Alto Saxophone': ['alto sax', 'alto saxophone', 'eb sax'],
-  'Tenor Saxophone': ['tenor sax', 'tenor saxophone', 'tenor'],
-  Trumpet: ['trumpet', 'brass'],
-  Bass: ['bass', 'walking bass', 'upright'],
-  Drums: ['drums', 'drum', 'ride cymbal', 'brush'],
-};
+export const ALL_INSTRUMENTS_TOKEN = 'All';
 
-function exerciseText(ex: Exercise): string {
-  return `${ex.title} ${ex.instructions} ${ex.suggested_material} ${ex.category}`.toLowerCase();
+const VALID_FILTERS = new Set([
+  'All',
+  'Piano',
+  'Guitar',
+  'Alto Saxophone',
+  'Tenor Saxophone',
+  'Trumpet',
+  'Bass',
+  'Drums',
+]);
+
+export function normalizeApplicableInstruments(list: string[] | undefined): string[] {
+  if (!list || list.length === 0) return [ALL_INSTRUMENTS_TOKEN];
+  return list;
 }
 
-/** Match seed/catalog exercises to Explore instrument chips. */
+export function matchesApplicableInstruments(applicable: string[] | undefined, filter: string): boolean {
+  if (filter === 'All') return true;
+  const apps = normalizeApplicableInstruments(applicable);
+  if (apps.includes(ALL_INSTRUMENTS_TOKEN)) return true;
+  return apps.includes(filter);
+}
+
 export function exerciseMatchesInstrument(ex: Exercise, filter: string): boolean {
-  if (filter === 'All') return true;
-  const keywords = FILTER_KEYWORDS[filter];
-  if (!keywords) return true;
-  const text = exerciseText(ex);
-  return keywords.some(k => text.includes(k));
+  if (!VALID_FILTERS.has(filter)) return true;
+  return matchesApplicableInstruments(ex.applicable_instruments, filter);
 }
 
-export function routineMatchesInstrument(
-  routine: Routine,
-  exerciseLookup: Record<string, Exercise | undefined>,
-  filter: string
-): boolean {
-  if (filter === 'All') return true;
-  return routine.steps.some(step => {
-    const ex = exerciseLookup[step.exercise_id];
-    return ex ? exerciseMatchesInstrument(ex, filter) : false;
-  });
+export function routineMatchesInstrument(routine: Routine, filter: string): boolean {
+  if (!VALID_FILTERS.has(filter)) return true;
+  return matchesApplicableInstruments(routine.applicable_instruments, filter);
 }

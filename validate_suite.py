@@ -55,6 +55,10 @@ for ex in seed['exercises']:
     require(bool(ex['instructions'].strip()), f"Missing exercise instructions: {ex['id']}")
     require(ex['duration_minutes'] > 0, f"Missing recommended duration: {ex['id']}")
     require(ex.get('chart_id') is None or ex['chart_id'] in charts, f"Unknown chart for {ex['id']}")
+    apps = ex.get('applicable_instruments') or []
+    require(isinstance(apps, list) and len(apps) > 0, f"Missing applicable_instruments: {ex['id']}")
+    for a in apps:
+        require(a == 'All' or a in instruments, f"Invalid applicable_instruments on {ex['id']}: {a}")
 
 routines = {r['id']:r for r in seed['routines']}
 require(len(routines) == len(seed['routines']) == 14, 'Expected fourteen unique starter routines.')
@@ -62,6 +66,10 @@ for r in seed['routines']:
     actual = sum(s['duration_minutes'] for s in r['steps'])
     require(actual == r['duration_minutes'], f"Incorrect total duration: {r['id']} expected {r['duration_minutes']}, got {actual}")
     require(all(st['exercise_id'] in exercises for st in r['steps']), f"Unknown exercise in {r['id']}")
+    apps = r.get('applicable_instruments') or []
+    require(isinstance(apps, list) and len(apps) > 0, f"Missing applicable_instruments: {r['id']}")
+    for a in apps:
+        require(a == 'All' or a in instruments, f"Invalid applicable_instruments on {r['id']}: {a}")
 for p in seed['paths']:
     require(all(rid in routines for rid in p['sessions']), f"Undefined path routine in {p['id']}")
 require(len({q['id'] for q in seed['charts']}) == len(seed['charts']), 'Duplicate chart IDs.')

@@ -4,6 +4,7 @@ import { ChordGrid } from '../components/ChordGrid';
 import { CatSprite } from '../features/cats/CatCompanion';
 import { chartsById, exercisesById } from '../data/seed';
 import { formatChartMeta } from '../lib/chords';
+import { commitStepElapsed, sessionDurationSeconds } from '../lib/practiceSessionTimer';
 import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
 
@@ -26,10 +27,7 @@ export function PracticePage() {
 
   const routine = activeRoutineId ? (routines.find(r => r.id === activeRoutineId) ?? null) : null;
   const [stepIndex, setStepIndex] = useState(0);
-
-  useEffect(() => {
-    setStepIndex(0);
-  }, [activeRoutineId, routine?.id]);
+  const [accumulatedSeconds, setAccumulatedSeconds] = useState(0);
 
   const currentStep = routine?.steps[stepIndex] ?? null;
   const stepExercise = useMemo(() => {
@@ -44,9 +42,18 @@ export function PracticePage() {
   const [chartKey, setChartKey] = useState('F');
   const [selectedBar, setSelectedBar] = useState(0);
   const [loopValue, setLoopValue] = useState('all');
-  const [seconds, setSeconds] = useState(0);
+  const [stepSeconds, setStepSeconds] = useState(0);
   const [running, setRunning] = useState(false);
   const timerRef = useRef<number | null>(null);
+
+  const sessionSeconds = sessionDurationSeconds(accumulatedSeconds, stepSeconds);
+
+  useEffect(() => {
+    setStepIndex(0);
+    setAccumulatedSeconds(0);
+    setStepSeconds(0);
+    setRunning(false);
+  }, [activeRoutineId, routine?.id]);
 
   const chart = chartsById[chartId] ?? charts[0]!;
   const stepMinutes = currentStep?.duration_minutes ?? stepExercise?.duration_minutes ?? 0;
@@ -63,7 +70,7 @@ export function PracticePage() {
 
   useEffect(() => {
     if (running) {
-      timerRef.current = window.setInterval(() => setSeconds(s => s + 1), 1000);
+      timerRef.current = window.setInterval(() => setStepSeconds(s => s + 1), 1000);
     } else if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -95,25 +102,29 @@ export function PracticePage() {
   const goStep = (delta: number) => {
     if (!routine) return;
     setRunning(false);
-    setSeconds(0);
+    setAccumulatedSeconds(prev => commitStepElapsed(prev, stepSeconds));
+    setStepSeconds(0);
     setStepIndex(i => Math.max(0, Math.min(routine.steps.length - 1, i + delta)));
   };
 
   const finish = () => {
     setRunning(false);
+    const durationSeconds = sessionDurationSeconds(accumulatedSeconds, stepSeconds);
     addSession({
       id: `sess-${Date.now()}`,
       finishedAt: new Date().toISOString(),
-      durationSeconds: seconds,
+      durationSeconds,
       routineId: activeRoutineId ?? undefined,
       exerciseId: stepExercise?.id,
     });
-    setSeconds(0);
+    setAccumulatedSeconds(0);
+    setStepSeconds(0);
     showToast('Session saved on this device.');
     navigate('/profile');
   };
 
-  const timeLabel = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+  const stepTimeLabel = `${String(Math.floor(stepSeconds / 60)).padStart(2, '0')}:${String(stepSeconds % 60).padStart(2, '0')}`;
+  const sessionTimeLabel = `${String(Math.floor(sessionSeconds / 60)).padStart(2, '0')}:${String(sessionSeconds % 60).padStart(2, '0')}`;
   const targetLabel = `${String(Math.floor(stepTargetSeconds / 60)).padStart(2, '0')}:${String(stepTargetSeconds % 60).padStart(2, '0')}`;
 
   return (
@@ -239,8 +250,8 @@ export function PracticePage() {
                 'Select a routine in Explore or follow the chart study on the Chords tab.'}
             </p>
             <small className="muted">
-              Suggested duration: {stepMinutes} min · Timer {timeLabel}
-              {stepTargetSeconds > 0 ? ` / ${targetLabel}` : ''}
+              Suggested duration: {stepMinutes} min · Step {stepTimeLabel}
+              {stepTargetSeconds > 0 ? ` / ${targetLabel}` : ''} · Session {sessionTimeLabel}
             </small>
           </div>
           <div className="simple">
@@ -316,9 +327,9 @@ export function PracticePage() {
         </button>
       </div>
       <div className="between">
-        <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{timeLabel}</strong>
+        <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{sessionTimeLabel}</strong>
         <small>
-          Measure {selectedBar + 1} / {chart.bars.length}
+          Step {stepTimeLabel} · Measure {selectedBar + 1} / {chart.bars.length}
         </small>
         <button type="button" className="btn" onClick={finish}>
           Finish
