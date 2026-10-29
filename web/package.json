@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "test": "vitest run",
     "test:rls": "node scripts/supabase-rls-test.mjs",
+    "test:rls:secure": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-RlsTest.ps1",
     "provision:user": "node scripts/provision-team-user.mjs",
     "typecheck": "tsc -b",
     "preview": "vite preview"

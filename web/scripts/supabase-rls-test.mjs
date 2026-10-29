@@ -3,9 +3,19 @@
  * Phase 2 RLS smoke tests — run against YOUR Supabase project after migrations.
  * Env: SUPABASE_URL, SUPABASE_ANON_KEY, TEAM_USER_A_EMAIL, TEAM_USER_A_PASSWORD,
  *      TEAM_USER_B_EMAIL, TEAM_USER_B_PASSWORD
+ * Loads web/.env.local automatically (see web/.env.example).
  */
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'node:crypto';
+import { loadEnvLocal, missingRlsEnvVars } from './load-env-local.mjs';
+
+loadEnvLocal();
+const missing = missingRlsEnvVars();
+if (missing.length) {
+  console.error('Missing required environment variables:', missing.join(', '));
+  console.error('Add them to web/.env.local (gitignored). Never commit passwords.');
+  process.exit(1);
+}
 
 const url = process.env.SUPABASE_URL;
 const anon = process.env.SUPABASE_ANON_KEY;
@@ -17,7 +27,7 @@ function req(name) {
 }
 
 if (!url || !anon) {
-  console.error('Set SUPABASE_URL and SUPABASE_ANON_KEY');
+  console.error('Set SUPABASE_URL and SUPABASE_ANON_KEY (or VITE_* in web/.env.local)');
   process.exit(1);
 }
 
@@ -34,7 +44,7 @@ const fail = (label, detail) => {
 async function signIn(email, password) {
   const client = createClient(url, anon, { auth: { persistSession: false } });
   const { error } = await client.auth.signInWithPassword({ email, password });
-  if (error) throw new Error(`${email}: ${error.message}`);
+  if (error) throw new Error(`Sign-in failed for ${email}: ${error.message}`);
   return client;
 }
 

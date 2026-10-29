@@ -82,15 +82,28 @@ npm run dev
 
 ## 7. Run automated RLS tests
 
-Set environment variables (PowerShell example):
+**Recommended (hidden password prompts, credentials not saved to disk):**
+
+```powershell
+cd web
+npm run test:rls:secure
+```
+
+Or run the script directly:
+
+```powershell
+cd web
+.\scripts\Invoke-RlsTest.ps1
+```
+
+The script reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from `web/.env.local`, prompts for User A/B email and password (passwords hidden), runs the tests, then clears `TEAM_USER_*` from the process environment.
+
+**Manual env (only if you already use a secrets manager in your shell):**
 
 ```powershell
 $env:SUPABASE_URL="https://YOUR_PROJECT_REF.supabase.co"
 $env:SUPABASE_ANON_KEY="your-anon-key"
-$env:TEAM_USER_A_EMAIL="user-a@example.com"
-$env:TEAM_USER_A_PASSWORD="..."
-$env:TEAM_USER_B_EMAIL="user-b@example.com"
-$env:TEAM_USER_B_PASSWORD="..."
+# set TEAM_USER_* in your shell — never commit or paste passwords into chat
 cd web
 npm run test:rls
 ```
