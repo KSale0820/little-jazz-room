@@ -9,10 +9,8 @@ export type RoomLightingAsset = ResolvedLighting;
 
 export const VISUAL_ASSETS = {
   decor: {
-    botanicalCorner: '/decor/botanical-corner.svg',
     plant: '/decor/plant.png',
     books: '/decor/books.png',
-    mug: '/decor/mug.png',
   },
   room: {
     /** Cat-free hero room (installed individual scene art). */
@@ -31,9 +29,7 @@ export const VISUAL_ASSETS = {
   cat: {
     portraitFile: (id: CatId) => `/jazz-cat-assets/${id}-portrait.png`,
     spriteFile: (id: CatId) => `/jazz-cat-assets/${id}.svg`,
-    iconFile: (id: CatId) => `/jazz-cat-assets/${id}-icon.png`,
-    smallFile: (id: CatId) => `/jazz-cat-assets/${id}-small.png`,
-    cardFile: (id: CatId) => `/jazz-cat-assets/cards/${id}-card.png`,
+    floorFile: (id: CatId) => `/jazz-cat-assets/${id}.png`,
   },
 } as const;
 
@@ -44,22 +40,12 @@ export function roomArtUrls(lighting: RoomLightingAsset): string[] {
   ];
 }
 
+/** Ordered candidates for the head/bust portrait: PNG first, then the SVG wrapper. */
 export function catPortraitUrls(id: CatId): string[] {
   return [VISUAL_ASSETS.cat.portraitFile(id), VISUAL_ASSETS.cat.spriteFile(id)];
 }
 
-export function catSpriteUrl(id: CatId): string {
-  return VISUAL_ASSETS.cat.spriteFile(id);
-}
-
-export function catPortraitUrl(id: CatId): string {
-  return VISUAL_ASSETS.cat.portraitFile(id);
-}
-
-/**
- * Full-body illustrated cat PNG (not the pixel-art SVG sprite).
- * Use this on Home and wherever an illustrated floor-sitting cat is needed.
- */
-export function catFloorUrl(id: CatId): string {
-  return `/jazz-cat-assets/${id}.png`;
+/** Full-body illustrated PNG used on Home, Profile and the chooser; SVG wrapper as fallback. */
+export function catFloorUrls(id: CatId): string[] {
+  return [VISUAL_ASSETS.cat.floorFile(id), VISUAL_ASSETS.cat.spriteFile(id)];
 }

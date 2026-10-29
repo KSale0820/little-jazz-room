@@ -3,7 +3,7 @@ import type { Chart, ChordEvent, WrittenPitch } from '../types/content';
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'] as const;
 const BASE: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
-export function pitchClass(root: string): number {
+function pitchClass(root: string): number {
   const m = root.match(/^([A-G])([b#]?)$/);
   if (!m) return 0;
   const alter = m[2] === 'b' ? -1 : m[2] === '#' ? 1 : 0;

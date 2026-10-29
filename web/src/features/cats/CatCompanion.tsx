@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { catFloorUrl, catPortraitUrls, catSpriteUrl } from '../../assets/visualManifest';
+import { catFloorUrls, catPortraitUrls } from '../../assets/visualManifest';
+import { useImageFallback } from '../../lib/useImageFallback';
 import './cat-companion.css';
 
 export const JAZZ_CATS = [
-  { id: 'luna', instrument: 'Piano', name: 'Luna', coat: 'Calico', personality: 'Curious & cozy', age: 'Adult', build: 'Medium', shape: 'medium' },
-  { id: 'milo', instrument: 'Tenor saxophone', name: 'Milo', coat: 'Black', personality: 'Quiet & thoughtful', age: 'Adult', build: 'Slim', shape: 'slim' },
-  { id: 'maple', instrument: 'Upright bass', name: 'Maple', coat: 'Orange tabby', personality: 'Playful & energetic', age: 'Young adult', build: 'Lean', shape: 'young' },
-  { id: 'mochi', instrument: 'Drums', name: 'Mochi', coat: 'Cream', personality: 'Gentle & sleepy', age: 'Kitten', build: 'Tiny', shape: 'kitten' },
-  { id: 'pepper', instrument: 'Trumpet', name: 'Pepper', coat: 'Charcoal gray', personality: 'Wise & mellow', age: 'Senior', build: 'Fluffy', shape: 'senior' },
-  { id: 'patches', instrument: 'Jazz guitar', name: 'Patches', coat: 'Gray-and-white', personality: 'Friendly & goofy', age: 'Adult', build: 'Chubby', shape: 'chubby' },
-  { id: 'chai', instrument: 'Vocals', name: 'Chai', coat: 'Siamese', personality: 'Elegant & vocal', age: 'Adult', build: 'Slender', shape: 'long' },
-  { id: 'biscuit', instrument: 'Turntables / listening', name: 'Biscuit', coat: 'Orange tabby', personality: 'Adventurous & cozy', age: 'Adult', build: 'Large', shape: 'large' },
+  { id: 'luna', instrument: 'Piano', name: 'Luna', coat: 'Calico', personality: 'Curious & cozy', age: 'Adult', build: 'Medium' },
+  { id: 'milo', instrument: 'Tenor saxophone', name: 'Milo', coat: 'Black', personality: 'Quiet & thoughtful', age: 'Adult', build: 'Slim' },
+  { id: 'maple', instrument: 'Upright bass', name: 'Maple', coat: 'Orange tabby', personality: 'Playful & energetic', age: 'Young adult', build: 'Lean' },
+  { id: 'mochi', instrument: 'Drums', name: 'Mochi', coat: 'Cream', personality: 'Gentle & sleepy', age: 'Kitten', build: 'Tiny' },
+  { id: 'pepper', instrument: 'Trumpet', name: 'Pepper', coat: 'Charcoal gray', personality: 'Wise & mellow', age: 'Senior', build: 'Fluffy' },
+  { id: 'patches', instrument: 'Jazz guitar', name: 'Patches', coat: 'Gray-and-white', personality: 'Friendly & goofy', age: 'Adult', build: 'Chubby' },
+  { id: 'chai', instrument: 'Vocals', name: 'Chai', coat: 'Siamese', personality: 'Elegant & vocal', age: 'Adult', build: 'Slender' },
+  { id: 'biscuit', instrument: 'Turntables / listening', name: 'Biscuit', coat: 'Orange tabby', personality: 'Adventurous & cozy', age: 'Adult', build: 'Large' },
 ] as const;
 export type CatId = (typeof JAZZ_CATS)[number]['id'];
 const KEY = 'little-jazz-room:selected-cat:v1';
@@ -60,24 +61,21 @@ export function useCatSelection(repository?: CatPreferenceRepository, accountKey
 }
 
 export function CatSprite({ catId, size = 96, className = '', decorative = false, animated = false, variant = 'portrait' }:
-  { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'sprite' | 'floor' }) {
+  { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'floor' }) {
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
-  const portraitCandidates = catPortraitUrls(catId);
-  const [portraitIndex, setPortraitIndex] = useState(0);
-  // 'floor' = full-body illustrated PNG; 'sprite' = pixel-art SVG; 'portrait' = head/bust PNG
-  const src = variant === 'sprite' ? catSpriteUrl(catId)
-    : variant === 'floor' ? catFloorUrl(catId)
-    : portraitCandidates[portraitIndex] ?? catSpriteUrl(catId);
-  const onError = useCallback(() => {
-    if (variant === 'portrait' && portraitIndex < portraitCandidates.length - 1) {
-      setPortraitIndex(i => i + 1);
-    }
-  }, [variant, portraitIndex, portraitCandidates.length]);
+  // 'floor' = full-body illustrated PNG; 'portrait' = head/bust PNG. Both fall back to the SVG wrapper.
+  const candidates = variant === 'floor' ? catFloorUrls(catId) : catPortraitUrls(catId);
+  const { src, onError } = useImageFallback(candidates, `${variant}:${catId}`);
 
   return <img className={`jazz-cat-sprite ${animated ? 'jazz-cat-animated' : ''} ${className}`} src={src}
     onError={onError}
     alt={decorative ? '' : `${cat.name}, ${cat.personality.toLowerCase()} ${cat.coat.toLowerCase()} jazz cat`}
     aria-hidden={decorative} width={size} height={size} draggable={false} />;
+}
+
+function CatChooserArt({ catId }: { catId: CatId }) {
+  const { src, onError } = useImageFallback(catFloorUrls(catId), `chooser:${catId}`);
+  return <img className="board-cat-art" src={src} onError={onError} alt="" aria-hidden draggable={false} />;
 }
 
 export function CatChooser({ catId, onSelect }:
@@ -96,13 +94,7 @@ export function CatChooser({ catId, onSelect }:
             aria-label={`${cat.name}, ${cat.instrument}, ${cat.personality}`}
             onClick={() => { void onSelect(cat.id); }}
           >
-            {/* Full-body illustrated PNG — shows coat, build, and jazz accessories */}
-            <img
-              className="board-cat-art"
-              src={catFloorUrl(cat.id)}
-              alt=""
-              aria-hidden
-            />
+            <CatChooserArt catId={cat.id} />
             <div className="board-cat-meta">
               <strong>{cat.name}</strong>
               <span className="board-cat-instrument">{cat.instrument}</span>
