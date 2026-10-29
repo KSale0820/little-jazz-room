@@ -48,12 +48,60 @@ for (const vp of viewports) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
   console.log(vp.name, 'horizontal overflow:', overflow);
   await page.screenshot({ path: join(out, `home-${vp.name}${suffix}.png`) });
+  if (vp.mobile) {
+    const scroller = page.locator('.room-scroller');
+    const left = () => scroller.evaluate(el => Math.round(el.scrollLeft));
+    const start = await left();
+    for (const [chip, tag] of [['Pan to the bookshelf notebook', 'pan-shelf'], ['Pan to the plants', 'pan-garden']]) {
+      const btn = page.getByRole('button', { name: chip });
+      if (await btn.count()) {
+        await btn.click();
+        await page.waitForTimeout(1200);
+        console.log(vp.name, tag, 'scrollLeft', start, '->', await left());
+        await page.screenshot({ path: join(out, `home-${vp.name}-${tag}${suffix}.png`) });
+      }
+    }
+  }
   for (const p of panels) {
     await page.getByRole('button', { name: panelButton[p] }).click({ position: { x: 24, y: 24 } });
     await page.waitForTimeout(500);
     await page.screenshot({ path: join(out, `home-${vp.name}-${p}${suffix}.png`) });
     await page.keyboard.press('Escape');
     await page.waitForTimeout(200);
+    if (process.env.CHECK === '1') {
+      const open = () => page.getByRole('dialog').count();
+      console.log(vp.name, p, 'closed by Escape:', (await open()) === 0);
+      await page.getByRole('button', { name: panelButton[p] }).click({ position: { x: 24, y: 24 } });
+      await page.waitForTimeout(300);
+      await page.getByRole('button', { name: /^Close / }).click();
+      await page.waitForTimeout(300);
+      console.log(vp.name, p, 'closed by button:', (await open()) === 0);
+      if (vp.mobile) {
+        await page.getByRole('button', { name: panelButton[p] }).click({ position: { x: 24, y: 24 } });
+        await page.waitForTimeout(300);
+        await page.locator('.room-panel-backdrop').dispatchEvent('click');
+        await page.waitForTimeout(300);
+        console.log(vp.name, p, 'closed by backdrop:', (await open()) === 0);
+      }
+    }
+  }
+  if (process.env.CHECK === '1') {
+    await page.getByRole('button', { name: /^Piano/ }).click({ position: { x: 24, y: 24 } });
+    await page.waitForTimeout(600);
+    console.log(vp.name, 'piano ->', new URL(page.url()).pathname);
+    await page.goto(base + '/', { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: /Bookshelf notebook/ }).click({ position: { x: 24, y: 24 } });
+    const items = page.locator('.room-routine');
+    const n = await items.count();
+    if (n > 1) {
+      const target = items.nth(n - 1);
+      const title = await target.locator('strong').innerText();
+      await target.evaluate(el => el.click());
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(300);
+      await page.getByRole('button', { name: /Sheet music stand/ }).click({ position: { x: 24, y: 24 } });
+      console.log(vp.name, 'routine selection reflected on stand:', (await page.getByRole('dialog').innerText()).includes(title), title);
+    }
   }
   await ctx.close();
 }
