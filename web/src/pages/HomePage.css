@@ -1,345 +1,277 @@
-/* ── Home page ───────────────────────────────────────────────── */
-.home-page {
-  background: var(--cream);
-  padding-bottom: 8px;
-}
-
-/* ── Goal card — overlaps the room's cream fade ──────────────── */
-.home-goal-card {
-  position: relative;
-  z-index: 5;
-  /* overlap room bottom so cat appears to sit inside room right above card */
-  margin: -20px 12px 0;
-  padding: 0 14px 14px;
-  background: var(--paper);
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  box-shadow: 0 6px 22px #1a2b1e0d;
-}
-
-/* ── Card header: room name + lighting control ───────────────── */
-.home-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 11px 0 10px;
-  gap: 8px;
-}
-
-.home-card-title-wrap {
+/* ── Home: the room is the interface ─────────────────────────── */
+.page.home-room-page {
+  --home-nav-h: 74px;
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  min-width: 0;
+  height: calc(100dvh - var(--home-nav-h));
+  min-height: 520px;
+  padding-top: 24px;
+  background: var(--cream);
+  position: relative;
+  justify-content: flex-end;
 }
 
-.home-card-title {
+/* Home fills the viewport; the scene scrolls nothing. */
+.viewport:has(.home-room-page) {
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.home-room-stage {
+  position: relative;
+  /* Basis keeps the piano on screen (art scale about 0.69, i.e. 1.41 x the column width); shrinks on short phones. */
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: calc(min(100vw, 899px) * 1.62);
+  overflow: hidden;
+}
+
+/* ── Header: a band on phones, an overlay on the room on desktop ── */
+.home-header {
+  flex: 0 0 auto;
+  min-height: 56px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 12px 8px;
+}
+.home-title-chip { display: flex; flex-direction: column; min-width: 0; }
+.home-title {
   font-family: var(--font-serif);
-  font-size: 1.08rem;
+  font-size: 1.35rem;
   font-weight: 700;
+  line-height: 1.15;
   color: var(--evergreen);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
 }
-
-.home-card-greeting {
-  font-size: 0.73rem;
+.home-greeting {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.3;
   color: var(--ink-muted);
+}
+.home-next {
+  margin: 4px 0 0;
+  font-size: 0.74rem;
+  font-weight: 650;
+  color: var(--sage);
   line-height: 1.3;
 }
-
-/* Gear / lighting button */
-.home-settings-wrap {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.home-gear-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: #f7f4ed;
+.home-light-btn {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
-  color: var(--ink-muted);
-  transition: background 0.12s, color 0.12s;
-}
-.home-gear-btn:hover {
-  background: #eee9df;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fffdf5;
   color: var(--evergreen);
+  box-shadow: 0 2px 8px #1d2b1e1f;
+  cursor: pointer;
 }
-.home-gear-btn svg {
-  width: 14px;
-  height: 14px;
-}
+.home-light-btn svg { width: 20px; height: 20px; }
+.home-light-btn:hover { background: #fff; }
+.home-light-btn:focus-visible { outline: 3px solid var(--sage); outline-offset: 2px; }
+.home-hint { display: none; }
 
-/* Settings dropdown */
-.home-settings-panel {
-  position: absolute;
-  right: 0;
-  top: 36px;
-  width: 144px;
-  padding: 10px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--paper);
-  box-shadow: 0 8px 24px #1a2b1e18;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 10;
-}
-.home-settings-label {
-  font-size: 10px;
-  color: var(--ink-muted);
-  font-weight: 600;
-}
-.home-settings-select {
+/* ── Companion ───────────────────────────────────────────────── */
+.home-cat-btn {
+  display: block;
   width: 100%;
-  font-size: 11px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(0 2px 3px rgba(30, 18, 8, 0.35));
+  transition: transform 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-cat-btn:hover { transform: translateY(-3px); }
+.home-cat-btn:focus-visible { outline: 3px solid #fff; outline-offset: 4px; border-radius: 16px; }
+.home-cat-sprite {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.home-cat-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 18px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 190px;
+  margin: 0;
+  padding: 6px 12px;
+  font-size: 0.74rem;
+  line-height: 1.3;
+  color: var(--evergreen);
+  background: #fffefa;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px;
-  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px #1d2b1e30;
+  animation: bubble-in 0.5s ease both;
+  pointer-events: none;
+}
+.home-cat-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 10px;
+  height: 10px;
+  background: #fffefa;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transform: translateX(-50%) rotate(45deg);
+}
+@keyframes bubble-in {
+  from { opacity: 0; transform: translate(-50%, 6px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
-/* Thin divider between header and goal section */
-.home-card-rule {
-  height: 1px;
-  background: var(--border);
-  margin: 0 -14px 11px;
-  opacity: 0.7;
+/* ── Progress HUD: a narrow paper strip, not a card ──────────── */
+.home-hud {
+  position: relative;
+  z-index: 5;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px 10px;
+  background:
+    linear-gradient(#fffdf6, #f7f1e2);
+  border-top: 2px solid #d9cfb6;
+  box-shadow: 0 -4px 14px #3a24101f;
 }
-
-/* ── Daily goal section ──────────────────────────────────────── */
-.home-goal-row {
+.home-hud-goal { flex: 1 1 auto; min-width: 0; }
+.home-hud-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 7px;
+  gap: 8px;
+  margin-bottom: 5px;
 }
-
-.home-goal-label {
-  font-size: 0.85rem;
+.home-hud-label {
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--evergreen);
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
-.home-goal-label::before {
-  content: '🌿';
+.home-hud-value {
   font-size: 0.72rem;
-}
-
-.home-goal-minutes {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 650;
   color: var(--ink-muted);
+  white-space: nowrap;
 }
-
-/* Progress bar */
-.home-progress {
+.home-hud-bar {
   height: 7px;
   border-radius: 99px;
-  background: #eceae4;
+  background: #e4dcc7;
   overflow: hidden;
-  margin-bottom: 9px;
 }
-.home-progress > i {
+.home-hud-bar i {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, var(--sage), #4a7a5c);
   border-radius: 99px;
+  background: linear-gradient(90deg, #5f9a6b, var(--sage));
+  transition: width 0.5s ease;
 }
-
-/* Stats */
-.home-stats-row {
+.home-hud-streak {
+  flex: 0 0 auto;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 11px;
-  color: var(--evergreen);
-  font-size: 0.8rem;
-}
-.home-stat-muted {
-  flex: 1 1 100%;
-  font-size: 0.7rem;
-  color: var(--ink-muted);
-  order: 3;
-}
-@media (min-width: 420px) {
-  .home-stat-muted {
-    flex: 1 1 auto;
-    order: 0;
-    text-align: center;
-  }
-}
-.home-stat {
-  display: inline-flex;
   align-items: center;
   gap: 4px;
-}
-.home-stat strong {
-  font-size: 0.96rem;
-  font-weight: 800;
-}
-.streak-mark {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #f0a76a, #c45c2a);
-  box-shadow: 0 0 0 2px #f0a76a44;
-}
-.home-stat-icon.note {
-  color: var(--sage);
-  font-weight: 700;
-}
-
-/* Start Practicing */
-.home-start-btn {
-  width: 100%;
-  border: 0;
-  border-radius: 12px;
-  padding: 12px 16px;
-  background: var(--sage);
-  color: #fff;
-  font-size: 0.96rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  box-shadow: 0 3px 12px #2d6a4f38;
-  transition: background 0.14s, transform 0.12s, box-shadow 0.14s;
-}
-.home-start-btn:hover {
-  background: #2d5e47;
-  box-shadow: 0 5px 16px #2d6a4f45;
-  transform: translateY(-1px);
-}
-.home-play-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  font-size: 10px;
-}
-
-/* ── Content section cards ───────────────────────────────────── */
-.home-sections {
-  padding: 8px 12px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.home-section-card {
-  background: var(--paper);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 11px 13px 12px;
-  /* left botanical accent stripe */
-  border-left: 3px solid #d4e5d0;
-}
-
-/* Section headings */
-.home-section-title {
-  font-family: var(--font-serif);
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: var(--evergreen);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 6px;
-}
-.home-section-icon {
-  font-size: 0.82rem;
-  line-height: 1;
-  opacity: 0.85;
-}
-
-/* Today's Practice */
-.home-today-title {
-  font-size: 0.82rem;
-  color: var(--ink);
-  margin: 0;
-  font-weight: 600;
-}
-.home-today-meta {
   font-size: 0.72rem;
   color: var(--ink-muted);
-  margin: 2px 0 0;
+  white-space: nowrap;
 }
-.home-today-empty {
-  font-size: 0.78rem;
-  color: var(--ink-muted);
-  margin: 0;
-}
+.home-hud-streak svg { width: 17px; height: 17px; color: var(--sage); }
+.home-hud-streak strong { color: var(--evergreen); font-size: 0.85rem; }
 
-/* Quick Access buttons */
-.home-quick button {
-  font-size: 0.7rem;
-  min-height: 44px;
-  background: #f3efe6;
-  border-color: var(--border);
-  color: var(--evergreen);
-  border-radius: 10px;
-  transition: background 0.12s;
+.home-hud-practice {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 16px 0 13px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(#427b61, var(--sage));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 0 #254a3a, 0 6px 12px #254a3a33;
+  cursor: pointer;
 }
-.home-quick button:hover {
-  background: #ebe6dc;
-}
+.home-hud-practice svg { width: 15px; height: 15px; }
+.home-hud-practice:hover { filter: brightness(1.06); }
+.home-hud-practice:active { transform: translateY(1px); box-shadow: 0 1px 0 #254a3a; }
+.home-hud-practice:focus-visible { outline: 3px solid var(--evergreen); outline-offset: 2px; }
 
-/* Long-term goal */
-.home-section-goal .home-goal-text {
-  font-size: 0.78rem;
-  color: var(--ink-muted);
-  margin: 0 0 6px;
-}
-.home-long-bar {
-  height: 6px;
-  background: #eceae4;
-  border-radius: 99px;
-  overflow: hidden;
-  margin: 0 0 5px;
-}
-.home-long-bar > i {
-  display: block;
-  height: 100%;
-  background: #8eb49a;
-  border-radius: 99px;
-}
-.home-goal-meta {
-  font-size: 0.7rem;
-  color: var(--ink-muted);
-  margin: 0;
-}
-
-/* ── Desktop: 2-column card grid ─────────────────────────────── */
+/* ── Desktop: the room fills the main area; the header floats over it ── */
 @media (min-width: 900px) {
-  .home-goal-card {
-    margin: -16px 14px 0;
-    padding: 0 16px 16px;
-    border-radius: 16px;
+  .page.home-room-page {
+    height: calc(100dvh - 50px);
+    min-height: 560px;
+    padding-top: 0;
+    border-radius: 20px;
+    overflow: hidden;
+    justify-content: flex-start;
   }
-
-  .home-sections {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 10px 14px 24px;
-    gap: 10px;
+  .home-room-stage { flex: 1 1 0; max-height: none; }
+  .home-header {
+    position: absolute;
+    z-index: 6;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    min-height: 0;
+    max-height: none;
+    padding: 0;
+    align-items: flex-start;
+    pointer-events: none;
   }
+  .home-header > * { pointer-events: auto; }
+  .home-title-chip {
+    padding: 7px 14px 8px;
+    border-radius: 12px;
+    background: #fffdf5e6;
+    border: 1px solid #ffffffa0;
+    box-shadow: 0 3px 12px #1d2b1e2e;
+    backdrop-filter: blur(3px);
+  }
+  .home-title { font-size: 1.1rem; }
+  .home-next { display: none; }
+  .home-light-btn { width: 36px; height: 36px; border-color: #ffffffa0; background: #fffdf5e6; box-shadow: 0 3px 12px #1d2b1e2e; }
+  .home-hint {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    font-weight: 650;
+    color: var(--evergreen);
+    background: #fffdf5d9;
+    border-radius: 999px;
+    white-space: nowrap;
+    animation: hint-fade 9s ease forwards;
+    pointer-events: none;
+  }
+  .home-hud { padding: 12px 18px; gap: 20px; }
+  .home-hud-goal { max-width: 420px; }
+  .home-hud-streak { margin-left: auto; font-size: 0.8rem; }
+}
 
-  /* Today's Practice: left col */
-  .home-section-card:nth-child(1) { grid-column: 1; }
-  /* Quick Access: right col, same row */
-  .home-section-card:nth-child(2) { grid-column: 2; grid-row: 1; }
-  /* Long-term goal: full width below */
-  .home-section-card:nth-child(3) { grid-column: 1 / 3; }
+@media (prefers-reduced-motion: reduce) {
+  .home-cat-bubble, .home-hint { animation: none; }
+  .home-hud-bar i, .home-cat-btn { transition: none; }
 }

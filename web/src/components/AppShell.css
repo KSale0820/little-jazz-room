@@ -15,7 +15,7 @@
 
 .app-shell {
   position: relative;
-  width: min(390px, 100%);
+  width: 100%;
   max-width: 100%;
   min-height: 100dvh;
   background: var(--cream);
