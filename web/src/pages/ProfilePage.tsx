@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CatChooser, CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
+import { RoomArt } from '../components/RoomArt';
+import { PageAtmosphere } from '../components/PageAtmosphere';
+import { resolveLighting, readLightingPreference } from '../lib/roomLighting';
 import { useApp } from '../context/AppContext';
 
 const MONTH_NAMES = [
@@ -69,6 +72,7 @@ export function ProfilePage() {
   }, [calendarMonth, calendarYear]);
 
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
+  const profileLighting = resolveLighting(readLightingPreference());
 
   const shiftMonth = (delta: number) => {
     const d = new Date(calendarYear, calendarMonth + delta, 1);
@@ -78,9 +82,12 @@ export function ProfilePage() {
 
   return (
     <section className="page profile-page pad tight" aria-label="Profile">
-      <div className="pageheading">
-        <h1>Progress</h1>
-        <span className="mutebadge">Your jazz companion</span>
+      <PageAtmosphere title="Progress" subtitle="Your jazz companion and practice history." badge="Your jazz companion" />
+      <div className="profile-room-banner botanical-frame" aria-hidden>
+        <RoomArt lighting={profileLighting} />
+        <div className="profile-banner-cat">
+          <CatSprite catId={catId} size={120} animated={catMotion} variant="sprite" decorative />
+        </div>
       </div>
       <div className="box">
         <div className="between">

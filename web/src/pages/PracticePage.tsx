@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PageAtmosphere } from '../components/PageAtmosphere';
 import { ChordGrid } from '../components/ChordGrid';
 import { CatSprite } from '../features/cats/CatCompanion';
 import { chartsById, exercisesById } from '../data/seed';
@@ -39,7 +40,7 @@ export function PracticePage() {
 
   const defaultChartId = playableStep?.chart_id ?? charts[0]?.id ?? 'blues-f-12';
   const [chartId, setChartId] = useState(defaultChartId);
-  const [panel, setPanel] = useState<'chords' | 'player'>('player');
+  const [panel, setPanel] = useState<'chords' | 'player'>('chords');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
   const [chartKey, setChartKey] = useState('F');
   const [selectedBar, setSelectedBar] = useState(0);
@@ -135,10 +136,7 @@ export function PracticePage() {
 
   return (
     <section className="page practice-page pad tight" aria-label="Practice">
-      <div className="pageheading">
-        <h2>Practice</h2>
-        <span className="mutebadge">No audio loaded</span>
-      </div>
+      <PageAtmosphere title="Practice" subtitle="Charts and routine steps — music first." badge="No audio loaded" />
 
       {routine ? (
         <div className="box routine-player-head">
@@ -234,14 +232,16 @@ export function PracticePage() {
               </select>
             </label>
           </div>
-          <ChordGrid
-            chart={chart}
-            chartKey={chartKey}
-            writtenPitch={writtenPitch}
-            selectedBar={selectedBar}
-            loopRange={loopRange}
-            onSelectBar={setSelectedBar}
-          />
+          <div className="practice-chart-stage">
+            <ChordGrid
+              chart={chart}
+              chartKey={chartKey}
+              writtenPitch={writtenPitch}
+              selectedBar={selectedBar}
+              loopRange={loopRange}
+              onSelectBar={setSelectedBar}
+            />
+          </div>
           <p className="muted" style={{ marginTop: 8 }}>
             Tap a measure to highlight it. Chart only; audio is not synchronized.
           </p>

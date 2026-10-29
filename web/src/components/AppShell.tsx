@@ -24,7 +24,7 @@ export function AppShell() {
       <aside className="app-sidebar" aria-label="Main navigation">
         <div className="app-brand">
           <strong>Little Jazz Room</strong>
-          <span>Phase 2 · team cloud optional</span>
+          <span>Practice · Companion · A brighter you</span>
         </div>
         {configured ? (
           <div className="team-auth-panel">

@@ -1,0 +1,108 @@
+.page-atmosphere {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 14px 16px 16px;
+  background: linear-gradient(180deg, #fffef9 0%, var(--cream) 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.page-atmosphere-text h1 {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--evergreen);
+  margin: 0;
+}
+
+.page-atmosphere-sub {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+
+.page-atmosphere-deco {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.page-atmosphere-deco--left {
+  left: 6px;
+  bottom: 4px;
+}
+
+.page-atmosphere-deco--right {
+  right: 8px;
+  top: 6px;
+}
+
+.page-atmosphere-badge {
+  position: relative;
+  z-index: 1;
+}
+
+.page-atmosphere-text {
+  position: relative;
+  z-index: 1;
+  max-width: 78%;
+}
+
+.profile-room-banner {
+  position: relative;
+  height: 168px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+
+.profile-room-banner .jazz-room-photo {
+  object-position: center 42%;
+}
+
+.profile-room-banner .profile-banner-cat {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  width: min(32%, 120px);
+  pointer-events: none;
+  filter: drop-shadow(0 6px 12px #2a201a40);
+}
+
+.profile-room-banner .profile-banner-cat img {
+  width: 100%;
+  height: auto;
+  max-height: 100px;
+}
+
+.practice-chart-stage {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 8px 12px;
+  margin: 8px 0 12px;
+}
+
+.practice-chart-stage .chord-grid {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.practice-controls-card {
+  background: #f7f5ee;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  margin-top: 10px;
+}

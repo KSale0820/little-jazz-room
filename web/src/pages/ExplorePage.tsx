@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { exerciseMatchesInstrument, routineMatchesInstrument } from '../lib/instrumentFilter';
+import { PageAtmosphere } from '../components/PageAtmosphere';
 import { useApp } from '../context/AppContext';
 
 type ExploreTab = 'routines' | 'exercises' | 'challenges';
@@ -48,10 +49,7 @@ export function ExplorePage() {
 
   return (
     <section className="page explore-page pad tight" aria-label="Explore">
-      <div className="pageheading">
-        <h1>Explore</h1>
-        <small>Community · {paths.length} learning paths</small>
-      </div>
+      <PageAtmosphere title="Explore" subtitle={`Community · ${paths.length} learning paths`} />
       <input
         aria-label="Search routines or exercises"
         className="search"

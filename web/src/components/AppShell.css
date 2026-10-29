@@ -62,36 +62,37 @@
 @media (min-width: 900px) {
   .app-root {
     display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    gap: 0;
-    max-width: 1120px;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 24px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 20px 24px 32px;
+    padding: 24px 28px 36px;
     align-items: start;
   }
 
   .app-sidebar {
     display: block;
     position: sticky;
-    top: 20px;
-    padding: 16px 12px;
-    border-radius: 16px;
-    border: 1px solid #e5e0d4;
-    background: #fffdf8;
+    top: 24px;
+    padding: 20px 16px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: var(--paper);
   }
 
   .app-main {
     justify-content: stretch;
+    min-width: 0;
   }
 
   .app-shell {
     width: 100%;
-    max-width: 820px;
-    margin: 0 auto;
-    min-height: calc(100dvh - 40px);
-    border: 1px solid #e5e0d4;
-    border-radius: 18px;
-    box-shadow: 0 16px 40px #1d2b1e12;
+    max-width: none;
+    margin: 0;
+    min-height: calc(100dvh - 48px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 18px 48px #1d2b1e14;
   }
 
   .phone-status {

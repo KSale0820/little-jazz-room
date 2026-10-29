@@ -54,6 +54,12 @@
 
 .chords span {
   white-space: nowrap;
+  background: #e3eef8;
+  border: 1px solid #b8cfe8;
+  border-radius: 8px;
+  padding: 5px 10px;
+  color: #1a3a5c;
+  font-size: 0.95em;
 }
 
 @media (min-width: 560px) {

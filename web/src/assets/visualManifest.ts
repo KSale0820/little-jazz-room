@@ -1,6 +1,5 @@
 /**
  * Central visual asset manifest — exact public URLs and fallbacks.
- * Replace primary files in /public when final cat-free room art and portraits ship.
  * Never crop APPROVED-VISUAL-REFERENCE.png for runtime assets.
  */
 import type { CatId } from '../features/cats/CatCompanion';
@@ -11,32 +10,38 @@ export type RoomLightingAsset = ResolvedLighting;
 export const VISUAL_ASSETS = {
   decor: {
     botanicalCorner: '/decor/botanical-corner.svg',
+    plant: '/decor/plant.png',
+    books: '/decor/books.png',
+    mug: '/decor/mug.png',
   },
   room: {
-    /** Cat-free illustrated room (SVG). Legacy PNGs in /room/ are deprecated collage crops. */
-    catFree: {
+    /** Cat-free hero room (installed individual scene art). */
+    hero: {
+      sunshine: '/room/home-hero-sunshine.png',
+      twilight: '/room/home-hero-twilight.png',
+      night: '/room/home-hero-night.png',
+    },
+    /** Vector fallback if hero PNG fails to load. */
+    vectorFallback: {
       sunshine: '/room/catfree-sunshine.svg',
       twilight: '/room/catfree-twilight.svg',
       night: '/room/catfree-night.svg',
-    },
-    /** Deprecated — may contain baked-in cats or tight crops; listed only as last-resort fallback. */
-    legacyPhoto: {
-      sunshine: '/room/home-room-base.png',
-      twilight: '/room/home-room-twilight.png',
-      night: '/room/home-room-night.png',
     },
   },
   cat: {
     portraitFile: (id: CatId) => `/jazz-cat-assets/${id}-portrait.png`,
     spriteFile: (id: CatId) => `/jazz-cat-assets/${id}.svg`,
+    iconFile: (id: CatId) => `/jazz-cat-assets/${id}-icon.png`,
+    smallFile: (id: CatId) => `/jazz-cat-assets/${id}-small.png`,
     cardFile: (id: CatId) => `/jazz-cat-assets/cards/${id}-card.png`,
   },
 } as const;
 
 export function roomArtUrls(lighting: RoomLightingAsset): string[] {
-  const primary = VISUAL_ASSETS.room.catFree[lighting];
-  const legacy = VISUAL_ASSETS.room.legacyPhoto[lighting];
-  return [primary, legacy];
+  return [
+    VISUAL_ASSETS.room.hero[lighting],
+    VISUAL_ASSETS.room.vectorFallback[lighting],
+  ];
 }
 
 export function catPortraitUrls(id: CatId): string[] {
@@ -45,4 +50,8 @@ export function catPortraitUrls(id: CatId): string[] {
 
 export function catSpriteUrl(id: CatId): string {
   return VISUAL_ASSETS.cat.spriteFile(id);
+}
+
+export function catPortraitUrl(id: CatId): string {
+  return VISUAL_ASSETS.cat.portraitFile(id);
 }

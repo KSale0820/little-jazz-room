@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { PageAtmosphere } from '../components/PageAtmosphere';
 import { exercisesById } from '../data/seed';
 import { useApp } from '../context/AppContext';
 import {
@@ -181,8 +182,9 @@ export function CreatePage() {
 
   return (
     <section className="page create-page pad tight" aria-label="Create">
+      <PageAtmosphere title="Create routine" subtitle="Build ordered steps from seed and your exercises." />
       <div className="pageheading">
-        <h2>Create Routine</h2>
+        <h2 className="screen-reader-only">Create routine form</h2>
         <button type="button" className="pill" onClick={() => showToast('Draft saved in this browser.')}>
           Save draft
         </button>

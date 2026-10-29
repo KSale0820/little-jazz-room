@@ -1,15 +1,17 @@
 # Visual asset manifest
 
-Runtime paths live in `web/src/assets/visualManifest.ts`.
+Runtime paths: `web/src/assets/visualManifest.ts`
 
 | Asset | Primary file | Fallback |
 |-------|----------------|----------|
-| Room sunshine | `/room/catfree-sunshine.svg` | `/room/home-room-base.png` (deprecated crop) |
-| Room twilight | `/room/catfree-twilight.svg` | `/room/home-room-twilight.png` |
-| Room night | `/room/catfree-night.svg` | `/room/home-room-night.png` |
-| Cat portrait | `/jazz-cat-assets/{id}-portrait.png` | `/jazz-cat-assets/{id}.svg` |
-| Cat sprite (Home) | `/jazz-cat-assets/{id}.svg` | — |
-| Cat chooser card | `/jazz-cat-assets/cards/{id}-card.png` | portrait → sprite |
-| Botanical decor | `/decor/botanical-corner.svg` | none |
+| Room sunshine | `/room/home-hero-sunshine.png` | `/room/catfree-sunshine.svg` |
+| Room twilight | `/room/home-hero-twilight.png` | `/room/catfree-twilight.svg` |
+| Room night | `/room/home-hero-night.png` | `/room/catfree-night.svg` |
+| Cat portrait (chooser, avatars) | `/jazz-cat-assets/{id}-portrait.png` | `{id}.svg` |
+| Cat sprite (Home floor, banner) | `/jazz-cat-assets/{id}.svg` | — |
+| Cat icon / small | `{id}-icon.png`, `{id}-small.png` | portrait |
+| Decor | `/decor/plant.png`, `books.png`, `mug.png`, `botanical-corner.svg` | — |
 
-Drop final cat-free PNG/JPG room art into `/public/room/` and update `VISUAL_ASSETS.room.catFree` filenames when ready. Do **not** crop `APPROVED-VISUAL-REFERENCE.png`.
+Metadata authority: `web/public/jazz-cat-assets/cats.json` (eight cats; do not rename or alter identities).
+
+Do **not** use `home-room-base.png` or collage boards at runtime. See `web/docs/ASSET-INTEGRATION-PLAN.md`.

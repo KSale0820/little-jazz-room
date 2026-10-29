@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { catPortraitUrls, catSpriteUrl } from '../../assets/visualManifest';
+import { catPortraitUrl, catPortraitUrls, catSpriteUrl } from '../../assets/visualManifest';
 import './cat-companion.css';
 
 export const JAZZ_CATS = [
-  { id: 'luna', instrument: 'Piano', name: 'Luna', coat: 'Calico', personality: 'Curious', age: 'Adult', build: 'Medium', shape: 'medium' },
-  { id: 'milo', instrument: 'Tenor saxophone', name: 'Milo', coat: 'Tuxedo', personality: 'Cool', age: 'Adult', build: 'Slim', shape: 'slim' },
-  { id: 'maple', instrument: 'Upright bass', name: 'Maple', coat: 'Ginger tabby', personality: 'Energetic', age: 'Young adult', build: 'Lean', shape: 'young' },
-  { id: 'mochi', instrument: 'Drums', name: 'Mochi', coat: 'Cream', personality: 'Gentle', age: 'Kitten', build: 'Tiny', shape: 'kitten' },
-  { id: 'pepper', instrument: 'Trumpet', name: 'Pepper', coat: 'Dark charcoal gray', personality: 'Soulful', age: 'Senior', build: 'Fluffy', shape: 'senior' },
-  { id: 'patches', instrument: 'Jazz guitar', name: 'Patches', coat: 'Gray and white', personality: 'Friendly', age: 'Adult', build: 'Chubby', shape: 'chubby' },
-  { id: 'chai', instrument: 'Vocals', name: 'Chai', coat: 'Siamese', personality: 'Elegant', age: 'Adult', build: 'Slender', shape: 'long' },
-  { id: 'biscuit', instrument: 'Turntables / listening', name: 'Biscuit', coat: 'Brown tabby', personality: 'Cozy', age: 'Adult', build: 'Large', shape: 'large' }
+  { id: 'luna', instrument: 'Piano', name: 'Luna', coat: 'Calico', personality: 'Curious & cozy', age: 'Adult', build: 'Medium', shape: 'medium' },
+  { id: 'milo', instrument: 'Tenor saxophone', name: 'Milo', coat: 'Black', personality: 'Quiet & thoughtful', age: 'Adult', build: 'Slim', shape: 'slim' },
+  { id: 'maple', instrument: 'Upright bass', name: 'Maple', coat: 'Orange tabby', personality: 'Playful & energetic', age: 'Young adult', build: 'Lean', shape: 'young' },
+  { id: 'mochi', instrument: 'Drums', name: 'Mochi', coat: 'Cream', personality: 'Gentle & sleepy', age: 'Kitten', build: 'Tiny', shape: 'kitten' },
+  { id: 'pepper', instrument: 'Trumpet', name: 'Pepper', coat: 'Charcoal gray', personality: 'Wise & mellow', age: 'Senior', build: 'Fluffy', shape: 'senior' },
+  { id: 'patches', instrument: 'Jazz guitar', name: 'Patches', coat: 'Gray-and-white', personality: 'Friendly & goofy', age: 'Adult', build: 'Chubby', shape: 'chubby' },
+  { id: 'chai', instrument: 'Vocals', name: 'Chai', coat: 'Siamese', personality: 'Elegant & vocal', age: 'Adult', build: 'Slender', shape: 'long' },
+  { id: 'biscuit', instrument: 'Turntables / listening', name: 'Biscuit', coat: 'Orange tabby', personality: 'Adventurous & cozy', age: 'Adult', build: 'Large', shape: 'large' },
 ] as const;
 export type CatId = (typeof JAZZ_CATS)[number]['id'];
 const KEY = 'little-jazz-room:selected-cat:v1';
@@ -92,7 +92,7 @@ export function CatChooser({ catId, onSelect }:
           aria-label={`${cat.name}, ${cat.instrument}, ${cat.personality}`}
           onClick={() => { void onSelect(cat.id); }}
         >
-          <img className="board-cat-art" src={`/jazz-cat-assets/${cat.id}-portrait.png`} alt="" aria-hidden />
+          <img className="board-cat-art" src={catPortraitUrl(cat.id)} alt="" aria-hidden />
           <div className="board-cat-meta">
             <strong>{cat.name}</strong>
             <span className="board-cat-instrument">{cat.instrument}</span>

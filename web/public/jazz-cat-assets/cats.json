@@ -3,80 +3,88 @@
     "id": "luna",
     "name": "Luna",
     "coat": "Calico",
-    "character": "Curious & cozy",
     "age": "Adult",
     "build": "Medium",
-    "shape": "medium",
-    "instrument": "Piano"
+    "character": "Curious & cozy",
+    "instrument": "Piano",
+    "portrait": "/jazz-cat-assets/luna-portrait.png",
+    "sprite": "/jazz-cat-assets/luna.svg"
   },
   {
     "id": "milo",
     "name": "Milo",
-    "coat": "Tuxedo",
-    "character": "Quiet & thoughtful",
+    "coat": "Black",
     "age": "Adult",
     "build": "Slim",
-    "shape": "slim",
-    "instrument": "Tenor saxophone"
+    "character": "Quiet & thoughtful",
+    "instrument": "Tenor saxophone",
+    "portrait": "/jazz-cat-assets/milo-portrait.png",
+    "sprite": "/jazz-cat-assets/milo.svg"
   },
   {
     "id": "maple",
     "name": "Maple",
-    "coat": "Ginger tabby",
-    "character": "Playful & energetic",
+    "coat": "Orange tabby",
     "age": "Young adult",
     "build": "Lean",
-    "shape": "young",
-    "instrument": "Upright bass"
+    "character": "Playful & energetic",
+    "instrument": "Upright bass",
+    "portrait": "/jazz-cat-assets/maple-portrait.png",
+    "sprite": "/jazz-cat-assets/maple.svg"
   },
   {
     "id": "mochi",
     "name": "Mochi",
     "coat": "Cream",
-    "character": "Gentle & sleepy",
     "age": "Kitten",
     "build": "Tiny",
-    "shape": "kitten",
-    "instrument": "Drums"
+    "character": "Gentle & sleepy",
+    "instrument": "Drums",
+    "portrait": "/jazz-cat-assets/mochi-portrait.png",
+    "sprite": "/jazz-cat-assets/mochi.svg"
   },
   {
     "id": "pepper",
     "name": "Pepper",
-    "coat": "Dark charcoal gray",
-    "character": "Wise & mellow",
+    "coat": "Charcoal gray",
     "age": "Senior",
     "build": "Fluffy",
-    "shape": "senior",
-    "instrument": "Trumpet"
+    "character": "Wise & mellow",
+    "instrument": "Trumpet",
+    "portrait": "/jazz-cat-assets/pepper-portrait.png",
+    "sprite": "/jazz-cat-assets/pepper.svg"
   },
   {
     "id": "patches",
     "name": "Patches",
-    "coat": "Gray and white",
-    "character": "Friendly & goofy",
+    "coat": "Gray-and-white",
     "age": "Adult",
     "build": "Chubby",
-    "shape": "chubby",
-    "instrument": "Jazz guitar"
+    "character": "Friendly & goofy",
+    "instrument": "Jazz guitar",
+    "portrait": "/jazz-cat-assets/patches-portrait.png",
+    "sprite": "/jazz-cat-assets/patches.svg"
   },
   {
     "id": "chai",
     "name": "Chai",
     "coat": "Siamese",
-    "character": "Elegant & vocal",
     "age": "Adult",
     "build": "Slender",
-    "shape": "long",
-    "instrument": "Vocals"
+    "character": "Elegant & vocal",
+    "instrument": "Vocals",
+    "portrait": "/jazz-cat-assets/chai-portrait.png",
+    "sprite": "/jazz-cat-assets/chai.svg"
   },
   {
     "id": "biscuit",
     "name": "Biscuit",
-    "coat": "Brown tabby",
-    "character": "Adventurous & cozy",
+    "coat": "Orange tabby",
     "age": "Adult",
     "build": "Large",
-    "shape": "large",
-    "instrument": "Turntables / listening"
+    "character": "Adventurous & cozy",
+    "instrument": "Turntables / listening",
+    "portrait": "/jazz-cat-assets/biscuit-portrait.png",
+    "sprite": "/jazz-cat-assets/biscuit.svg"
   }
 ]
