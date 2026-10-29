@@ -378,9 +378,17 @@ small,
   z-index: 7;
   background: #fffdf7f2;
   border-top: 1px solid #e5e0d4;
-  display: grid;
+  /* hidden by default; shown only on narrow screens */
+  display: none;
   grid-template-columns: repeat(5, 1fr);
   padding: 8px 5px 14px;
+}
+
+/* Show bottom nav only on mobile — avoids cascade conflict with AppShell.css */
+@media (max-width: 899px) {
+  .bottom-nav {
+    display: grid;
+  }
 }
 
 .bottom-nav a {

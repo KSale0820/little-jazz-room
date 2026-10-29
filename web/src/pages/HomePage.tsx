@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { JazzRoomScene } from '../components/JazzRoomScene';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { useApp } from '../context/AppContext';
-import { timeGreeting } from '../lib/greeting';
+import { timeGreeting, displayNameFromUser } from '../lib/greeting';
 import {
   computeGentleStreak,
   longTermProgressPercent,
@@ -17,7 +17,6 @@ import {
   writeLightingPreference,
   type RoomLightingMode,
 } from '../lib/roomLighting';
-import { displayNameFromUser } from '../lib/greeting';
 import { useAuth } from '../context/AuthContext';
 import './HomePage.css';
 
@@ -32,17 +31,15 @@ export function HomePage() {
   const lighting = resolveLighting(lightMode);
 
   const practicedMinutes = useMemo(() => minutesToday(sessions), [sessions]);
-  const totalMinutes = useMemo(() => totalPracticeMinutes(sessions), [sessions]);
-  const streak = useMemo(() => computeGentleStreak(sessions), [sessions]);
-  const longTermPct = useMemo(() => longTermProgressPercent(sessions), [sessions]);
-  const greeting = useMemo(() => timeGreeting(displayNameFromUser(user)), [user]);
-  const cat = JAZZ_CATS.find(c => c.id === catId)!;
-  const progress = Math.min(100, (practicedMinutes / GOAL_MINUTES) * 100);
-  const todayRoutine = activeRoutineId ? routines.find(r => r.id === activeRoutineId) : undefined;
+  const totalMinutes   = useMemo(() => totalPracticeMinutes(sessions), [sessions]);
+  const streak         = useMemo(() => computeGentleStreak(sessions), [sessions]);
+  const longTermPct    = useMemo(() => longTermProgressPercent(sessions), [sessions]);
+  const greeting       = useMemo(() => timeGreeting(displayNameFromUser(user)), [user]);
+  const cat            = JAZZ_CATS.find(c => c.id === catId)!;
+  const progress       = Math.min(100, (practicedMinutes / GOAL_MINUTES) * 100);
+  const todayRoutine   = activeRoutineId ? routines.find(r => r.id === activeRoutineId) : undefined;
 
-  useEffect(() => {
-    writeLightingPreference(lightMode);
-  }, [lightMode]);
+  useEffect(() => { writeLightingPreference(lightMode); }, [lightMode]);
 
   const goHotspot = (target: 'piano' | 'stand' | 'notebook') => {
     if (target === 'piano') navigate('/practice');
@@ -52,31 +49,54 @@ export function HomePage() {
 
   return (
     <section className="page home-page" aria-label="Home">
+
+      {/* ── Illustrated room — pure art, cat on floor ── */}
       <JazzRoomScene
         lighting={lighting}
-        greeting={greeting}
         onHotspot={goHotspot}
-        settingsControl={
+        catOverlay={
+          <button
+            type="button"
+            className="home-cat-btn"
+            aria-label={`Your companion ${cat.name}. Tap to choose cat.`}
+            onClick={() => navigate('/profile', { state: { scrollToCat: true } })}
+          >
+            <CatSprite catId={catId} size={120} animated={catMotion} variant="floor" className="home-cat-sprite" />
+          </button>
+        }
+      />
+
+      {/* ── Goal card — overlaps room bottom, contains title + controls ── */}
+      <div className="home-goal-card">
+
+        {/* Card header: room name + lighting gear */}
+        <div className="home-card-header">
+          <div className="home-card-title-wrap">
+            <span className="home-card-title">My Jazz Room</span>
+            <span className="home-card-greeting">{greeting}</span>
+          </div>
           <div className="home-settings-wrap">
             <button
               type="button"
               className="home-gear-btn"
-              aria-label="Room settings"
+              aria-label="Room lighting settings"
               aria-expanded={settingsOpen}
               onClick={() => setSettingsOpen(o => !o)}
             >
+              {/* sun/moon icon */}
               <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
               </svg>
             </button>
-            {settingsOpen ? (
-              <div className="home-settings-panel" role="dialog" aria-label="Room settings">
-                <label htmlFor="room-light">Room light</label>
+            {settingsOpen && (
+              <div className="home-settings-panel" role="dialog" aria-label="Room lighting">
+                <label htmlFor="room-light" className="home-settings-label">Room light</label>
                 <select
                   id="room-light"
                   value={lightMode}
                   onChange={e => setLightMode(e.target.value as RoomLightingMode)}
+                  className="home-settings-select"
                 >
                   <option value="auto">Auto</option>
                   <option value="sunshine">Sunshine</option>
@@ -87,27 +107,17 @@ export function HomePage() {
                   Choose cat
                 </button>
               </div>
-            ) : null}
+            )}
           </div>
-        }
-        catOverlay={
-          <button
-            type="button"
-            className="home-cat-btn"
-            aria-label={`Your companion ${cat.name}. Choose cat.`}
-            onClick={() => navigate('/profile', { state: { scrollToCat: true } })}
-          >
-            <CatSprite catId={catId} size={120} animated={catMotion} variant="floor" className="home-cat-sprite" />
-          </button>
-        }
-      />
+        </div>
 
-      <div className="home-goal-card">
+        {/* Thin rule */}
+        <div className="home-card-rule" />
+
+        {/* Daily goal section */}
         <div className="home-goal-row">
           <span className="home-goal-label">Daily goal</span>
-          <span className="home-goal-minutes">
-            {practicedMinutes} / {GOAL_MINUTES} min
-          </span>
+          <span className="home-goal-minutes">{practicedMinutes} / {GOAL_MINUTES} min</span>
         </div>
         <div
           className="home-progress"
@@ -123,71 +133,67 @@ export function HomePage() {
             <span className="home-stat-icon streak-mark" aria-hidden />
             <strong>{streak}</strong> days
           </span>
-          <span className="home-stat home-stat-muted">
-            Gentle streak · no pressure
-          </span>
+          <span className="home-stat home-stat-muted">Gentle streak · no pressure</span>
           <span className="home-stat">
-            <span className="home-stat-icon note" aria-hidden>
-              ♪
-            </span>
+            <span className="home-stat-icon note" aria-hidden>♪</span>
             <strong>{totalMinutes}</strong>
           </span>
         </div>
         <button type="button" className="home-start-btn" onClick={() => navigate('/practice')}>
-          <span className="home-play-icon" aria-hidden>
-            ▶
-          </span>
+          <span className="home-play-icon" aria-hidden>▶</span>
           Start Practicing
         </button>
       </div>
 
-      <div className="home-sections pad-inline">
-        <div className="box home-section">
+      {/* ── Content cards ── */}
+      <div className="home-sections">
+
+        <div className="home-section-card">
           <div className="between">
-            <h3>Today&apos;s Practice</h3>
-            <button type="button" className="mutelink" onClick={() => navigate('/practice')}>
-              Open
-            </button>
+            <h3 className="home-section-title">
+              <span className="home-section-icon" aria-hidden>♩</span>
+              Today&apos;s Practice
+            </h3>
+            <button type="button" className="mutelink" onClick={() => navigate('/practice')}>Open</button>
           </div>
           {todayRoutine ? (
             <>
-              <p className="today-title">{todayRoutine.title}</p>
-              <small>
-                {todayRoutine.duration_minutes} min · {todayRoutine.steps.length} exercises
-              </small>
+              <p className="home-today-title">{todayRoutine.title}</p>
+              <p className="home-today-meta">{todayRoutine.duration_minutes} min · {todayRoutine.steps.length} exercises</p>
             </>
           ) : (
-            <p className="muted">Pick a routine in Explore or Create.</p>
+            <p className="home-today-empty">Pick a routine in Explore or Create.</p>
           )}
         </div>
 
-        <div className="box home-section">
-          <h3>Quick Access</h3>
-          <div className="quick">
-            <button type="button" onClick={() => navigate('/profile')}>
-              Saved Routines
-            </button>
-            <button type="button" onClick={() => navigate('/create')}>
-              My Exercises
-            </button>
-            <button type="button" onClick={() => navigate('/explore')}>
-              Explore
-            </button>
+        <div className="home-section-card">
+          <h3 className="home-section-title">
+            <span className="home-section-icon" aria-hidden>♪</span>
+            Quick Access
+          </h3>
+          <div className="quick home-quick">
+            <button type="button" onClick={() => navigate('/profile')}>Saved Routines</button>
+            <button type="button" onClick={() => navigate('/create')}>My Exercises</button>
+            <button type="button" onClick={() => navigate('/explore')}>Explore</button>
           </div>
         </div>
 
-        <div className="box home-section">
-          <h3>Long-term goal</h3>
-          <p className="muted goal-text">
-            Log steady practice time on this device — {cat.name} is here for company, not a grade.
+        <div className="home-section-card home-section-goal">
+          <h3 className="home-section-title">
+            <span className="home-section-icon" aria-hidden>🌱</span>
+            Long-term goal
+          </h3>
+          <p className="home-goal-text">
+            {cat.name} is here for company, not a grade.
           </p>
-          <div className="bar">
+          <div className="bar home-long-bar">
             <i style={{ width: `${longTermPct}%` }} />
           </div>
-          <small>
-            {longTermPct}% of your {PRACTICE_MILESTONE_MINUTES}-minute practice milestone (total time logged)
-          </small>
+          <p className="home-goal-meta">
+            {longTermPct}% of your {PRACTICE_MILESTONE_MINUTES}-min milestone
+          </p>
         </div>
+
       </div>
     </section>
   );

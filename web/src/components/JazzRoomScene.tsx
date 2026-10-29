@@ -9,36 +9,27 @@ const HOTSPOT_META: Record<
   RoomHotspot,
   { hint: string; label: string; className: string }
 > = {
-  piano: { hint: 'Practice', label: 'Piano — open practice', className: 'piano' },
-  stand: { hint: 'Explore', label: 'Music stand — browse routines', className: 'stand' },
-  notebook: { hint: 'Saved', label: 'Notebook — saved routines and progress', className: 'notebook' },
+  piano:    { hint: 'Practice', label: 'Piano — open practice',                     className: 'piano' },
+  stand:    { hint: 'Explore',  label: 'Music stand — browse routines',              className: 'stand' },
+  notebook: { hint: 'Saved',    label: 'Notebook — saved routines and progress',     className: 'notebook' },
 };
 
 interface JazzRoomSceneProps {
   lighting: ResolvedLighting;
-  greeting: string;
-  settingsControl: ReactNode;
+  /** Cat companion rendered over the floor area */
   catOverlay: ReactNode;
   onHotspot: (target: RoomHotspot) => void;
 }
 
-/** Cat-free room art with one companion overlay and invisible hotspots (hints on hover/focus). */
-export function JazzRoomScene({
-  lighting,
-  greeting,
-  settingsControl,
-  catOverlay,
-  onHotspot,
-}: JazzRoomSceneProps) {
+/**
+ * Pure room art + cat + interactive hotspots.
+ * Title and controls live in the card below — not inside this image.
+ */
+export function JazzRoomScene({ lighting, catOverlay, onHotspot }: JazzRoomSceneProps) {
   return (
-    <div className="jazz-room-scene home-hero botanical-frame" data-mode={lighting}>
+    <div className="jazz-room-scene home-hero" data-mode={lighting} aria-hidden="true">
       <RoomArt lighting={lighting} />
-      <div className="scene-header home-hero-header">
-        <h1>My Jazz Room</h1>
-        <p>{greeting}</p>
-      </div>
-      <div className="home-settings">{settingsControl}</div>
-      <div className="room-hotspots" aria-label="Room shortcuts">
+      <div className="room-hotspots" role="region" aria-label="Room shortcuts" aria-hidden="false">
         {(Object.keys(HOTSPOT_META) as RoomHotspot[]).map(key => {
           const meta = HOTSPOT_META[key];
           return (
