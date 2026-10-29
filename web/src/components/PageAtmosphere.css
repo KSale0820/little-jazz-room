@@ -57,35 +57,6 @@
   max-width: 78%;
 }
 
-.profile-room-banner {
-  position: relative;
-  height: 168px;
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 12px;
-  border: 1px solid var(--border);
-}
-
-.profile-room-banner .jazz-room-photo {
-  object-position: center 42%;
-}
-
-.profile-room-banner .profile-banner-cat {
-  position: absolute;
-  left: 50%;
-  bottom: 4%;
-  transform: translateX(-50%);
-  width: min(32%, 120px);
-  pointer-events: none;
-  filter: drop-shadow(0 6px 12px #2a201a40);
-}
-
-.profile-room-banner .profile-banner-cat img {
-  width: 100%;
-  height: auto;
-  max-height: 100px;
-}
-
 .practice-chart-stage {
   background: var(--paper);
   border: 1px solid var(--border);
@@ -97,12 +68,4 @@
 .practice-chart-stage .chord-grid {
   border-radius: 10px;
   overflow: hidden;
-}
-
-.practice-controls-card {
-  background: #f7f5ee;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 12px;
-  margin-top: 10px;
 }
