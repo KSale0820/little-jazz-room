@@ -27,7 +27,8 @@
   flex-direction: column;
   gap: 4px;
   margin-bottom: 20px;
-  color: #1a2e45;
+  color: var(--evergreen);
+  font-family: var(--font-serif);
 }
 
 .app-brand span {

@@ -1,14 +1,18 @@
 import type { ResolvedLighting } from '../lib/roomLighting';
 import type { ReactNode } from 'react';
+import { RoomArt } from './RoomArt';
 import './JazzRoomScene.css';
 
-const ROOM_SRC: Record<ResolvedLighting, string> = {
-  sunshine: '/room/home-room-base.png',
-  twilight: '/room/home-room-twilight.png',
-  night: '/room/home-room-night.png',
-};
-
 export type RoomHotspot = 'piano' | 'stand' | 'notebook';
+
+const HOTSPOT_META: Record<
+  RoomHotspot,
+  { hint: string; label: string; className: string }
+> = {
+  piano: { hint: 'Practice', label: 'Piano — open practice', className: 'piano' },
+  stand: { hint: 'Explore', label: 'Music stand — browse routines', className: 'stand' },
+  notebook: { hint: 'Saved', label: 'Notebook — saved routines and progress', className: 'notebook' },
+};
 
 interface JazzRoomSceneProps {
   lighting: ResolvedLighting;
@@ -18,7 +22,7 @@ interface JazzRoomSceneProps {
   onHotspot: (target: RoomHotspot) => void;
 }
 
-/** Cat-free illustrated room per design lock; companion is overlaid separately. */
+/** Cat-free room art with one companion overlay and invisible hotspots (hints on hover/focus). */
 export function JazzRoomScene({
   lighting,
   greeting,
@@ -27,23 +31,27 @@ export function JazzRoomScene({
   onHotspot,
 }: JazzRoomSceneProps) {
   return (
-    <div className="jazz-room-scene home-hero" data-mode={lighting}>
-      <img className="jazz-room-photo" src={ROOM_SRC[lighting]} alt="" aria-hidden />
+    <div className="jazz-room-scene home-hero botanical-frame" data-mode={lighting}>
+      <RoomArt lighting={lighting} />
       <div className="scene-header home-hero-header">
         <h1>My Jazz Room</h1>
         <p>{greeting}</p>
       </div>
       <div className="home-settings">{settingsControl}</div>
       <div className="room-hotspots" aria-label="Room shortcuts">
-        <button type="button" className="room-hotspot piano" onClick={() => onHotspot('piano')}>
-          Piano · Practice
-        </button>
-        <button type="button" className="room-hotspot stand" onClick={() => onHotspot('stand')}>
-          Music stand · Explore
-        </button>
-        <button type="button" className="room-hotspot notebook" onClick={() => onHotspot('notebook')}>
-          Notebook · Saved
-        </button>
+        {(Object.keys(HOTSPOT_META) as RoomHotspot[]).map(key => {
+          const meta = HOTSPOT_META[key];
+          return (
+            <button
+              key={key}
+              type="button"
+              className={`room-hotspot ${meta.className}`}
+              aria-label={meta.label}
+              data-hint={meta.hint}
+              onClick={() => onHotspot(key)}
+            />
+          );
+        })}
       </div>
       <div className="home-cat-stage">{catOverlay}</div>
     </div>

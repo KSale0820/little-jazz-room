@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f0e4"/>
+      <stop offset="100%" stop-color="#ebe3d4"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d8cbb8"/>
+      <stop offset="100%" stop-color="#c9b9a3"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff8e8" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#f5e6c8" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="520" fill="url(#wall)"/>
+  <rect y="360" width="800" height="160" fill="url(#floor)"/>
+  <rect x="520" y="40" width="240" height="220" rx="8" fill="#cfe8f5"/>
+  <rect x="532" y="52" width="216" height="196" rx="4" fill="url(#sun)"/>
+  <rect x="548" y="72" width="36" height="48" fill="#9ec5de" opacity="0.35"/>
+  <rect x="596" y="72" width="36" height="48" fill="#9ec5de" opacity="0.35"/>
+  <rect x="644" y="72" width="36" height="48" fill="#9ec5de" opacity="0.35"/>
+  <rect x="692" y="72" width="36" height="48" fill="#9ec5de" opacity="0.35"/>
+  <ellipse cx="640" cy="300" rx="120" ry="18" fill="#000" opacity="0.06"/>
+  <!-- piano -->
+  <rect x="40" y="220" width="200" height="150" rx="6" fill="#2a2f32"/>
+  <rect x="52" y="232" width="176" height="88" rx="4" fill="#1a1d1f"/>
+  <rect x="60" y="240" width="160" height="52" fill="#f5f0e6"/>
+  <rect x="68" y="300" width="144" height="58" fill="#3d4347"/>
+  <!-- music stand -->
+  <rect x="330" y="250" width="8" height="110" fill="#6b5a48"/>
+  <path d="M300 250h76l-8 52H308z" fill="#f8f4eb" stroke="#c9bba8" stroke-width="2"/>
+  <!-- shelf / notebook area -->
+  <rect x="620" y="268" width="140" height="92" rx="6" fill="#8b6f52"/>
+  <rect x="632" y="280" width="48" height="64" rx="3" fill="#f3ebe0"/>
+  <rect x="688" y="280" width="58" height="64" rx="3" fill="#e8dfd2"/>
+  <!-- plants -->
+  <ellipse cx="120" cy="390" rx="42" ry="12" fill="#6a8f62" opacity="0.5"/>
+  <path fill="#5a8a54" d="M95 390c8-40 18-62 28-62s18 22 26 62c-14 6-40 6-54 0z"/>
+  <ellipse cx="700" cy="400" rx="36" ry="10" fill="#6a8f62" opacity="0.45"/>
+  <path fill="#6d9b5a" d="M680 400c6-34 14-50 22-50s16 16 22 50c-12 5-32 5-44 0z"/>
+  <path fill="#8eb49a" opacity="0.55" d="M0 0c40 20 80 10 120 30 20 10 40 8 60 0v90H0z"/>
+  <path fill="#8eb49a" opacity="0.45" d="M680 0c60 24 80 16 120 36v74H680z"/>
+</svg>

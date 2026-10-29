@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { catPortraitUrls, catSpriteUrl } from '../../assets/visualManifest';
 import './cat-companion.css';
 
 export const JAZZ_CATS = [
@@ -61,8 +62,17 @@ export function useCatSelection(repository?: CatPreferenceRepository, accountKey
 export function CatSprite({ catId, size = 96, className = '', decorative = false, animated = false, variant = 'portrait' }:
   { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'sprite' }) {
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
-  const src = variant === 'portrait' ? `/jazz-cat-assets/${catId}-portrait.png` : `/jazz-cat-assets/${catId}.svg`;
+  const portraitCandidates = catPortraitUrls(catId);
+  const [portraitIndex, setPortraitIndex] = useState(0);
+  const src = variant === 'sprite' ? catSpriteUrl(catId) : portraitCandidates[portraitIndex] ?? catSpriteUrl(catId);
+  const onError = useCallback(() => {
+    if (variant === 'portrait' && portraitIndex < portraitCandidates.length - 1) {
+      setPortraitIndex(i => i + 1);
+    }
+  }, [variant, portraitIndex, portraitCandidates.length]);
+
   return <img className={`jazz-cat-sprite ${animated ? 'jazz-cat-animated' : ''} ${className}`} src={src}
+    onError={onError}
     alt={decorative ? '' : `${cat.name}, ${cat.personality.toLowerCase()} ${cat.coat.toLowerCase()} jazz cat`}
     aria-hidden={decorative} width={size} height={size} draggable={false} />;
 }

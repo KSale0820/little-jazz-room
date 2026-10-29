@@ -1,12 +1,20 @@
 :root {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: #22332c;
-  background: #eae7df;
+  font-family: 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--ink);
+  background: var(--page-bg);
+  --font-serif: 'Palatino Linotype', 'Book Antiqua', Georgia, 'Times New Roman', serif;
   --cream: #fbf8f0;
   --paper: #fffefa;
-  --green: #35654f;
+  --page-bg: #eae7df;
+  --evergreen: #1e3a2f;
+  --ink: #22332c;
+  --ink-muted: #5f6f66;
+  --sage: #35654f;
+  --sage-soft: #dce9dc;
+  --green: var(--sage);
   --light: #dfe9de;
   --border: #e7e3d9;
+  --peach: #e8c4a8;
 }
 
 * {
@@ -33,6 +41,45 @@ a:focus-visible {
 
 body {
   margin: 0;
+  background: var(--page-bg);
+}
+
+.botanical-frame {
+  position: relative;
+}
+
+.botanical-frame::before,
+.botanical-frame::after {
+  content: '';
+  position: absolute;
+  width: 88px;
+  height: 88px;
+  background: url('/decor/botanical-corner.svg') no-repeat center / contain;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.botanical-frame::before {
+  top: 4px;
+  left: 4px;
+}
+
+.botanical-frame::after {
+  top: 4px;
+  right: 4px;
+  transform: scaleX(-1);
+}
+
+.app-shell {
+  background: var(--cream);
+}
+
+.pageheading h1,
+.pageheading h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 h1,
@@ -44,7 +91,8 @@ p {
 
 h1,
 h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-serif);
+  color: var(--evergreen);
 }
 
 h1 {
@@ -190,9 +238,9 @@ small,
 }
 
 .btn.primary {
-  background: var(--green);
+  background: var(--sage);
   color: white;
-  border-color: var(--green);
+  border-color: var(--sage);
   font-weight: 700;
 }
 
@@ -409,10 +457,22 @@ small,
 }
 
 .chip.selected {
-  background: #dce9dc;
+  background: var(--sage-soft);
   border-color: #bed6c4;
-  color: #2b5d43;
+  color: var(--sage);
   font-weight: 700;
+}
+
+.explore-page,
+.create-page,
+.practice-page,
+.profile-page {
+  background: var(--cream);
+}
+
+.practice-page .simple,
+.practice-page #chordPanel {
+  background: var(--paper);
 }
 
 .search {

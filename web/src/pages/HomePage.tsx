@@ -94,7 +94,7 @@ export function HomePage() {
             aria-label={`Your companion ${cat.name}. Choose cat.`}
             onClick={() => navigate('/profile', { state: { scrollToCat: true } })}
           >
-            <CatSprite catId={catId} size={128} animated={catMotion} variant="portrait" className="home-cat-sprite" />
+            <CatSprite catId={catId} size={112} animated={catMotion} variant="sprite" className="home-cat-sprite" />
           </button>
         }
       />
@@ -117,9 +117,7 @@ export function HomePage() {
         </div>
         <div className="home-stats-row">
           <span className="home-stat">
-            <span className="home-stat-icon" aria-hidden>
-              🔥
-            </span>
+            <span className="home-stat-icon streak-mark" aria-hidden />
             <strong>{streak}</strong> days
           </span>
           <span className="home-stat home-stat-muted">
@@ -176,10 +174,7 @@ export function HomePage() {
         </div>
 
         <div className="box home-section">
-          <div className="between">
-            <h3>Long-term goal</h3>
-            <CatSprite catId={catId} size={33} animated={catMotion} className="tiny-cat" />
-          </div>
+          <h3>Long-term goal</h3>
           <p className="muted goal-text">
             Log steady practice time on this device — {cat.name} is here for company, not a grade.
           </p>
