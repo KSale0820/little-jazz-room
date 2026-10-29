@@ -55,3 +55,11 @@ export function catSpriteUrl(id: CatId): string {
 export function catPortraitUrl(id: CatId): string {
   return VISUAL_ASSETS.cat.portraitFile(id);
 }
+
+/**
+ * Full-body illustrated cat PNG (not the pixel-art SVG sprite).
+ * Use this on Home and wherever an illustrated floor-sitting cat is needed.
+ */
+export function catFloorUrl(id: CatId): string {
+  return `/jazz-cat-assets/${id}.png`;
+}

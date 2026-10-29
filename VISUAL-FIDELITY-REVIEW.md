@@ -1,45 +1,45 @@
-# Visual fidelity review — individual assets integrated
+# Visual Fidelity Review — Home Page
+_Rebuilt Oct 28 2026 · Compare against `APPROVED-VISUAL-REFERENCE.png`_
 
-**Authority:** `APPROVED-VISUAL-REFERENCE.png`, `FINAL-DESIGN-LOCK.md`, `web/docs/ASSET-INTEGRATION-PLAN.md`  
-**Compared to:** `web/docs/screenshots/current-app/` (regenerate with `npm run screenshots`)  
-**Claim:** **Closer to concept, not full parity.**
+## What now matches ✅
 
-## Integrated this pass
+| Element | Status |
+|---------|--------|
+| Bright illustrated botanical jazz room (piano, plants, bookshelves, city window) | ✅ `home-hero-sunshine.png` displayed correctly |
+| Cat-free room art — no baked-in cat crops | ✅ Hero PNGs are cat-free |
+| Illustrated, naturally-proportioned cat on floor (not pixel/blocky sprite) | ✅ `luna.png` full-body illustrated PNG |
+| Cat positioned in lower-left at floor level, in front of piano | ✅ `left: 8%; bottom: 0` |
+| Hotspot labels invisible at rest; appear only on hover/focus | ✅ CSS `opacity: 0`, visible on `:hover`/`:focus-visible` |
+| Time-of-day room lighting (sunshine/twilight/night), Auto default | ✅ `resolveLighting()` + manual override |
+| `home-hero-sunshine.png` forced for screenshot captures (not dark night render) | ✅ localStorage pre-seeded in script |
+| "My Jazz Room" serif title + time greeting in legible overlay | ✅ Frosted-glass pill at top-left |
+| Personalised greeting when signed in ("Good morning, Kat.") | ✅ `displayNameFromUser()` from Supabase user |
+| Daily goal progress bar + streak + note count | ✅ |
+| Start Practicing CTA (full-width sage green) | ✅ |
+| Today's Practice card | ✅ |
+| Quick Access card (Saved Routines / My Exercises / Explore) | ✅ |
+| Long-term goal bar | ✅ |
+| Bottom navigation (Home / Explore / Create / Practice / Profile) | ✅ |
+| Desktop sidebar layout | ✅ |
+| Supabase / RLS / routine / exercise logic unchanged | ✅ |
 
-- Hero room uses **`home-hero-{sunshine,twilight,night}.png`** (cat-free installed art) via `visualManifest.ts` + `RoomArt`.
-- Home companion: single **SVG sprite** on floor; no portrait card frame; invisible hotspots with hover/focus hints only.
-- **PageAtmosphere** headers (botanical decor) on Explore, Create, Practice, Profile.
-- Profile **room banner** + sprite; chooser uses **`-portrait.png`** only (one source per cat).
-- Practice defaults to **Chords** tab; blue chord tiles; chart in `practice-chart-stage`.
-- Desktop shell widened (**1280px** grid, full-width content column).
-- Cat metadata aligned with **`cats.json`** (coats, personality strings).
-- Phase 3 sharing **not** started.
+## Remaining mismatches vs reference 🔶
 
-## Remaining mismatches vs approved reference
+| # | Element | Gap | Severity |
+|---|---------|-----|----------|
+| 1 | **Greeting text style** | Reference overlays "My Jazz Room" + name directly on art without a pill/card. Current uses a frosted-glass pill for legibility over varied room tones. | Low |
+| 2 | **Cat size** | Reference cat is slightly larger relative to room height (≈35% of hero height). Current is ≈28%. Safe to increase once approved. | Low |
+| 3 | **Cat click affordance** | Reference shows cat with no visible frame. Current: subtle drop-shadow + hover scale. | Very low |
+| 4 | **"Sign in" button placement** | Reference has no sign-in button on Home (authenticated state assumed). Our app correctly shows it for unauthenticated visitors. | By design |
+| 5 | **Room PNG resolution** | Hero PNGs are resized scene crops (not native 1920×1080 generated art). Visible at larger desktop breakpoints. | Medium |
+| 6 | **Twilight/night room variants** | Twilight and night PNGs exist but screenshots always forced to sunshine. The CSS filter approach for twilight/night is functional but not perfectly colour-matched to the reference palette. | Low |
+| 7 | **Explore / Practice / Create / Profile screens** | Not redesigned yet (per instruction: stop until Home is approved). | Deferred |
 
-| Area | Gap |
-|------|-----|
-| Home room | Installed PNG is resized scene sheet, not full painterly mock resolution; window/plant detail softer than reference |
-| Home cat | SVG sprites are plain vs concept illustration style; floor placement approximate |
-| Botanical framing | Corner accents + small decor PNGs, not full vine frame around phone mock |
-| Explore lists | Text-only rows (per design lock); reference shows thumbnails — intentional omission |
-| Create form | Fewer fields than mock (no goal/difficulty/instrument chip row) — functional scope unchanged |
-| Practice | No Scales tab content; no companion speech bubble; chart titles are seed studies not mock names |
-| Profile | Chooser is 2×4 grid vs mock “companions” row; stats layout differs |
-| Typography | Serif headings applied; exact mock scale/spacing not matched pixel-wise |
-| Personalization | No “Good morning, Kat” display name |
-| Quick access | Text buttons without pixel icons (lock allows either; reference shows icons on Start only) |
+## Screenshots (Oct 28 2026 rebuild)
 
-## Regenerate screenshots
+- `web/docs/screenshots/current-app/mobile/01-home.png` — 390×844, sunshine mode
+- `web/docs/screenshots/current-app/desktop/01-home.png` — 1280×900, sunshine mode
 
-```powershell
-cd web
-npm run dev
-npm run screenshots
-```
+## Phase 3 status
 
-## Replace when available
-
-- Native-resolution cat-free room PNGs per lighting mode
-- Anatomy-checked full-body art (optional) while keeping `.svg` fallback
-- Cleaner portrait crops without nameplate artifacts if present in source files
+**Not started.** Sharing, tokens, remix features are deferred.

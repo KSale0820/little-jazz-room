@@ -17,12 +17,15 @@ import {
   writeLightingPreference,
   type RoomLightingMode,
 } from '../lib/roomLighting';
+import { displayNameFromUser } from '../lib/greeting';
+import { useAuth } from '../context/AuthContext';
 import './HomePage.css';
 
 const GOAL_MINUTES = 30;
 
 export function HomePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { catId, catMotion, sessions, activeRoutineId, routines } = useApp();
   const [lightMode, setLightMode] = useState<RoomLightingMode>(() => readLightingPreference());
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -32,7 +35,7 @@ export function HomePage() {
   const totalMinutes = useMemo(() => totalPracticeMinutes(sessions), [sessions]);
   const streak = useMemo(() => computeGentleStreak(sessions), [sessions]);
   const longTermPct = useMemo(() => longTermProgressPercent(sessions), [sessions]);
-  const greeting = useMemo(() => timeGreeting(), []);
+  const greeting = useMemo(() => timeGreeting(displayNameFromUser(user)), [user]);
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
   const progress = Math.min(100, (practicedMinutes / GOAL_MINUTES) * 100);
   const todayRoutine = activeRoutineId ? routines.find(r => r.id === activeRoutineId) : undefined;
@@ -94,7 +97,7 @@ export function HomePage() {
             aria-label={`Your companion ${cat.name}. Choose cat.`}
             onClick={() => navigate('/profile', { state: { scrollToCat: true } })}
           >
-            <CatSprite catId={catId} size={112} animated={catMotion} variant="sprite" className="home-cat-sprite" />
+            <CatSprite catId={catId} size={120} animated={catMotion} variant="floor" className="home-cat-sprite" />
           </button>
         }
       />

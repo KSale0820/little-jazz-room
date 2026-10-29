@@ -68,12 +68,12 @@
 .home-goal-card {
   position: relative;
   z-index: 5;
-  margin: -22px 14px 0;
-  padding: 14px 16px 16px;
+  margin: -28px 14px 0;
+  padding: 16px 18px 18px;
   background: var(--paper);
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid var(--border);
-  box-shadow: 0 10px 28px #1a2b1e10;
+  box-shadow: 0 12px 32px #1a2b1e14;
 }
 
 .home-goal-row {
