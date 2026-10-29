@@ -86,14 +86,14 @@ try {
       },
     ],
   });
-  if (!bForgeRpc) fail('User B RPC on A routine blocked', 'unexpected success');
-  else pass('User B RPC on A routine blocked');
+  if (!bForgeRpc) fail('User B RPC forbidden update on A routine', 'unexpected success');
+  else pass('User B RPC forbidden update on A routine');
 
-  const rpcRoutineId = randomUUID();
-  const { error: aRpcErr } = await clientA.rpc('save_user_routine_with_steps', {
+  const createRoutineId = randomUUID();
+  const { error: createRpcErr } = await clientA.rpc('save_user_routine_with_steps', {
     p_routine: {
-      id: rpcRoutineId,
-      title: 'RPC atomic save',
+      id: createRoutineId,
+      title: 'RPC create with client UUID',
       description: 'test',
       level: 'Beginner',
       duration_minutes: 10,
@@ -121,18 +121,105 @@ try {
       },
     ],
   });
-  if (aRpcErr) fail('User A RPC save routine', aRpcErr.message);
-  else pass('User A RPC save routine');
+  if (createRpcErr) fail('User A RPC create routine (client UUID)', createRpcErr.message);
+  else pass('User A RPC create routine (client UUID)');
 
-  const { data: rpcSteps } = await clientA
+  const { data: createSteps } = await clientA
     .from('routine_steps')
     .select('sort_order, snapshot_title')
-    .eq('routine_id', rpcRoutineId)
+    .eq('routine_id', createRoutineId)
     .order('sort_order');
-  if ((rpcSteps ?? []).length !== 2) fail('RPC wrote both steps', JSON.stringify(rpcSteps));
-  else pass('RPC wrote both steps');
+  if ((createSteps ?? []).length !== 2) fail('RPC create wrote both steps', JSON.stringify(createSteps));
+  else pass('RPC create wrote both steps');
 
-  await clientA.from('user_routines').delete().eq('id', rpcRoutineId);
+  const { error: updateRpcErr } = await clientA.rpc('save_user_routine_with_steps', {
+    p_routine: {
+      id: createRoutineId,
+      title: 'RPC updated title',
+      description: 'updated',
+      level: 'Beginner',
+      duration_minutes: 5,
+      visibility: 'private',
+      applicable_instruments: ['All'],
+    },
+    p_steps: [
+      {
+        sort_order: 0,
+        snapshot_title: 'Only step',
+        snapshot_instructions: 'Updated',
+        snapshot_duration_minutes: 5,
+        snapshot_chart_id: '',
+        seed_exercise_id: 'swing-2-4',
+        source_exercise_id: '',
+      },
+    ],
+  });
+  if (updateRpcErr) fail('User A RPC update owned routine', updateRpcErr.message);
+  else pass('User A RPC update owned routine');
+
+  const { data: updatedRoutine } = await clientA
+    .from('user_routines')
+    .select('title')
+    .eq('id', createRoutineId)
+    .single();
+  if (updatedRoutine?.title !== 'RPC updated title') {
+    fail('RPC update changed routine row', JSON.stringify(updatedRoutine));
+  } else pass('RPC update changed routine row');
+
+  const { data: updatedSteps } = await clientA
+    .from('routine_steps')
+    .select('sort_order, snapshot_title')
+    .eq('routine_id', createRoutineId)
+    .order('sort_order');
+  if ((updatedSteps ?? []).length !== 1 || updatedSteps?.[0]?.snapshot_title !== 'Only step') {
+    fail('RPC update replaced steps', JSON.stringify(updatedSteps));
+  } else pass('RPC update replaced steps');
+
+  const bogusExerciseId = randomUUID();
+  const { error: rollbackRpcErr } = await clientA.rpc('save_user_routine_with_steps', {
+    p_routine: {
+      id: createRoutineId,
+      title: 'Should not persist',
+      description: 'rollback test',
+      level: 'Beginner',
+      duration_minutes: 5,
+      visibility: 'private',
+      applicable_instruments: ['All'],
+    },
+    p_steps: [
+      {
+        sort_order: 0,
+        snapshot_title: 'Broken step',
+        snapshot_instructions: 'Bad FK',
+        snapshot_duration_minutes: 5,
+        snapshot_chart_id: '',
+        seed_exercise_id: '',
+        source_exercise_id: bogusExerciseId,
+      },
+    ],
+  });
+  if (!rollbackRpcErr) fail('RPC rollback on invalid step', 'unexpected success');
+  else pass('RPC rollback on invalid step');
+
+  const { data: afterRollbackRoutine } = await clientA
+    .from('user_routines')
+    .select('title')
+    .eq('id', createRoutineId)
+    .single();
+  if (afterRollbackRoutine?.title !== 'RPC updated title') {
+    fail('RPC rollback preserved routine row', JSON.stringify(afterRollbackRoutine));
+  } else pass('RPC rollback preserved routine row');
+
+  const { data: afterRollbackSteps } = await clientA
+    .from('routine_steps')
+    .select('sort_order, snapshot_title')
+    .eq('routine_id', createRoutineId)
+    .order('sort_order');
+  if ((afterRollbackSteps ?? []).length !== 1 || afterRollbackSteps?.[0]?.snapshot_title !== 'Only step') {
+    fail('RPC rollback preserved prior steps', JSON.stringify(afterRollbackSteps));
+  } else pass('RPC rollback preserved prior steps');
+
+  await clientA.from('user_routines').delete().eq('id', createRoutineId);
 
   const publicId = randomUUID();
   await clientA.from('user_routines').insert({
