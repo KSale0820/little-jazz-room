@@ -2,16 +2,18 @@
 
 Runtime paths: `web/src/assets/visualManifest.ts`
 
-| Asset | Primary file | Fallback |
-|-------|----------------|----------|
-| Room sunshine | `/room/home-hero-sunshine.png` | `/room/catfree-sunshine.svg` |
-| Room twilight | `/room/home-hero-twilight.png` | `/room/catfree-twilight.svg` |
-| Room night | `/room/home-hero-night.png` | `/room/catfree-night.svg` |
-| Cat portrait (chooser, avatars) | `/jazz-cat-assets/{id}-portrait.png` | `{id}.svg` |
-| Cat sprite (Home floor, banner) | `/jazz-cat-assets/{id}.svg` | — |
-| Cat icon / small | `{id}-icon.png`, `{id}-small.png` | portrait |
-| Decor | `/decor/plant.png`, `books.png`, `mug.png`, `botanical-corner.svg` | — |
+The approved library, dimensions, and Stitch notes are in `web/docs/APPROVED-ASSET-LIBRARY.md`.
 
-Metadata authority: `web/public/jazz-cat-assets/cats.json` (eight cats; do not rename or alter identities).
+| Asset | Live file | Notes |
+|-------|-----------|--------|
+| Room sunshine / twilight / night | `/room/home-hero-sunshine.png` and matching twilight/night | 1440×800. Vector fallback: `/room/catfree-*.svg` |
+| Approved portrait room | `/visuals/room/home-hero-*.png` | 941×1672. Registered only. Not used by `RoomArt` yet |
+| Cat full-body | `/visuals/cats/full-body/{id}.png` | Home, Profile, chooser |
+| Cat profile | `/visuals/cats/profiles/{id}.png` | `catPortraitUrl` |
+| Cat close-up | `/visuals/cats/closeups/{id}.png` | Practice companion |
+| Legacy cat sprites | `/jazz-cat-assets/{id}.svg` | Explicit `sprite` variant only. Not a fallback |
+| Page decor still on screen | `/decor/plant.png`, `books.png`, `mug.png`, `botanical-corner.svg` | Approved replacements live under `/visuals/decor/` and are not mounted yet |
 
-Do **not** use `home-room-base.png` or collage boards at runtime. See `web/docs/ASSET-INTEGRATION-PLAN.md`.
+Cat ids stay `luna`, `milo`, `maple`, `mochi`, `pepper`, `patches`, `chai`, `biscuit`. Do not rename them.
+
+Do **not** use `home-room-base.png` or collage boards at runtime.

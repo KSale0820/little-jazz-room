@@ -347,7 +347,7 @@ export function PracticePage() {
       </label>
       {!focusMode && (
         <div className="practice-companion" aria-hidden>
-          <CatSprite catId={catId} size={48} animated={catMotion} decorative />
+          <CatSprite catId={catId} size={48} animated={catMotion} variant="closeup" decorative />
           <span className="muted tiny">Companion below controls · not on notation</span>
         </div>
       )}

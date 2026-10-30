@@ -1,3 +1,6 @@
+import type { CSSProperties } from 'react';
+import { VISUAL_ASSETS } from '../assets/visualManifest';
+
 export const NAV_PIXELS = {
   home: 'M3 9h2V7h2V5h2V3h4v2h2v2h2v2h2v9h-5v-6h-4v6H3z',
   explore: 'M3 3h11v2h3v2h2v7h-2v3h-3v-2h-2v-2h-2V7H3z',
@@ -8,7 +11,22 @@ export const NAV_PIXELS = {
 
 export type NavRoute = keyof typeof NAV_PIXELS;
 
+/** Corrected Explore and Practice marks. Painted with currentColor via CSS mask. */
+const NAV_FILES = {
+  explore: VISUAL_ASSETS.icons.nav.explore,
+  practice: VISUAL_ASSETS.icons.nav.practice,
+} as const;
+
 export function PixelIcon({ route }: { route: NavRoute }) {
+  if (route === 'explore' || route === 'practice') {
+    return (
+      <span
+        className="pix pix-mask"
+        style={{ '--pix-mask': `url("${NAV_FILES[route]}")` } as CSSProperties}
+        aria-hidden
+      />
+    );
+  }
   return (
     <svg className="pix" viewBox="0 0 22 22" aria-hidden>
       <path d={NAV_PIXELS[route]} />

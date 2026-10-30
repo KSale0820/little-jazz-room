@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { catFloorUrl, catPortraitUrls, catSpriteUrl } from '../../assets/visualManifest';
+import { catCloseupUrl, catFloorUrl, catPortraitUrls, catSpriteUrl } from '../../assets/visualManifest';
 import './cat-companion.css';
 
 export const JAZZ_CATS = [
@@ -60,14 +60,15 @@ export function useCatSelection(repository?: CatPreferenceRepository, accountKey
 }
 
 export function CatSprite({ catId, size = 96, className = '', decorative = false, animated = false, variant = 'portrait' }:
-  { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'sprite' | 'floor' }) {
+  { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'sprite' | 'floor' | 'closeup' }) {
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
   const portraitCandidates = catPortraitUrls(catId);
   const [portraitIndex, setPortraitIndex] = useState(0);
-  // 'floor' = full-body illustrated PNG; 'sprite' = pixel-art SVG; 'portrait' = head/bust PNG
+  // floor = full-body PNG; portrait = profile PNG; closeup = face PNG; sprite = legacy SVG only
   const src = variant === 'sprite' ? catSpriteUrl(catId)
     : variant === 'floor' ? catFloorUrl(catId)
-    : portraitCandidates[portraitIndex] ?? catSpriteUrl(catId);
+    : variant === 'closeup' ? catCloseupUrl(catId)
+    : portraitCandidates[portraitIndex] ?? portraitCandidates[0];
   const onError = useCallback(() => {
     if (variant === 'portrait' && portraitIndex < portraitCandidates.length - 1) {
       setPortraitIndex(i => i + 1);

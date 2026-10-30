@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Little Jazz Room cat and piano favicon">
+<title>Little Jazz Room cat and grand piano</title>
+<!-- Brass semi-circle and quiet lower accent echo the original brand mark. -->
+<path fill="none" stroke="#C99B54" stroke-width="3.4" stroke-linecap="round" d="M8 29C10 16 21 7 35 7C46 7 54 14 57 24"/>
+<path fill="none" stroke="#C99B54" stroke-width="3.4" stroke-linecap="round" d="M10 48C19 58 43 61 55 48"/>
+<!-- Iconic grand piano lid, its raised right edge and supported body. -->
+<path fill="#063B2B" d="M31 33L51 18Q54 16 56 19L49 29Q50 31 56 33L58 37H31Z"/>
+<path fill="#063B2B" d="M29 37H59V45Q59 47 56 47H34L29 44Z"/>
+<path fill="#063B2B" d="M35 45H39V51H35ZM51 45H55V51H51Z"/>
+<!-- Ivory keyboard with three black-key markers, retained at 16 px. -->
+<path fill="#F9EACC" d="M31 37H56V41H31Z"/>
+<path fill="#063B2B" d="M38 37H40V39.7H38ZM44 37H46V39.7H44ZM49 37H51V39.7H49Z"/>
+<!-- Sitting companion in foreground: strong ears, profile and curled tail. -->
+<path fill="#063B2B" d="M14 38Q11 33 13 29L15 24L20 28L24 22L28 30Q29 34 25 36Q30 41 29 48Q28 53 23 54H18Q12 53 13 47L14 42Q11 46 9 43Q7 40 10 39Z"/>
+<path fill="#F9EACC" d="M17.5 30.5L16.7 28.5L19.1 30.3Z"/>
+</svg>
