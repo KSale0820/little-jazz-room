@@ -9,7 +9,7 @@ import {
   type LocalRepository,
 } from '../repository/localRepository';
 import { SupabasePracticeRepository } from '../repository/supabasePracticeRepository';
-import { createSupabaseCatRepository, ensureProfileRow } from '../repository/supabaseCatRepository';
+import { createSupabaseCatRepository } from '../repository/supabaseCatRepository';
 import { getSupabaseClient } from '../lib/supabase/client';
 import type { Exercise, PracticeSessionRecord, Routine } from '../types/content';
 import { useCatSelection } from '../features/cats/CatCompanion';
@@ -60,6 +60,13 @@ function readBool(key: string, defaultValue: boolean): boolean {
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  // Reset providers AND page-local form/timer state before a new identity renders.
+  return <AccountAppProvider key={localStorageScopeForUser(user?.id)}>{children}</AccountAppProvider>;
+}
+
+function AccountAppProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const localScope = localStorageScopeForUser(user?.id);
   const repo = useMemo(() => createLocalRepository(localScope), [localScope]);
@@ -112,25 +119,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return;
     }
     let cancelled = false;
-    (async () => {
+    // A missing profile or a failed content query must not block unrelated data.
+    const sync = async <T,>(load: () => Promise<T>, apply: (value: T) => void) => {
       try {
-        await ensureProfileRow(client, user.id);
-        const [ex, rt, pub, sess] = await Promise.all([
-          cloudRepo.listMyExercises(),
-          cloudRepo.listMyRoutines(),
-          cloudRepo.listPublicRoutines(),
-          cloudRepo.listMySessions(),
-        ]);
-        if (!cancelled) {
-          setCloudExercises(ex);
-          setCloudRoutines(rt);
-          setPublicRoutines(pub.filter(r => r.visibility === 'public'));
-          setCloudSessions(sess);
-        }
+        const value = await load();
+        if (!cancelled) apply(value);
       } catch {
-        if (!cancelled) showToast('Could not sync cloud data. Check connection and RLS.');
+        if (!cancelled) showToast('Some cloud data could not sync. Try again when online.');
       }
-    })();
+    };
+    void Promise.allSettled([
+      sync(() => cloudRepo.listMyExercises(), setCloudExercises),
+      sync(() => cloudRepo.listMyRoutines(), setCloudRoutines),
+      sync(() => cloudRepo.listPublicRoutines(), value => setPublicRoutines(value.filter(r => r.visibility === 'public'))),
+      sync(() => cloudRepo.listMySessions(), setCloudSessions),
+    ]);
     return () => {
       cancelled = true;
     };

@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { useState } from 'react';
 import { PixelIcon, type NavRoute } from './PixelIcon';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
@@ -13,8 +14,17 @@ const NAV: { to: string; route: NavRoute; label: string }[] = [
 ];
 
 export function AppShell() {
-  const { toast } = useApp();
-  const { configured, user, signOut } = useAuth();
+  const { toast, showToast } = useApp();
+  const { configured, user, signOut, authError } = useAuth();
+  const [signingOut, setSigningOut] = useState(false);
+  const handleSignOut = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    const result = await signOut();
+    if (result.error) showToast(`Could not sign out: ${result.error}`);
+    setSigningOut(false);
+  };
+  const message = toast ?? authError;
 
   return (
     <div className="app-root">
@@ -31,7 +41,7 @@ export function AppShell() {
             {user ? (
               <>
                 <small className="team-auth-label">Signed in</small>
-                <button type="button" className="btn tiny wide" onClick={() => void signOut()}>
+                <button type="button" className="btn tiny wide" disabled={signingOut} onClick={() => void handleSignOut()}>
                   Sign out
                 </button>
               </>
@@ -60,7 +70,7 @@ export function AppShell() {
           {configured ? (
             <div className="mobile-auth-bar">
               {user ? (
-                <button type="button" className="btn tiny" onClick={() => void signOut()}>
+                <button type="button" className="btn tiny" disabled={signingOut} onClick={() => void handleSignOut()}>
                   Sign out
                 </button>
               ) : (
@@ -83,9 +93,9 @@ export function AppShell() {
           </nav>
         </main>
       </div>
-      {toast ? (
+      {message ? (
         <div className="toast-message" role="status">
-          {toast}
+          {message}
         </div>
       ) : null}
     </div>
