@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { seedCharts, seedExercises, seedPaths, seedRoutines } from '../data/seed';
 import { useAuth } from './AuthContext';
 import {
@@ -62,6 +62,8 @@ function readBool(key: string, defaultValue: boolean): boolean {
 export function AppProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const localScope = localStorageScopeForUser(user?.id);
+  const currentScope = useRef(localScope);
+  useEffect(() => { currentScope.current = localScope; }, [localScope]);
   const repo = useMemo(() => createLocalRepository(localScope), [localScope]);
   const client = getSupabaseClient();
   const cloudRepo = useMemo(() => {
@@ -84,6 +86,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [cloudRoutines, setCloudRoutines] = useState<Routine[]>([]);
   const [publicRoutines, setPublicRoutines] = useState<Routine[]>([]);
   const [cloudSessions, setCloudSessions] = useState<PracticeSessionRecord[]>([]);
+  const [confirmedSessions, setConfirmedSessions] = useState<{ scope: string; records: PracticeSessionRecord[] }>({ scope: localScope, records: [] });
   const [toast, setToast] = useState<string | null>(null);
   const [focusMode, setFocusModeState] = useState(() => readBool(FOCUS_KEY, false));
   const [catMotion, setCatMotionState] = useState(() => readBool(MOTION_KEY, true));
@@ -137,11 +140,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [cloudRepo, client, user?.id, cloudTick]);
 
   const localSessions = useMemo(() => repo.listSessions(), [repo, sessionTick]);
-  const sessions = user ? cloudSessions : localSessions;
+  const sessions = useMemo(() => {
+    if (!user) return localSessions;
+    const byId = new Map(cloudSessions.map(s => [s.id, s]));
+    if (confirmedSessions.scope === localScope) {
+      for (const s of confirmedSessions.records) byId.set(s.id, s);
+    }
+    return [...byId.values()].sort((a, b) => b.finishedAt.localeCompare(a.finishedAt)).slice(0, 200);
+  }, [user, localScope, localSessions, cloudSessions, confirmedSessions]);
 
   const addSession = async (session: PracticeSessionRecord) => {
     if (cloudRepo) {
       await cloudRepo.addSession(session);
+      // A late completion from an old account must not update the current view.
+      if (currentScope.current !== localScope) return;
+      setConfirmedSessions(previous => ({
+        scope: localScope,
+        records: [session, ...(previous.scope === localScope ? previous.records : []).filter(s => s.id !== session.id)].slice(0, 200),
+      }));
       setCloudTick(t => t + 1);
       return;
     }

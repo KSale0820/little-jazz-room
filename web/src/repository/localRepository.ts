@@ -107,8 +107,10 @@ export function createLocalRepository(scope: string = LOCAL_SCOPE_ANONYMOUS): Lo
     },
     addSession(session) {
       const list = readJson<PracticeSessionRecord[]>(sessKey, []);
+      if (list.some(s => s.id === session.id)) return;
       list.unshift(session);
-      writeJson(sessKey, list.slice(0, 200));
+      // Completion must report quota/storage failures so the user can retry.
+      localStorage.setItem(sessKey, JSON.stringify(list.slice(0, 200)));
     },
     readCreateDraft() {
       return readJson<CreateDraft | null>(draftKey, null);

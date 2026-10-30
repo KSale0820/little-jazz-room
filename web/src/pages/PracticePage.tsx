@@ -8,13 +8,14 @@ import { formatChartMeta } from '../lib/chords';
 import { commitStepElapsed, sessionDurationSeconds } from '../lib/practiceSessionTimer';
 import { resolvePlayableStep } from '../lib/routinePlayback';
 import { useApp } from '../context/AppContext';
-import type { WrittenPitch } from '../types/content';
+import type { PracticeSessionRecord, WrittenPitch } from '../types/content';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
 export function PracticePage() {
   const navigate = useNavigate();
   const {
+    repo,
     charts,
     exercises,
     routines,
@@ -48,6 +49,12 @@ export function PracticePage() {
   const [stepSeconds, setStepSeconds] = useState(0);
   const [running, setRunning] = useState(false);
   const timerRef = useRef<number | null>(null);
+  const pendingSession = useRef<PracticeSessionRecord | null>(null);
+  const savingRef = useRef(false);
+  const completedRef = useRef(false);
+  const completionContext = useRef({ cancelled: false });
+  const [saving, setSaving] = useState(false);
+  const [completionPending, setCompletionPending] = useState(false);
 
   const sessionSeconds = sessionDurationSeconds(accumulatedSeconds, stepSeconds);
 
@@ -56,7 +63,15 @@ export function PracticePage() {
     setAccumulatedSeconds(0);
     setStepSeconds(0);
     setRunning(false);
-  }, [activeRoutineId, routine?.id]);
+    pendingSession.current = null;
+    savingRef.current = false;
+    completedRef.current = false;
+    setSaving(false);
+    setCompletionPending(false);
+    const context = { cancelled: false };
+    completionContext.current = context;
+    return () => { context.cancelled = true; };
+  }, [activeRoutineId, routine?.id, repo.scope]);
 
   const chart = chartsById[chartId] ?? charts[0]!;
   const stepMinutes = currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0;
@@ -100,10 +115,12 @@ export function PracticePage() {
     return [{ value: 'all', label: `All ${n}` }, ...chunks];
   }, [chart]);
 
-  const toggleTimer = () => setRunning(r => !r);
+  const toggleTimer = () => {
+    if (!pendingSession.current) setRunning(r => !r);
+  };
 
   const goStep = (delta: number) => {
-    if (!routine) return;
+    if (!routine || pendingSession.current) return;
     setRunning(false);
     setAccumulatedSeconds(prev => commitStepElapsed(prev, stepSeconds));
     setStepSeconds(0);
@@ -111,21 +128,38 @@ export function PracticePage() {
   };
 
   const finish = async () => {
+    if (savingRef.current || completedRef.current) return;
+    savingRef.current = true;
+    setSaving(true);
     setRunning(false);
-    const durationSeconds = sessionDurationSeconds(accumulatedSeconds, stepSeconds);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    // Freeze the completion record: an ambiguous network failure must retry the
+    // same UUID, duration and timestamp rather than create another history row.
+    pendingSession.current ??= {
+      id: crypto.randomUUID(),
+      finishedAt: new Date().toISOString(),
+      durationSeconds: sessionDurationSeconds(accumulatedSeconds, stepSeconds),
+      routineId: routine?.id,
+      routineTitle: routine?.title,
+      exerciseId: playableStep?.exercise_id,
+    };
+    setCompletionPending(true);
+    const context = completionContext.current;
     try {
-      await addSession({
-        id: `sess-${Date.now()}`,
-        finishedAt: new Date().toISOString(),
-        durationSeconds,
-        routineId: activeRoutineId ?? undefined,
-        exerciseId: playableStep?.exercise_id,
-      });
+      await addSession(pendingSession.current);
+      if (context.cancelled) return;
+      completedRef.current = true;
       setAccumulatedSeconds(0);
       setStepSeconds(0);
       showToast(teamSignedIn ? 'Session saved to your team account.' : 'Session saved on this device.');
       navigate('/profile');
     } catch {
+      if (context.cancelled) return;
+      savingRef.current = false;
+      setSaving(false);
       showToast('Could not save session. Try again when online.');
     }
   };
@@ -151,13 +185,13 @@ export function PracticePage() {
             <span className="mutebadge">{stepMinutes} min suggested</span>
           </div>
           <div className="routine-step-nav between" style={{ marginTop: 10 }}>
-            <button type="button" className="btn tiny" disabled={stepIndex === 0} onClick={() => goStep(-1)}>
+            <button type="button" className="btn tiny" disabled={completionPending || stepIndex === 0} onClick={() => goStep(-1)}>
               Previous exercise
             </button>
             <button
               type="button"
               className="btn tiny"
-              disabled={!routine || stepIndex >= routine.steps.length - 1}
+              disabled={completionPending || !routine || stepIndex >= routine.steps.length - 1}
               onClick={() => goStep(1)}
             >
               Next exercise
@@ -321,7 +355,7 @@ export function PracticePage() {
         >
           ◀◀
         </button>
-        <button type="button" aria-label="Start or pause timer" className="bigplay" onClick={toggleTimer}>
+        <button type="button" aria-label="Start or pause timer" className="bigplay" onClick={toggleTimer} disabled={completionPending}>
           {running ? 'Ⅱ' : '▶'}
         </button>
         <button
@@ -337,7 +371,7 @@ export function PracticePage() {
         <small>
           Step {stepTimeLabel} · Measure {selectedBar + 1} / {chart.bars.length}
         </small>
-        <button type="button" className="btn" onClick={finish}>
+        <button type="button" className="btn" onClick={finish} disabled={saving}>
           Finish
         </button>
       </div>

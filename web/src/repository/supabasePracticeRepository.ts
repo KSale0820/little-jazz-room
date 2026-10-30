@@ -42,6 +42,8 @@ type DbSession = {
   id: string;
   duration_seconds: number;
   routine_id: string | null;
+  routine_ref?: string | null;
+  routine_title?: string | null;
   exercise_ref: string | null;
   finished_at: string;
 };
@@ -212,21 +214,25 @@ export class SupabasePracticeRepository {
     return (data as DbSession[]).map(s => ({
       id: s.id,
       durationSeconds: s.duration_seconds,
-      routineId: s.routine_id ?? undefined,
+      routineId: s.routine_ref ?? s.routine_id ?? undefined,
+      routineTitle: s.routine_title ?? undefined,
       exerciseId: s.exercise_ref ?? undefined,
       finishedAt: s.finished_at,
     }));
   }
 
   async addSession(session: PracticeSessionRecord): Promise<void> {
-    const { error } = await this.client.from('practice_sessions').insert({
-      id: session.id.startsWith('sess-') ? undefined : session.id,
+    const isCloudRoutine = session.routineId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(session.routineId);
+    const { error } = await this.client.from('practice_sessions').upsert({
+      id: session.id,
       owner_id: this.userId,
       duration_seconds: session.durationSeconds,
-      routine_id: session.routineId ?? null,
+      routine_id: isCloudRoutine ? session.routineId : null,
+      routine_ref: session.routineId ?? null,
+      routine_title: session.routineTitle ?? null,
       exercise_ref: session.exerciseId ?? null,
       finished_at: session.finishedAt,
-    });
+    }, { onConflict: 'id', ignoreDuplicates: true });
     if (error) throw error;
   }
 }

@@ -113,5 +113,6 @@ export interface PracticeSessionRecord {
   finishedAt: string;
   durationSeconds: number;
   routineId?: string;
+  routineTitle?: string;
   exerciseId?: string;
 }
