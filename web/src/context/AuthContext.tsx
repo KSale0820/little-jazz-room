@@ -10,14 +10,16 @@ import {
 import type { Session, User } from '@supabase/supabase-js';
 import { getSupabaseClient } from '../lib/supabase/client';
 import { isSupabaseConfigured } from '../lib/supabase/env';
+import { authAction, observeAuthSession } from '../lib/authSession';
 
 interface AuthContextValue {
   configured: boolean;
   loading: boolean;
   session: Session | null;
   user: User | null;
+  authError: string | null;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signOut: () => Promise<void>;
+  signOut: () => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -27,41 +29,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const client = useMemo(() => (configured ? getSupabaseClient() : null), [configured]);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(configured);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!client) {
       setLoading(false);
       return;
     }
-    let active = true;
-    client.auth.getSession().then(({ data }) => {
-      if (active) {
-        setSession(data.session);
-        setLoading(false);
-      }
-    });
-    const { data: sub } = client.auth.onAuthStateChange((_event, next) => {
+    return observeAuthSession(client.auth, (next, error) => {
       setSession(next);
+      setAuthError(error);
       setLoading(false);
     });
-    return () => {
-      active = false;
-      sub.subscription.unsubscribe();
-    };
   }, [client]);
 
   const signIn = useCallback(
     async (email: string, password: string) => {
       if (!client) return { error: 'Supabase is not configured on this build.' };
-      const { error } = await client.auth.signInWithPassword({ email, password });
-      return { error: error?.message ?? null };
+      return authAction(() => client.auth.signInWithPassword({ email, password }));
     },
     [client]
   );
 
   const signOut = useCallback(async () => {
-    if (!client) return;
-    await client.auth.signOut();
+    if (!client) return { error: null };
+    return authAction(() => client.auth.signOut());
   }, [client]);
 
   const value: AuthContextValue = {
@@ -69,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     session,
     user: session?.user ?? null,
+    authError,
     signIn,
     signOut,
   };

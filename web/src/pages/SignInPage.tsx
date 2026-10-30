@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import './SignInPage.css';
 
 export function SignInPage() {
-  const { configured, loading, user, signIn } = useAuth();
+  const { configured, loading, user, signIn, authError } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -67,7 +67,7 @@ export function SignInPage() {
           onChange={e => setPassword(e.target.value)}
           required
         />
-        {error ? <p className="sign-in-error">{error}</p> : null}
+        {error || authError ? <p className="sign-in-error">{error ?? authError}</p> : null}
         <button type="submit" className="btn primary wide" disabled={busy}>
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
