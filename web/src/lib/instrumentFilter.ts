@@ -1,6 +1,6 @@
 import type { Exercise, Routine } from '../types/content';
 
-export const ALL_INSTRUMENTS_TOKEN = 'All';
+const ALL_INSTRUMENTS_TOKEN = 'All';
 
 const VALID_FILTERS = new Set([
   'All',
@@ -13,12 +13,12 @@ const VALID_FILTERS = new Set([
   'Drums',
 ]);
 
-export function normalizeApplicableInstruments(list: string[] | undefined): string[] {
+function normalizeApplicableInstruments(list: string[] | undefined): string[] {
   if (!list || list.length === 0) return [ALL_INSTRUMENTS_TOKEN];
   return list;
 }
 
-export function matchesApplicableInstruments(applicable: string[] | undefined, filter: string): boolean {
+function matchesApplicableInstruments(applicable: string[] | undefined, filter: string): boolean {
   if (filter === 'All') return true;
   const apps = normalizeApplicableInstruments(applicable);
   if (apps.includes(ALL_INSTRUMENTS_TOKEN)) return true;

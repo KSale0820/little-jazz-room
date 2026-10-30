@@ -7,11 +7,9 @@ import { describe, expect, it } from 'vitest';
 import {
   APPROVED_ROOM_SIZE,
   VISUAL_ASSETS,
-  catCloseupUrl,
-  catFloorUrl,
-  catPortraitUrl,
+  catCloseupUrls,
+  catFloorUrls,
   catPortraitUrls,
-  catSpriteUrl,
   roomArtUrls,
 } from './visualManifest';
 
@@ -94,12 +92,22 @@ describe('approved visual library', () => {
 
   it('maps the eight cat ids to full-body, profile, and close-up art', () => {
     for (const id of CAT_IDS) {
-      expect(catFloorUrl(id)).toBe(`/visuals/cats/full-body/${id}.png`);
-      expect(catPortraitUrl(id)).toBe(`/visuals/cats/profiles/${id}.png`);
-      expect(catPortraitUrls(id)).toEqual([`/visuals/cats/profiles/${id}.png`]);
-      expect(catCloseupUrl(id)).toBe(`/visuals/cats/closeups/${id}.png`);
-      expect(catSpriteUrl(id)).toBe(`/jazz-cat-assets/${id}.svg`);
-      expect(catPortraitUrls(id).some(url => url.endsWith('.svg'))).toBe(false);
+      expect(catFloorUrls(id)).toEqual([
+        `/visuals/cats/full-body/${id}.png`,
+        `/jazz-cat-assets/${id}.png`,
+        `/jazz-cat-assets/${id}.svg`,
+      ]);
+      expect(catPortraitUrls(id)).toEqual([
+        `/visuals/cats/profiles/${id}.png`,
+        `/jazz-cat-assets/${id}-portrait.png`,
+        `/jazz-cat-assets/${id}.svg`,
+      ]);
+      expect(catCloseupUrls(id)).toEqual([
+        `/visuals/cats/closeups/${id}.png`,
+        `/visuals/cats/profiles/${id}.png`,
+        `/jazz-cat-assets/${id}-portrait.png`,
+        `/jazz-cat-assets/${id}.svg`,
+      ]);
     }
   });
 
@@ -107,9 +115,9 @@ describe('approved visual library', () => {
     const installed = new Set(walkFiles(publicVisuals));
     const fromManifest = new Set<string>(collectVisualUrls(VISUAL_ASSETS));
     for (const id of CAT_IDS) {
-      fromManifest.add(catFloorUrl(id));
-      fromManifest.add(catPortraitUrl(id));
-      fromManifest.add(catCloseupUrl(id));
+      fromManifest.add(catFloorUrls(id)[0]);
+      fromManifest.add(catPortraitUrls(id)[0]);
+      fromManifest.add(catCloseupUrls(id)[0]);
     }
 
     const roomFrames = [

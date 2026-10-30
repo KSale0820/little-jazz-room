@@ -16,10 +16,8 @@ export const APPROVED_ROOM_SIZE = { width: 941, height: 1672 } as const;
 
 export const VISUAL_ASSETS = {
   decor: {
-    botanicalCorner: '/decor/botanical-corner.svg',
     plant: '/decor/plant.png',
     books: '/decor/books.png',
-    mug: '/decor/mug.png',
   },
   room: {
     /** Live cat-free hero room (1440×800 landscape). */
@@ -57,14 +55,11 @@ export const VISUAL_ASSETS = {
     fullBodyFile: (id: CatId) => `/visuals/cats/full-body/${id}.png`,
     profileFile: (id: CatId) => `/visuals/cats/profiles/${id}.png`,
     closeupFile: (id: CatId) => `/visuals/cats/closeups/${id}.png`,
-    /** Previous sprites. Kept on disk; live helpers do not return these. */
+    /** Previous art. Used only after an approved file fails to load. */
     legacy: {
       floorFile: (id: CatId) => `/jazz-cat-assets/${id}.png`,
       portraitFile: (id: CatId) => `/jazz-cat-assets/${id}-portrait.png`,
       spriteFile: (id: CatId) => `/jazz-cat-assets/${id}.svg`,
-      iconFile: (id: CatId) => `/jazz-cat-assets/${id}-icon.png`,
-      smallFile: (id: CatId) => `/jazz-cat-assets/${id}-small.png`,
-      cardFile: (id: CatId) => `/jazz-cat-assets/cards/${id}-card.png`,
     },
   },
   garden: {
@@ -131,27 +126,30 @@ export function roomArtUrls(lighting: RoomLightingAsset): string[] {
   ];
 }
 
+/** Approved profile first, then the previous portrait PNG, then the SVG wrapper. */
 export function catPortraitUrls(id: CatId): string[] {
-  return [VISUAL_ASSETS.cat.profileFile(id)];
+  return [
+    VISUAL_ASSETS.cat.profileFile(id),
+    VISUAL_ASSETS.cat.legacy.portraitFile(id),
+    VISUAL_ASSETS.cat.legacy.spriteFile(id),
+  ];
 }
 
-/** Explicit pixel-sprite variant only. Not a fallback for missing approved art. */
-export function catSpriteUrl(id: CatId): string {
-  return VISUAL_ASSETS.cat.legacy.spriteFile(id);
+/** Approved full-body first, then the previous floor PNG, then the SVG wrapper. */
+export function catFloorUrls(id: CatId): string[] {
+  return [
+    VISUAL_ASSETS.cat.fullBodyFile(id),
+    VISUAL_ASSETS.cat.legacy.floorFile(id),
+    VISUAL_ASSETS.cat.legacy.spriteFile(id),
+  ];
 }
 
-export function catPortraitUrl(id: CatId): string {
-  return VISUAL_ASSETS.cat.profileFile(id);
-}
-
-export function catCloseupUrl(id: CatId): string {
-  return VISUAL_ASSETS.cat.closeupFile(id);
-}
-
-/**
- * Full-body approved cat PNG.
- * Used on Home, Profile, and the chooser.
- */
-export function catFloorUrl(id: CatId): string {
-  return VISUAL_ASSETS.cat.fullBodyFile(id);
+/** Approved close-up, then the approved profile, then the previous portrait and SVG. */
+export function catCloseupUrls(id: CatId): string[] {
+  return [
+    VISUAL_ASSETS.cat.closeupFile(id),
+    VISUAL_ASSETS.cat.profileFile(id),
+    VISUAL_ASSETS.cat.legacy.portraitFile(id),
+    VISUAL_ASSETS.cat.legacy.spriteFile(id),
+  ];
 }

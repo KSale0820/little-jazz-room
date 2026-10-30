@@ -33,16 +33,15 @@ Public URLs use `/visuals/{group}/{file}`.
 
 | Helper | URL | Used by |
 |--------|-----|---------|
-| `catFloorUrl` | `/visuals/cats/full-body/{id}.png` | Home (220px), Profile hero (140px), chooser |
-| `catPortraitUrl` / `catPortraitUrls` | `/visuals/cats/profiles/{id}.png` | Profile-style portrait. No SVG fallback |
-| `catCloseupUrl` | `/visuals/cats/closeups/{id}.png` | Practice companion (`variant="closeup"`, 48px) |
-| `catSpriteUrl` | `/jazz-cat-assets/{id}.svg` | Only if a caller passes `variant="sprite"` |
+| `catFloorUrls` | `/visuals/cats/full-body/{id}.png`, then `/jazz-cat-assets/{id}.png`, then `{id}.svg` | Home, Profile hero, chooser. `useImageFallback` resets when the cat id changes |
+| `catPortraitUrls` | `/visuals/cats/profiles/{id}.png`, then the older portrait PNG, then `{id}.svg` | Portrait variant |
+| `catCloseupUrls` | `/visuals/cats/closeups/{id}.png`, then the approved profile, then the older portrait and SVG | Practice companion (`variant="closeup"`, 48px) |
 | `VISUAL_ASSETS.icons.nav.explore` | `/visuals/icons/nav-explore.svg` | Sidebar and bottom nav, CSS mask so `currentColor` still applies |
 | `VISUAL_ASSETS.icons.nav.practice` | `/visuals/icons/nav-practice.svg` | Same |
 
 Selection is unchanged: `little-jazz-room:selected-cat:v1` (or that key plus the account id) and Supabase `profiles.cat_id`.
 
-Home, Create, and Profile navigation still use the previous inline pixel paths. Utility icons, vignettes, garden stages, approved decor, achievements, effects, brand files, and room overlays are registered and not mounted. Page atmosphere still uses `/decor/plant.png` and `/decor/books.png`, which are the older files, not `web/public/visuals/decor/`.
+Home, Create, and Profile navigation still use the previous inline pixel paths. Utility icons, vignettes, garden stages, approved decor, achievements, effects, the wordmark, the brand mark, and room overlays are registered and not mounted. The document icon is `/visuals/brand/favicon.svg`. Page atmosphere still uses `/decor/plant.png` and `/decor/books.png`, which are the older files, not `web/public/visuals/decor/`.
 
 The new full-body cats are drawn on the current landscape room. That mix is temporary. Do not stretch the portrait room to hide it.
 
@@ -113,7 +112,7 @@ Light botanical accents for secondary pages. 1200×600 RGBA. Do not place them o
 |------|--------|
 | `web/public/visuals/brand/little-jazz-room-wordmark.svg` | Not swapped into the header |
 | `web/public/visuals/brand/brand-mark.svg` | Not swapped into the header |
-| `web/public/visuals/brand/favicon.svg` | Valid SVG. Detail can merge at 16px. `web/index.html` still points at `/favicon.svg` |
+| `web/public/visuals/brand/favicon.svg` | Valid SVG. Detail can merge at 16px. `web/index.html` points here |
 
 ### Icons — Explore and Practice are live
 
@@ -182,7 +181,7 @@ Stitch should:
 - Hotspot fractions and the cat anchor are still for 1440×800.
 - New cats sit on the old room until that scene switches.
 - Garden, vignettes, approved decor, utility icons, achievements, effects, wordmark, and brand mark are not mounted.
-- `index.html` still uses the previous favicon.
+- `index.html` uses `/visuals/brand/favicon.svg`. The previous `/favicon.svg` is still on disk. Detail in the approved mark can clump at 16px.
 - Home, Create, and Profile nav icons are still the older inline paths.
 - Legacy files under `web/public/room/`, `web/public/decor/`, `web/public/jazz-cat-assets/`, and `web/public/favicon.svg` were left in place so nothing 404s.
 - Cat anatomy at 48 / 96 / 256px still needs a visual pass. The handoff asked for that review in the app; this change did not redraw anything.
