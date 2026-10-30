@@ -47,8 +47,8 @@ export function CreatePage() {
   const [exChartId, setExChartId] = useState<string>('');
 
   useEffect(() => {
-    if (editId && exercisesById[editId]) {
-      const ex = exercises.find(e => e.id === editId) ?? exercisesById[editId];
+    const ex = editId ? exercises.find(e => e.id === editId) : undefined;
+    if (ex) {
       setShowExerciseForm(true);
       setExTitle(ex.title);
       setExCategory(ex.category);
@@ -77,8 +77,13 @@ export function CreatePage() {
   };
 
   const saveExercise = async () => {
+    if (saving) return;
     if (!exTitle.trim() || !exInstructions.trim()) {
       showToast('Exercise needs a title and instructions.');
+      return;
+    }
+    if (!Number.isSafeInteger(exMinutes) || exMinutes < 1) {
+      showToast('Duration must be a positive whole number of minutes.');
       return;
     }
     const existing = editId ? exercises.find(e => e.id === editId) : undefined;
@@ -89,25 +94,27 @@ export function CreatePage() {
           ? crypto.randomUUID()
           : newLocalExerciseId();
     const exercise: LocalExercise = {
+      ...existing,
       id,
       title: exTitle.trim(),
       category: exCategory,
       level: exLevel,
       duration_minutes: exMinutes,
       instructions: exInstructions.trim(),
-      suggested_material: 'Custom exercise',
-      suggested_bpm: null,
-      audio_asset_id: null,
-      visibility: 'private',
+      suggested_material: existing?.suggested_material ?? 'Custom exercise',
+      suggested_bpm: existing?.suggested_bpm ?? null,
+      audio_asset_id: existing?.audio_asset_id ?? null,
+      visibility: existing?.is_seed === false ? existing.visibility : 'private',
       is_seed: false,
       chart_id: exChartId || null,
-      applicable_instruments: ['All'],
+      applicable_instruments: existing?.applicable_instruments ?? ['All'],
     };
-    if (!stepIds.includes(id)) setStepIds([...stepIds, id]);
     setSaving(true);
     try {
+      let savedId = id;
       if (teamSignedIn) {
         const saved = await saveExerciseToCloud(exercise);
+        savedId = saved.id;
         repo.saveLocalExercise({ ...exercise, id: saved.id });
         refreshLocal();
         showToast('Exercise saved to your team account.');
@@ -116,6 +123,7 @@ export function CreatePage() {
         refreshLocal();
         showToast('Exercise saved on this device.');
       }
+      setStepIds(ids => ids.includes(savedId) ? ids : [...ids, savedId]);
       setShowExerciseForm(false);
     } catch (e) {
       showToast(e instanceof Error ? e.message : 'Could not save exercise.');
