@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { catFloorUrls, catPortraitUrls } from '../../assets/visualManifest';
+import { catCloseupUrls, catFloorUrls, catPortraitUrls } from '../../assets/visualManifest';
 import { useImageFallback } from '../../lib/useImageFallback';
 import './cat-companion.css';
 
@@ -61,10 +61,12 @@ export function useCatSelection(repository?: CatPreferenceRepository, accountKey
 }
 
 export function CatSprite({ catId, size = 96, className = '', decorative = false, animated = false, variant = 'portrait' }:
-  { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'floor' }) {
+  { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'floor' | 'closeup' }) {
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
-  // 'floor' = full-body illustrated PNG; 'portrait' = head/bust PNG. Both fall back to the SVG wrapper.
-  const candidates = variant === 'floor' ? catFloorUrls(catId) : catPortraitUrls(catId);
+  // floor = approved full-body; portrait = approved profile; closeup = approved face. Each list falls back to older art.
+  const candidates = variant === 'floor' ? catFloorUrls(catId)
+    : variant === 'closeup' ? catCloseupUrls(catId)
+    : catPortraitUrls(catId);
   const { src, onError } = useImageFallback(candidates, `${variant}:${catId}`);
 
   return <img className={`jazz-cat-sprite ${animated ? 'jazz-cat-animated' : ''} ${className}`} src={src}

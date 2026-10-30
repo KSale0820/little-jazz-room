@@ -1,0 +1,593 @@
+[
+  {
+    "path": "achievements/achievement-first-practice.png",
+    "bytes": 36306,
+    "sha256": "f40adf32cda76f4281fb1734cd319800994aabcf113fe799f03697e159294be3",
+    "source": "little-jazz-room-polish-v2(1).zip :: achievement-first-practice.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "achievements/achievement-first-routine.png",
+    "bytes": 56203,
+    "sha256": "7e73d8a845841416d1cc52aee5e94a8ce64356150d3e71e4a0b34c7347b6c0fa",
+    "source": "little-jazz-room-polish-v2(1).zip :: achievement-first-routine.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "achievements/achievement-practice-milestone.png",
+    "bytes": 94081,
+    "sha256": "47457b0bd0e9d7ea1bc2d92f9b23d4571fcf21b21b9e85e6930561de567cffb4",
+    "source": "little-jazz-room-polish-v2(1).zip :: achievement-practice-milestone.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "brand/brand-mark.svg",
+    "bytes": 7606,
+    "sha256": "1a9905857c0cf14c052bfc8c94f6f9583efe8c24970c65508429e112e560e11f",
+    "source": "brand-mark(2).svg"
+  },
+  {
+    "path": "brand/favicon.svg",
+    "bytes": 1280,
+    "sha256": "64673e9dfd05ab958376a10f5fc11c3451bf7a75da57c790158bc412abddff32",
+    "source": "favicon(2).svg"
+  },
+  {
+    "path": "brand/little-jazz-room-wordmark.svg",
+    "bytes": 12783,
+    "sha256": "fb02248afc24037ca4c136522658835678a50cae0774535c68298d45597b8af3",
+    "source": "little-jazz-room-wordmark(2).svg"
+  },
+  {
+    "path": "cats/README.txt",
+    "bytes": 647,
+    "sha256": "dcb4f1285e10d5f8a1823dc1ab53ae7bfabf6e9069b3919a016789afa1fe6b42",
+    "source": "jazz-cats(1).zip :: README.txt"
+  },
+  {
+    "path": "cats/closeups/biscuit.png",
+    "bytes": 59480,
+    "sha256": "38bc27e7c7d9407e0afd5807eedb9438a11b544665a3cbab803f784944f0e043",
+    "source": "jazz-cats(1).zip :: closeups/biscuit.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/closeups/chai.png",
+    "bytes": 59457,
+    "sha256": "d3aae8b1e0866bfde73b79b3df055c75802eb840947a7dbf65d48a638c464b69",
+    "source": "jazz-cats(1).zip :: closeups/chai.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/closeups/luna.png",
+    "bytes": 58601,
+    "sha256": "773fe4d9d552f77b341988d96e6917dc2574cd478d36a67e6d568afc8fc8b6bc",
+    "source": "jazz-cats(1).zip :: closeups/luna.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/closeups/maple.png",
+    "bytes": 61423,
+    "sha256": "1e3eb3e852aacf49a80ec66bfb7b2bdf19fb23fc0f16c5e86f896977c15e9945",
+    "source": "jazz-cats(1).zip :: closeups/maple.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/closeups/milo.png",
+    "bytes": 54214,
+    "sha256": "14575fa8a0fe0a3db8bf5c3c740c2b106bbf295808234306531440f6d31287ed",
+    "source": "jazz-cats(1).zip :: closeups/milo.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/closeups/mochi.png",
+    "bytes": 58380,
+    "sha256": "a1390eead4151f25a202f244fe509e79f3b0dfa235ce7b5973ae0638e32ff3cd",
+    "source": "jazz-cats(1).zip :: closeups/mochi.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/closeups/patches.png",
+    "bytes": 58182,
+    "sha256": "615601fcbb0f0f4b21f315f86ceda5f2729a65a3b444d53a7695ba57f4c89d47",
+    "source": "jazz-cats(1).zip :: closeups/patches.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/closeups/pepper.png",
+    "bytes": 58138,
+    "sha256": "2f66c1e6c7f948c7c30686eac5c53a78d35699448a8b59eccce9f92d4980a23a",
+    "source": "jazz-cats(1).zip :: closeups/pepper.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/full-body/biscuit.png",
+    "bytes": 164167,
+    "sha256": "ef7dd61157b29c3b013a24379c115bbd684d66c197750c4e0871ab56453d93c3",
+    "source": "jazz-cats(1).zip :: full-body/biscuit.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/full-body/chai.png",
+    "bytes": 82000,
+    "sha256": "448f2eaed5f1d9629bc3a8f2de4c27db4ebe9ce11604396539a4f074b9bab1cb",
+    "source": "jazz-cats(1).zip :: full-body/chai.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/full-body/luna.png",
+    "bytes": 178230,
+    "sha256": "1d8b91b728ecd5d3cb5f5be6ed8018e4354dbd55c6be51f384928653627334e2",
+    "source": "jazz-cats(1).zip :: full-body/luna.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/full-body/maple.png",
+    "bytes": 160822,
+    "sha256": "b5bf20c0838cc7c4e5ae1c325dd3093ef769694474e74388bdaad104a448e345",
+    "source": "jazz-cats(1).zip :: full-body/maple.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/full-body/milo.png",
+    "bytes": 108917,
+    "sha256": "200800caff7192831ed0def0b2587b9aca9c139b32eb9c921fee8ba1b38034fa",
+    "source": "jazz-cats(1).zip :: full-body/milo.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/full-body/mochi.png",
+    "bytes": 181780,
+    "sha256": "8537f94145d405308bb611255083cf9020f5809579cd9a366b8d1304303a4ff6",
+    "source": "jazz-cats(1).zip :: full-body/mochi.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/full-body/patches.png",
+    "bytes": 175791,
+    "sha256": "0357da9191de53db65c83ac92f8d752f602e2a301c64ad9d253ee7e534407c98",
+    "source": "jazz-cats(1).zip :: full-body/patches.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/full-body/pepper.png",
+    "bytes": 132180,
+    "sha256": "8831c54ac265abc65c9ecad4222b877769b6af2280e7ea03de1823d8d9522408",
+    "source": "jazz-cats(1).zip :: full-body/pepper.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/profiles/biscuit.png",
+    "bytes": 69620,
+    "sha256": "8e1626308d39596640f01376108421a89ca7823b344d8354ec661a50931e301b",
+    "source": "jazz-cats(1).zip :: profiles/biscuit.png",
+    "width": 800,
+    "height": 800,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/profiles/chai.png",
+    "bytes": 72668,
+    "sha256": "acbd4fc02cf82be2d0074d3e87d3addfeb806577d0d1e65af2095d39a47345c4",
+    "source": "jazz-cats(1).zip :: profiles/chai.png",
+    "width": 800,
+    "height": 800,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/profiles/luna.png",
+    "bytes": 67231,
+    "sha256": "a915100a5793dd38a6f5208b93789aefde0f5bb8e787c498e51d6b7e1ae4d1ea",
+    "source": "jazz-cats(1).zip :: profiles/luna.png",
+    "width": 800,
+    "height": 800,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/profiles/maple.png",
+    "bytes": 66336,
+    "sha256": "b6d42bb905fc809a087f45df1515240df5e0e276435d93945d9bf6fc00fb189b",
+    "source": "jazz-cats(1).zip :: profiles/maple.png",
+    "width": 800,
+    "height": 800,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/profiles/milo.png",
+    "bytes": 60624,
+    "sha256": "cd0ac9af736fc49bbd44463aa1cd6c9af58130005c1940919075997a2a8a7bf0",
+    "source": "jazz-cats(1).zip :: profiles/milo.png",
+    "width": 800,
+    "height": 800,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/profiles/mochi.png",
+    "bytes": 71415,
+    "sha256": "be73e2efe17b12c12d3804cea4592c6d1d96911173e8e2fa27a1ef73ae2bb3e4",
+    "source": "jazz-cats(1).zip :: profiles/mochi.png",
+    "width": 800,
+    "height": 800,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/profiles/patches.png",
+    "bytes": 68627,
+    "sha256": "eef82052697a944fb86a3cc82a9b04cb542452eddb32493b88af4191bf178d7b",
+    "source": "jazz-cats(1).zip :: profiles/patches.png",
+    "width": 800,
+    "height": 800,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/profiles/pepper.png",
+    "bytes": 66609,
+    "sha256": "0e0a42716cf9e22b895e55afe4278106c9a5129d4c50584caf2dd58b36d81c6a",
+    "source": "jazz-cats(1).zip :: profiles/pepper.png",
+    "width": 800,
+    "height": 800,
+    "mode": "RGBA"
+  },
+  {
+    "path": "cats/verification.json",
+    "bytes": 5073,
+    "sha256": "77475515a178d049275d1d9643dc8f0671db5dba4d4939652ec57d288049fcf7",
+    "source": "jazz-cats(1).zip :: verification.json"
+  },
+  {
+    "path": "decor/books.png",
+    "bytes": 1188321,
+    "sha256": "4776a3cd38fde6592767bcae82e90832c48b34d3784b21a64cb939ebe3061944",
+    "source": "little-jazz-room-decorative-objects-revised(2).zip :: books.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "decor/brass-lamp.png",
+    "bytes": 466979,
+    "sha256": "f95f33454fdf8a104209d1464def0e31d6795e30ccbf51c09d9924747da9b010",
+    "source": "little-jazz-room-decorative-objects-revised(2).zip :: brass-lamp.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "decor/coffee-mug.png",
+    "bytes": 689017,
+    "sha256": "648895b29b995c89c7045c46ece3783a491080bf0b26581b53156c5f980b6b4a",
+    "source": "little-jazz-room-decorative-objects-revised(2).zip :: coffee-mug.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "decor/hanging-plant.png",
+    "bytes": 718420,
+    "sha256": "c3547e8c464da08831d583e376291360e1e094c2b53387d0719d77b481fc3932",
+    "source": "little-jazz-room-decorative-objects-revised(2).zip :: hanging-plant.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "decor/metronome.png",
+    "bytes": 647406,
+    "sha256": "71e0144ce5f2a8f9605b4fb660cac7f5919d4044893314a72c884a1849f5160f",
+    "source": "little-jazz-room-decorative-objects-revised(2).zip :: metronome.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "decor/plant.png",
+    "bytes": 963505,
+    "sha256": "32de16b8f4b7d8f84d09f0959c7f61bbd5ee28f685539d595492babed6ee8aa4",
+    "source": "little-jazz-room-decorative-objects-revised(2).zip :: plant.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "effects/music-notes-overlay.png",
+    "bytes": 8234,
+    "sha256": "bf864a598363fe45710f1b43185e07900fb5b39364dcf31d19f167e80d7b6b33",
+    "source": "little-jazz-room-polish-v2(1).zip :: music-notes-overlay.png",
+    "width": 512,
+    "height": 512,
+    "mode": "RGBA"
+  },
+  {
+    "path": "effects/window-rain-overlay.png",
+    "bytes": 42681,
+    "sha256": "6f62393fb3dd86b000b27973c245605c90d600262cdab37df236e9f50ddd3499",
+    "source": "little-jazz-room-polish-v2(1).zip :: window-rain-overlay.png",
+    "width": 1024,
+    "height": 1024,
+    "mode": "RGBA"
+  },
+  {
+    "path": "garden/garden-stage-0.png",
+    "bytes": 83053,
+    "sha256": "6debc7332c093e27c54732f31b82fa584ae09cc5e6ba4530853767d13cfef624",
+    "source": "little-jazz-room-bluebell-soft-assets(1).zip :: garden-stage-0.png",
+    "width": 512,
+    "height": 768,
+    "mode": "RGBA"
+  },
+  {
+    "path": "garden/garden-stage-1.png",
+    "bytes": 122552,
+    "sha256": "0949e1f0687c68c10260ff9eba30d632926de112c619847b8ee7aa6b43d457c0",
+    "source": "little-jazz-room-bluebell-soft-assets(1).zip :: garden-stage-1.png",
+    "width": 512,
+    "height": 768,
+    "mode": "RGBA"
+  },
+  {
+    "path": "garden/garden-stage-2.png",
+    "bytes": 196161,
+    "sha256": "99f62c99db77604c0cfb2d0f793de48689450c1ba266aec2abf1d31513f35b4a",
+    "source": "little-jazz-room-bluebell-soft-assets(1).zip :: garden-stage-2.png",
+    "width": 512,
+    "height": 768,
+    "mode": "RGBA"
+  },
+  {
+    "path": "garden/garden-stage-3.png",
+    "bytes": 282511,
+    "sha256": "3ab1d1787985f36a0e258ebd2db12e69adcdae5e570231ebdf97dc5790829a2f",
+    "source": "little-jazz-room-bluebell-soft-assets(1).zip :: garden-stage-3.png",
+    "width": 512,
+    "height": 768,
+    "mode": "RGBA"
+  },
+  {
+    "path": "icons/icon-bookmark.svg",
+    "bytes": 241,
+    "sha256": "468704e050126b1b2cb0871aa5f43c56a2ca01d72529f2631416aa50540ff876",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-bookmark.svg"
+  },
+  {
+    "path": "icons/icon-copy.svg",
+    "bytes": 287,
+    "sha256": "ac820774cbc9108fd8774f489987e2391b072b8b4b2e0e3107c28c4180bc2337",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-copy.svg"
+  },
+  {
+    "path": "icons/icon-edit.svg",
+    "bytes": 331,
+    "sha256": "f2153918ec659027efb5895362c8b54089a9b57a8feb51bf8ad8b687365a69ed",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-edit.svg"
+  },
+  {
+    "path": "icons/icon-lighting.svg",
+    "bytes": 353,
+    "sha256": "a2280dc15e4e3f91c4a6e239a411fba3781f869d5b3a60928177c8b24180a54f",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-lighting.svg"
+  },
+  {
+    "path": "icons/icon-loop.svg",
+    "bytes": 352,
+    "sha256": "44532632056d88ed07b9908dd3ee8fbebce7d1799b2ede85c0590a243fdaf970",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-loop.svg"
+  },
+  {
+    "path": "icons/icon-metronome.svg",
+    "bytes": 439,
+    "sha256": "4fa6e7e493bf60cb5d7d445b2333695769937a35fd8daed0c03e772eab08e1d6",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-metronome.svg"
+  },
+  {
+    "path": "icons/icon-pause.svg",
+    "bytes": 380,
+    "sha256": "c4b1c48436ef8bc75c5b8d967c349528d914ffe17f9ea8a4c5636745fc41178f",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-pause.svg"
+  },
+  {
+    "path": "icons/icon-play.svg",
+    "bytes": 335,
+    "sha256": "d1b492450319b3613a0fcd70afc7fe9b9bb4fef2768c49ff5fe8d0282178c690",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-play.svg"
+  },
+  {
+    "path": "icons/icon-save.svg",
+    "bytes": 312,
+    "sha256": "bdae743110d31bb0d166034a52a12420d3bac607d4fdb6893e90751276a8d85a",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-save.svg"
+  },
+  {
+    "path": "icons/icon-search.svg",
+    "bytes": 265,
+    "sha256": "b05615b816f856c8943976f3d4495583d047458bff33c360d8e6ddecc8eb18af",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-search.svg"
+  },
+  {
+    "path": "icons/icon-share.svg",
+    "bytes": 280,
+    "sha256": "c5e69a4014ff40b7b837eeeea546e5294ed98ebf5d68419e337c2f8d02f54441",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-share.svg"
+  },
+  {
+    "path": "icons/icon-skip.svg",
+    "bytes": 416,
+    "sha256": "94aa2e522649cee692893c4a46f5ead47885afc4bfef636229ea5d58b679968e",
+    "source": "little-jazz-room-utility-and-playback-icons(1).zip :: web/public/icons/icon-skip.svg"
+  },
+  {
+    "path": "icons/nav-create.svg",
+    "bytes": 130,
+    "sha256": "667a90b7e9ccb447e4ebd6d3fd523abb568bfb89372065a2aaaeab4f09905714",
+    "source": "little-jazz-room-nav-repo-ready(1).zip :: web/public/icons/nav-create.svg"
+  },
+  {
+    "path": "icons/nav-explore.svg",
+    "bytes": 703,
+    "sha256": "c26e50ad477b1c1be5a7c0414f64f4b7fdf56884a867092b1531a63762c13ff7",
+    "source": "little-jazz-room-nav-final-two-icons(2).zip :: nav-explore.svg"
+  },
+  {
+    "path": "icons/nav-home.svg",
+    "bytes": 218,
+    "sha256": "49c781128cbe9d0753e078e067bd7ab391408fcaecb9716163830d1420a77efb",
+    "source": "little-jazz-room-nav-repo-ready(1).zip :: web/public/icons/nav-home.svg"
+  },
+  {
+    "path": "icons/nav-practice.svg",
+    "bytes": 541,
+    "sha256": "437831696e0b270e6172e22726861ded2557e49269aaa9568b10caac2b63f5ae",
+    "source": "little-jazz-room-nav-final-two-icons(2).zip :: nav-practice.svg"
+  },
+  {
+    "path": "icons/nav-profile.svg",
+    "bytes": 267,
+    "sha256": "b25cb5a8ce5e34ad2f21ccb00a6bcb111b3f7bad4798edcbea7798757863e712",
+    "source": "little-jazz-room-nav-repo-ready(1).zip :: web/public/icons/nav-profile.svg"
+  },
+  {
+    "path": "references/APPROVED-VISUAL-REFERENCE.png",
+    "bytes": 2344522,
+    "sha256": "6eb075ed70fe54f2511732948e332a142a555669ca76ee4e78880341ac2b7053",
+    "source": "APPROVED-VISUAL-REFERENCE.png",
+    "width": 1448,
+    "height": 1086,
+    "mode": "RGB"
+  },
+  {
+    "path": "room/home-hero-night.png",
+    "bytes": 2039291,
+    "sha256": "8295cf4f9998a0e0037a7803f351a1687d6b8566a247a02ae873610c5e7dd62f",
+    "source": "little-jazz-room-lighting-states (1).zip :: home-hero-night.png",
+    "width": 941,
+    "height": 1672,
+    "mode": "RGB"
+  },
+  {
+    "path": "room/home-hero-sunshine.png",
+    "bytes": 3024067,
+    "sha256": "e6d76f24204dd0103c590bb6da3bffb50b742f0feea1aa16a500310d64242bd2",
+    "source": "image(6).png",
+    "width": 941,
+    "height": 1672,
+    "mode": "RGBA"
+  },
+  {
+    "path": "room/home-hero-twilight.png",
+    "bytes": 1940074,
+    "sha256": "235b85d29b8fa0de91bb88e3b6fc9543033829dc3e2781cf7b107a579de56b17",
+    "source": "little-jazz-room-lighting-states (1).zip :: home-hero-twilight.png",
+    "width": 941,
+    "height": 1672,
+    "mode": "RGB"
+  },
+  {
+    "path": "room/overlays/notebook-active.png",
+    "bytes": 13704,
+    "sha256": "95c241f686fdeb4b382a6cc55a158fefb2c554c474eb7b5d58635c38e9482caa",
+    "source": "little-jazz-room-overlays-corrected(1).zip :: notebook-active.png",
+    "width": 941,
+    "height": 1672,
+    "mode": "RGBA"
+  },
+  {
+    "path": "room/overlays/piano-active.png",
+    "bytes": 20553,
+    "sha256": "8a118000c0fe53846ab0f40eed970d74f71635f5b4c634bb47a9161adff06364",
+    "source": "little-jazz-room-overlays-corrected(1).zip :: piano-active.png",
+    "width": 941,
+    "height": 1672,
+    "mode": "RGBA"
+  },
+  {
+    "path": "room/overlays/plants-active.png",
+    "bytes": 16181,
+    "sha256": "6e2d8979e958bb4ac506f6452ee8f656c4a0f5cd830f34d6cb08b892017aa6c9",
+    "source": "little-jazz-room-overlays-corrected(1).zip :: plants-active.png",
+    "width": 941,
+    "height": 1672,
+    "mode": "RGBA"
+  },
+  {
+    "path": "room/overlays/stand-active.png",
+    "bytes": 13401,
+    "sha256": "be334a36bb8399cbf8ba44aeff15ef7eee15f5e8d264a8deb8ca8d07b5a867e5",
+    "source": "little-jazz-room-overlays-corrected(1).zip :: stand-active.png",
+    "width": 941,
+    "height": 1672,
+    "mode": "RGBA"
+  },
+  {
+    "path": "vignettes/create-vignette.png",
+    "bytes": 427200,
+    "sha256": "58ebb929b2143970d2048ec07305342e3e8e9ec2c1c6711042f8ff2a06f00987",
+    "source": "little-jazz-room-vignettes-updated(2).zip :: create-vignette.png",
+    "width": 1200,
+    "height": 600,
+    "mode": "RGBA"
+  },
+  {
+    "path": "vignettes/explore-vignette.png",
+    "bytes": 573616,
+    "sha256": "66431401569d56a58011993cc38d6f543f1d8cff2e959f92817ef46181e53376",
+    "source": "little-jazz-room-vignettes-updated(2).zip :: explore-vignette.png",
+    "width": 1200,
+    "height": 600,
+    "mode": "RGBA"
+  },
+  {
+    "path": "vignettes/practice-vignette.png",
+    "bytes": 309954,
+    "sha256": "5867faef43ad9fa9c62f1ecd293b692574910d313ead096dcee276e2670ebae9",
+    "source": "little-jazz-room-vignettes-updated(2).zip :: practice-vignette.png",
+    "width": 1200,
+    "height": 600,
+    "mode": "RGBA"
+  },
+  {
+    "path": "vignettes/profile-vignette.png",
+    "bytes": 476628,
+    "sha256": "de826fc9c58033511f656f370f1c708d5d21ddfd108e678270e118c8f1ed95a2",
+    "source": "little-jazz-room-vignettes-updated(2).zip :: profile-vignette.png",
+    "width": 1200,
+    "height": 600,
+    "mode": "RGBA"
+  }
+]

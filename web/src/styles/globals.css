@@ -396,6 +396,20 @@ small,
   height: 23px;
   image-rendering: pixelated;
   fill: currentColor;
+  flex-shrink: 0;
+}
+
+.pix-mask {
+  display: inline-block;
+  background: currentColor;
+  -webkit-mask-image: var(--pix-mask);
+  mask-image: var(--pix-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .tabs {
