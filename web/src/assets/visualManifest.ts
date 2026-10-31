@@ -20,6 +20,8 @@ export const VISUAL_ASSETS = {
     books: '/decor/books.png',
   },
   room: {
+    /** Exact user-provided H01 room image, with no UI or cat baked in. */
+    h01: '/visuals/room/h01-approved-room.jpeg',
     /** Live cat-free hero room (1440×800 landscape). */
     hero: {
       sunshine: '/room/home-hero-sunshine.png',
@@ -53,6 +55,7 @@ export const VISUAL_ASSETS = {
   },
   cat: {
     /** The user's approved October 31 class-MVP art pack. Sole source of cat illustrations. */
+    sleepingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sleeping/${id}.png`,
     fullBodyFile: (id: CatId) => `/visuals/cats/approved-class-mvp/full-body/${id}.png`,
     profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
     closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
