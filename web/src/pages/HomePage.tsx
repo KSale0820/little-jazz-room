@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
@@ -7,8 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { displayNameFromUser, timeGreeting } from '../lib/greeting';
 import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
 import {
-  readLightingPreference, resolveLighting, writeLightingPreference,
-  type RoomLightingMode,
+  readLightingPreference, resolveLighting,
 } from '../lib/roomLighting';
 import './HomePage.css';
 
@@ -26,11 +25,7 @@ export function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { catId, catMotion, sessions, routines, activeRoutineId, setActiveRoutineId } = useApp();
-  const [lightMode, setLightMode] = useState<RoomLightingMode>(() => readLightingPreference());
-  const lighting = resolveLighting(lightMode);
-  const [lightingOpen, setLightingOpen] = useState(false);
-
-  useEffect(() => { writeLightingPreference(lightMode); }, [lightMode]);
+  const lighting = resolveLighting(readLightingPreference());
 
   const greeting = useMemo(() => timeGreeting(displayNameFromUser(user)), [user]);
   const todayMinutes = useMemo(() => minutesToday(sessions), [sessions]);
@@ -132,18 +127,6 @@ export function HomePage() {
           <span className="h01-flame" aria-hidden="true">♨</span>
           <span className="h01-stats-streak"><strong>{streak} day streak</strong><small>Keep it going!</small></span>
         </button>
-        <div className="h01-lighting-tools">
-          <button type="button" aria-expanded={lightingOpen} onClick={() => setLightingOpen(open => !open)} className="h01-lighting-toggle">Room lighting</button>
-          {lightingOpen ? (
-            <div className="h01-lighting-options" aria-label="Room lighting">
-              {(['auto', 'sunshine', 'twilight', 'night'] as const).map(mode => (
-                <button type="button" key={mode} aria-pressed={lightMode === mode} onClick={() => { setLightMode(mode); setLightingOpen(false); }}>
-                  {mode === 'auto' ? 'Auto' : mode[0].toUpperCase() + mode.slice(1)}
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
       </div>
     </section>
   );
