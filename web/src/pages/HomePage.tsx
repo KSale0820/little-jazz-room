@@ -1,241 +1,149 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { JazzRoomScene, type RoomHotspot } from '../components/JazzRoomScene';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
-import { RoomPanel } from '../features/home-room/RoomPanel';
-import {
-  LightingPanelContent,
-  NotebookPanelContent,
-  PlantsPanelContent,
-  StandPanelContent,
-} from '../features/home-room/RoomPanels';
-import { plantGrowth } from '../features/home-room/plantGrowth';
-import {
-  CAT_PROFILE_NAVIGATION,
-  actionForObject,
-  nextPanel,
-  type RoomPanelId,
-} from '../features/home-room/roomPanelState';
+import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { displayNameFromUser, timeGreeting } from '../lib/greeting';
+import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
 import {
-  computeGentleStreak,
-  longTermProgressPercent,
-  minutesToday,
-  totalPracticeMinutes,
-} from '../lib/practiceStats';
-import {
-  readLightingPreference,
-  resolveLighting,
-  writeLightingPreference,
+  readLightingPreference, resolveLighting, writeLightingPreference,
   type RoomLightingMode,
 } from '../lib/roomLighting';
-import '../features/home-room/home-room.css';
 import './HomePage.css';
 
 const GOAL_MINUTES = 30;
+type Hotspot = 'practice' | 'routines' | 'charts' | 'tracks';
 
-const PANEL_TITLES: Record<Exclude<RoomPanelId, null>, { title: string; eyebrow: string }> = {
-  'music-stand': { title: "Today's Practice", eyebrow: 'Music stand' },
-  notebook: { title: 'Saved Routines', eyebrow: 'Notebook' },
-  plants: { title: 'Your Garden', eyebrow: 'Long-term progress' },
-  lighting: { title: 'Room Lighting', eyebrow: 'Atmosphere' },
-};
-
-const CAT_LINES = [
-  'Ready when you are.',
-  'A few gentle minutes is plenty.',
-  'The piano has been waiting.',
-  "Let's warm up slowly.",
-  'No rush. Just a little music.',
+const HOTSPOTS: { id: Hotspot; text: string; description: string; to: string }[] = [
+  { id: 'practice', text: 'Practice', description: 'Piano: open Practice', to: '/practice' },
+  { id: 'routines', text: 'Routines', description: 'Music stand: browse routines', to: '/routines' },
+  { id: 'charts', text: 'Charts', description: 'Bookshelf: browse charts', to: '/charts' },
+  { id: 'tracks', text: 'Tracks', description: 'Record player: browse tracks', to: '/tracks' },
 ];
-
-const prefersReducedMotion = () =>
-  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { catId, catMotion, sessions, routines, activeRoutineId, setActiveRoutineId } = useApp();
   const [lightMode, setLightMode] = useState<RoomLightingMode>(() => readLightingPreference());
-  const [activePanel, setActivePanel] = useState<RoomPanelId>(null);
-  const [notes, setNotes] = useState(false);
-  const [bubble, setBubble] = useState(true);
-  const timers = useRef<number[]>([]);
   const lighting = resolveLighting(lightMode);
+  const [lightingOpen, setLightingOpen] = useState(false);
 
-  const practicedMinutes = useMemo(() => minutesToday(sessions), [sessions]);
-  const totalMinutes = useMemo(() => totalPracticeMinutes(sessions), [sessions]);
-  const streak = useMemo(() => computeGentleStreak(sessions), [sessions]);
-  const longTermPct = useMemo(() => longTermProgressPercent(sessions), [sessions]);
+  useEffect(() => { writeLightingPreference(lightMode); }, [lightMode]);
+
   const greeting = useMemo(() => timeGreeting(displayNameFromUser(user)), [user]);
-  const growth = useMemo(() => plantGrowth(totalMinutes), [totalMinutes]);
-  const cat = JAZZ_CATS.find(c => c.id === catId)!;
-  const todayRoutine = activeRoutineId ? routines.find(r => r.id === activeRoutineId) : undefined;
-  const [catLine] = useState(() => CAT_LINES[new Date().getDate() % CAT_LINES.length]);
+  const todayMinutes = useMemo(() => minutesToday(sessions), [sessions]);
+  const streak = useMemo(() => computeGentleStreak(sessions), [sessions]);
+  const routine = routines.find(r => r.id === activeRoutineId)
+    ?? routines.find(r => r.id === 'daily-warm-up')
+    ?? routines[0];
+  const companion = JAZZ_CATS.find(cat => cat.id === catId);
+  const todayProgress = Math.min(100, todayMinutes / GOAL_MINUTES * 100);
 
-  useEffect(() => {
-    writeLightingPreference(lightMode);
-  }, [lightMode]);
-
-  useEffect(() => {
-    const t = window.setTimeout(() => setBubble(false), 7000);
-    const pending = timers.current;
-    return () => {
-      window.clearTimeout(t);
-      pending.forEach(window.clearTimeout);
-    };
-  }, []);
-
-  const togglePanel = useCallback((id: RoomPanelId) => setActivePanel(cur => nextPanel(cur, id)), []);
-  const closePanel = useCallback(() => setActivePanel(null), []);
-
-  const startPractice = useCallback(() => {
-    setActivePanel(null);
-    if (prefersReducedMotion()) {
-      navigate('/practice');
-      return;
-    }
-    setNotes(true);
-    timers.current.push(window.setTimeout(() => navigate('/practice'), 420));
-  }, [navigate]);
-
-  const onHotspot = (id: RoomHotspot) => {
-    if (id === 'stand' || id === 'notebook') { navigate('/routines'); return; }
-    setBubble(false);
-    const action = actionForObject(id);
-    if (action.kind === 'navigate') startPractice();
-    else togglePanel(action.panel);
+  const openRoutine = () => {
+    if (!routine) { navigate('/routines'); return; }
+    setActiveRoutineId(routine.id);
+    navigate('/player');
   };
 
-  const panelBody = (() => {
-    switch (activePanel) {
-      case 'music-stand':
-        return (
-          <StandPanelContent
-            routine={todayRoutine}
-            onStart={startPractice}
-            onOpenNotebook={() => setActivePanel('notebook')}
-          />
-        );
-      case 'notebook':
-        return (
-          <NotebookPanelContent
-            routines={routines}
-            activeRoutineId={activeRoutineId}
-            onSelect={setActiveRoutineId}
-            onStart={startPractice}
-          />
-        );
-      case 'plants':
-        return <PlantsPanelContent totalMinutes={totalMinutes} percent={longTermPct} />;
-      case 'lighting':
-        return <LightingPanelContent mode={lightMode} resolved={lighting} onChange={setLightMode} />;
-      default:
-        return null;
-    }
-  })();
-
-  const progress = Math.min(100, (practicedMinutes / GOAL_MINUTES) * 100);
-
   return (
-    <section className="page home-room-page" aria-label="Home">
-      <header className="home-header">
-        <div className="home-title-chip">
-          <h1 className="home-title">My Jazz Room</h1>
-          <p className="home-greeting">{greeting}</p>
-          <p className="home-next">
-            {todayRoutine ? `Up next · ${todayRoutine.title} · ${todayRoutine.duration_minutes} min` : 'Pick a routine from the sheet music or the shelf'}
-          </p>
-        </div>
-        <button
-          type="button"
-          className="home-light-btn"
-          aria-label="Room lighting"
-          aria-haspopup="dialog"
-          aria-expanded={activePanel === 'lighting'}
-          onClick={() => togglePanel('lighting')}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
-          </svg>
-        </button>
-        <p className="home-hint" aria-hidden="true">
-          Tap the piano, shelf, sheet music or plants
-        </p>
-      </header>
-      <div className="home-room-stage">
-        <JazzRoomScene
-          lighting={lighting}
-          plantStage={growth.stage}
-          notesActive={notes}
-          onHotspot={onHotspot}
-          catOverlay={
-            <>
-              {bubble ? (
-                <p className="home-cat-bubble" aria-hidden="true">
-                  {catLine}
-                </p>
-              ) : null}
+    <section className="h01-page" aria-label="Home">
+      <div className="h01-scene-window">
+        <div className="h01-scene-image-frame">
+          <img
+            className="h01-room-image"
+            src={VISUAL_ASSETS.room.approved[lighting]}
+            alt=""
+            aria-hidden="true"
+          />
+          <div className="h01-hotspots">
+            {HOTSPOTS.map(h => (
               <button
+                key={h.id}
                 type="button"
-                className="home-cat-btn"
-                aria-label={`Your companion ${cat.name}. Open profile to choose a cat.`}
-                onClick={() => navigate(CAT_PROFILE_NAVIGATION.to, { state: CAT_PROFILE_NAVIGATION.state })}
+                className={`h01-hotspot h01-hotspot--${h.id}`}
+                aria-label={h.description}
+                onClick={() => navigate(h.to)}
               >
-                <CatSprite catId={catId} size={220} animated={catMotion} variant="floor" decorative className="home-cat-sprite" />
+                <span className="h01-hotspot-label"><span className="h01-hotspot-dot" aria-hidden="true" />{h.text}</span>
               </button>
-            </>
-          }
-        />
-        {activePanel ? (
-          <RoomPanel
-            key={activePanel}
-            title={PANEL_TITLES[activePanel].title}
-            eyebrow={PANEL_TITLES[activePanel].eyebrow}
-            onClose={closePanel}
+            ))}
+          </div>
+          <button
+            type="button"
+            className="h01-companion"
+            onClick={() => navigate('/profile', { state: { scrollToCat: true } })}
+            aria-label={`Change companion: ${companion?.name ?? 'jazz cat'}`}
           >
-            {panelBody}
-          </RoomPanel>
-        ) : null}
+            <CatSprite catId={catId} variant="floor" size={132} animated={catMotion} decorative />
+          </button>
+        </div>
+        <div className="h01-scene-fade" aria-hidden="true" />
+        <header className="h01-header">
+          <div className="h01-greeting">
+            <span className="h01-sprig" aria-hidden="true">❧</span>
+            <div>
+              <h1>{greeting}</h1>
+              <p>Let's practice a little jazz today.</p>
+            </div>
+          </div>
+          <button type="button" className="h01-settings-button" aria-label="Settings" onClick={() => navigate('/profile')}>⚙</button>
+        </header>
       </div>
 
-      <div className="home-hud" aria-label="Today's progress">
-        <div className="home-hud-goal">
-          <div className="home-hud-row">
-            <span className="home-hud-label">Today</span>
-            <span className="home-hud-value">
-              {practicedMinutes} / {GOAL_MINUTES} min
-            </span>
-          </div>
-          <div
-            className="home-hud-bar"
-            role="progressbar"
-            aria-label="Daily practice goal"
-            aria-valuenow={Math.min(practicedMinutes, GOAL_MINUTES)}
-            aria-valuemin={0}
-            aria-valuemax={GOAL_MINUTES}
-          >
-            <i style={{ width: `${progress}%` }} />
-          </div>
+      <div className="h01-content">
+        <div className="h01-quick-actions">
+          <button type="button" className="h01-primary-button" onClick={() => navigate('/practice')}>Start Practice</button>
+          <button type="button" className="h01-secondary-button" onClick={() => navigate('/tracks')}>Browse Tracks</button>
         </div>
-        <div className="home-hud-streak" title="Gentle streak, no pressure">
-          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 19c0-9 5-14 14-14 0 9-5 14-14 14z" />
-            <path d="M5 19c3-5 6-8 9-10" />
-          </svg>
-          <span>
-            <strong>{streak}</strong> day{streak === 1 ? '' : 's'}
+
+        <section className="h01-daily-card" aria-label="Today's practice">
+          <div className="h01-card-title">
+            <h2>Today's Practice</h2>
+            <button type="button" className="h01-change-button" onClick={() => navigate('/routines')} aria-label="Choose another routine">
+              <span aria-hidden="true">↻</span> Change
+            </button>
+          </div>
+          {routine ? (
+            <div className="h01-daily-details">
+              <button type="button" className="h01-routine-link" onClick={openRoutine} aria-label={`Practice ${routine.title}`}>
+                <img src={VISUAL_ASSETS.approvedDecor.books} alt="" className="h01-daily-art" />
+                <span className="h01-daily-copy">
+                  <strong>{routine.title} <span className="h01-middle-dot">·</span> {routine.duration_minutes} min</strong>
+                  <small>{routine.steps.length} guided steps <span className="h01-middle-dot">·</span> {routine.level}</small>
+                  <small>Recorded backing tracks: Preview</small>
+                </span>
+              </button>
+              <button type="button" className="h01-play-button" onClick={openRoutine} aria-label={`Open practice player for ${routine.title}`}><span aria-hidden="true">▶</span></button>
+            </div>
+          ) : (
+            <button type="button" className="h01-routine-empty" onClick={() => navigate('/routines')}>Browse guided routines</button>
+          )}
+        </section>
+
+        <button type="button" className="h01-stats-card" onClick={() => navigate('/progress')} aria-label={`Open progress. ${todayMinutes} minutes today; ${streak} day streak`}>
+          <span className="h01-stats-icon" aria-hidden="true"><i /><i /><i /></span>
+          <span className="h01-stats-today">
+            <strong>{todayMinutes} min today</strong>
+            <span className="h01-progress-track"><i style={{ width: `${todayProgress}%` }} /></span>
           </span>
-        </div>
-        <button type="button" className="home-hud-practice" onClick={startPractice}>
-          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
-            <path d="M8 5.5v13l11-6.5z" />
-          </svg>
-          Practice
+          <span className="h01-stats-divider" />
+          <span className="h01-flame" aria-hidden="true">♨</span>
+          <span className="h01-stats-streak"><strong>{streak} day streak</strong><small>Keep it going!</small></span>
         </button>
+        <div className="h01-lighting-tools">
+          <button type="button" aria-expanded={lightingOpen} onClick={() => setLightingOpen(open => !open)} className="h01-lighting-toggle">Room lighting</button>
+          {lightingOpen ? (
+            <div className="h01-lighting-options" aria-label="Room lighting">
+              {(['auto', 'sunshine', 'twilight', 'night'] as const).map(mode => (
+                <button type="button" key={mode} aria-pressed={lightMode === mode} onClick={() => { setLightMode(mode); setLightingOpen(false); }}>
+                  {mode === 'auto' ? 'Auto' : mode[0].toUpperCase() + mode.slice(1)}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
     </section>
   );
