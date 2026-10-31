@@ -3,6 +3,8 @@ import { VISUAL_ASSETS } from '../assets/visualManifest';
 
 const NAV_PIXELS = {
   home: 'M3 9h2V7h2V5h2V3h4v2h2v2h2v2h2v9h-5v-6h-4v6H3z',
+  tracks: 'M3 4h16v4H3z M3 10h16v4H3z M3 16h16v3H3z',
+  progress: 'M3 18h4v-6H3z M9 18h4V8H9z M15 18h4V4h-4z',
   explore: 'M3 3h11v2h3v2h2v7h-2v3h-3v-2h-2v-2h-2V7H3z',
   create: 'M9 2h4v7h7v4h-7v7H9v-7H2V9h7z',
   practice: 'M13 3h2v11h-2V7H7v11H5V5h8z M4 16h3v2H4z M12 12h3v2h-3z',
