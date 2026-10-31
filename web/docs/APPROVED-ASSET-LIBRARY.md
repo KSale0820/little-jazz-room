@@ -186,3 +186,10 @@ Stitch should:
 - Legacy files under `web/public/room/`, `web/public/decor/`, `web/public/jazz-cat-assets/`, and `web/public/favicon.svg` were left in place so nothing 404s.
 - Cat anatomy at 48 / 96 / 256px still needs a visual pass. The handoff asked for that review in the app; this change did not redraw anything.
 - `npm run test:rls` was not run. It needs live Supabase credentials.
+
+
+### Sleeping poses — added 2026-10-31
+
+Seven transparent, optimized 128×128 PNGs are in `web/public/visuals/cats/sleeping/`: `pepper.png`, `patches.png`, `mochi.png`, `milo.png`, `luna.png`, `maple.png`, `chai.png`.
+
+Use `<CatSprite catId={catId} variant="sleeping" />` (or `catSleepingUrls(catId)`). The seven variants load the pose first and fall back to existing full-body art. Biscuit uses the existing full-body art until its separately approved sleeping image is supplied. Original existing cat art is unchanged. For large illustrations, replace the 128-pixel optimized render with a higher-resolution approved transparent PNG at the same path.
