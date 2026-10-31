@@ -43,8 +43,8 @@
 }
 .h01-hotspot--practice { left: 20.5%; top: 54%; }
 .h01-hotspot--routines { left: 61.3%; top: 53%; }
-.h01-hotspot--charts { left: 86.7%; top: 32%; }
-.h01-hotspot--tracks { left: 86.7%; top: 67%; }
+.h01-hotspot--charts { left: 86.7%; top: 44%; }
+.h01-hotspot--tracks { left: 86.7%; top: 63%; }
 .h01-hotspot-label {
   display: inline-flex;
   align-items: center;
@@ -67,7 +67,7 @@
 .h01-companion {
   position: absolute;
   left: 54%;
-  top: 75%;
+  top: 70%;
   width: clamp(92px, 28%, 132px);
   aspect-ratio: 1;
   border: 0;
@@ -82,8 +82,8 @@
 .h01-scene-fade {
   position: absolute;
   inset: 0 0 auto;
-  height: 148px;
-  background: linear-gradient(180deg, #fff8eefb 0%, #fff8eee7 63%, #fff8ee00 100%);
+  height: 142px;
+  background: linear-gradient(180deg, #fff8eef2 0%, #fff8eece 58%, #fff8ee00 100%);
   z-index: 3;
   pointer-events: none;
 }
@@ -97,7 +97,9 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  pointer-events: none;
 }
+.h01-header button { pointer-events: auto; }
 .h01-greeting { display: flex; align-items: flex-start; gap: 7px; min-width: 0; }
 .h01-greeting > div { min-width: 0; }
 .h01-sprig { color: #5f7f46; font-size: 39px; line-height: 1; transform: rotate(-35deg); flex: 0 0 auto; }
