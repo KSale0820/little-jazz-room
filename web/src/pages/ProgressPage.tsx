@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { JAZZ_CATS } from '../features/cats/CatCompanion';
-import { VISUAL_ASSETS } from '../assets/visualManifest';
+import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { computeGentleStreak } from '../lib/practiceStats';
 import './DemoPages.css';
 
@@ -23,7 +22,7 @@ export function ProgressPage() {
       <header className="demo-header"><div><p className="demo-eyebrow">Your little victories</p><h1 className="demo-heading">Progress</h1></div><button type="button" className="demo-link" onClick={() => navigate('/profile')}>Settings ⚙</button></header>
       <div className="demo-cat-art">
         <div><h2 className="demo-card-title">{cat?.name ?? 'Your companion'}</h2><p className="demo-subtitle">Great progress this week!</p><button className="demo-link" style={{marginTop:12}} type="button" onClick={() => navigate('/profile', {state:{scrollToCat:true}})}>Change</button></div>
-        <img src={VISUAL_ASSETS.cat.profileFile(catId)} alt={cat ? cat.name + ' the jazz cat' : 'Jazz cat companion'} />
+        <CatSprite catId={catId} variant="portrait" size={140} />
       </div>
       <div className="demo-stats">
         <div className="demo-stat"><strong>{streak}</strong><span>day streak</span></div>
