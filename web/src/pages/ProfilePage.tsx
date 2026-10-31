@@ -160,7 +160,7 @@ export function ProfilePage() {
             <button
               type="button"
               className="mutelink"
-              onClick={() => { setActiveRoutineId(r.id); navigate('/practice'); }}
+              onClick={() => { setActiveRoutineId(r.id); navigate('/player'); }}
             >
               Practice
             </button>
