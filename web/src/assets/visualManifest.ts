@@ -55,6 +55,8 @@ export const VISUAL_ASSETS = {
     fullBodyFile: (id: CatId) => `/visuals/cats/full-body/${id}.png`,
     profileFile: (id: CatId) => `/visuals/cats/profiles/${id}.png`,
     closeupFile: (id: CatId) => `/visuals/cats/closeups/${id}.png`,
+    /** Optional sleeping overlay. Biscuit is awaiting a final approved pose. */
+    sleepingFile: (id: CatId) => `/visuals/cats/sleeping/${id}.png`,
     /** Previous art. Used only after an approved file fails to load. */
     legacy: {
       floorFile: (id: CatId) => `/jazz-cat-assets/${id}.png`,
@@ -152,4 +154,9 @@ export function catCloseupUrls(id: CatId): string[] {
     VISUAL_ASSETS.cat.legacy.portraitFile(id),
     VISUAL_ASSETS.cat.legacy.spriteFile(id),
   ];
+}
+
+/** Sleeping pose when approved, with the existing full-body art as fallback. */
+export function catSleepingUrls(id: CatId): string[] {
+  return id === 'biscuit' ? catFloorUrls(id) : [VISUAL_ASSETS.cat.sleepingFile(id), ...catFloorUrls(id)];
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { catCloseupUrls, catFloorUrls, catPortraitUrls } from '../../assets/visualManifest';
+import { catCloseupUrls, catFloorUrls, catPortraitUrls, catSleepingUrls } from '../../assets/visualManifest';
 import { useImageFallback } from '../../lib/useImageFallback';
 import './cat-companion.css';
 
@@ -61,10 +61,11 @@ export function useCatSelection(repository?: CatPreferenceRepository, accountKey
 }
 
 export function CatSprite({ catId, size = 96, className = '', decorative = false, animated = false, variant = 'portrait' }:
-  { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'floor' | 'closeup' }) {
+  { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'floor' | 'closeup' | 'sleeping' }) {
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
-  // floor = approved full-body; portrait = approved profile; closeup = approved face. Each list falls back to older art.
-  const candidates = variant === 'floor' ? catFloorUrls(catId)
+  // floor = full-body; sleeping = new sleeping pose (with fallback); portrait = profile; closeup = face. Each list falls back to older art.
+  const candidates = variant === 'sleeping' ? catSleepingUrls(catId)
+    : variant === 'floor' ? catFloorUrls(catId)
     : variant === 'closeup' ? catCloseupUrls(catId)
     : catPortraitUrls(catId);
   const { src, onError } = useImageFallback(candidates, `${variant}:${catId}`);
