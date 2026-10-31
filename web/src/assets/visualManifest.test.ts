@@ -80,7 +80,7 @@ function assertWellFormedSvg(text: string, file: string) {
 describe('approved visual library', () => {
   const packaged = JSON.parse(readFileSync(join(designDir, 'ASSET-MANIFEST.json'), 'utf8')) as PackagedAsset[];
 
-  it('keeps the live room on the landscape heroes', () => {
+  it('registers the correct approved portrait room (old landscape helper stays for legacy scenes)', () => {
     expect(VISUAL_ASSETS.room.approved.live).toBe(false);
     expect(VISUAL_ASSETS.room.approved.width).toBe(APPROVED_ROOM_SIZE.width);
     expect(VISUAL_ASSETS.room.approved.height).toBe(APPROVED_ROOM_SIZE.height);
@@ -90,24 +90,20 @@ describe('approved visual library', () => {
     expect(roomArtUrls('sunshine').some(url => url.startsWith('/visuals/'))).toBe(false);
   });
 
-  it('maps the eight cat ids to full-body, profile, and close-up art', () => {
+  it('uses only the eight newly approved companion variants with no fallbacks', () => {
     for (const id of CAT_IDS) {
-      expect(catFloorUrls(id)).toEqual([
-        `/visuals/cats/full-body/${id}.png`,
-        `/jazz-cat-assets/${id}.png`,
-        `/jazz-cat-assets/${id}.svg`,
-      ]);
-      expect(catPortraitUrls(id)).toEqual([
-        `/visuals/cats/profiles/${id}.png`,
-        `/jazz-cat-assets/${id}-portrait.png`,
-        `/jazz-cat-assets/${id}.svg`,
-      ]);
-      expect(catCloseupUrls(id)).toEqual([
-        `/visuals/cats/closeups/${id}.png`,
-        `/visuals/cats/profiles/${id}.png`,
-        `/jazz-cat-assets/${id}-portrait.png`,
-        `/jazz-cat-assets/${id}.svg`,
-      ]);
+      const base = `/visuals/cats/approved-class-mvp`;
+      expect(catFloorUrls(id)).toEqual([`${base}/full-body/${id}.png`]);
+      expect(catPortraitUrls(id)).toEqual([`${base}/profiles/${id}.png`]);
+      expect(catCloseupUrls(id)).toEqual([`${base}/closeups/${id}.png`]);
+
+      for (const variant of ['full-body', 'profiles', 'closeups']) {
+        const file = join(publicVisuals, 'cats', 'approved-class-mvp', variant, `${id}.png`);
+        const png = readPngInfo(readFileSync(file));
+        expect(png.width).toBeGreaterThan(500);
+        expect(png.height).toBeGreaterThan(500);
+        expect([4, 6]).toContain(png.colorType);
+      }
     }
   });
 
@@ -136,7 +132,8 @@ describe('approved visual library', () => {
         expect(png).toMatchObject({ width: 1448, height: 1086, colorType: 2 });
         continue;
       }
-      if (asset.path === 'cats/README.txt' || asset.path === 'cats/verification.json') {
+      // The former 24-character sheet cutouts were explicitly retired by the user.
+      if (asset.path.startsWith('cats/')) {
         expect(installed.has(asset.path)).toBe(false);
         continue;
       }
