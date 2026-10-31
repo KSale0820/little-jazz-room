@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
+import { JAZZ_CATS } from '../features/cats/CatCompanion';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
@@ -24,7 +24,9 @@ const HOTSPOTS: { id: Hotspot; text: string; description: string; to: string }[]
 export function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { catId, catMotion, sessions, routines, activeRoutineId, setActiveRoutineId } = useApp();
+  const { catId, sessions, routines, activeRoutineId, setActiveRoutineId } = useApp();
+  const [sleepingReady, setSleepingReady] = useState(false);
+  const [roomSource, setRoomSource] = useState<string>(VISUAL_ASSETS.room.h01);
   const lighting = resolveLighting(readLightingPreference());
 
   const greeting = useMemo(() => timeGreeting(displayNameFromUser(user)), [user]);
@@ -35,6 +37,7 @@ export function HomePage() {
     ?? routines[0];
   const companion = JAZZ_CATS.find(cat => cat.id === catId);
   const todayProgress = Math.min(100, todayMinutes / GOAL_MINUTES * 100);
+  useEffect(() => { setSleepingReady(false); }, [catId]);
 
   const openRoutine = () => {
     if (!routine) { navigate('/routines'); return; }
@@ -48,7 +51,10 @@ export function HomePage() {
         <div className="h01-scene-image-frame">
           <img
             className="h01-room-image"
-            src={VISUAL_ASSETS.room.approved[lighting]}
+            src={roomSource}
+            onError={() => {
+              if (roomSource !== VISUAL_ASSETS.room.approved[lighting]) setRoomSource(VISUAL_ASSETS.room.approved[lighting]);
+            }}
             alt=""
             aria-hidden="true"
           />
@@ -68,19 +74,29 @@ export function HomePage() {
           <button
             type="button"
             className="h01-companion"
+            style={{ visibility: sleepingReady ? 'visible' : 'hidden' }}
+            disabled={!sleepingReady}
             onClick={() => navigate('/profile', { state: { scrollToCat: true } })}
             aria-label={`Change companion: ${companion?.name ?? 'jazz cat'}`}
           >
-            <CatSprite catId={catId} variant="floor" size={132} animated={catMotion} decorative />
+            <img
+              className="jazz-cat-sprite h01-sleeping-sprite"
+              src={VISUAL_ASSETS.cat.sleepingFile(catId)}
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+              onLoad={() => setSleepingReady(true)}
+              onError={() => setSleepingReady(false)}
+            />
           </button>
         </div>
         <div className="h01-scene-fade" aria-hidden="true" />
         <header className="h01-header">
           <div className="h01-greeting">
-            <span className="h01-sprig" aria-hidden="true">❧</span>
+            <span className="h01-sprig" aria-hidden="true"><svg viewBox="0 0 48 56" width="31" height="39" fill="none" aria-hidden="true"><path d="M6 52C15 38 21 27 29 8" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"/><path d="M15 39C2 41 4 26 7 23c9 1 15 9 8 16ZM25 22C18 11 25 2 36 2c1 12-3 19-11 20ZM31 18C42 9 49 16 44 27c-10 2-15-2-13-9Z" fill="currentColor"/></svg></span>
             <div>
               <h1>{greeting}</h1>
-              <p>Let's practice a little jazz today.</p>
+              <p>Let's practice with a backing track.</p>
             </div>
           </div>
           <button type="button" className="h01-settings-button" aria-label="Settings" onClick={() => navigate('/profile')}>⚙</button>
@@ -124,7 +140,7 @@ export function HomePage() {
             <span className="h01-progress-track"><i style={{ width: `${todayProgress}%` }} /></span>
           </span>
           <span className="h01-stats-divider" />
-          <span className="h01-flame" aria-hidden="true">♨</span>
+          <span className="h01-flame" aria-hidden="true">🔥</span>
           <span className="h01-stats-streak"><strong>{streak} day streak</strong><small>Keep it going!</small></span>
         </button>
       </div>
