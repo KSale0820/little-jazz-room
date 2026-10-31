@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PageAtmosphere } from '../components/PageAtmosphere';
 import { ChordGrid } from '../components/ChordGrid';
 import { CatSprite } from '../features/cats/CatCompanion';
@@ -14,6 +14,7 @@ const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 
 export function PracticePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const {
     charts,
     exercises,
@@ -39,7 +40,10 @@ export function PracticePage() {
   }, [currentStep, exercises]);
 
   const defaultChartId = playableStep?.chart_id ?? charts[0]?.id ?? 'blues-f-12';
-  const [chartId, setChartId] = useState(defaultChartId);
+  const [chartId, setChartId] = useState(() => {
+    const requested = searchParams.get('chart');
+    return requested && chartsById[requested] ? requested : defaultChartId;
+  });
   const [panel, setPanel] = useState<'chords' | 'player'>('chords');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
   const [chartKey, setChartKey] = useState('F');
@@ -124,7 +128,7 @@ export function PracticePage() {
       setAccumulatedSeconds(0);
       setStepSeconds(0);
       showToast(teamSignedIn ? 'Session saved to your team account.' : 'Session saved on this device.');
-      navigate('/profile');
+      navigate('/progress');
     } catch {
       showToast('Could not save session. Try again when online.');
     }
@@ -165,7 +169,7 @@ export function PracticePage() {
           </div>
         </div>
       ) : (
-        <p className="muted">Choose a routine in Explore to follow ordered exercises.</p>
+        <p className="muted">Choose Guided Practice to follow an ordered routine.</p>
       )}
 
       <div className="tabs" role="tablist">
