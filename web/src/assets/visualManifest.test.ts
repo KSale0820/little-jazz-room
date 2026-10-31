@@ -119,6 +119,15 @@ describe('approved visual library', () => {
       fromManifest.add(catFloorUrls(id)[0]);
       fromManifest.add(catPortraitUrls(id)[0]);
       fromManifest.add(catCloseupUrls(id)[0]);
+      // Sleeping sprites are a separate approved upload and may arrive after this commit.
+      const sleeping = VISUAL_ASSETS.cat.sleepingFile(id);
+      if (installed.has(sleeping.replace('/visuals/', ''))) {
+        fromManifest.add(sleeping);
+        const png = readPngInfo(readFileSync(join(publicVisuals, sleeping.replace('/visuals/', ''))));
+        expect(png.width).toBeGreaterThan(200);
+        expect(png.height).toBeGreaterThan(200);
+        expect([4, 6]).toContain(png.colorType);
+      }
     }
 
     const roomFrames = [
