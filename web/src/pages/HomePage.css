@@ -176,7 +176,11 @@
 /* Short iPhones: preserve the room scene but expose the practice and progress
    cards above the fixed tabs. The viewport itself ends before the navigation. */
 @media (max-height: 700px) and (max-width: 599px) {
-  .h01-scene-window { height: clamp(274px, 43dvh, 300px); }
+  .h01-scene-window { height: clamp(315px, 48dvh, 345px); }
+  .h01-hotspot--practice { top: 72%; }
+  .h01-hotspot--routines { top: 67%; }
+  .h01-hotspot--charts { top: 59%; }
+  .h01-hotspot--tracks { top: 81%; }
   .h01-content { padding-top: 8px; padding-bottom: 6px; }
   .h01-quick-actions { gap: 6px; }
   .h01-primary-button, .h01-secondary-button { min-height: 42px; padding-top: 6px; padding-bottom: 6px; font-size: 18px; }
