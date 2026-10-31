@@ -10,6 +10,7 @@ import {
   catCloseupUrls,
   catFloorUrls,
   catPortraitUrls,
+  catSleepingUrls,
   roomArtUrls,
 } from './visualManifest';
 
@@ -102,6 +103,10 @@ describe('approved visual library', () => {
         `/jazz-cat-assets/${id}-portrait.png`,
         `/jazz-cat-assets/${id}.svg`,
       ]);
+      expect(catSleepingUrls(id)).toEqual(id === 'biscuit' ? catFloorUrls(id) : [
+        `/visuals/cats/sleeping/${id}.png`,
+        ...catFloorUrls(id),
+      ]);
       expect(catCloseupUrls(id)).toEqual([
         `/visuals/cats/closeups/${id}.png`,
         `/visuals/cats/profiles/${id}.png`,
@@ -118,6 +123,7 @@ describe('approved visual library', () => {
       fromManifest.add(catFloorUrls(id)[0]);
       fromManifest.add(catPortraitUrls(id)[0]);
       fromManifest.add(catCloseupUrls(id)[0]);
+      if (id !== 'biscuit') fromManifest.add(catSleepingUrls(id)[0]);
     }
 
     const roomFrames = [
