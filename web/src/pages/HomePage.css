@@ -9,7 +9,7 @@
 }
 .h01-scene-window {
   position: relative;
-  height: clamp(348px, 53dvh, 510px);
+  height: clamp(340px, 53dvh, 475px);
   width: 100%;
   overflow: hidden;
   background: #dcc7a1;
@@ -18,12 +18,11 @@
 .h01-scene-image-frame {
   position: absolute;
   width: 100%;
-  aspect-ratio: 941 / 1672;
+  aspect-ratio: 1122 / 1402;
   left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: -5px;
 }
-.h01-room-image { display: block; width: 100%; height: auto; }
+.h01-room-image { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
 .h01-hotspots { position: absolute; inset: 0; }
 .h01-hotspot {
   position: absolute;
@@ -41,10 +40,10 @@
   -webkit-tap-highlight-color: transparent;
   z-index: 2;
 }
-.h01-hotspot--practice { left: 20.5%; top: 54%; }
-.h01-hotspot--routines { left: 61.3%; top: 53%; }
-.h01-hotspot--charts { left: 86.7%; top: 44%; }
-.h01-hotspot--tracks { left: 86.7%; top: 63%; }
+.h01-hotspot--practice { left: 17%; top: 55%; }
+.h01-hotspot--routines { left: 55%; top: 47%; }
+.h01-hotspot--charts { left: 87%; top: 36%; }
+.h01-hotspot--tracks { left: 85.5%; top: 63%; }
 .h01-hotspot-label {
   display: inline-flex;
   align-items: center;
@@ -66,9 +65,9 @@
 .h01-hotspot:active .h01-hotspot-label { background: #203826ed; }
 .h01-companion {
   position: absolute;
-  left: 54%;
-  top: 70%;
-  width: clamp(92px, 28%, 132px);
+  left: 47%;
+  top: 81%;
+  width: clamp(98px, 29%, 134px);
   aspect-ratio: 1;
   border: 0;
   padding: 0;
@@ -82,15 +81,15 @@
 .h01-scene-fade {
   position: absolute;
   inset: 0 0 auto;
-  height: 142px;
-  background: linear-gradient(180deg, #fff8eef2 0%, #fff8eece 58%, #fff8ee00 100%);
+  height: 154px;
+  background: linear-gradient(180deg, #fff8eefb 0%, #fff8eee5 42%, #fff8ee10 100%);
   z-index: 3;
   pointer-events: none;
 }
 .h01-header {
   position: absolute;
   z-index: 4;
-  top: max(14px, env(safe-area-inset-top));
+  top: max(18px, env(safe-area-inset-top));
   left: 16px;
   right: 14px;
   display: flex;
@@ -100,10 +99,10 @@
   pointer-events: none;
 }
 .h01-header button { pointer-events: auto; }
-.h01-greeting { display: flex; align-items: flex-start; gap: 7px; min-width: 0; }
+.h01-greeting { display: flex; align-items: flex-start; gap: 9px; min-width: 0; }
 .h01-greeting > div { min-width: 0; }
-.h01-sprig { color: #5f7f46; font-size: 32px; line-height: 1; transform: rotate(-35deg); flex: 0 0 auto; }
-.h01-greeting h1 { font: 700 clamp(22px, 6vw, 31px)/1.15 Georgia, 'Times New Roman', serif; color: #152d21; letter-spacing: -0.03em; }
+.h01-sprig { color: #5f7f46; display: inline-flex; line-height: 1; margin-top: 1px; flex: 0 0 31px; }
+.h01-greeting h1 { font: 700 clamp(22px, 6vw, 31px)/1.15 Georgia, 'Times New Roman', serif; color: #152d21; letter-spacing: -0.025em; }
 .h01-greeting p { margin-top: 5px; font: 400 12px/1.3 system-ui, sans-serif; color: #5b6054; }
 .h01-settings-button { min-width: 44px; min-height: 44px; display: grid; place-items: center; border: 0; background: transparent; font: 26px/1 system-ui, sans-serif; color: #213c2c; border-radius: 50%; }
 .h01-settings-button:focus-visible { outline: 3px solid #cda953; }
@@ -111,8 +110,8 @@
 .h01-content {
   position: relative;
   z-index: 5;
-  margin-top: -10px;
-  padding: 11px 14px 12px;
+  margin-top: -9px;
+  padding: 11px 14px 18px;
   border-radius: 23px 23px 0 0;
   background: #fff8ee;
 }
@@ -177,7 +176,7 @@
 /* Short iPhones: preserve the room scene but expose the practice and progress
    cards above the fixed tabs. The viewport itself ends before the navigation. */
 @media (max-height: 700px) and (max-width: 599px) {
-  .h01-scene-window { height: 305px; }
+  .h01-scene-window { height: clamp(274px, 43dvh, 300px); }
   .h01-content { padding-top: 8px; padding-bottom: 6px; }
   .h01-quick-actions { gap: 6px; }
   .h01-primary-button, .h01-secondary-button { min-height: 42px; padding-top: 6px; padding-bottom: 6px; font-size: 18px; }
@@ -186,7 +185,7 @@
   .h01-daily-details { margin-top: 3px; }
   .h01-daily-copy { gap: 3px; }
   .h01-stats-card { min-height: 58px; margin-top: 7px; }
-  .h01-companion { top: 66%; width: 96px; }
+  .h01-companion { top: 80%; width: 106px; }
 }
 @media (max-width:365px) {
   .h01-scene-window { height: clamp(340px, 51dvh, 435px); }
