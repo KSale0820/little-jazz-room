@@ -102,6 +102,7 @@ export function HomePage() {
   }, [navigate]);
 
   const onHotspot = (id: RoomHotspot) => {
+    if (id === 'stand' || id === 'notebook') { navigate('/routines'); return; }
     setBubble(false);
     const action = actionForObject(id);
     if (action.kind === 'navigate') startPractice();
