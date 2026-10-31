@@ -52,9 +52,17 @@ export const VISUAL_ASSETS = {
     },
   },
   cat: {
-    fullBodyFile: (id: CatId) => `/visuals/cats/full-body/${id}.png`,
-    profileFile: (id: CatId) => `/visuals/cats/profiles/${id}.png`,
-    closeupFile: (id: CatId) => `/visuals/cats/closeups/${id}.png`,
+    /** User-supplied pixel companions (approved class-MVP pack, 2026-10-31).
+     * Install the 24 PNGs under public/visuals/cats/approved-class-mvp/.
+     * Preserve older assets as fallbacks until screenshots are approved. */
+    fullBodyFile: (id: CatId) => `/visuals/cats/approved-class-mvp/full-body/${id}.png`,
+    profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
+    closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
+    previous: {
+      fullBodyFile: (id: CatId) => `/visuals/cats/full-body/${id}.png`,
+      profileFile: (id: CatId) => `/visuals/cats/profiles/${id}.png`,
+      closeupFile: (id: CatId) => `/visuals/cats/closeups/${id}.png`,
+    },
     /** Previous art. Used only after an approved file fails to load. */
     legacy: {
       floorFile: (id: CatId) => `/jazz-cat-assets/${id}.png`,
@@ -130,6 +138,7 @@ export function roomArtUrls(lighting: RoomLightingAsset): string[] {
 export function catPortraitUrls(id: CatId): string[] {
   return [
     VISUAL_ASSETS.cat.profileFile(id),
+    VISUAL_ASSETS.cat.previous.profileFile(id),
     VISUAL_ASSETS.cat.legacy.portraitFile(id),
     VISUAL_ASSETS.cat.legacy.spriteFile(id),
   ];
@@ -139,6 +148,7 @@ export function catPortraitUrls(id: CatId): string[] {
 export function catFloorUrls(id: CatId): string[] {
   return [
     VISUAL_ASSETS.cat.fullBodyFile(id),
+    VISUAL_ASSETS.cat.previous.fullBodyFile(id),
     VISUAL_ASSETS.cat.legacy.floorFile(id),
     VISUAL_ASSETS.cat.legacy.spriteFile(id),
   ];
@@ -148,7 +158,9 @@ export function catFloorUrls(id: CatId): string[] {
 export function catCloseupUrls(id: CatId): string[] {
   return [
     VISUAL_ASSETS.cat.closeupFile(id),
+    VISUAL_ASSETS.cat.previous.closeupFile(id),
     VISUAL_ASSETS.cat.profileFile(id),
+    VISUAL_ASSETS.cat.previous.profileFile(id),
     VISUAL_ASSETS.cat.legacy.portraitFile(id),
     VISUAL_ASSETS.cat.legacy.spriteFile(id),
   ];
