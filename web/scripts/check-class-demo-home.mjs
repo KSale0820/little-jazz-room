@@ -20,7 +20,7 @@ try {
     page.on('pageerror', e => errors.push(e.message));
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => localStorage.setItem('little-jazz-room:room-lighting:v1', 'twilight'));
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.locator('.h01-room-image').waitFor({ state: 'visible' });
     await page.evaluate(async () => {
       await Promise.all([...document.images].map(img => img.decode().catch(() => {})));
@@ -34,13 +34,13 @@ try {
     if (overflow > 1) throw new Error(`Horizontal page overflow: ${overflow}px`);
     const authVisible = await page.locator('.mobile-auth-bar').isVisible();
     if (authVisible) throw new Error('Team sign-in bar overlaps Home artwork');
+    const screenshotPath = join(outDir, `home-${width}x${height}.png`);
+    await page.screenshot({ path: screenshotPath, fullPage: false });
     for (const {label,path} of checks) {
       await page.getByRole('button', { name: label }).click();
       await page.waitForURL(new RegExp(`${path.replace('/', '\\/')}$`));
-      await page.goto(baseUrl, { waitUntil: 'networkidle' });
+      await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
     }
-    const screenshotPath = join(outDir, `home-${width}x${height}.png`);
-    await page.screenshot({ path: screenshotPath, fullPage: false });
     console.log(`PASS H01 ${width}x${height}: room loaded, navigation, four hotspots, no overflow; screenshot ${screenshotPath}`);
     if (errors.length) throw new Error(`Browser errors: ${errors.join(' | ')}`);
     await context.close();
