@@ -16,10 +16,11 @@ export type NavRoute = keyof typeof NAV_PIXELS;
 /** Corrected Explore and Practice marks. Painted with currentColor via CSS mask. */
 const NAV_FILES = {
   explore: VISUAL_ASSETS.icons.nav.explore,
+  practice: VISUAL_ASSETS.icons.nav.practice,
 } as const;
 
 export function PixelIcon({ route }: { route: NavRoute }) {
-  if (route === 'explore') {
+  if (route === 'explore' || route === 'practice') {
     return (
       <span
         className="pix pix-mask"
