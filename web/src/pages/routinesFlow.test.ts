@@ -51,9 +51,9 @@ describe('R01/R03 local class-demo routine journey', () => {
     const myRoutines = mergeRoutines(seedRoutines, reloaded.listLocalRoutines())
       .filter(entry => entry.is_seed === false);
     expect(myRoutines).toHaveLength(1);
-    expect(myRoutines[0].title).toBe('My Morning Standards');
-    expect(myRoutines[0].duration_minutes).toBe(22);
-    expect(myRoutines[0].steps).toEqual(steps);
+    expect(myRoutines[0]?.title).toBe('My Morning Standards');
+    expect(myRoutines[0]?.duration_minutes).toBe(22);
+    expect(myRoutines[0]?.steps).toEqual(steps);
     expect(mergeRoutines(seedRoutines, reloaded.listLocalRoutines())
       .some(entry => entry.id === 'daily-warm-up')).toBe(true);
   });
