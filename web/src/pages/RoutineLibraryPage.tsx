@@ -212,10 +212,10 @@ export function RoutineLibraryPage() {
       </div>
 
       <button type="button" className="routine-create-button" onClick={() => navigate('/create')}>
-        <span aria-hidden="true">＋</span> Create routine
+        <span aria-hidden="true">+</span> Create routine
       </button>
       {featuredOnly && shown.length > displayed.length && <button type="button" className="routine-show-all" onClick={() => setShowAllPresets(true)}>See all {shown.length} preset routines</button>}
-      <p className="routine-tip"><span aria-hidden="true">ⓘ</span>
+      <p className="routine-tip"><span aria-hidden="true">i</span>
         Tap a routine to practice its steps. Bookmark a preset or make your own.
       </p>
     </section>
