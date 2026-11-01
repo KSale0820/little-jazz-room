@@ -57,7 +57,7 @@ export function PracticePage() {
   const [priorMs, setPriorMs] = useState(0);
   const [stepMs, setStepMs] = useState(0);
   const [startedAtMs, setStartedAtMs] = useState<number | null>(null);
-  const [nowMs, setNowMs] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState(() => performance.now());
   const [completion, setCompletion] = useState<Completion | null>(null);
   const [notes, setNotes] = useState('');
   const [rating, setRating] = useState(0);
@@ -72,14 +72,14 @@ export function PracticePage() {
   const currentStepMs = elapsedMilliseconds(stepMs, startedAtMs, nowMs);
   const elapsedSeconds = Math.floor((priorMs + currentStepMs) / 1000);
   const stepSeconds = Math.floor(currentStepMs / 1000);
-  const formProgress = routine ? Math.round((stepIndex / routine.steps.length) * 100) : 0;
+  const formProgress = routine ? Math.round(((stepIndex + 1) / routine.steps.length) * 100) : 0;
 
   useEffect(() => {
     setStepIndex(0);
     setPriorMs(0);
     setStepMs(0);
     setStartedAtMs(null);
-    setNowMs(Date.now());
+    setNowMs(performance.now());
     setCompletion(null);
     setSaveState('idle');
     savePromiseRef.current = null;
@@ -100,7 +100,7 @@ export function PracticePage() {
 
   useEffect(() => {
     if (!isRunning || completion) return;
-    const timerId = window.setInterval(() => setNowMs(Date.now()), 200);
+    const timerId = window.setInterval(() => setNowMs(performance.now()), 200);
     return () => window.clearInterval(timerId);
   }, [isRunning, completion]);
 
@@ -129,7 +129,7 @@ export function PracticePage() {
   }
 
   function toggleTimer() {
-    const now = Date.now();
+    const now = performance.now();
     if (startedAtMs === null) {
       setStartedAtMs(now);
     } else {
@@ -143,7 +143,7 @@ export function PracticePage() {
     if (!routine) return;
     const next = Math.max(0, Math.min(routine.steps.length - 1, stepIndex + delta));
     if (next === stepIndex) return;
-    const now = Date.now();
+    const now = performance.now();
     setPriorMs(value => value + elapsedMilliseconds(stepMs, startedAtMs, now));
     setStepMs(0);
     setStartedAtMs(null);
@@ -153,15 +153,16 @@ export function PracticePage() {
 
   function finishSession() {
     if (completion) return;
-    const now = Date.now();
+    const now = performance.now();
+    const finishedStamp = Date.now();
     const finalStepMs = elapsedMilliseconds(stepMs, startedAtMs, now);
     const durationSeconds = Math.floor((priorMs + finalStepMs) / 1000);
     setStepMs(finalStepMs);
     setStartedAtMs(null);
     setNowMs(now);
     setCompletion({
-      id: 'sess-' + now + '-' + Math.random().toString(36).slice(2, 9),
-      finishedAt: new Date(now).toISOString(),
+      id: 'sess-' + finishedStamp + '-' + Math.random().toString(36).slice(2, 9),
+      finishedAt: new Date(finishedStamp).toISOString(),
       durationSeconds,
       routineId: routine?.id,
       exerciseId: playableStep?.exercise_id,
@@ -220,7 +221,7 @@ export function PracticePage() {
     setPriorMs(0);
     setStepMs(0);
     setStartedAtMs(null);
-    setNowMs(Date.now());
+    setNowMs(performance.now());
     setSelectedBar(0);
     setCompletion(null);
     setNotes('');
@@ -335,8 +336,8 @@ export function PracticePage() {
         <div className="practice-clock"><strong data-testid="session-elapsed">{formatPracticeTime(elapsedSeconds)}</strong><span>{isRunning ? 'Practicing' : elapsedSeconds ? 'Paused' : 'Ready'} · Step {formatPracticeTime(stepSeconds)}{targetSeconds ? ' / ' + formatPracticeTime(targetSeconds) : ''}</span></div>
         <div className="practice-control-row">
           <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => setSelectedBar(bar => (bar + chart.bars.length - 1) % chart.bars.length)}>‹‹</button>
-          <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={isRunning ? 'Pause practice timer' : elapsedSeconds ? 'Resume practice timer' : 'Start practice timer'}>
-            {isRunning ? 'Ⅱ' : '▶'}<span>{isRunning ? 'Pause' : elapsedSeconds ? 'Resume' : 'Start'}</span>
+          <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
+            {isRunning ? 'Ⅱ' : '▶'}<span>{isRunning ? 'Pause' : (priorMs + stepMs) ? 'Resume' : 'Start'}</span>
           </button>
           <button className="practice-measure-btn" type="button" aria-label="Next measure" onClick={() => setSelectedBar(bar => (bar + 1) % chart.bars.length)}>››</button>
         </div>
