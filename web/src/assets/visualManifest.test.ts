@@ -10,6 +10,7 @@ import {
   catCloseupUrls,
   catFloorUrls,
   catPortraitUrls,
+  catSleepingUrls,
   roomArtUrls,
 } from './visualManifest';
 
@@ -96,6 +97,9 @@ describe('approved visual library', () => {
       expect(catFloorUrls(id)).toEqual([`${base}/full-body/${id}.png`]);
       expect(catPortraitUrls(id)).toEqual([`${base}/profiles/${id}.png`]);
       expect(catCloseupUrls(id)).toEqual([`${base}/closeups/${id}.png`]);
+      expect(catSleepingUrls(id)).toEqual([
+        id === 'biscuit' ? `${base}/full-body/biscuit.png` : `/visuals/cats/sleeping/${id}.png`,
+      ]);
 
       for (const variant of ['full-body', 'profiles', 'closeups']) {
         const file = join(publicVisuals, 'cats', 'approved-class-mvp', variant, `${id}.png`);
@@ -119,14 +123,17 @@ describe('approved visual library', () => {
       fromManifest.add(catFloorUrls(id)[0]);
       fromManifest.add(catPortraitUrls(id)[0]);
       fromManifest.add(catCloseupUrls(id)[0]);
-      // Sleeping sprites are a separate approved upload and may arrive after this commit.
+      // PR #8 ships seven exact, palette-indexed 128px sleeping images.
+      // Biscuit has no sleeping asset; do not substitute an unapproved pose on H01.
       const sleeping = VISUAL_ASSETS.cat.sleepingFile(id);
-      if (installed.has(sleeping.replace('/visuals/', ''))) {
+      if (id !== 'biscuit') {
         fromManifest.add(sleeping);
-        const png = readPngInfo(readFileSync(join(publicVisuals, sleeping.replace('/visuals/', ''))));
-        expect(png.width).toBeGreaterThan(200);
-        expect(png.height).toBeGreaterThan(200);
-        expect([4, 6]).toContain(png.colorType);
+        const file = join(publicVisuals, sleeping.replace('/visuals/', ''));
+        expect(installed.has(sleeping.replace('/visuals/', '')), `${id} sleeping art missing`).toBe(true);
+        const png = readPngInfo(readFileSync(file));
+        expect(png).toMatchObject({ width: 128, height: 128, colorType: 3 });
+      } else {
+        expect(installed.has(sleeping.replace('/visuals/', ''))).toBe(false);
       }
     }
 

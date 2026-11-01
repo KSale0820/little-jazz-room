@@ -31,6 +31,11 @@ try {
     const pendingFallback = room.width === 941 && room.height === 1672;
     if (!approvedPhoto && !pendingFallback) throw new Error(`Home room failed to load at ${width}x${height}`);
     console.log(`H01 room source: ${approvedPhoto ? 'user-approved photograph' : 'temporary older room; new photo not installed'}`);
+    // Default local companion is Luna; her PR #8 sleeping pose must render.
+    const cat = await page.locator('.h01-sleeping-sprite').evaluate(el => ({ width: el.naturalWidth, height: el.naturalHeight }));
+    if (cat.width !== 128 || cat.height !== 128) {
+      throw new Error(`Approved Luna sleeping cat failed to load at ${width}x${height}`);
+    }
     const nav = page.locator('nav.bottom-nav a');
     if (await nav.count() !== 4) throw new Error('Expected exactly four navigation tabs');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);

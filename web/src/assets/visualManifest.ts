@@ -55,7 +55,7 @@ export const VISUAL_ASSETS = {
   },
   cat: {
     /** The user's approved October 31 class-MVP art pack. Sole source of cat illustrations. */
-    sleepingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sleeping/${id}.png`,
+    sleepingFile: (id: CatId) => `/visuals/cats/sleeping/${id}.png`,
     fullBodyFile: (id: CatId) => `/visuals/cats/approved-class-mvp/full-body/${id}.png`,
     profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
     closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
@@ -135,4 +135,9 @@ export function catFloorUrls(id: CatId): string[] {
 
 export function catCloseupUrls(id: CatId): string[] {
   return [VISUAL_ASSETS.cat.closeupFile(id)];
+}
+
+/** Use PR #8's sleeping poses when available. Biscuit does not have one yet. */
+export function catSleepingUrls(id: CatId): string[] {
+  return id === 'biscuit' ? catFloorUrls(id) : [VISUAL_ASSETS.cat.sleepingFile(id)];
 }
