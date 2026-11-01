@@ -241,7 +241,7 @@ export function PracticePage() {
         <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
         <p className="practice-complete-date">{new Date(completion.finishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
         <div className="practice-complete-summary">
-          <img src={VISUAL_ASSETS.room.h01} alt="" />
+          <img src={VISUAL_ASSETS.room.approved.twilight} alt="" />
           <div>
             <strong>{completion.title}</strong>
             <span>{completion.routineId ? 'Guided Practice' : 'Free Practice'}</span>
@@ -320,7 +320,7 @@ export function PracticePage() {
         </div>
       ) : (
         <div className="practice-art-panel" role="tabpanel" aria-label="Chart only player">
-          <img src={VISUAL_ASSETS.room.h01} alt="Warm and cozy jazz practice room" />
+          <img src={VISUAL_ASSETS.room.approved.twilight} alt="Warm and cozy jazz practice room" />
           <div className="practice-art-caption"><strong>{chart.title}</strong><span>{formatChartMeta(chart)}</span></div>
           <div className="practice-no-audio"><strong>Chart Only · No Recording</strong><p>Backing-track playback and stem mixing are unavailable. Your practice timer works independently.</p></div>
         </div>
