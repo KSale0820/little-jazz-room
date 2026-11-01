@@ -41,6 +41,7 @@ export function RoutineLibraryPage() {
   const { repo, routines, publicRoutines, exercises, setActiveRoutineId } = useApp();
   const [tab, setTab] = useState<RoutineTab>(() => params.get('tab') === 'my' ? 'My Routines' : 'Presets');
   const [query, setQuery] = useState('');
+  const [showAllPresets, setShowAllPresets] = useState(false);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [bookmarks, setBookmarks] = useState<string[]>(() => readBookmarks(repo.scope));
 
@@ -75,6 +76,18 @@ export function RoutineLibraryPage() {
     if (filters.goal && routineCategory(routine, linked.map(ex => ex?.category ?? '')) !== filters.goal) return false;
     return true;
   }), [available, query, filters, exerciseMap]);
+
+  const featuredOnly = tab === 'Presets' && !showAllPresets && !query.trim() &&
+    !Object.values(filters).some(Boolean);
+  const displayed = featuredOnly ? shown.slice(0, 3) : shown;
+
+  const routineDescription = (routine: Routine): string => {
+    if (routine.description) return routine.description;
+    if (routine.id === 'daily-warm-up') return 'Rhythm, harmony, and a little free play.';
+    if (routine.id === 'first-improv') return 'Blues phrases and call-and-response.';
+    if (routine.id === '12bar-blues') return 'Hear the form and build your first solo.';
+    return routine.steps.length + ' focused steps for your jazz practice.';
+  };
 
   const toggleBookmark = (id: string) => {
     setBookmarks(previous => {
@@ -150,11 +163,11 @@ export function RoutineLibraryPage() {
 
       <div className="routine-list-header">
         <h2>{tab === 'Presets' ? 'Start with a preset' : tab === 'Shared' ? 'Shared routines' : 'Your routines'}</h2>
-        <span>{shown.length} {shown.length === 1 ? 'routine' : 'routines'}</span>
+        <span>{displayed.length} {displayed.length === 1 ? 'routine' : 'routines'}</span>
       </div>
 
       <div className="routine-list">
-        {shown.map((routine, index) => {
+        {displayed.map((routine, index) => {
           const category = routineCategory(routine, routine.steps.map(step => exerciseMap.get(step.exercise_id)?.category ?? ''));
           const isBookmarked = bookmarks.includes(routine.id);
           return (
@@ -166,7 +179,7 @@ export function RoutineLibraryPage() {
                 </span>
                 <span className="routine-card-content">
                   <span className="routine-card-title">{routine.title}</span>
-                  <span className="routine-card-desc">{routine.description || routine.steps.length + ' steps to build your playing.'}</span>
+                  <span className="routine-card-desc">{routineDescription(routine)}</span>
                   <span className="routine-card-tags">
                     <span>◷ {routine.duration_minutes} min</span>
                     <span>{routine.level}</span>
@@ -201,6 +214,7 @@ export function RoutineLibraryPage() {
       <button type="button" className="routine-create-button" onClick={() => navigate('/create')}>
         <span aria-hidden="true">＋</span> Create routine
       </button>
+      {featuredOnly && shown.length > displayed.length && <button type="button" className="routine-show-all" onClick={() => setShowAllPresets(true)}>See all {shown.length} preset routines</button>}
       <p className="routine-tip"><span aria-hidden="true">ⓘ</span>
         Tap a routine to practice its steps. Bookmark a preset or make your own.
       </p>
