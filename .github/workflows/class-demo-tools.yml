@@ -8,6 +8,7 @@ on:
       - 'web/src/pages/ToolsPages.css'
       - 'web/src/pages/toolsAudio.ts'
       - 'web/scripts/check-class-demo-tools.mjs'
+      - 'web/scripts/check-class-demo-integration.mjs'
       - '.github/workflows/class-demo-tools.yml'
   workflow_dispatch:
 
@@ -29,8 +30,6 @@ jobs:
       - name: Build
         run: npm run build
       - name: Unit tests
-        id: unit_tests
-        continue-on-error: true # Base branch manifest test currently fails on newly committed sitting cat binaries.
         run: npm test
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
@@ -43,6 +42,15 @@ jobs:
           done
       - name: Browser checks and screenshots
         run: node scripts/check-class-demo-tools.mjs
+      - name: Full routine, session, and progress walkthrough
+        run: node scripts/check-class-demo-integration.mjs
+      - name: Upload integration screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: class-demo-full-walkthrough-390x844-and-375x667
+          path: web/docs/screenshots/class-demo-integration/
+          if-no-files-found: warn
       - name: Upload actual screenshots
         if: always()
         uses: actions/upload-artifact@v4
