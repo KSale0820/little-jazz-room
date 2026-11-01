@@ -199,7 +199,7 @@ export function MetronomePage() {
   const beatCount = beatsPerMeasure(signature);
   return (
     <section className={`tool-page tool-metronome${roomArtLoaded ? ' tool-has-background' : ''}`} aria-label="Metronome">
-      <img className="tool-bottom-art" src="/visuals/tools/p05-metronome-background.png" alt="" aria-hidden="true"
+      <img className="tool-bottom-art" src={VISUAL_ASSETS.tools.metronomeBackground} alt="" aria-hidden="true"
         onLoad={() => setRoomArtLoaded(true)} onError={() => setRoomArtLoaded(false)} />
       <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
       <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
