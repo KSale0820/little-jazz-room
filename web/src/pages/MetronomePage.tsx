@@ -261,8 +261,10 @@ export function MetronomePage() {
       </button>
       {error ? <p className="tool-error" role="alert">{error}</p> : null}
       <div className="tool-cat-scene tool-metronome-scene" aria-hidden="true">
+        <img className="tool-scene-plant tool-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
+        <img className="tool-scene-plant tool-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-rug" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.rug} alt="" />
-        <img className="tool-scene-cat" src={VISUAL_ASSETS.cat.sleepingFile(catId)} alt="" />
+        <img className="tool-scene-cat" src={'/visuals/cats/approved-class-mvp/sitting/' + catId + '.png'} alt="" />
       </div>
     </section>
   );
