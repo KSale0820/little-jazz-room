@@ -56,7 +56,7 @@ export const VISUAL_ASSETS = {
   cat: {
     /** The user's approved October 31 class-MVP art pack. Sole source of cat illustrations. */
     sleepingFile: (id: CatId) => `/visuals/cats/sleeping/${id}.png`,
-    sittingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sitting/${id}.png`,
+    ...{ sittingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sitting/${id}.png` },
     fullBodyFile: (id: CatId) => `/visuals/cats/approved-class-mvp/full-body/${id}.png`,
     profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
     closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
