@@ -71,6 +71,42 @@ try {
       await page.waitForURL(new RegExp(`${path.replace('/', '\\/')}$`));
       await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
     }
+    // Verify both visual states and capture the corrected Practice tab without changing any UI.
+    const practiceTab = page.locator('nav.bottom-nav a[href="/practice"]');
+    const practiceIcon = practiceTab.locator('.pix');
+    const readPracticeIcon = () => practiceIcon.evaluate(el => {
+      const style = getComputedStyle(el);
+      const bounds = el.getBoundingClientRect();
+      return {
+        tag: el.tagName.toLowerCase(),
+        mask: style.maskImage || style.webkitMaskImage,
+        width: bounds.width, height: bounds.height,
+        color: getComputedStyle(el.closest('a')).color,
+        background: style.backgroundColor,
+      };
+    });
+    const inactive = await readPracticeIcon();
+    if (inactive.tag !== 'span' ||
+        !inactive.mask.includes('/visuals/icons/nav-practice.svg') ||
+        inactive.width !== 23 || inactive.height !== 23 ||
+        inactive.background !== inactive.color) {
+      throw new Error(`Incorrect inactive Practice icon at ${width}x${height}: ${JSON.stringify(inactive)}`);
+    }
+    await practiceTab.click();
+    await page.waitForURL(url => new URL(url).pathname === '/practice');
+    const active = await readPracticeIcon();
+    if (!(await practiceTab.evaluate(el => el.classList.contains('current'))) ||
+        active.mask !== inactive.mask || active.background !== active.color ||
+        active.color === inactive.color) {
+      throw new Error(`Incorrect active Practice icon at ${width}x${height}: ${JSON.stringify(active)}`);
+    }
+    await page.evaluate(async () => {
+      await Promise.all([...document.images].map(img => img.decode().catch(() => {})));
+      if (document.fonts?.ready) await document.fonts.ready;
+    });
+    const practiceScreenshot = join(outDir, `practice-${width}x${height}.png`);
+    await page.screenshot({ path: practiceScreenshot, fullPage: false });
+    console.log(`PASS Practice nav ${width}x${height}: approved mask, 23px, active/inactive colors, /practice route; screenshot ${practiceScreenshot}`);
     console.log(`PASS H01 ${width}x${height}: room loaded, navigation, four hotspots, no overflow; screenshot ${screenshotPath}`);
     if (errors.length) throw new Error(`Browser errors: ${errors.join(' | ')}`);
     await context.close();
