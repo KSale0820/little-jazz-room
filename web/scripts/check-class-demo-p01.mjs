@@ -27,9 +27,8 @@ try {
     if (!(await page.getByRole('heading', { name: "Let's Practice" }).isVisible())) throw new Error('P01 heading missing');
     if (await page.locator('.p01-path').count() !== 2) throw new Error('Expected two practice modes');
     if ((await page.locator('nav.bottom-nav a').count()) !== 4) throw new Error('Navigation tab count changed');
-    for (const src of await page.locator('.p01-path-art img').evaluateAll(images => images.map(img => img.naturalWidth))) {
-      if (!src) throw new Error('Approved practice card asset failed to load');
-    }
+    const failedArtwork = await page.locator('.p01-page img').evaluateAll(images => images.filter(img => !img.naturalWidth).map(img => img.src));
+    if (failedArtwork.length) throw new Error(`P01 artwork failed to load: ${failedArtwork.join(', ')}`);
     const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     if (horizontalOverflow > 1) throw new Error(`Horizontal overflow at ${width}x${height}: ${horizontalOverflow}px`);
     const nav = await page.locator('nav.bottom-nav').boundingBox();
