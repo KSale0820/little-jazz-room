@@ -13,6 +13,7 @@ type MicStatus = 'idle' | 'requesting' | 'listening' | 'denied' | 'unsupported' 
 export function TunerPage() {
   const navigate = useNavigate();
   const { catId } = useApp();
+  const [roomArtLoaded, setRoomArtLoaded] = useState(false);
   const [mode, setMode] = useState<TuningMode>('chromatic');
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
@@ -191,7 +192,9 @@ export function TunerPage() {
   };
 
   return (
-    <section className="tool-page tool-tuner" aria-label="Chromatic instrument tuner">
+    <section className={`tool-page tool-tuner${roomArtLoaded ? ' tool-has-background' : ''}`} aria-label="Chromatic instrument tuner">
+      <img className="tool-bottom-art" src="/visuals/tools/p04-tuner-background.png" alt="" aria-hidden="true"
+        onLoad={() => setRoomArtLoaded(true)} onError={() => setRoomArtLoaded(false)} />
       <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
       <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
       <header className="tool-heading">
