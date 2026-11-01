@@ -57,6 +57,8 @@ export const VISUAL_ASSETS = {
     /** The user's approved October 31 class-MVP art pack. Sole source of cat illustrations. */
     sleepingFile: (id: CatId) => `/visuals/cats/sleeping/${id}.png`,
     fullBodyFile: (id: CatId) => `/visuals/cats/approved-class-mvp/full-body/${id}.png`,
+    /** Approved sitting poses. Preserve the original full-resolution PNG binaries. */
+    sittingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sitting/${id}.png`,
     profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
     closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
   },
@@ -165,4 +167,9 @@ export function catCloseupUrls(id: CatId): string[] {
 /** All eight companions now have approved sleeping poses. Never fall back to legacy cats. */
 export function catSleepingUrls(id: CatId): string[] {
   return [VISUAL_ASSETS.cat.sleepingFile(id)];
+}
+
+/** All eight approved sitting poses, with no legacy fallback. */
+export function catSittingUrls(id: CatId): string[] {
+  return [VISUAL_ASSETS.cat.sittingFile(id)];
 }
