@@ -193,7 +193,7 @@ export function TunerPage() {
 
   return (
     <section className={`tool-page tool-tuner${roomArtLoaded ? ' tool-has-background' : ''}`} aria-label="Chromatic instrument tuner">
-      <img className="tool-bottom-art" src="/visuals/tools/p04-tuner-background.png" alt="" aria-hidden="true"
+      <img className="tool-bottom-art" src={VISUAL_ASSETS.tools.tunerBackground} alt="" aria-hidden="true"
         onLoad={() => setRoomArtLoaded(true)} onError={() => setRoomArtLoaded(false)} />
       <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
       <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
