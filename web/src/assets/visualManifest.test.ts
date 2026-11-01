@@ -99,7 +99,7 @@ describe('approved visual library', () => {
       expect(catCloseupUrls(id)).toEqual([`${base}/closeups/${id}.png`]);
       expect(catSleepingUrls(id)).toEqual([`/visuals/cats/sleeping/${id}.png`]);
 
-      for (const variant of ['full-body', 'profiles', 'closeups']) {
+      for (const variant of ['full-body', 'profiles', 'closeups', 'sitting']) {
         const file = join(publicVisuals, 'cats', 'approved-class-mvp', variant, `${id}.png`);
         const png = readPngInfo(readFileSync(file));
         expect(png.width).toBeGreaterThan(500);
@@ -121,6 +121,8 @@ describe('approved visual library', () => {
       fromManifest.add(catFloorUrls(id)[0]);
       fromManifest.add(catPortraitUrls(id)[0]);
       fromManifest.add(catCloseupUrls(id)[0]);
+      // The eight owner-approved sitting PNGs are part of the installed library.
+      fromManifest.add(VISUAL_ASSETS.cat.sittingFile(id));
       // All eight sleeping sprites are indexed 128x128 PNGs with transparency.
       const sleeping = VISUAL_ASSETS.cat.sleepingFile(id);
       fromManifest.add(sleeping);
