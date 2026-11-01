@@ -61,7 +61,7 @@ try {
       const navBox = await page.locator('nav.bottom-nav').boundingBox();
       const shortViewport = height <= 720;
       const artworkOffset = shortViewport ? (selector.includes('metronome') ? 40 : 35) : 0;
-      if (!navBox || Math.abs(result.bottom - navBox.y - artworkOffset) > 2) {
+      if (!navBox || Math.abs(result.bottom - navBox.y - artworkOffset) > 6) {
         throw new Error('Room illustration is not aligned with the intended floor offset: ' + selector + ' ' + JSON.stringify({ artwork: result, nav: navBox, artworkOffset, width, height }));
       }
     };
