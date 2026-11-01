@@ -267,7 +267,7 @@ export function MetronomePage() {
         <img className="tool-scene-plant tool-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-plant tool-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-rug" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.rug} alt="" />
-        <img className="tool-scene-cat" src={'/visuals/cats/approved-class-mvp/sitting/' + catId + '.png'} alt="" />
+        <img className="tool-scene-cat" src={VISUAL_ASSETS.cat.sittingFile(catId)} alt="" />
       </div>
     </section>
   );
