@@ -78,8 +78,9 @@ try {
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
     console.log('P06_CAT_DIAG', JSON.stringify(await page.locator('.practice-sleeping-cat').evaluate(async img => {
-      const response = await fetch(img.src);
-      return { src: img.src, width: img.naturalWidth, complete: img.complete, status: response.status, mime: response.headers.get('content-type') };
+      let status = 'fetch-error';
+      try { status = String((await fetch(img.src)).status); } catch { /* preserve image diagnostic */ }
+      return { src: img.src, width: img.naturalWidth, complete: img.complete, status };
     })));
     await capture(page, folder, 'P06-free-completion');
     await page.waitForFunction(() => {
