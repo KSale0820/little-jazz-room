@@ -43,10 +43,20 @@ it.skipIf(!process.env.CI)('visually captures R01/R03 and completes the class-de
       await page.getByRole('heading', { name: 'Practice routines' }).waitFor();
       await page.locator('.routine-card').first().waitFor();
       recordImage('R01-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
+      if (width === 390) {
+        await page.locator('.viewport').evaluate(element => { element.scrollTop = element.scrollHeight; });
+        recordImage('R01-bottom-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
+        await page.getByRole('button', { name: 'See all 14 preset routines' }).click();
+        await expect.poll(async () => page.locator('.routine-card').count()).toBe(14);
+      }
       await page.goto('http://127.0.0.1:5187/create');
       await page.getByRole('heading', { name: 'Create routine' }).waitFor();
       await page.locator('.builder-step').first().waitFor();
       recordImage('R03-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
+      if (width === 390) {
+        await page.locator('.viewport').evaluate(element => { element.scrollTop = element.scrollHeight; });
+        recordImage('R03-bottom-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
+      }
 
       await page.getByLabel('Routine title').fill('Demo Practice ' + width);
       await page.getByLabel('Duration for Swing on Two and Four in minutes').fill('7');
