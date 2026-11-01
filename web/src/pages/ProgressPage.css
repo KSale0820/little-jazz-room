@@ -43,7 +43,7 @@
 .g01-daily-card { position: relative; overflow: hidden; padding: 10px 15px 13px; margin: 0 8px 9px; border-radius: 16px; background: #fffbf3; }
 .g01-daily-card h2 { color: #121d20; font: 700 20px/1.2 Georgia, 'Times New Roman', serif; }
 .g01-daily-card p { margin: 4px 0 6px; font-size: 17px; font-weight: 550; color: #101b1d; font-variant-numeric: tabular-nums; }
-.g01-goal-plant { position: absolute; top: 4px; right: 9px; width: 89px; height: 89px; object-fit: contain; opacity: .87; pointer-events: none; }
+.g01-goal-plant { position: absolute; top: 3px; right: 12px; width: 62px; height: 62px; object-fit: contain; opacity: .87; pointer-events: none; }
 .g01-goal-track { position: relative; overflow: hidden; width: 100%; height: 12px; border-radius: 9px; background: #e7dfcf; }
 .g01-goal-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #5f8c6d, #35634e); transition: width .2s ease; }
 .g01-week-chart { display: flex; gap: 10px; height: 131px; padding: 13px 12px 9px 8px; margin: 0 8px 12px; border-radius: 17px; background: #fffbf3; }
