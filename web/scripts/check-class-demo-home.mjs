@@ -75,6 +75,38 @@ try {
     if (errors.length) throw new Error(`Browser errors: ${errors.join(' | ')}`);
     await context.close();
   }
+  // Screenshot gallery: one real H01 render for each of the eight approved cats.
+  // All screenshots use the same 390x844 viewport and identical local demo state.
+  for (const catId of ['luna', 'milo', 'maple', 'mochi', 'pepper', 'patches', 'chai', 'biscuit']) {
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 }, isMobile: true,
+      deviceScaleFactor: 2, hasTouch: true,
+    });
+    await context.addInitScript(id => {
+      localStorage.setItem('little-jazz-room:selected-cat:v1', id);
+      localStorage.setItem('little-jazz-room:room-lighting:v1', 'twilight');
+    }, catId);
+    const page = await context.newPage();
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto(baseUrl, { waitUntil: 'networkidle' });
+    const sprite = page.locator('.h01-sleeping-sprite');
+    await sprite.waitFor({ state: 'visible' });
+    await page.waitForFunction(id => {
+      const img = document.querySelector('.h01-sleeping-sprite');
+      return img instanceof HTMLImageElement &&
+        img.getAttribute('src') === `/visuals/cats/sleeping/${id}.png` &&
+        img.complete && img.naturalWidth === 128 && img.naturalHeight === 128;
+    }, catId);
+    await page.evaluate(() => document.fonts?.ready);
+    const rendered = await page.locator('.h01-companion').isVisible();
+    if (!rendered) throw new Error(`Companion ${catId} was not visible on H01`);
+    const filename = `home-cat-${catId}-390x844.png`;
+    await page.screenshot({ path: join(outDir, filename), fullPage: false });
+    if (errors.length) throw new Error(`Browser errors for ${catId}: ${errors.join(' | ')}`);
+    console.log(`PASS H01 CAT ${catId}: approved sleeping sprite loaded; screenshot ${filename}`);
+    await context.close();
+  }
 } finally {
   await browser.close();
 }
