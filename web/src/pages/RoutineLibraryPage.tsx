@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Routine } from '../types/content';
 import './RoutineLibraryPage.css';
@@ -34,8 +34,9 @@ function routineCategory(routine: Routine, exerciseCategories: string[]): string
 
 export function RoutineLibraryPage() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const { repo, routines, publicRoutines, exercises, setActiveRoutineId } = useApp();
-  const [tab, setTab] = useState<RoutineTab>('Presets');
+  const [tab, setTab] = useState<RoutineTab>(() => params.get('tab') === 'my' ? 'My Routines' : 'Presets');
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [bookmarks, setBookmarks] = useState<string[]>(() => readBookmarks(repo.scope));
