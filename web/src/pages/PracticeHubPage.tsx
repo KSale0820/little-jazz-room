@@ -1,36 +1,129 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
-import './DemoPages.css';
+import './PracticeHubPage.css';
+
+type QuickTool = 'tuner' | 'metronome';
 
 export function PracticeHubPage() {
   const navigate = useNavigate();
-  const { setActiveRoutineId, routines } = useApp();
-  const latest = routines.find(r => r.id === 'daily-warm-up') ?? routines[0];
+  const { catId, sessions, routines, setActiveRoutineId } = useApp();
+  const [preview, setPreview] = useState<QuickTool | null>(null);
+  const latestSession = [...sessions].sort((a, b) => b.finishedAt.localeCompare(a.finishedAt))[0];
+  const recentRoutine = latestSession?.routineId
+    ? routines.find(routine => routine.id === latestSession.routineId)
+    : null;
+
+  const startFreePractice = () => {
+    setActiveRoutineId(null);
+    navigate('/player');
+  };
+
+  const resumePractice = () => {
+    if (!latestSession) return;
+    setActiveRoutineId(recentRoutine?.id ?? null);
+    navigate('/player');
+  };
+
   return (
-    <section className="demo-page" aria-label="Practice hub">
-      <header className="demo-header"><div><p className="demo-eyebrow">Find your rhythm</p><h1 className="demo-heading">Let's Practice</h1><p className="demo-subtitle">Choose how you want to practice today.</p></div></header>
-      <button type="button" className="demo-card demo-card-peach" onClick={() => { setActiveRoutineId(null); navigate('/player'); }}>
-        <img className="demo-card-image" src={VISUAL_ASSETS.approvedDecor.metronome} alt="" />
-        <span className="demo-card-copy"><span className="demo-card-title">Free Practice</span><span className="demo-card-desc">Pick a chart and start your timer.</span></span>
-        <span className="demo-chevron" aria-hidden="true">›</span>
-      </button>
-      <button type="button" className="demo-card demo-card-tint" onClick={() => navigate('/routines')}>
-        <img className="demo-card-image" src={VISUAL_ASSETS.approvedDecor.books} alt="" />
-        <span className="demo-card-copy"><span className="demo-card-title">Guided Practice</span><span className="demo-card-desc">Follow an ordered routine step by step.</span></span>
-        <span className="demo-chevron" aria-hidden="true">›</span>
-      </button>
-      <h2 className="demo-section-title">Quick tools</h2>
-      <div className="demo-stats">
-        <div className="demo-stat"><strong style={{fontSize:18}}>Tuner</strong><span>Microphone · Preview</span></div>
-        <div className="demo-stat"><strong style={{fontSize:18}}>Metronome</strong><span>Beat controls · Preview</span></div>
-      </div>
-      {latest ? <>
-        <h2 className="demo-section-title">Ready for a warm-up?</h2>
-        <button type="button" className="demo-row" onClick={() => { setActiveRoutineId(latest.id); navigate('/player'); }}>
-          <span><span className="demo-row-title">{latest.title}</span><span className="demo-row-meta">{latest.duration_minutes} min · {latest.steps.length} steps</span></span><span aria-hidden="true">›</span>
+    <section className="p01-page" aria-label="Practice hub">
+      <img className="p01-botanical p01-botanical-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
+      <img className="p01-botanical p01-botanical-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
+
+      <header className="p01-header">
+        <p className="p01-greeting">Good morning,</p>
+        <h1>Let&apos;s Practice</h1>
+        <p className="p01-intro">Choose how you want to practice today.</p>
+      </header>
+
+      <div className="p01-paths" aria-label="Choose a practice mode">
+        <button type="button" className="p01-path p01-path-free" onClick={startFreePractice}>
+          <span className="p01-path-art p01-path-art-record" aria-hidden="true">
+            <img src={VISUAL_ASSETS.sharedMvp.practice.vinyl} alt="" />
+          </span>
+          <span className="p01-path-text">
+            <strong>Free Practice</strong>
+            <span>Pick a track and start playing.</span>
+          </span>
+          <span className="p01-chevron" aria-hidden="true">›</span>
         </button>
-      </> : null}
+
+        <button type="button" className="p01-path p01-path-guided" onClick={() => navigate('/routines')}>
+          <span className="p01-path-art p01-path-art-score" aria-hidden="true">
+            <img src={VISUAL_ASSETS.sharedMvp.practice.stand} alt="" />
+          </span>
+          <span className="p01-path-text">
+            <strong>Guided Practice</strong>
+            <span>Follow a routine with step by step exercises.</span>
+          </span>
+          <span className="p01-chevron" aria-hidden="true">›</span>
+        </button>
+      </div>
+
+      <section className="p01-tools" aria-labelledby="p01-tools-heading">
+        <h2 id="p01-tools-heading">Quick Tools</h2>
+        <div className="p01-tool-grid">
+          <button type="button" className="p01-tool" onClick={() => setPreview('tuner')}>
+            <span className="p01-tuning-fork" aria-hidden="true" />
+            <strong>Tuner</strong>
+            <small>Check your pitch.</small>
+          </button>
+          <button type="button" className="p01-tool" onClick={() => setPreview('metronome')}>
+            <span className="p01-metronome-symbol" style={{
+              WebkitMaskImage: `url("${VISUAL_ASSETS.icons.metronome}")`,
+              maskImage: `url("${VISUAL_ASSETS.icons.metronome}")`,
+            }} aria-hidden="true" />
+            <strong>Metronome</strong>
+            <small>Keep steady time.</small>
+          </button>
+          <button type="button" className="p01-tool" onClick={resumePractice} disabled={!latestSession}>
+            <span className="p01-resume-symbol" aria-hidden="true">♫</span>
+            <strong>Resume</strong>
+            <small>{latestSession ? 'Continue your last session.' : 'No session yet.'}</small>
+          </button>
+        </div>
+        {preview ? (
+          <div className="p01-preview" role="status">
+            <span><strong>{preview === 'tuner' ? 'Tuner' : 'Metronome'} preview</strong> · {preview === 'tuner' ? 'Microphone tuning is coming soon.' : 'Beat controls are coming soon.'}</span>
+            <button type="button" onClick={() => setPreview(null)} aria-label="Dismiss tool preview">Close</button>
+          </div>
+        ) : null}
+      </section>
+
+      <section className="p01-recent" aria-labelledby="p01-recent-heading">
+        <div className="p01-recent-header">
+          <h2 id="p01-recent-heading">Recently Played</h2>
+          <button type="button" className="p01-see-all" onClick={() => navigate('/progress')}>See All <span aria-hidden="true">›</span></button>
+        </div>
+        {latestSession ? (
+          <button type="button" className="p01-recent-track" onClick={resumePractice}>
+            <span className="p01-recent-image"><img src={VISUAL_ASSETS.sharedMvp.covers.rainy} alt="" /></span>
+            <span className="p01-recent-copy">
+              <strong>{recentRoutine?.title ?? 'Free Practice'}</strong>
+              <span>{Math.max(1, Math.round(latestSession.durationSeconds / 60))} min · Last session</span>
+            </span>
+            <span className="p01-chevron" aria-hidden="true">›</span>
+          </button>
+        ) : (
+          <button type="button" className="p01-recent-track" onClick={startFreePractice}>
+            <span className="p01-recent-image"><img src={VISUAL_ASSETS.sharedMvp.covers.evening} alt="" /></span>
+            <span className="p01-recent-copy">
+              <strong>Start your first session</strong>
+              <span>Your recent practice will appear here.</span>
+            </span>
+            <span className="p01-chevron" aria-hidden="true">›</span>
+          </button>
+        )}
+      </section>
+
+      <div className="p01-footer-decoration" aria-hidden="true">
+        <img className="p01-footer-vine" src={VISUAL_ASSETS.sharedMvp.botanicals.shortTrail} alt="" />
+        <div className="p01-sleep-nook">
+          <img className="p01-sleep-cushion" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.cushion} alt="" />
+          <img className="p01-sleeping-cat" src={VISUAL_ASSETS.cat.sleepingFile(catId)} alt="" />
+        </div>
+      </div>
     </section>
   );
 }

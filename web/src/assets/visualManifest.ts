@@ -72,6 +72,26 @@ export const VISUAL_ASSETS = {
     practice: '/visuals/vignettes/practice-vignette.png',
     profile: '/visuals/vignettes/profile-vignette.png',
   },
+  /** Approved reusable class-MVP illustrations; each path is an original supplied PNG. */
+  sharedMvp: {
+    botanicals: {
+      topLeft: '/visuals/shared-mvp/botanicals/pothos-top-left.png',
+      topRight: '/visuals/shared-mvp/botanicals/pothos-top-right.png',
+      shortTrail: '/visuals/shared-mvp/botanicals/pothos-short-trail.png',
+    },
+    practice: {
+      vinyl: '/visuals/shared-mvp/practice/free-practice-vinyl.png',
+      stand: '/visuals/shared-mvp/practice/guided-practice-stand.png',
+    },
+    covers: {
+      evening: '/visuals/shared-mvp/covers/recent-evening-window.png',
+      rainy: '/visuals/shared-mvp/covers/recent-rainy-studio.png',
+    },
+    companionSurfaces: {
+      cushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
+      rug: '/visuals/shared-mvp/companion-surfaces/oatmeal-oval-rug.png',
+    },
+  },
   approvedDecor: {
     books: '/visuals/decor/books.png',
     brassLamp: '/visuals/decor/brass-lamp.png',
