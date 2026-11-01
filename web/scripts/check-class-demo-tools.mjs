@@ -66,6 +66,12 @@ try {
     const missingMetronomeArt = await page.locator('.tool-metronome img').evaluateAll(
       images => images.filter(img => !img.naturalWidth).map(img => img.src));
     if (missingMetronomeArt.length) throw new Error('Missing metronome art: ' + missingMetronomeArt.join(', '));
+    const toolNav = await page.locator('nav.bottom-nav').boundingBox();
+    const playButton = await page.getByRole('button', { name: 'Start metronome' }).boundingBox();
+    const catImage = await page.locator('.tool-metronome .tool-scene-cat').boundingBox();
+    if (!toolNav || !playButton || !catImage || playButton.y + playButton.height > toolNav.y + 1 || catImage.y + catImage.height > toolNav.y + 1) {
+      throw new Error('Metronome CTA or cat scene clipped by navigation at ' + width + 'x' + height);
+    }
     await page.screenshot({ path: join(output, 'P05-metronome-' + width + 'x' + height + '.png'), fullPage: false });
     console.log('SCREENSHOT_PREVIEW_P05_' + width + 'x' + height + ':' + (await page.screenshot({ type: 'jpeg', quality: 62 })).toString('base64'));
     await page.getByRole('button', { name: 'Increase tempo by 1 BPM' }).click();
