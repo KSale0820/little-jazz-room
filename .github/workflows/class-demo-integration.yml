@@ -1,0 +1,45 @@
+name: Class demo integrated functional QA
+on:
+  push:
+    branches: [class-demo-2026-10-31, class-demo-tools]
+    paths:
+      - 'web/src/**'
+      - 'web/scripts/check-class-demo-integration.mjs'
+      - 'web/package*.json'
+      - '.github/workflows/class-demo-integration.yml'
+  workflow_dispatch:
+jobs:
+  class-demo-integration:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build
+        run: npm run build
+      - name: Unit tests
+        run: npm test
+      - name: Start local Vite
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/little-jazz-demo.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+      - name: Test real local class walkthrough
+        run: node scripts/check-class-demo-integration.mjs
+      - name: Upload QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integrated-class-demo-390x844-and-375x667
+          path: web/docs/screenshots/class-demo-integration/
+          if-no-files-found: warn
