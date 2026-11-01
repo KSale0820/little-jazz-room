@@ -34,8 +34,12 @@ try {
     for (let i = 0; i < data.length; i += 8000) console.log('T01_CAPTURE_DATA:' + width + 'x' + height + ':' + data.slice(i, i + 8000));
     console.log('T01_CAPTURE_END:' + width + 'x' + height);
 
-    const favorite = page.getByRole('button', { name: 'Add After-Hours Blues to favorites' });
+    const favorite = page.getByRole('button', { name: 'Remove After-Hours Blues from favorites' });
     await favorite.click();
+    await page.getByRole('button', { name: 'Favorites', exact: true }).click();
+    if (await page.locator('.t01-track-card').count() !== 0) throw new Error('Removing seeded favorite failed');
+    await page.getByRole('button', { name: 'Recent', exact: true }).click();
+    await page.getByRole('button', { name: 'Add After-Hours Blues to favorites' }).click();
     await page.getByRole('button', { name: 'Favorites', exact: true }).click();
     if (await page.locator('.t01-track-card').count() !== 1) throw new Error('Favorite filter failed');
     await page.reload({ waitUntil: 'networkidle' });
@@ -45,6 +49,7 @@ try {
     await page.getByRole('button', { name: 'Recent', exact: true }).click();
     await page.getByRole('searchbox', { name: 'Search tracks' }).fill('neo-soul waltz');
     if (await page.getByRole('heading', { name: 'No tracks found' }).count() !== 1) throw new Error('Search empty state failed');
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
     await page.screenshot({ path: join(outDir, 't01-empty-' + width + 'x' + height + '.png'), fullPage: false });
     await page.getByRole('button', { name: 'Clear search', exact: true }).first().click();
     if (await page.locator('.t01-track-card').count() !== 4) throw new Error('Clear search failed');
