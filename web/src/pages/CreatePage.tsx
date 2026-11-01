@@ -160,8 +160,9 @@ export function CreatePage() {
       return;
     }
     const routineSteps = steps.map(step => ({ exercise_id: step.exerciseId, duration_minutes: step.minutes }));
-    const routine: LocalRoutine = {
+    const routine: LocalRoutine & { goal: string } = {
       id: newLocalRoutineId(), title: title.trim(), description: description.trim(),
+      goal,
       level: 'Beginner', duration_minutes: routineDurationFromSteps(routineSteps),
       visibility: teamSignedIn && visibility === 'Public' ? 'public' : 'private',
       is_seed: false, steps: routineSteps, applicable_instruments: [instrument],
@@ -217,7 +218,7 @@ export function CreatePage() {
           </div>
           <div><label htmlFor="builderGoal">Goal</label>
             <select id="builderGoal" className="builder-field" value={goal} onChange={e => setGoal(e.target.value)}>
-              {['Jazz standards', 'Technique', 'Improvisation', 'Ear training', 'Rhythm'].map(value =>
+              {['Jazz standards', 'Technique', 'Improvisation', 'Ear Training', 'Rhythm', 'Harmony'].map(value =>
                 <option key={value}>{value}</option>)}
             </select>
           </div>
