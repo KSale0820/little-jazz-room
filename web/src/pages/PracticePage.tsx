@@ -287,6 +287,8 @@ export function PracticePage() {
         <button className="practice-more" type="button" aria-label="Finish session" onClick={finishSession}>Finish</button>
       </header>
 
+      <p className="practice-audio-state"><strong>Chart Only</strong> · No recording available</p>
+
       {routine && (
         <div className="practice-guided-head">
           <div className="practice-progress-track" role="progressbar" aria-label="Routine steps completed" aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={stepIndex}>
