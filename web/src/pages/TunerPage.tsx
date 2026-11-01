@@ -261,6 +261,8 @@ export function TunerPage() {
         </button>
       </div>
       <div className="tool-cat-scene tool-tuner-scene" aria-hidden="true">
+        <img className="tool-scene-plant tool-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
+        <img className="tool-scene-plant tool-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-rug" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.rug} alt="" />
         <img className="tool-scene-cat" src={VISUAL_ASSETS.cat.sleepingFile(catId)} alt="" />
       </div>
