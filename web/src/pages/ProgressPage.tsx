@@ -107,7 +107,7 @@ export function ProgressPage() {
       </div>
 
       <section className="g01-daily-card" aria-labelledby="g01-goal-heading">
-        <img src={VISUAL_ASSETS.approvedDecor.plant} alt="" className="g01-goal-plant" aria-hidden="true" />
+        <img src="/visuals/progress/g01-goal-leaves.png" alt="" className="g01-goal-plant" aria-hidden="true" onError={event => { event.currentTarget.src = VISUAL_ASSETS.approvedDecor.plant; }} />
         <h2 id="g01-goal-heading">Daily Goal</h2>
         <p>{summary.todayMinutes} / {DAILY_GOAL_MINUTES} min</p>
         <div className="g01-goal-track" role="progressbar" aria-label="Daily practice goal" aria-valuemin={0} aria-valuemax={DAILY_GOAL_MINUTES} aria-valuenow={Math.min(summary.todayMinutes, DAILY_GOAL_MINUTES)} aria-valuetext={summary.todayMinutes + ' of ' + DAILY_GOAL_MINUTES + ' minutes practiced today'}>
