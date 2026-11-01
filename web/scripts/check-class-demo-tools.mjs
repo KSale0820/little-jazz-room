@@ -117,6 +117,63 @@ try {
   await deniedPage.getByText(/Microphone access was denied/).waitFor({ timeout: 15000 });
   await denied.close();
   console.log('PASS P04 denied-microphone state');
+  // Inject an actual 440 Hz / guitar E2 / bass E1 audio waveform into the
+  // browser microphone path. This validates analyser -> pitch -> UI, not
+  // permission alone, while avoiding any fabricated tuner reading.
+  const pitched = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await pitched.addInitScript(() => {
+    const media = navigator.mediaDevices;
+    if (!media) return;
+    Object.defineProperty(media, 'getUserMedia', {
+      configurable: true,
+      value: async () => {
+        const context = new AudioContext();
+        await context.resume();
+        const oscillator = context.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 440;
+        const gain = context.createGain();
+        gain.gain.value = 0.55;
+        const destination = context.createMediaStreamDestination();
+        oscillator.connect(gain);
+        gain.connect(destination);
+        oscillator.start();
+        window.__pitchAudioFixture = { context, oscillator };
+        return destination.stream;
+      },
+    });
+  });
+  const pitchedPage = await pitched.newPage();
+  await pitchedPage.goto(base + '/tuner', { waitUntil: 'networkidle' });
+  await pitchedPage.getByRole('button', { name: 'Enable microphone' }).click();
+  await pitchedPage.waitForFunction(() => document.querySelector('.tuner-reading strong')?.textContent === 'A4', { timeout: 12000 });
+  const readHz = async () => Number((await pitchedPage.locator('.tuner-reading > span').innerText()).split(' ')[0]);
+  const a440 = await readHz();
+  if (Math.abs(a440 - 440) > 5) throw new Error('Actual audio pitch pipeline failed A440: ' + a440 + ' Hz');
+  const deviation = await pitchedPage.locator('.tuner-gauge').getAttribute('aria-label');
+  if (!deviation?.includes('Deviation')) throw new Error('Pitch needle did not receive live cents reading');
+  await pitchedPage.getByRole('button', { name: 'Guitar', exact: true }).click();
+  await pitchedPage.evaluate(() => {
+    window.__pitchAudioFixture.oscillator.frequency.setValueAtTime(82.4069, window.__pitchAudioFixture.context.currentTime);
+  });
+  await pitchedPage.waitForFunction(() => document.querySelector('.tuner-reading strong')?.textContent === 'E2', { timeout: 12000 });
+  const guitarHz = await readHz();
+  if (Math.abs(guitarHz - 82.4069) > 3) throw new Error('Actual audio pitch pipeline failed guitar E2: ' + guitarHz + ' Hz');
+  await pitchedPage.getByRole('button', { name: 'Bass', exact: true }).click();
+  await pitchedPage.evaluate(() => {
+    window.__pitchAudioFixture.oscillator.frequency.setValueAtTime(41.2034, window.__pitchAudioFixture.context.currentTime);
+  });
+  await pitchedPage.waitForFunction(() => document.querySelector('.tuner-reading strong')?.textContent === 'E1', { timeout: 12000 });
+  const bassHz = await readHz();
+  if (Math.abs(bassHz - 41.2034) > 3) throw new Error('Actual audio pitch pipeline failed bass E1: ' + bassHz + ' Hz');
+  await pitchedPage.getByRole('button', { name: 'Stop microphone' }).click();
+  if (!(await pitchedPage.getByText('No pitch detected').isVisible())) throw new Error('Tuner displayed stale pitch after stopping audio');
+  await pitchedPage.evaluate(() => {
+    window.__pitchAudioFixture.oscillator.stop();
+    return window.__pitchAudioFixture.context.close();
+  });
+  await pitched.close();
+  console.log('PASS P04 live Web Audio pitch pipeline: A440, guitar E2, bass E1, cents needle, stop/silence');
 } finally {
   await browser.close();
 }
