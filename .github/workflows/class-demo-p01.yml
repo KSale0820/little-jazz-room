@@ -39,6 +39,19 @@ jobs:
           done
       - name: Check P01 and capture both iPhone sizes
         run: node scripts/check-class-demo-p01.mjs
+      - name: Integrated routine-to-progress walkthrough at two phone sizes
+        run: node scripts/check-class-demo-integration.mjs
+      - name: Audio tool routes, controls and click scheduling
+        run: node scripts/check-class-demo-tools.mjs
+      - name: Upload integration and audio screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-functional-stage-screenshots
+          path: |
+            web/docs/screenshots/class-demo-integration/
+            web/docs/screenshots/class-demo-tools/
+          if-no-files-found: warn
       - name: Upload actual screenshots
         if: always()
         uses: actions/upload-artifact@v4
