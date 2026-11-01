@@ -186,3 +186,10 @@ Stitch should:
 - Legacy files under `web/public/room/`, `web/public/decor/`, `web/public/jazz-cat-assets/`, and `web/public/favicon.svg` were left in place so nothing 404s.
 - Cat anatomy at 48 / 96 / 256px still needs a visual pass. The handoff asked for that review in the app; this change did not redraw anything.
 - `npm run test:rls` was not run. It needs live Supabase credentials.
+
+
+### Sleeping poses — integrated for class MVP (2026-11-01)
+
+The source branch `master` added seven transparent 128×128 sleeping sprites for Chai, Luna, Maple, Milo, Mochi, Patches, and Pepper. These original PNG blobs are preserved at `web/public/visuals/cats/sleeping/{id}.png`. The class-demo branch also adds the approved 128×128 sleeping Biscuit sprite at the same location, completing all eight companions.
+
+`CatSprite variant="sleeping"` and `catSleepingUrls(id)` resolve sleeping poses from `VISUAL_ASSETS.cat.sleepingFile(id)`; H01 uses the same manifest path. The class MVP deliberately uses only the eight newly approved companion sets and removes legacy cat fallbacks. Do not restore legacy artwork during merges. The Home room and its eight companion screenshots have been approved by the owner.
