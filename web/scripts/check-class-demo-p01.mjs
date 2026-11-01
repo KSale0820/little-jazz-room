@@ -48,13 +48,14 @@ try {
     await page.getByRole('button', { name: /Guided Practice/ }).click();
     await page.waitForURL(url => new URL(url).pathname === '/routines');
     await page.goto(base + '/practice', { waitUntil: 'domcontentloaded' });
-    await page.getByRole('button', { name: 'Tuner preview' }).click();
+    await page.locator('.p01-tool-grid .p01-tool').nth(0).click();
     if (!(await page.getByText('Microphone tuning is coming soon.').isVisible())) throw new Error('Tuner preview did not open');
     await page.getByRole('button', { name: 'Dismiss tool preview' }).click();
-    await page.getByRole('button', { name: 'Metronome preview' }).click();
+    await page.locator('.p01-tool-grid .p01-tool').nth(1).click();
     if (!(await page.getByText('Beat controls are coming soon.').isVisible())) throw new Error('Metronome preview did not open');
     await page.getByRole('button', { name: 'Dismiss tool preview' }).click();
-    const routine = page.locator('.p01-routine');
+    if (await page.locator('.p01-tool-grid .p01-tool').count() !== 3) throw new Error('Expected three approved quick tools');
+    const routine = page.locator('.p01-recent-track');
     if (await routine.count()) {
       await routine.scrollIntoViewIfNeeded();
       const routineBox = await routine.boundingBox();
@@ -64,9 +65,12 @@ try {
       }
       await routine.click();
       await page.waitForURL(url => new URL(url).pathname === '/player');
+      await page.goto(base + '/practice', { waitUntil: 'domcontentloaded' });
+      await page.getByRole('button', { name: /See All/ }).click();
+      await page.waitForURL(url => new URL(url).pathname === '/progress');
     }
     if (errors.length) throw new Error(`Browser errors: ${errors.join(' | ')}`);
-    console.log(`PASS P01 ${width}x${height}: visuals, images, responsive layout, routes, previews, warm-up; screenshot saved`);
+    console.log(`PASS P01 ${width}x${height}: visuals, images, responsive layout, routes, previews, recently played and history; screenshot saved`);
     await context.close();
   }
 } finally {
