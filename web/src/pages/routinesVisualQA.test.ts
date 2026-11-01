@@ -51,7 +51,7 @@ it.skipIf(!process.env.CI)('visually captures R01/R03 and completes the class-de
       await page.getByLabel('Routine title').fill('Demo Practice ' + width);
       await page.getByLabel('Duration for Swing on Two and Four in minutes').fill('7');
       await page.getByRole('button', { name: 'Move Guide Tones Through ii–V–I up' }).click();
-      await page.getByRole('button', { name: 'Save routine', exact: true }).click();
+      await page.getByRole('button', { name: /Save routine/ }).click();
       await page.waitForURL('**/routines?tab=my');
       await expect.poll(async () => page.getByText('Demo Practice ' + width).count()).toBeGreaterThan(0);
       await page.getByRole('button', { name: 'Open Demo Practice ' + width + ' in player' }).click();
