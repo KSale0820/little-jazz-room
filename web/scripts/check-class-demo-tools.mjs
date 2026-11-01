@@ -1,10 +1,27 @@
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 
 const base = process.env.APP_URL || 'http://127.0.0.1:5174';
 const output = join(process.cwd(), 'docs', 'screenshots', 'class-demo-tools');
 mkdirSync(output, { recursive: true });
+// Reject a stale, missing, or accidentally recompressed background, not just a 200 response.
+for (const [file, expected] of [
+  ['p04-tuner-background.png', '8f9cca3247363c50b470a2f2c09f2ea358aa58d4da6b2854f55dbfa36355085a'],
+  ['p05-metronome-background.png', '5d18e2166d144ef7af5edcb16dc2e55e15a0515a62525331ab2b310641de40d8'],
+]) {
+  let actual;
+  try {
+    const bytes = readFileSync(join(process.cwd(), 'public', 'visuals', 'tools', file));
+    actual = createHash('sha256').update(bytes).digest('hex');
+  } catch {
+    throw new Error('Approved P04/P05 binary asset is not committed to class-demo-tools: ' + file);
+  }
+  if (actual !== expected) throw new Error('Unexpected P04/P05 image contents: ' + file);
+}
+
 const browser = await chromium.launch({
   headless: true,
   args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
