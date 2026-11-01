@@ -28,8 +28,8 @@ export function PracticeHubPage() {
 
   return (
     <section className="p01-page" aria-label="Practice hub">
-      <div className="p01-botanical p01-botanical-left" aria-hidden="true" />
-      <div className="p01-botanical p01-botanical-right" aria-hidden="true" />
+      <img className="p01-botanical p01-botanical-left" src="/visuals/shared-mvp/botanicals/pothos-top-left.png" alt="" aria-hidden="true" />
+      <img className="p01-botanical p01-botanical-right" src="/visuals/shared-mvp/botanicals/pothos-top-right.png" alt="" aria-hidden="true" />
 
       <header className="p01-header">
         <p className="p01-greeting">Good morning,</p>
@@ -40,7 +40,7 @@ export function PracticeHubPage() {
       <div className="p01-paths" aria-label="Choose a practice mode">
         <button type="button" className="p01-path p01-path-free" onClick={startFreePractice}>
           <span className="p01-path-art p01-path-art-record" aria-hidden="true">
-            <img src={VISUAL_ASSETS.vignettes.practice} alt="" />
+            <img src="/visuals/shared-mvp/practice/free-practice-vinyl.png" alt="" />
           </span>
           <span className="p01-path-text">
             <strong>Free Practice</strong>
@@ -51,7 +51,7 @@ export function PracticeHubPage() {
 
         <button type="button" className="p01-path p01-path-guided" onClick={() => navigate('/routines')}>
           <span className="p01-path-art p01-path-art-score" aria-hidden="true">
-            <img src={VISUAL_ASSETS.vignettes.practice} alt="" />
+            <img src="/visuals/shared-mvp/practice/guided-practice-stand.png" alt="" />
           </span>
           <span className="p01-path-text">
             <strong>Guided Practice</strong>
@@ -98,7 +98,7 @@ export function PracticeHubPage() {
         </div>
         {latestSession ? (
           <button type="button" className="p01-recent-track" onClick={resumePractice}>
-            <span className="p01-recent-image"><img src={VISUAL_ASSETS.vignettes.practice} alt="" /></span>
+            <span className="p01-recent-image"><img src="/visuals/shared-mvp/covers/recent-rainy-studio.png" alt="" /></span>
             <span className="p01-recent-copy">
               <strong>{recentRoutine?.title ?? 'Free Practice'}</strong>
               <span>{Math.max(1, Math.round(latestSession.durationSeconds / 60))} min · Last session</span>
@@ -107,7 +107,7 @@ export function PracticeHubPage() {
           </button>
         ) : (
           <button type="button" className="p01-recent-track" onClick={startFreePractice}>
-            <span className="p01-recent-image"><img src={VISUAL_ASSETS.vignettes.practice} alt="" /></span>
+            <span className="p01-recent-image"><img src="/visuals/shared-mvp/covers/recent-evening-window.png" alt="" /></span>
             <span className="p01-recent-copy">
               <strong>Start your first session</strong>
               <span>Your recent practice will appear here.</span>
@@ -118,8 +118,11 @@ export function PracticeHubPage() {
       </section>
 
       <div className="p01-footer-decoration" aria-hidden="true">
-        <img className="p01-footer-plant" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
-        <img className="p01-sleeping-cat" src={VISUAL_ASSETS.cat.sleepingFile(catId)} alt="" />
+        <img className="p01-footer-vine" src="/visuals/shared-mvp/botanicals/pothos-short-trail.png" alt="" />
+        <div className="p01-sleep-nook">
+          <img className="p01-sleep-cushion" src="/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png" alt="" />
+          <img className="p01-sleeping-cat" src={VISUAL_ASSETS.cat.sleepingFile(catId)} alt="" />
+        </div>
       </div>
     </section>
   );
