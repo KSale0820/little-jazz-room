@@ -16,13 +16,12 @@
   isolation: isolate;
   height: 207px;
   border-radius: 22px;
-  background: linear-gradient(90deg, #9b6440 0%, #cc9562 27%, #edbc83 65%, #b87a4c 100%);
+  /* The G01 reference illustration is an independent layer, never a flattened cat image. */
+  background: url('/visuals/progress/g01-room-background.png') center center / cover no-repeat,
+    linear-gradient(90deg, #9b6440, #edbc83 60%, #b87a4c);
 }
-.g01-companion::before {
-  position: absolute; z-index: -1; inset: 0; content: '';
-  background: repeating-linear-gradient(90deg, transparent 0 64px, #75432229 65px 70px, transparent 71px 112px),
-    linear-gradient(0deg, #6e653b35, transparent 40%);
-}
+/* Botanical framing is included in the approved background artwork. */
+.g01-companion::before, .g01-companion > .g01-plant { display: none; }
 .g01-plant { position: absolute; z-index: 0; width: 142px; height: 170px; object-fit: contain; bottom: -19px; filter: saturate(.9) brightness(.72); pointer-events: none; }
 .g01-plant-left { left: -50px; transform: rotate(-9deg) scale(1.3); }
 .g01-plant-right { right: -44px; transform: scaleX(-1) rotate(-8deg) scale(1.35); }
@@ -44,7 +43,7 @@
 .g01-daily-card { position: relative; overflow: hidden; padding: 10px 15px 13px; margin: 0 8px 9px; border-radius: 16px; background: #fffbf3; }
 .g01-daily-card h2 { color: #121d20; font: 700 20px/1.2 Georgia, 'Times New Roman', serif; }
 .g01-daily-card p { margin: 4px 0 6px; font-size: 17px; font-weight: 550; color: #101b1d; font-variant-numeric: tabular-nums; }
-.g01-goal-plant { position: absolute; top: -26px; right: -14px; width: 99px; height: 97px; object-fit: contain; opacity: .62; pointer-events: none; }
+.g01-goal-plant { position: absolute; top: 4px; right: 9px; width: 89px; height: 89px; object-fit: contain; opacity: .87; pointer-events: none; }
 .g01-goal-track { position: relative; overflow: hidden; width: 100%; height: 12px; border-radius: 9px; background: #e7dfcf; }
 .g01-goal-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #5f8c6d, #35634e); transition: width .2s ease; }
 .g01-week-chart { display: flex; gap: 10px; height: 131px; padding: 13px 12px 9px 8px; margin: 0 8px 12px; border-radius: 17px; background: #fffbf3; }
