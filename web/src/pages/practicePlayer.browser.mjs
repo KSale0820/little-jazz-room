@@ -77,7 +77,7 @@ try {
     await capture(page, folder, 'P06-free-completion');
     await page.getByRole('textbox', { name: /Notes/ }).fill('Stayed with the changes.');
     await page.getByRole('button', { name: '4 stars' }).click();
-    await page.getByRole('button', { name: 'Save Session' }).click();
+    await page.getByRole('button', { name: 'Save Session', exact: true }).click();
     check((await storageSessions(page)).length === 1, 'First session did not persist exactly once');
     await page.getByRole('button', { name: 'View Progress' }).click();
     check((await storageSessions(page)).length === 1, 'Navigation duplicated the session');
