@@ -485,6 +485,30 @@
 .practice-confetti i:nth-child(4n + 1) { background: #f5b54c; }
 .practice-confetti i:nth-child(4n + 2) { background: #92ae90; }
 .practice-confetti i:nth-child(4n + 3) { background: #fb8e6a; }
+.practice-confetti i:nth-child(1) { left: 5%; top: 14px; }
+.practice-confetti i:nth-child(2) { left: 13%; top: 6px; }
+.practice-confetti i:nth-child(3) { left: 25%; top: 12px; }
+.practice-confetti i:nth-child(4) { left: 38%; top: 5px; }
+.practice-confetti i:nth-child(5) { left: 49%; top: 19px; }
+.practice-confetti i:nth-child(6) { left: 65%; top: 7px; }
+.practice-confetti i:nth-child(7) { left: 77%; top: 15px; }
+.practice-confetti i:nth-child(8) { left: 92%; top: 10px; }
+.practice-confetti i:nth-child(9) { left: 6%; top: 50px; }
+.practice-confetti i:nth-child(10) { left: 15%; top: 45px; }
+.practice-confetti i:nth-child(11) { left: 87%; top: 44px; }
+.practice-confetti i:nth-child(12) { left: 95%; top: 58px; }
+.practice-confetti i:nth-child(13) { left: 4%; top: 91px; }
+.practice-confetti i:nth-child(14) { left: 13%; top: 118px; }
+.practice-confetti i:nth-child(15) { left: 24%; top: 138px; }
+.practice-confetti i:nth-child(16) { left: 86%; top: 122px; }
+.practice-confetti i:nth-child(17) { left: 95%; top: 139px; }
+.practice-confetti i:nth-child(18) { left: 8%; top: 154px; }
+.practice-confetti i:nth-child(19) { left: 74%; top: 154px; }
+.practice-confetti i:nth-child(20) { left: 93%; top: 164px; }
+.practice-confetti i:nth-child(21) { left: 4%; top: 127px; }
+.practice-confetti i:nth-child(22) { left: 95%; top: 93px; }
+.practice-confetti i:nth-child(23) { left: 58%; top: 5px; }
+.practice-confetti i:nth-child(24) { left: 37%; top: 150px; }
 .practice-celebrate {
   display: block;
   margin: 0 auto 6px;
