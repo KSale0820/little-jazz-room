@@ -50,7 +50,7 @@ try {
     await page.locator('.practice-more').click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
     await page.getByRole('button', { name: '4 stars' }).click();
-    await page.getByRole('button', { name: 'Save Session' }).click();
+    await page.getByRole('button', { name: 'Save Session', exact: true }).click();
     await page.getByRole('button', { name: /Session Saved/ }).waitFor();
 
     const saved = await page.evaluate(() => ({
