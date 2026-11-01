@@ -8,6 +8,7 @@ import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
 import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
+import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import './PracticePage.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -31,7 +32,7 @@ export function PracticePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    charts, exercises, routines, activeRoutineId, addSession, showToast,
+    charts, exercises, routines, activeRoutineId, addSession, showToast, catId,
   } = useApp();
   const routine = activeRoutineId ? routines.find(item => item.id === activeRoutineId) ?? null : null;
   const [stepIndex, setStepIndex] = useState(0);
@@ -235,11 +236,22 @@ export function PracticePage() {
     return (
       <section className="practice-complete" aria-label="Practice session complete">
         <button className="practice-complete-close" type="button" aria-label="Go home and save session" onClick={() => void leaveAfterSave('/')}>×</button>
-        <div className="practice-confetti" aria-hidden="true">✦ · ✧ · ✦</div>
-        <div className="practice-celebrate" aria-hidden="true">◷</div>
-        <h1>Great practice!</h1>
-        <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
-        <p className="practice-complete-date">{new Date(completion.finishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+        <div className="practice-complete-hero">
+          <div className="practice-confetti" aria-hidden="true"><span>✦</span><span>·</span><span>✧</span><span>·</span><span>✦</span></div>
+          <div className="practice-complete-hero-grid">
+            <div className="practice-complete-message">
+              <span className="practice-celebrate" aria-hidden="true">✦</span>
+              <h1>Great practice!</h1>
+              <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
+              <p className="practice-complete-date">{new Date(completion.finishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+            </div>
+            <div className="practice-complete-companion" aria-label={`Your companion ${JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'jazz cat'} is taking a cozy rest`}>
+              <div className="practice-companion-rug" aria-hidden="true" />
+              <CatSprite catId={catId} variant="sleeping" size={132} className="practice-sleeping-cat" decorative />
+              <span className="practice-companion-name">{JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'Your companion'}</span>
+            </div>
+          </div>
+        </div>
         <div className="practice-complete-summary">
           <img src={VISUAL_ASSETS.room.approved.twilight} alt="" />
           <div>
