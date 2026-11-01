@@ -52,6 +52,14 @@ try {
         throw new Error('Approved G01 illustration assets failed browser verification: ' + JSON.stringify(artwork));
       }
       console.log('PASS approved G01 room and goal leaves at ' + width + 'x' + height + ': ' + JSON.stringify(artwork));
+      // G01 must use the approved sleeping pose of the currently selected companion.
+      await page.waitForFunction(() => {
+        const img = document.querySelector('.g01-cat');
+        return img instanceof HTMLImageElement &&
+          img.getAttribute('src') === '/visuals/cats/sleeping/luna.png' &&
+          img.complete && img.naturalWidth === 128 && img.naturalHeight === 128;
+      });
+      if (!(await page.locator('.g01-cat').isVisible())) throw new Error('Selected sleeping cat not visible on G01');
       const heading = await page.locator('.g01-header h1').innerText();
       if (heading !== 'Progress') throw new Error('G01 heading missing');
       const expected = state === 'completed' ? 'Practice Again' : 'Start Practicing';
@@ -74,6 +82,26 @@ try {
       }
       await context.close();
     }
+  }
+  // Every approved companion must resolve to its own sleeping sprite on Progress.
+  for (const catId of ['luna', 'milo', 'maple', 'mochi', 'pepper', 'patches', 'chai', 'biscuit']) {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, deviceScaleFactor: 2 });
+    await context.addInitScript(id => localStorage.setItem('little-jazz-room:selected-cat:v1', id), catId);
+    const page = await context.newPage();
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto('http://127.0.0.1:5174/progress', { waitUntil: 'networkidle' });
+    await page.waitForFunction(id => {
+      const sprite = document.querySelector('.g01-cat');
+      return sprite instanceof HTMLImageElement &&
+        sprite.getAttribute('src') === '/visuals/cats/sleeping/' + id + '.png' &&
+        sprite.complete && sprite.naturalWidth === 128 && sprite.naturalHeight === 128;
+    }, catId);
+    await page.evaluate(async () => document.fonts?.ready);
+    if (errors.length) throw new Error('G01 cat ' + catId + ': ' + errors.join(' | '));
+    await page.screenshot({ path: join(out, 'g01-cat-' + catId + '-390x844.png'), fullPage: false });
+    console.log('PASS G01 selected sleeping companion: ' + catId);
+    await context.close();
   }
 } finally {
   await browser.close();
