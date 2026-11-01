@@ -115,5 +115,5 @@ export function defaultAccents(signature: string): boolean[] {
 export function audioContextConstructor(): typeof AudioContext | null {
   if (typeof window === 'undefined') return null;
   const support = window as Window & { webkitAudioContext?: typeof AudioContext };
-  return support.AudioContext ?? support.webkitAudioContext ?? null;
+  return typeof AudioContext === 'function' ? AudioContext : support.webkitAudioContext ?? null;
 }
