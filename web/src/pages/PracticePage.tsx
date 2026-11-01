@@ -1,372 +1,381 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { PageAtmosphere } from '../components/PageAtmosphere';
 import { ChordGrid } from '../components/ChordGrid';
-import { CatSprite } from '../features/cats/CatCompanion';
 import { chartsById, exercisesById } from '../data/seed';
 import { formatChartMeta } from '../lib/chords';
-import { commitStepElapsed, sessionDurationSeconds } from '../lib/practiceSessionTimer';
 import { resolvePlayableStep } from '../lib/routinePlayback';
 import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
+import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
+import { VISUAL_ASSETS } from '../assets/visualManifest';
+import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
+import './PracticePage.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+type Panel = 'chart' | 'player';
+type Completion = {
+  id: string;
+  finishedAt: string;
+  durationSeconds: number;
+  routineId?: string;
+  exerciseId?: string;
+  title: string;
+  chartTitle: string;
+};
 
+/**
+ * The timer measures real wall-clock elapsed time, including time spent on a
+ * background tab, rather than counting setInterval callbacks. It never starts
+ * an audio transport: this demo has no licensed/recorded audio available.
+ */
 export function PracticePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    charts,
-    exercises,
-    routines,
-    activeRoutineId,
-    addSession,
-    showToast,
-    teamSignedIn,
-    catId,
-    catMotion,
-    focusMode,
-    setFocusMode,
+    charts, exercises, routines, activeRoutineId, addSession, showToast, catId,
   } = useApp();
-
-  const routine = activeRoutineId ? (routines.find(r => r.id === activeRoutineId) ?? null) : null;
+  const routine = activeRoutineId ? routines.find(item => item.id === activeRoutineId) ?? null : null;
   const [stepIndex, setStepIndex] = useState(0);
-  const [accumulatedSeconds, setAccumulatedSeconds] = useState(0);
-
   const currentStep = routine?.steps[stepIndex] ?? null;
-  const playableStep = useMemo(() => {
-    if (!currentStep) return null;
-    return resolvePlayableStep(currentStep, exercises, exercisesById);
-  }, [currentStep, exercises]);
-
-  const defaultChartId = playableStep?.chart_id ?? charts[0]?.id ?? 'blues-f-12';
-  const [chartId, setChartId] = useState(() => {
-    const requested = searchParams.get('chart');
-    return requested && chartsById[requested] ? requested : defaultChartId;
-  });
-  const [panel, setPanel] = useState<'chords' | 'player'>('chords');
+  const playableStep = useMemo(
+    () => currentStep ? resolvePlayableStep(currentStep, exercises, exercisesById) : null,
+    [currentStep, exercises],
+  );
+  const requestedChart = searchParams.get('chart');
+  const initialChart = requestedChart && chartsById[requestedChart]
+    ? requestedChart
+    : charts[0]?.id ?? 'blues-f-12';
+  const [chartId, setChartId] = useState(initialChart);
+  const [chartKey, setChartKey] = useState(chartsById[initialChart]?.concert_key ?? 'F');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
-  const [chartKey, setChartKey] = useState('F');
   const [selectedBar, setSelectedBar] = useState(0);
   const [loopValue, setLoopValue] = useState('all');
-  const [stepSeconds, setStepSeconds] = useState(0);
-  const [running, setRunning] = useState(false);
-  const timerRef = useRef<number | null>(null);
+  const [panel, setPanel] = useState<Panel>('chart');
+  const [tempo, setTempo] = useState(100);
 
-  const sessionSeconds = sessionDurationSeconds(accumulatedSeconds, stepSeconds);
+  // Prior steps are committed as milliseconds; the current step retains its
+  // fractional second when paused or advanced.
+  const [priorMs, setPriorMs] = useState(0);
+  const [stepMs, setStepMs] = useState(0);
+  const [startedAtMs, setStartedAtMs] = useState<number | null>(null);
+  const [nowMs, setNowMs] = useState(() => performance.now());
+  const [completion, setCompletion] = useState<Completion | null>(null);
+  const [notes, setNotes] = useState('');
+  const [rating, setRating] = useState(0);
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const savePromiseRef = useRef<Promise<boolean> | null>(null);
+
+  const chart = chartsById[chartId] ?? charts[0]!;
+  const chosenExercise = exercises.find(item => item.id === playableStep?.exercise_id);
+  const stepMinutes = currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0;
+  const targetSeconds = stepMinutes * 60;
+  const isRunning = startedAtMs !== null;
+  const currentStepMs = elapsedMilliseconds(stepMs, startedAtMs, nowMs);
+  const elapsedSeconds = Math.floor((priorMs + currentStepMs) / 1000);
+  const stepSeconds = Math.floor(currentStepMs / 1000);
+  const formProgress = routine ? Math.round(((stepIndex + 1) / routine.steps.length) * 100) : 0;
 
   useEffect(() => {
     setStepIndex(0);
-    setAccumulatedSeconds(0);
-    setStepSeconds(0);
-    setRunning(false);
-  }, [activeRoutineId, routine?.id]);
-
-  const chart = chartsById[chartId] ?? charts[0]!;
-  const stepMinutes = currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0;
-  const stepTargetSeconds = stepMinutes * 60;
-
-  useEffect(() => {
-    if (playableStep?.chart_id) {
-      setChartId(playableStep.chart_id);
-      const c = chartsById[playableStep.chart_id];
-      if (c) setChartKey(c.concert_key);
-      setSelectedBar(0);
-    }
-  }, [playableStep?.exercise_id, playableStep?.chart_id]);
+    setPriorMs(0);
+    setStepMs(0);
+    setStartedAtMs(null);
+    setNowMs(performance.now());
+    setCompletion(null);
+    setSaveState('idle');
+    savePromiseRef.current = null;
+  }, [activeRoutineId]);
 
   useEffect(() => {
-    if (running) {
-      timerRef.current = window.setInterval(() => setStepSeconds(s => s + 1), 1000);
-    } else if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [running]);
+    if (!playableStep?.chart_id || !chartsById[playableStep.chart_id]) return;
+    const chosen = chartsById[playableStep.chart_id];
+    setChartId(chosen.id);
+    setChartKey(chosen.concert_key);
+    setSelectedBar(0);
+    setLoopValue('all');
+  }, [playableStep?.chart_id, playableStep?.exercise_id]);
+
+  useEffect(() => {
+    if (chosenExercise?.suggested_bpm != null) setTempo(chosenExercise.suggested_bpm);
+  }, [chosenExercise?.id, chosenExercise?.suggested_bpm]);
+
+  useEffect(() => {
+    if (!isRunning || completion) return;
+    const timerId = window.setInterval(() => setNowMs(performance.now()), 200);
+    return () => window.clearInterval(timerId);
+  }, [isRunning, completion]);
 
   const loopRange = useMemo((): [number, number] | null => {
     if (loopValue === 'all') return null;
-    const [a, b] = loopValue.split('-').map(Number);
-    if (!a || !b) return null;
-    return [a, b];
+    const parts = loopValue.split('-').map(Number);
+    return parts.length === 2 && parts[0] > 0 && parts[1] > 0
+      ? [parts[0], parts[1]] : null;
   }, [loopValue]);
 
   const loopOptions = useMemo(() => {
-    const n = chart.bars.length;
-    const chunks = Array.from({ length: Math.ceil(n / 4) }, (_, i) => {
-      const a = 1 + i * 4;
-      const b = Math.min(n, a + 3);
-      return { value: `${a}-${b}`, label: `Bars ${a}–${b}` };
+    const groups = Array.from({ length: Math.ceil(chart.bars.length / 4) }, (_, i) => {
+      const first = 1 + i * 4;
+      return { value: first + '-' + Math.min(chart.bars.length, first + 3), label: first + '–' + Math.min(chart.bars.length, first + 3) };
     });
-    return [{ value: 'all', label: `All ${n}` }, ...chunks];
+    return [{ value: 'all', label: 'All bars' }, ...groups];
   }, [chart]);
 
-  const toggleTimer = () => setRunning(r => !r);
+  function chooseChart(id: string) {
+    const next = chartsById[id];
+    if (!next) return;
+    setChartId(id);
+    setChartKey(next.concert_key);
+    setLoopValue('all');
+    setSelectedBar(0);
+  }
 
-  const goStep = (delta: number) => {
-    if (!routine) return;
-    setRunning(false);
-    setAccumulatedSeconds(prev => commitStepElapsed(prev, stepSeconds));
-    setStepSeconds(0);
-    setStepIndex(i => Math.max(0, Math.min(routine.steps.length - 1, i + delta)));
-  };
-
-  const finish = async () => {
-    setRunning(false);
-    const durationSeconds = sessionDurationSeconds(accumulatedSeconds, stepSeconds);
-    try {
-      await addSession({
-        id: `sess-${Date.now()}`,
-        finishedAt: new Date().toISOString(),
-        durationSeconds,
-        routineId: activeRoutineId ?? undefined,
-        exerciseId: playableStep?.exercise_id,
-      });
-      setAccumulatedSeconds(0);
-      setStepSeconds(0);
-      showToast(teamSignedIn ? 'Session saved to your team account.' : 'Session saved on this device.');
-      navigate('/progress');
-    } catch {
-      showToast('Could not save session. Try again when online.');
+  function toggleTimer() {
+    const now = performance.now();
+    if (startedAtMs === null) {
+      setStartedAtMs(now);
+    } else {
+      setStepMs(value => elapsedMilliseconds(value, startedAtMs, now));
+      setStartedAtMs(null);
     }
-  };
+    setNowMs(now);
+  }
 
-  const stepTimeLabel = `${String(Math.floor(stepSeconds / 60)).padStart(2, '0')}:${String(stepSeconds % 60).padStart(2, '0')}`;
-  const sessionTimeLabel = `${String(Math.floor(sessionSeconds / 60)).padStart(2, '0')}:${String(sessionSeconds % 60).padStart(2, '0')}`;
-  const targetLabel = `${String(Math.floor(stepTargetSeconds / 60)).padStart(2, '0')}:${String(stepTargetSeconds % 60).padStart(2, '0')}`;
+  function goStep(delta: number) {
+    if (!routine) return;
+    const next = Math.max(0, Math.min(routine.steps.length - 1, stepIndex + delta));
+    if (next === stepIndex) return;
+    const now = performance.now();
+    setPriorMs(value => value + elapsedMilliseconds(stepMs, startedAtMs, now));
+    setStepMs(0);
+    setStartedAtMs(null);
+    setNowMs(now);
+    setStepIndex(next);
+  }
+
+  function finishSession() {
+    if (completion) return;
+    const now = performance.now();
+    const finishedStamp = Date.now();
+    const finalStepMs = elapsedMilliseconds(stepMs, startedAtMs, now);
+    const durationSeconds = Math.floor((priorMs + finalStepMs) / 1000);
+    setStepMs(finalStepMs);
+    setStartedAtMs(null);
+    setNowMs(now);
+    setCompletion({
+      id: 'sess-' + finishedStamp + '-' + Math.random().toString(36).slice(2, 9),
+      finishedAt: new Date(finishedStamp).toISOString(),
+      durationSeconds,
+      routineId: routine?.id,
+      exerciseId: playableStep?.exercise_id,
+      title: routine?.title ?? chart.title,
+      chartTitle: chart.title,
+    });
+    setSaveState('idle');
+    savePromiseRef.current = null;
+  }
+
+  function saveSession(): Promise<boolean> {
+    if (!completion) return Promise.resolve(false);
+    if (savePromiseRef.current) return savePromiseRef.current;
+    const record = completion;
+    const savedNotes = notes.trim();
+    const savedRating = rating;
+    setSaveState('saving');
+    const promise = (async () => {
+      try {
+        await addSession({
+          id: record.id,
+          finishedAt: record.finishedAt,
+          durationSeconds: record.durationSeconds,
+          routineId: record.routineId,
+          exerciseId: record.exerciseId,
+        });
+        // Notes and rating belong to the local class demo, not the session or
+        // Supabase schema. Failures here must never cause a duplicate session.
+        try {
+          localStorage.setItem(
+            'little-jazz-room:practice-feedback:v1:' + record.id,
+            JSON.stringify({ notes: savedNotes, rating: savedRating }),
+          );
+        } catch { /* optional local feedback */ }
+        setSaveState('saved');
+        showToast('Practice session saved.');
+        return true;
+      } catch {
+        setSaveState('idle');
+        savePromiseRef.current = null;
+        showToast('Could not save your session. Please try again.');
+        return false;
+      }
+    })();
+    savePromiseRef.current = promise;
+    return promise;
+  }
+
+  async function leaveAfterSave(destination: string) {
+    if (await saveSession()) navigate(destination);
+  }
+
+  async function practiceAgain() {
+    if (!(await saveSession())) return;
+    setStepIndex(0);
+    setPriorMs(0);
+    setStepMs(0);
+    setStartedAtMs(null);
+    setNowMs(performance.now());
+    setSelectedBar(0);
+    setCompletion(null);
+    setNotes('');
+    setRating(0);
+    setSaveState('idle');
+    setPanel('chart');
+    savePromiseRef.current = null;
+  }
+
+  if (completion) {
+    return (
+      <section className="practice-complete" aria-label="Practice session complete">
+        <button className="practice-complete-close" type="button" aria-label="Go home and save session" onClick={() => void leaveAfterSave('/')}>×</button>
+        <div className="practice-complete-hero">
+          <div className="practice-confetti" aria-hidden="true">
+            {Array.from({ length: 24 }, (_, index) => <i key={index} />)}
+          </div>
+          <div className="practice-celebrate" aria-hidden="true">
+            <svg width="65" height="65" viewBox="0 0 80 80" fill="none">
+              <g stroke="#eab051" strokeWidth="3" strokeLinecap="round">
+                <path d="M40 5v7M10 38h8M62 38h8M17 17l6 6M57 17l-6 6M17 59l6-6M57 59l-6-6" />
+              </g>
+              <rect x="35" y="7" width="10" height="8" rx="2" fill="#285143" transform="rotate(8 40 11)" />
+              <path d="M57 16l6-6" stroke="#285143" strokeWidth="4" strokeLinecap="round"/>
+              <circle cx="40" cy="43" r="24" stroke="#285143" strokeWidth="5" fill="#fff9ed"/>
+              <path d="M40 24v19l-9 9" stroke="#285143" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="40" cy="43" r="3" fill="#285143"/>
+            </svg>
+          </div>
+          <h1>Great practice!</h1>
+          <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
+          <p className="practice-complete-date">{new Date(completion.finishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+        </div>
+        <div className="practice-complete-summary">
+          <img src={VISUAL_ASSETS.room.approved.twilight} alt="" />
+          <div>
+            <strong>{completion.title}</strong>
+            <span>{completion.routineId ? 'Guided Practice' : 'Free Practice'}</span>
+            <small>{completion.chartTitle} · Chart only</small>
+          </div>
+        </div>
+        <div className="practice-complete-notes">
+          <label className="practice-notes-label" htmlFor="practice-notes">Notes <span>Optional</span></label>
+          <textarea id="practice-notes" value={notes} maxLength={500} rows={2} disabled={saveState !== 'idle'} onChange={event => setNotes(event.target.value)} placeholder="What went well? What to work on?" />
+        </div>
+        <div className="practice-rating">
+          <span>Rating <small>Optional · on this device</small></span>
+          <div role="group" aria-label="Rate this practice session">
+            {[1, 2, 3, 4, 5].map(star => (
+              <button key={star} type="button" disabled={saveState !== 'idle'} aria-label={star + ' stars'} aria-pressed={rating === star} onClick={() => setRating(value => value === star ? 0 : star)}>
+                {star <= rating ? '★' : '☆'}
+              </button>
+            ))}
+          </div>
+        </div>
+        <button className="practice-primary practice-save" type="button" disabled={saveState !== 'idle'} onClick={() => void saveSession()}>
+          {saveState === 'saved' ? 'Session Saved ✓' : saveState === 'saving' ? 'Saving…' : 'Save Session'}
+        </button>
+        <button className="practice-secondary" type="button" onClick={() => void practiceAgain()}>Practice Again</button>
+        <div className="practice-complete-links">
+          <button className="practice-secondary" type="button" onClick={() => void leaveAfterSave('/progress')}>View Progress</button>
+          <button className="practice-secondary" type="button" onClick={() => void leaveAfterSave('/')}>Home</button>
+        </div>
+        <p className="practice-local-hint">Notes and ratings are stored locally for this demo.</p>
+        <div className="practice-complete-footer" aria-label="Your jazz companion is celebrating your practice">
+          <CatSprite catId={catId} variant="floor" size={170} className="practice-playing-cat" decorative />
+          <span>{JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'Your companion'} · great work!</span>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="page practice-page pad tight" aria-label="Practice">
-      <PageAtmosphere title="Practice" subtitle="Charts and routine steps — music first." badge="No audio loaded" />
+    <section className="practice-player" aria-label="Shared practice player">
+      <header className="practice-player-head">
+        <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
+        <div className="practice-title-group">
+          <span className="practice-overline">{routine ? 'Guided Practice' : 'Free Practice'}</span>
+          <h1>{routine?.title ?? chart.title}</h1>
+          <p>{routine
+            ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length + ' · ' + (playableStep?.title ?? 'Exercise')
+            : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
+        </div>
+        <button className="practice-more" type="button" aria-label="Finish session" onClick={finishSession}>Finish</button>
+      </header>
 
-      {routine ? (
-        <div className="box routine-player-head">
-          <div className="between">
-            <div>
-              <h3>{routine.title}</h3>
-              <small>
-                Exercise {stepIndex + 1} of {routine.steps.length}
-                {playableStep ? ` · ${playableStep.title}` : ''}
-              </small>
-            </div>
-            <span className="mutebadge">{stepMinutes} min suggested</span>
+      <p className="practice-audio-state"><strong>Chart Only</strong> · No recording available</p>
+
+      {routine && (
+        <div className="practice-guided-head">
+          <div className="practice-progress-track" role="progressbar" aria-label="Routine steps completed" aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={stepIndex}>
+            <span style={{ width: formProgress + '%' }} />
           </div>
-          <div className="routine-step-nav between" style={{ marginTop: 10 }}>
-            <button type="button" className="btn tiny" disabled={stepIndex === 0} onClick={() => goStep(-1)}>
-              Previous exercise
-            </button>
-            <button
-              type="button"
-              className="btn tiny"
-              disabled={!routine || stepIndex >= routine.steps.length - 1}
-              onClick={() => goStep(1)}
-            >
-              Next exercise
-            </button>
+          <div className="practice-step-copy"><strong>{playableStep?.title ?? 'Exercise'}</strong><span>{stepMinutes} min suggested</span></div>
+          <p>{playableStep?.instructions ?? 'Follow the exercise and practice at your own pace.'}</p>
+        </div>
+      )}
+
+      <div className="practice-segments" role="tablist" aria-label="Player view">
+        <button type="button" role="tab" aria-selected={panel === 'chart'} onClick={() => setPanel('chart')} className={panel === 'chart' ? 'selected' : undefined}>Chart</button>
+        <button type="button" role="tab" aria-selected={panel === 'player'} onClick={() => setPanel('player')} className={panel === 'player' ? 'selected' : undefined}>Player</button>
+      </div>
+
+      {panel === 'chart' ? (
+        <div className="practice-notation-panel" role="tabpanel" aria-label="Jazz chord chart">
+          <div className="practice-chart-toolbar">
+            <label htmlFor="player-chart">Study chart</label>
+            <select id="player-chart" value={chartId} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
+              {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
+            </select>
           </div>
+          {routine && !playableStep?.chart_id && <p className="practice-reference-note">Reference chart only. This step has no assigned chart.</p>}
+          <div className="practice-chart-scroll" tabIndex={0} aria-label="Scrollable measure grid">
+            <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch} selectedBar={selectedBar} loopRange={loopRange} onSelectBar={setSelectedBar} />
+          </div>
+          <p className="practice-chart-caption">{chart.bars.length} measures · Tap to select · Original harmony study</p>
         </div>
       ) : (
-        <p className="muted">Choose Guided Practice to follow an ordered routine.</p>
+        <div className="practice-art-panel" role="tabpanel" aria-label="Chart only player">
+          <img src={VISUAL_ASSETS.room.approved.twilight} alt="Warm and cozy jazz practice room" />
+          <div className="practice-art-caption"><strong>{chart.title}</strong><span>{formatChartMeta(chart)}</span></div>
+          <div className="practice-no-audio"><strong>Chart Only · No Recording</strong><p>Backing-track playback and stem mixing are unavailable. Your practice timer works independently.</p></div>
+        </div>
       )}
 
-      <div className="tabs" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={panel === 'chords'}
-          className={panel === 'chords' ? 'active' : undefined}
-          onClick={() => setPanel('chords')}
-        >
-          Chords
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={panel === 'player'}
-          className={panel === 'player' ? 'active' : undefined}
-          onClick={() => setPanel('player')}
-        >
-          Player
-        </button>
-      </div>
-      {panel === 'chords' && (
-        <div id="chordPanel">
-          <label className="form-label" htmlFor="chartStudy">
-            Harmony study chart
-          </label>
-          <select
-            id="chartStudy"
-            className="field"
-            aria-label="Choose a jazz harmony study"
-            value={chartId}
-            onChange={e => {
-              const id = e.target.value;
-              setChartId(id);
-              const c = chartsById[id];
-              if (c) setChartKey(c.concert_key);
-              setSelectedBar(0);
-            }}
-          >
-            {charts.map(c => (
-              <option key={c.id} value={c.id}>
-                {c.title} · {c.bars.length} bars
-              </option>
-            ))}
-          </select>
-          <div className="between" style={{ margin: '14px 0 4px' }}>
-            <h3>{chart.title}</h3>
-            <small>{formatChartMeta(chart)}</small>
-          </div>
-          <div className="between" style={{ marginBottom: 10 }}>
-            <small>Original study · not an exact licensed song chart</small>
-            <label className="row tiny">
-              Written pitch{' '}
-              <select
-                className="picker"
-                value={writtenPitch}
-                onChange={e => setWrittenPitch(e.target.value as WrittenPitch)}
-                aria-label="Written pitch for transposing instruments"
-              >
-                <option value="C">Concert</option>
-                <option value="Bb">B♭ instruments</option>
-                <option value="Eb">E♭ instruments</option>
-              </select>
-            </label>
-          </div>
-          <div className="practice-chart-stage">
-            <ChordGrid
-              chart={chart}
-              chartKey={chartKey}
-              writtenPitch={writtenPitch}
-              selectedBar={selectedBar}
-              loopRange={loopRange}
-              onSelectBar={setSelectedBar}
-            />
-          </div>
-          <p className="muted" style={{ marginTop: 8 }}>
-            Tap a measure to highlight it. Chart only; audio is not synchronized.
-          </p>
+      {routine && (
+        <div className="practice-step-controls">
+          <button type="button" onClick={() => goStep(-1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
+          <div><strong>Step {stepIndex + 1} of {routine.steps.length}</strong><span>{playableStep?.title ?? 'Exercise'}</span></div>
+          <button type="button" className="practice-next" onClick={() => goStep(1)} disabled={stepIndex === routine.steps.length - 1}>Next Step ›</button>
         </div>
       )}
-      {panel === 'player' && (
-        <div id="playerPanel">
-          <div className="simple">
-            <h3>{playableStep?.title ?? 'Practice instructions'}</h3>
-            <p className="placeholder" style={{ marginTop: 8 }}>
-              {playableStep?.instructions ??
-                'Select a routine in Explore or follow the chart study on the Chords tab.'}
-            </p>
-            <small className="muted">
-              Suggested duration: {stepMinutes} min · Step {stepTimeLabel}
-              {stepTargetSeconds > 0 ? ` / ${targetLabel}` : ''} · Session {sessionTimeLabel}
-            </small>
-          </div>
-          <div className="simple">
-            <h3>Backing recording</h3>
-            <p className="placeholder" style={{ marginTop: 7 }}>
-              No recording selected. Future releases will support original mixed recordings and
-              synchronized recorded instrument stems.
-            </p>
-            <button
-              type="button"
-              className="btn"
-              style={{ marginTop: 9 }}
-              disabled
-              title="Preview only until recordings exist"
-            >
-              Recorded stems · Preview (disabled)
-            </button>
-          </div>
+
+      <div className="practice-transport">
+        <div className="practice-clock"><strong data-testid="session-elapsed">{formatPracticeTime(elapsedSeconds)}</strong><span>{isRunning ? 'Practicing' : elapsedSeconds ? 'Paused' : 'Ready'} · Step {formatPracticeTime(stepSeconds)}{targetSeconds ? ' / ' + formatPracticeTime(targetSeconds) : ''}</span></div>
+        <div className="practice-control-row">
+          <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => setSelectedBar(bar => (bar + chart.bars.length - 1) % chart.bars.length)}>‹‹</button>
+          <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
+            {isRunning ? 'Ⅱ' : '▶'}<span>{isRunning ? 'Pause' : (priorMs + stepMs) ? 'Resume' : 'Start'}</span>
+          </button>
+          <button className="practice-measure-btn" type="button" aria-label="Next measure" onClick={() => setSelectedBar(bar => (bar + 1) % chart.bars.length)}>››</button>
         </div>
-      )}
-      <div className="between" style={{ marginTop: 17 }}>
-        <label className="row tiny">
-          Chart key{' '}
-          <select
-            className="picker"
-            value={chartKey}
-            onChange={e => setChartKey(e.target.value)}
-            aria-label="Chart transposition key"
-          >
-            {CHROMA.map(k => (
-              <option key={k} value={k}>
-                {k.replace('b', '♭')} (chart)
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="row tiny">
-          Loop bars{' '}
-          <select
-            className="picker"
-            value={loopValue}
-            onChange={e => {
-              setLoopValue(e.target.value);
-              showToast('Notation loop selected, not a synchronized audio loop.');
-            }}
-            aria-label="Loop bars for notation highlight"
-          >
-            {loopOptions.map(o => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <div className="playerline">
-        <button
-          type="button"
-          aria-label="Previous bar"
-          onClick={() => setSelectedBar(i => (i + chart.bars.length - 1) % chart.bars.length)}
-        >
-          ◀◀
-        </button>
-        <button type="button" aria-label="Start or pause timer" className="bigplay" onClick={toggleTimer}>
-          {running ? 'Ⅱ' : '▶'}
-        </button>
-        <button
-          type="button"
-          aria-label="Next bar"
-          onClick={() => setSelectedBar(i => (i + 1) % chart.bars.length)}
-        >
-          ▶▶
-        </button>
-      </div>
-      <div className="between">
-        <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{sessionTimeLabel}</strong>
-        <small>
-          Step {stepTimeLabel} · Measure {selectedBar + 1} / {chart.bars.length}
-        </small>
-        <button type="button" className="btn" onClick={finish}>
-          Finish
-        </button>
-      </div>
-      <label className="row tiny focus-toggle">
-        <input type="checkbox" checked={focusMode} onChange={e => setFocusMode(e.target.checked)} />
-        Focus mode (hide companion)
-      </label>
-      {!focusMode && (
-        <div className="practice-companion" aria-hidden>
-          <CatSprite catId={catId} size={48} animated={catMotion} variant="closeup" decorative />
-          <span className="muted tiny">Companion below controls · not on notation</span>
+        <div className="practice-chart-controls">
+          <label>Key<select value={chartKey} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
+          <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
+          <label>Tempo<select value={tempo} onChange={event => setTempo(Number(event.target.value))} aria-label="Reference tempo in beats per minute">{[60, 70, 80, 90, 100, 110, 120, 140, 160, 180].concat(chosenExercise?.suggested_bpm ?? []).filter((bpm, index, all) => all.indexOf(bpm) === index).sort((a,b) => a-b).map(bpm => <option key={bpm} value={bpm}>{bpm} BPM</option>)}</select></label>
+          <label>Loop<select value={loopValue} onChange={event => setLoopValue(event.target.value)} aria-label="Highlight loop measures">{loopOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
         </div>
-      )}
-      <div className="player-options">
-        <div className="between">
-          <h3>Recording and advanced audio</h3>
-          <span className="mutebadge">Future</span>
-        </div>
-        <p className="placeholder" style={{ marginTop: 8 }}>
-          Mix stem volumes, tempo/pitch processing, and melody fade: disabled until verified
-          recorded-audio processing exists.
-        </p>
-        <button type="button" className="btn" disabled>
-          Metronome · Preview
-        </button>
+        <p className="practice-reference-note">Tempo is a reference setting. No audio or metronome sound is playing.</p>
+        <button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button>
+      </div>
+      <div className="practice-utility-row" aria-label="Unavailable preview tools">
+        {['Mixer', 'Tuner', 'Metronome'].map(item => <button key={item} type="button" disabled title={item + ' is Preview only'}>{item}<span>Preview</span></button>)}
       </div>
     </section>
   );
