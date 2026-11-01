@@ -265,6 +265,12 @@
 .tool-plant-right { right: -29px; transform: scaleX(-1); }
 .tool-scene-rug { z-index: 1; }
 .tool-scene-cat { z-index: 2; height: 111px; }
+.tool-metronome-scene .tool-scene-cat {
+  right: 10px;
+  bottom: 5px;
+  width: 184px;
+  height: 124px;
+}
 .tool-metronome { padding-top: 25px; }
 .metronome-tempo {
   display: grid;
@@ -515,4 +521,14 @@
   .tuner-reference { min-height: 62px; margin-top: 7px; }
   .tuner-reference-play { width: 43px; height: 43px; flex-basis: 43px; }
   .tuner-reference strong { font-size: 15px; }
+}
+
+/* On shorter phones keep the sitting companion on the rug at screen-right. */
+@media (max-height: 720px) and (max-width: 899px) {
+  .tool-metronome-scene .tool-scene-cat {
+    right: 6px;
+    bottom: 0;
+    width: 142px;
+    height: 90px;
+  }
 }
