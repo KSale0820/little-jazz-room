@@ -137,7 +137,7 @@ export function catCloseupUrls(id: CatId): string[] {
   return [VISUAL_ASSETS.cat.closeupFile(id)];
 }
 
-/** Use PR #8's sleeping poses when available. Biscuit does not have one yet. */
+/** All eight companions now have approved sleeping poses. Never fall back to legacy cats. */
 export function catSleepingUrls(id: CatId): string[] {
-  return id === 'biscuit' ? catFloorUrls(id) : [VISUAL_ASSETS.cat.sleepingFile(id)];
+  return [VISUAL_ASSETS.cat.sleepingFile(id)];
 }

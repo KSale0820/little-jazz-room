@@ -97,9 +97,7 @@ describe('approved visual library', () => {
       expect(catFloorUrls(id)).toEqual([`${base}/full-body/${id}.png`]);
       expect(catPortraitUrls(id)).toEqual([`${base}/profiles/${id}.png`]);
       expect(catCloseupUrls(id)).toEqual([`${base}/closeups/${id}.png`]);
-      expect(catSleepingUrls(id)).toEqual([
-        id === 'biscuit' ? `${base}/full-body/biscuit.png` : `/visuals/cats/sleeping/${id}.png`,
-      ]);
+      expect(catSleepingUrls(id)).toEqual([`/visuals/cats/sleeping/${id}.png`]);
 
       for (const variant of ['full-body', 'profiles', 'closeups']) {
         const file = join(publicVisuals, 'cats', 'approved-class-mvp', variant, `${id}.png`);
@@ -123,18 +121,13 @@ describe('approved visual library', () => {
       fromManifest.add(catFloorUrls(id)[0]);
       fromManifest.add(catPortraitUrls(id)[0]);
       fromManifest.add(catCloseupUrls(id)[0]);
-      // PR #8 ships seven exact, palette-indexed 128px sleeping images.
-      // Biscuit has no sleeping asset; do not substitute an unapproved pose on H01.
+      // All eight sleeping sprites are indexed 128x128 PNGs with transparency.
       const sleeping = VISUAL_ASSETS.cat.sleepingFile(id);
-      if (id !== 'biscuit') {
-        fromManifest.add(sleeping);
-        const file = join(publicVisuals, sleeping.replace('/visuals/', ''));
-        expect(installed.has(sleeping.replace('/visuals/', '')), `${id} sleeping art missing`).toBe(true);
-        const png = readPngInfo(readFileSync(file));
-        expect(png).toMatchObject({ width: 128, height: 128, colorType: 3 });
-      } else {
-        expect(installed.has(sleeping.replace('/visuals/', ''))).toBe(false);
-      }
+      fromManifest.add(sleeping);
+      const file = join(publicVisuals, sleeping.replace('/visuals/', ''));
+      expect(installed.has(sleeping.replace('/visuals/', '')), `${id} sleeping art missing`).toBe(true);
+      const png = readPngInfo(readFileSync(file));
+      expect(png).toMatchObject({ width: 128, height: 128, colorType: 3 });
     }
 
     const roomFrames = [

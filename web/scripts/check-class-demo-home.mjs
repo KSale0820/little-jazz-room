@@ -36,6 +36,15 @@ try {
     if (cat.width !== 128 || cat.height !== 128) {
       throw new Error(`Approved Luna sleeping cat failed to load at ${width}x${height}`);
     }
+    // User-added Biscuit must resolve to the new sleeping PNG, not full-body art.
+    await page.evaluate(() => localStorage.setItem('little-jazz-room:selected-cat:v1', 'biscuit'));
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    const biscuit = await page.locator('.h01-sleeping-sprite').evaluate(el => ({
+      src: el.getAttribute('src'), width: el.naturalWidth, height: el.naturalHeight,
+    }));
+    if (!biscuit.src?.endsWith('/visuals/cats/sleeping/biscuit.png') || biscuit.width !== 128 || biscuit.height !== 128) {
+      throw new Error(`Biscuit sleeping sprite failed to load at ${width}x${height}: ${JSON.stringify(biscuit)}`);
+    }
     const nav = page.locator('nav.bottom-nav a');
     if (await nav.count() !== 4) throw new Error('Expected exactly four navigation tabs');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
