@@ -14,6 +14,7 @@ type ScheduledBeat = { time: number; index: number; countIn: boolean };
 export function MetronomePage() {
   const navigate = useNavigate();
   const { catId } = useApp();
+  const [roomArtLoaded, setRoomArtLoaded] = useState(false);
   const [bpm, setBpm] = useState(100);
   const [signature, setSignature] = useState<Signature>('4/4');
   const [accents, setAccents] = useState<boolean[]>(defaultAccents('4/4'));
@@ -197,7 +198,9 @@ export function MetronomePage() {
 
   const beatCount = beatsPerMeasure(signature);
   return (
-    <section className="tool-page tool-metronome" aria-label="Metronome">
+    <section className={`tool-page tool-metronome${roomArtLoaded ? ' tool-has-background' : ''}`} aria-label="Metronome">
+      <img className="tool-bottom-art" src="/visuals/tools/p05-metronome-background.png" alt="" aria-hidden="true"
+        onLoad={() => setRoomArtLoaded(true)} onError={() => setRoomArtLoaded(false)} />
       <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
       <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
       <header className="tool-heading">
