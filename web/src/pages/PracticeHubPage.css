@@ -27,7 +27,7 @@
   opacity: .9;
   top: -21px;
 }
-.p01-botanical-left { left: -12px; }
+.p01-botanical-left { width: 200px; height: 200px; left: -60px; top: -22px; }
 .p01-botanical-right { right: -14px; }
 .p01-header { padding-left: 33px; margin-bottom: 18px; }
 .p01-greeting {
