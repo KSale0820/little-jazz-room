@@ -237,20 +237,24 @@ export function PracticePage() {
       <section className="practice-complete" aria-label="Practice session complete">
         <button className="practice-complete-close" type="button" aria-label="Go home and save session" onClick={() => void leaveAfterSave('/')}>×</button>
         <div className="practice-complete-hero">
-          <div className="practice-confetti" aria-hidden="true"><span>✦</span><span>·</span><span>✧</span><span>·</span><span>✦</span></div>
-          <div className="practice-complete-hero-grid">
-            <div className="practice-complete-message">
-              <span className="practice-celebrate" aria-hidden="true">◷</span>
-              <h1>Great practice!</h1>
-              <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
-              <p className="practice-complete-date">{new Date(completion.finishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-            </div>
-            <div className="practice-complete-companion" aria-label={`Your companion ${JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'jazz cat'} is taking a cozy rest`}>
-              <div className="practice-companion-rug" aria-hidden="true" />
-              <CatSprite catId={catId} variant="sleeping" size={132} className="practice-sleeping-cat" decorative />
-              <span className="practice-companion-name">{JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'Your companion'}</span>
-            </div>
+          <div className="practice-confetti" aria-hidden="true">
+            {Array.from({ length: 24 }, (_, index) => <i key={index} />)}
           </div>
+          <div className="practice-celebrate" aria-hidden="true">
+            <svg width="65" height="65" viewBox="0 0 80 80" fill="none">
+              <g stroke="#eab051" strokeWidth="3" strokeLinecap="round">
+                <path d="M40 5v7M10 38h8M62 38h8M17 17l6 6M57 17l-6 6M17 59l6-6M57 59l-6-6" />
+              </g>
+              <rect x="35" y="7" width="10" height="8" rx="2" fill="#285143" transform="rotate(8 40 11)" />
+              <path d="M57 16l6-6" stroke="#285143" strokeWidth="4" strokeLinecap="round"/>
+              <circle cx="40" cy="43" r="24" stroke="#285143" strokeWidth="5" fill="#fff9ed"/>
+              <path d="M40 24v19l-9 9" stroke="#285143" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="40" cy="43" r="3" fill="#285143"/>
+            </svg>
+          </div>
+          <h1>Great practice!</h1>
+          <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
+          <p className="practice-complete-date">{new Date(completion.finishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
         </div>
         <div className="practice-complete-summary">
           <img src={VISUAL_ASSETS.room.approved.twilight} alt="" />
@@ -260,8 +264,10 @@ export function PracticePage() {
             <small>{completion.chartTitle} · Chart only</small>
           </div>
         </div>
-        <label className="practice-notes-label" htmlFor="practice-notes">Notes <span>Optional</span></label>
-        <textarea id="practice-notes" value={notes} maxLength={500} rows={2} disabled={saveState !== 'idle'} onChange={event => setNotes(event.target.value)} placeholder="What went well? What will you work on?" />
+        <div className="practice-complete-notes">
+          <label className="practice-notes-label" htmlFor="practice-notes">Notes <span>Optional</span></label>
+          <textarea id="practice-notes" value={notes} maxLength={500} rows={2} disabled={saveState !== 'idle'} onChange={event => setNotes(event.target.value)} placeholder="What went well? What to work on?" />
+        </div>
         <div className="practice-rating">
           <span>Rating <small>Optional · on this device</small></span>
           <div role="group" aria-label="Rate this practice session">
@@ -281,6 +287,10 @@ export function PracticePage() {
           <button className="practice-secondary" type="button" onClick={() => void leaveAfterSave('/')}>Home</button>
         </div>
         <p className="practice-local-hint">Notes and ratings are stored locally for this demo.</p>
+        <div className="practice-complete-footer" aria-label="Your jazz companion is celebrating your practice">
+          <CatSprite catId={catId} variant="floor" size={170} className="practice-playing-cat" decorative />
+          <span>{JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'Your companion'} · great work!</span>
+        </div>
       </section>
     );
   }
