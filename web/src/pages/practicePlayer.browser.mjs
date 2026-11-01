@@ -1,0 +1,97 @@
+#!/usr/bin/env node
+/**
+ * P02/P06 owner-only browser QA. Run while Vite is serving web/:
+ *   APP_URL=http://127.0.0.1:5174 node src/pages/practicePlayer.browser.mjs
+ * Produces screenshots at 390x844 and 375x667 for all approved P02 states/P06.
+ */
+import { chromium } from 'playwright';
+import { mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '../../docs/screenshots/class-demo/p02');
+const baseUrl = process.env.APP_URL ?? 'http://127.0.0.1:5174';
+const browser = await chromium.launch({ headless: true });
+const viewports = [{ width: 390, height: 844 }, { width: 375, height: 667 }];
+
+function check(value, message) {
+  if (!value) throw new Error(message);
+}
+async function noOverflow(page, name) {
+  const result = await page.evaluate(() => ({
+    viewport: window.innerWidth,
+    body: document.documentElement.scrollWidth,
+  }));
+  check(result.body <= result.viewport + 1, name + ': horizontal overflow (' + JSON.stringify(result) + ')');
+}
+async function capture(page, folder, name) {
+  await noOverflow(page, name);
+  await page.screenshot({ path: join(folder, name + '.png'), animations: 'disabled' });
+}
+async function storageSessions(page) {
+  return page.evaluate(() => JSON.parse(localStorage.getItem('little-jazz-room:practice-sessions:v1:anonymous') || '[]'));
+}
+try {
+  for (const viewport of viewports) {
+    const folder = join(root, viewport.width + 'x' + viewport.height);
+    mkdirSync(folder, { recursive: true });
+    const context = await browser.newContext({ viewport, deviceScaleFactor: 2, isMobile: true });
+    const page = await context.newPage();
+    await page.goto(baseUrl + '/practice', { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: /Free Practice/ }).click();
+    await page.getByRole('button', { name: 'Start practice timer' }).click();
+    await page.waitForTimeout(1250);
+    check((await page.getByTestId('session-elapsed').textContent()) !== '00:00', 'Practice timer failed to start');
+    await capture(page, folder, 'P02-free-chart-running');
+
+    await page.getByRole('button', { name: 'Pause practice timer' }).click();
+    const paused = await page.getByTestId('session-elapsed').textContent();
+    await page.waitForTimeout(1250);
+    check(paused === (await page.getByTestId('session-elapsed').textContent()), 'Timer advanced while paused');
+    await capture(page, folder, 'P02-paused-chart');
+
+    const measureCount = await page.locator('.practice-chart-scroll .measure').count();
+    check(measureCount > 0, 'No jazz measures available');
+    const chordsFit = await page.locator('.practice-chart-scroll .chords').evaluateAll(elements =>
+      elements.every(element => element.scrollWidth <= element.clientWidth + 1));
+    check(chordsFit, 'At least one chord label overflows its measure');
+    await page.getByRole('tab', { name: 'Player' }).click();
+    check(await page.getByText(/Chart Only · No Recording/).isVisible(), 'Missing honest no-recording state');
+    check(await page.getByRole('button', { name: /Mixer Preview/ }).isDisabled(), 'Unavailable mixer appears functional');
+    await capture(page, folder, 'P02-free-player-no-recording');
+
+    await page.getByRole('button', { name: 'Resume practice timer' }).click();
+    await page.waitForTimeout(1100);
+    await page.getByRole('button', { name: 'Finish Session' }).click();
+    await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
+    await capture(page, folder, 'P06-free-completion');
+    await page.getByRole('textbox', { name: /Notes/ }).fill('Stayed with the changes.');
+    await page.getByRole('button', { name: '4 stars' }).click();
+    await page.getByRole('button', { name: 'Save Session' }).click();
+    check((await storageSessions(page)).length === 1, 'First session did not persist exactly once');
+    await page.getByRole('button', { name: 'View Progress' }).click();
+    check((await storageSessions(page)).length === 1, 'Navigation duplicated the session');
+    await page.reload({ waitUntil: 'networkidle' });
+    check((await storageSessions(page)).length === 1, 'Reload lost session persistence');
+
+    await page.goto(baseUrl + '/routines', { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: /Daily Jazz Warm-Up/ }).click();
+    await page.getByText('Guided Practice', { exact: true }).waitFor();
+    await capture(page, folder, 'P02-guided-chart');
+    await page.getByRole('button', { name: 'Start practice timer' }).click();
+    await page.waitForTimeout(1100);
+    await page.getByRole('button', { name: /Next Step/ }).click();
+    check(await page.getByText(/Step 2 of 3/).first().isVisible(), 'Guided step did not advance');
+    await capture(page, folder, 'P02-guided-step-two');
+    await page.getByRole('tab', { name: 'Player' }).click();
+    await capture(page, folder, 'P02-guided-player');
+    await page.getByRole('button', { name: 'Finish Session' }).click();
+    await capture(page, folder, 'P06-guided-completion');
+    await page.getByRole('button', { name: 'Home', exact: true }).click();
+    check((await storageSessions(page)).length === 2, 'Guided completion did not save once on exit');
+    await context.close();
+    console.log('PASS', viewport.width + 'x' + viewport.height, folder);
+  }
+} finally {
+  await browser.close();
+}
