@@ -98,7 +98,7 @@ try {
     check((await storageSessions(page)).length === 1, 'Reload lost session persistence');
 
     await page.goto(baseUrl + '/routines', { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: /Daily Jazz Warm-Up/ }).click();
+    await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
     await page.getByText('Guided Practice', { exact: true }).waitFor();
     await capture(page, folder, 'P02-guided-chart');
     await page.getByRole('button', { name: 'Start practice timer' }).click();
