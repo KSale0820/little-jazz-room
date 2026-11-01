@@ -1,7 +1,7 @@
 name: Class MVP Home verification
 on:
   push:
-    branches: [class-demo-2026-10-31]
+    branches: [class-demo-2026-10-31, class-demo-t01]
   workflow_dispatch:
 
 jobs:
