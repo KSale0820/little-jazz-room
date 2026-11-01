@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../../docs/screenshots/class-demo/p02');
 const baseUrl = process.env.APP_URL ?? 'http://127.0.0.1:5174';
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, ...(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {}) });
 const viewports = [{ width: 390, height: 844 }, { width: 375, height: 667 }];
 
 function check(value, message) {
@@ -27,6 +27,16 @@ async function noOverflow(page, name) {
 async function capture(page, folder, name) {
   await noOverflow(page, name);
   await page.screenshot({ path: join(folder, name + '.png'), animations: 'disabled' });
+  // Optional CI handoff: short base64 chunks avoid log-line limits.
+  // These bytes come from the running app in Chromium, not the design mockup.
+  if (process.env.P02_OUTPUT_LOG === '1') {
+    const jpeg = await page.screenshot({ type: 'jpeg', quality: 62, scale: 'css', animations: 'disabled' });
+    const data = jpeg.toString('base64');
+    const slug = folder.split('/').pop() + '/' + name;
+    for (let i = 0; i < data.length; i += 12000) {
+      console.log('P02_SCREENSHOT|' + slug + '|' + (i / 12000) + '|' + data.slice(i, i + 12000));
+    }
+  }
 }
 async function storageSessions(page) {
   return page.evaluate(() => JSON.parse(localStorage.getItem('little-jazz-room:practice-sessions:v1:anonymous') || '[]'));
