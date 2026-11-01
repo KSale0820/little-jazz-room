@@ -87,7 +87,7 @@ export function ProgressPage() {
       <section className="g01-companion" aria-label={'Your jazz companion: ' + (cat?.name ?? 'Luna')}>
         <img className="g01-plant g01-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" aria-hidden="true" />
         <img className="g01-plant g01-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" aria-hidden="true" />
-        <div className="g01-cat-platform" aria-hidden="true" />
+        <img className="g01-cat-cushion" src={VISUAL_ASSETS.progress.sleepCushion} alt="" aria-hidden="true" draggable={false} />
         <CatSprite catId={catId} variant="sleeping" size={204} className="g01-cat" />
         <p className="g01-cat-bubble">{orderedSessions.length ? 'Keep the rhythm going!' : 'Every practice starts somewhere!'}</p>
         <button type="button" className="g01-change" onClick={() => navigate('/profile', { state: { scrollToCat: true } })} aria-label={'Change companion, currently ' + (cat?.name ?? 'Luna')}>
