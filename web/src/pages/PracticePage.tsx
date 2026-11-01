@@ -240,7 +240,7 @@ export function PracticePage() {
           <div className="practice-confetti" aria-hidden="true"><span>✦</span><span>·</span><span>✧</span><span>·</span><span>✦</span></div>
           <div className="practice-complete-hero-grid">
             <div className="practice-complete-message">
-              <span className="practice-celebrate" aria-hidden="true">✦</span>
+              <span className="practice-celebrate" aria-hidden="true">◷</span>
               <h1>Great practice!</h1>
               <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
               <p className="practice-complete-date">{new Date(completion.finishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
