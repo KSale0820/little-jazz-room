@@ -9,8 +9,8 @@ const enabled = process.env.GITHUB_HEAD_REF === 'class-demo-p02'
   || process.env.RUN_P02_BROWSER_QA === '1';
 
 test.skipIf(!enabled)('P02/P06 real Chrome flows and two-size captures', async () => {
-  const baseUrl = 'http://127.0.0.1:5187';
-  const server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5187', '--strictPort'], {
+  const baseUrl = 'http://127.0.0.1:5291';
+  const server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5291', '--strictPort'], {
     cwd: process.cwd(),
     stdio: 'ignore',
   });
