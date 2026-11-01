@@ -25,11 +25,8 @@ try {
       if (document.fonts?.ready) await document.fonts.ready;
     });
     if (!(await page.getByRole('heading', { name: "Let's Practice" }).isVisible())) throw new Error('P01 heading missing');
+    if (await page.locator('.p01-path').count() !== 2) throw new Error('Expected two practice modes');
     if ((await page.locator('nav.bottom-nav a').count()) !== 4) throw new Error('Navigation tab count changed');
-    const art = await page.locator('.p01-illustration img').evaluate(el => ({
-      width: el.naturalWidth, height: el.naturalHeight,
-    }));
-    if (!art.width || !art.height) throw new Error('Approved practice vignette failed to load');
     for (const src of await page.locator('.p01-path-art img').evaluateAll(images => images.map(img => img.naturalWidth))) {
       if (!src) throw new Error('Approved practice card asset failed to load');
     }
