@@ -1,7 +1,7 @@
 name: Class demo integrated functional QA
 on:
   push:
-    branches: [class-demo-2026-10-31, class-demo-tools]
+    branches: [class-demo-2026-10-31, class-demo-tools, class-demo-functional-qa]
     paths:
       - 'web/src/**'
       - 'web/scripts/check-class-demo-integration.mjs'
@@ -36,6 +36,17 @@ jobs:
           done
       - name: Test real local class walkthrough
         run: node scripts/check-class-demo-integration.mjs
+      - name: Verify Tuner and Metronome in browser
+        run: node scripts/check-class-demo-tools.mjs
+      - name: Verify Practice Hub tool routing
+        run: node scripts/check-class-demo-p01.mjs
+      - name: Upload audio tool screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p04-p05-stage-qa
+          path: web/docs/screenshots/class-demo-tools/
+          if-no-files-found: warn
       - name: Upload QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
