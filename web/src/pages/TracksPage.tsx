@@ -55,7 +55,7 @@ function TrackIcon({ name, filled = false }: { name: 'book' | 'chevron' | 'star'
 
 function readFavorites(key: string): string[] {
   try {
-    const value: unknown = JSON.parse(localStorage.getItem(key) || '[]');
+    const value: unknown = JSON.parse(localStorage.getItem(key) ?? '["after-hours"]');
     return Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string') : [];
   } catch { return []; }
 }
