@@ -30,6 +30,8 @@ jobs:
           done
       - name: Check H01 and capture screenshots
         run: node scripts/check-class-demo-home.mjs
+      - name: Capture T01 Tracks Library at two iPhone sizes
+        run: node scripts/check-class-demo-tracks.mjs
       - name: Upload iPhone screenshots
         if: always()
         uses: actions/upload-artifact@v4
