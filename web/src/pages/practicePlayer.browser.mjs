@@ -60,6 +60,9 @@ try {
     check(paused === (await page.getByTestId('session-elapsed').textContent()), 'Timer advanced while paused');
     await capture(page, folder, 'P02-paused-chart');
 
+    const columnCount = await page.locator('.practice-chart-scroll .chord-grid').evaluate(el =>
+      getComputedStyle(el).gridTemplateColumns.split(/\\s+/).length);
+    check(columnCount === 4, 'P02 chart stylesheet missing or grid not four columns');
     const measureCount = await page.locator('.practice-chart-scroll .measure').count();
     check(measureCount > 0, 'No jazz measures available');
     const chordsFit = await page.locator('.practice-chart-scroll .chords').evaluateAll(elements =>
@@ -74,6 +77,11 @@ try {
     await page.waitForTimeout(1100);
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
+    await page.waitForFunction(() => {
+      const cat = document.querySelector('.practice-sleeping-cat');
+      return cat instanceof HTMLImageElement && cat.complete && cat.naturalWidth > 0;
+    }, null, { timeout: 10000 });
+    check(await page.locator('.practice-complete-companion').count() === 1, 'Missing selected companion on P06');
     await capture(page, folder, 'P06-free-completion');
     await page.getByRole('textbox', { name: /Notes/ }).fill('Stayed with the changes.');
     await page.getByRole('button', { name: '4 stars' }).click();
