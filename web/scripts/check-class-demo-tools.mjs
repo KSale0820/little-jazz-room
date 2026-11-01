@@ -24,6 +24,28 @@ try {
       if (overflow > 1) throw new Error('Horizontal overflow: ' + overflow + 'px at ' + width + 'x' + height);
       if (await page.locator('nav.bottom-nav a').count() !== 4) throw new Error('Bottom nav changed');
     };
+    const assertApprovedBackground = async (selector, expectedHeight) => {
+      const picture = page.locator(selector);
+      const result = await picture.evaluate(img => {
+        const el = img;
+        const style = getComputedStyle(el);
+        const bounds = el.getBoundingClientRect();
+        return {
+          width: el.naturalWidth, height: el.naturalHeight,
+          opacity: Number(style.opacity), bottom: bounds.bottom,
+          boundingWidth: bounds.width,
+        };
+      });
+      if (result.width !== 1170 || result.height !== expectedHeight ||
+          result.opacity < 0.99 || result.boundingWidth < width - 2) {
+        throw new Error('Approved illustration missing or incorrectly positioned: ' +
+          selector + ' at ' + width + 'x' + height + ': ' + JSON.stringify(result));
+      }
+      const navBox = await page.locator('nav.bottom-nav').boundingBox();
+      if (!navBox || Math.abs(result.bottom - navBox.y) > 2) {
+        throw new Error('Room illustration does not end at content/nav boundary: ' + selector);
+      }
+    };
     const waitArtwork = async () => page.evaluate(async () => {
       await Promise.all([...document.images].map(img => img.decode().catch(() => undefined)));
       if (document.fonts?.ready) await document.fonts.ready;
@@ -39,6 +61,7 @@ try {
     const missingTunerArt = await page.locator('.tool-tuner img').evaluateAll(
       images => images.filter(img => !img.naturalWidth).map(img => img.src));
     if (missingTunerArt.length) throw new Error('Missing tuner art: ' + missingTunerArt.join(', '));
+    await assertApprovedBackground('.tool-tuner .tool-bottom-art', 1154);
     await page.screenshot({ path: join(output, 'P04-tuner-' + width + 'x' + height + '.png'), fullPage: false });
     console.log('SCREENSHOT_PREVIEW_P04_' + width + 'x' + height + ':' + (await page.screenshot({ type: 'jpeg', quality: 62 })).toString('base64'));
     await page.getByRole('button', { name: 'Enable microphone' }).click();
@@ -66,6 +89,7 @@ try {
     const missingMetronomeArt = await page.locator('.tool-metronome img').evaluateAll(
       images => images.filter(img => !img.naturalWidth).map(img => img.src));
     if (missingMetronomeArt.length) throw new Error('Missing metronome art: ' + missingMetronomeArt.join(', '));
+    await assertApprovedBackground('.tool-metronome .tool-bottom-art', 1637);
     const toolNav = await page.locator('nav.bottom-nav').boundingBox();
     const playButton = await page.getByRole('button', { name: 'Start metronome' }).boundingBox();
     const catImage = await page.locator('.tool-metronome .tool-scene-cat').boundingBox();
