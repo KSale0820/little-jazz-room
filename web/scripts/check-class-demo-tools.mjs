@@ -40,6 +40,7 @@ try {
       images => images.filter(img => !img.naturalWidth).map(img => img.src));
     if (missingTunerArt.length) throw new Error('Missing tuner art: ' + missingTunerArt.join(', '));
     await page.screenshot({ path: join(output, 'P04-tuner-' + width + 'x' + height + '.png'), fullPage: false });
+    console.log('SCREENSHOT_PREVIEW_P04_' + width + 'x' + height + ':' + (await page.screenshot({ type: 'jpeg', quality: 62 })).toString('base64'));
     await page.getByRole('button', { name: 'Enable microphone' }).click();
     await page.getByRole('button', { name: 'Stop microphone' }).waitFor({ timeout: 15000 });
     await page.getByRole('button', { name: 'Stop microphone' }).click();
@@ -66,6 +67,7 @@ try {
       images => images.filter(img => !img.naturalWidth).map(img => img.src));
     if (missingMetronomeArt.length) throw new Error('Missing metronome art: ' + missingMetronomeArt.join(', '));
     await page.screenshot({ path: join(output, 'P05-metronome-' + width + 'x' + height + '.png'), fullPage: false });
+    console.log('SCREENSHOT_PREVIEW_P05_' + width + 'x' + height + ':' + (await page.screenshot({ type: 'jpeg', quality: 62 })).toString('base64'));
     await page.getByRole('button', { name: 'Increase tempo by 1 BPM' }).click();
     if (!(await page.locator('.metronome-bpm').getByText('101').isVisible())) throw new Error('Plus button did not change BPM');
     await page.getByRole('button', { name: 'Decrease tempo by 1 BPM' }).click();
