@@ -201,7 +201,7 @@ export function CreatePage() {
 
       <div className="builder-heading">
         <div><p className="builder-eyebrow">Build your practice</p><h1>Create routine</h1></div>
-        <button type="button" className="builder-draft" onClick={() => { persistDraft(); showToast('Draft saved in this browser.'); }}>♧ <span>Save draft</span></button>
+        <button type="button" className="builder-draft" onClick={() => { persistDraft(); showToast('Draft saved in this browser.'); }}><svg aria-hidden="true" width="15" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 3.5h12v17L12 16l-6 4.5z"/></svg><span>Save draft</span></button>
       </div>
 
       <div className="builder-form">
@@ -231,7 +231,7 @@ export function CreatePage() {
               <label key={value} className={visibility === value ? 'selected' : ''}>
                 <input type="radio" name="routine-visibility" checked={visibility === value}
                   onChange={() => setVisibility(value)} />
-                <span>{value === 'Private' ? '♙ Private' : '◎ Public (Preview)'}</span>
+                <span>{value === 'Private' ? 'Private' : 'Public (Preview)'}</span>
               </label>
             )}
           </div>
@@ -251,7 +251,7 @@ export function CreatePage() {
           const label = exercise?.title ?? step.exerciseId;
           return (
             <li className="builder-step" key={index + '-' + step.exerciseId}>
-              <span className="builder-step-grip" aria-hidden="true">☷</span>
+              <span className="builder-step-grip" aria-hidden="true"><svg width="13" height="19" viewBox="0 0 13 19" fill="currentColor"><circle cx="3" cy="3" r="1.3"/><circle cx="10" cy="3" r="1.3"/><circle cx="3" cy="9" r="1.3"/><circle cx="10" cy="9" r="1.3"/><circle cx="3" cy="15" r="1.3"/><circle cx="10" cy="15" r="1.3"/></svg></span>
               <div className="builder-step-content">
                 <strong>{index + 1}. {label}</strong>
                 <span>{exercise?.category ?? 'Exercise'}{chart ? ' · ' + chart.title : ''}</span>
@@ -268,15 +268,15 @@ export function CreatePage() {
                   onClick={() => moveStep(index, 1)}>▾</button>
               </div>
               <button type="button" className="builder-step-delete" aria-label={'Remove ' + label}
-                onClick={() => setSteps(previous => previous.filter((_, i) => i !== index))}>♲</button>
+                onClick={() => setSteps(previous => previous.filter((_, i) => i !== index))}><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 3v7m4-7v7"/></svg></button>
             </li>
           );
         })}
       </ol>
 
       <div className="builder-add-actions">
-        <button type="button" onClick={() => setShowPicker(value => !value)}>＋ Existing exercise</button>
-        <button type="button" onClick={() => setShowExerciseForm(value => !value)}>＋ New exercise</button>
+        <button type="button" onClick={() => setShowPicker(value => !value)}>+ Existing exercise</button>
+        <button type="button" onClick={() => setShowExerciseForm(value => !value)}>+ New exercise</button>
       </div>
 
       {showPicker && <div className="builder-panel">
@@ -314,15 +314,15 @@ export function CreatePage() {
         </div>
       </div>}
 
-      <p className="builder-tip"><span>ⓘ</span> Use the move controls to reorder steps. Every step needs a positive duration.</p>
+      <p className="builder-tip"><span aria-hidden="true">i</span> Use the move controls to reorder steps. Every step needs a positive duration.</p>
       <div className="builder-footer">
         <div className="builder-primary-actions">
-          <button type="button" className="builder-preview" onClick={() => showToast('Routine preview is not yet available. Save to practice in the shared player.')}>▤ Preview only</button>
+          <button type="button" className="builder-preview" onClick={() => showToast('Routine preview is not yet available. Save to practice in the shared player.')}>Preview only</button>
           <button type="button" className="builder-save" disabled={saving} onClick={() => void saveRoutine()}>✓ {saving ? 'Saving...' : 'Save routine'}</button>
         </div>
         <div className="builder-secondary-actions">
           <button type="button" onClick={() => navigate('/routines')}>× Cancel</button>
-          <button type="button" onClick={() => showToast('Community sharing is Preview. Your routine saves locally.')}>♧ Share · Preview</button>
+          <button type="button" onClick={() => showToast('Community sharing is Preview. Your routine saves locally.')}>Share · Preview</button>
         </div>
       </div>
     </section>
