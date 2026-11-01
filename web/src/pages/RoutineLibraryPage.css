@@ -240,7 +240,7 @@
   line-height: 1.45;
   color: #7c887e;
 }
-.routine-tip > span { color: #c6a05a; font-size: 16px; line-height: 1; }
+.routine-tip > span { display: inline-grid; place-items: center; flex-shrink: 0; width: 15px; height: 15px; border: 1.5px solid #c6a05a; border-radius: 50%; color: #c6a05a; font: 700 10px/1 Georgia,serif; }
 .routine-empty {
   padding: 20px 14px;
   border: 1px solid #e2dfd5;
