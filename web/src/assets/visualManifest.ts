@@ -63,6 +63,7 @@ export const VISUAL_ASSETS = {
   progress: {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',
+    sleepCushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
   },
   garden: {
     stage0: '/visuals/garden/garden-stage-0.png',
