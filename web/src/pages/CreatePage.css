@@ -73,6 +73,10 @@
   color: #214d3c;
 }
 .builder-draft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   align-self: center;
   flex-shrink: 0;
   min-height: 44px;
@@ -247,7 +251,7 @@ select.builder-field { padding-right: 25px; }
   line-height: 1.4;
   margin-top: 12px;
 }
-.builder-tip span { font-size: 16px; line-height: 1; color: #c9a45c; }
+.builder-tip span { display: inline-grid; place-items: center; flex-shrink: 0; width: 15px; height: 15px; border: 1.5px solid #c9a45c; border-radius: 50%; font: 700 10px/1 Georgia,serif; color: #c9a45c; }
 .builder-footer { margin-top: 13px; padding-top: 14px; border-top: 1px solid #e0ddd1; }
 .builder-primary-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .builder-primary-actions button {
