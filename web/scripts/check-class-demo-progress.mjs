@@ -35,6 +35,7 @@ try {
         const response = await fetch('/visuals/progress/g01-room-background.png');
         const background = response.ok ? await createImageBitmap(await response.blob()) : null;
         const leaf = document.querySelector('.g01-goal-plant');
+        const cushion = document.querySelector('.g01-cat-cushion');
         const panel = document.querySelector('.g01-companion');
         return {
           backgroundStatus: response.status,
@@ -44,11 +45,17 @@ try {
           leafWidth: leaf?.naturalWidth ?? 0,
           leafHeight: leaf?.naturalHeight ?? 0,
           leafVisible: leaf ? getComputedStyle(leaf).display !== 'none' : false,
+          cushionSrc: cushion?.getAttribute('src') ?? '',
+          cushionWidth: cushion?.naturalWidth ?? 0,
+          cushionHeight: cushion?.naturalHeight ?? 0,
+          cushionVisible: cushion ? getComputedStyle(cushion).display !== 'none' : false,
         };
       });
       if (artwork.backgroundWidth !== 1200 || artwork.backgroundHeight !== 690 ||
           !artwork.cssBackground.includes('g01-room-background.png') ||
-          artwork.leafWidth !== 300 || artwork.leafHeight !== 300 || !artwork.leafVisible) {
+          artwork.leafWidth !== 300 || artwork.leafHeight !== 300 || !artwork.leafVisible ||
+          !artwork.cushionSrc.endsWith('/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png') ||
+          artwork.cushionWidth !== 1024 || artwork.cushionHeight !== 512 || !artwork.cushionVisible) {
         throw new Error('Approved G01 illustration assets failed browser verification: ' + JSON.stringify(artwork));
       }
       console.log('PASS approved G01 room and goal leaves at ' + width + 'x' + height + ': ' + JSON.stringify(artwork));
