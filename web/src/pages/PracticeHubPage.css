@@ -222,3 +222,22 @@
   .p01-tools { margin-top: 15px; }
   .p01-resume { margin-top: 16px; }
 }
+
+/* Reserve the fixed four-tab bar's actual height on P01 only.
+   Smaller phones can scroll to every action without sliding behind the nav. */
+@media (max-width: 899px) {
+  .app-shell:has(.p01-page) .viewport {
+    height: calc(100dvh - 76px - env(safe-area-inset-bottom));
+    min-height: 0;
+    padding-bottom: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+@media (min-width: 900px) {
+  .app-shell:has(.p01-page) .viewport {
+    height: calc(100% - 76px);
+    min-height: 0;
+    padding-bottom: 0;
+  }
+}
