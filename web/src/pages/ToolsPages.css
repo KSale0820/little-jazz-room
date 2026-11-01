@@ -16,6 +16,27 @@
   isolation: isolate;
 }
 .tool-page > *:not(.tool-vine) { position: relative; z-index: 1; }
+
+/* Approved P04/P05 room layers: the transparent upper edge blends into ivory.
+   Keep existing rug/plant surfaces as a safe fallback until binary PNGs land. */
+.tool-page > .tool-bottom-art {
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+.tool-page.tool-has-background > .tool-bottom-art { opacity: 1; }
+.tool-has-background .tool-cat-scene { background: transparent; }
+.tool-has-background .tool-scene-rug,
+.tool-has-background .tool-scene-plant { display: none; }
+
 .tool-vine {
   position: absolute;
   z-index: 0;
