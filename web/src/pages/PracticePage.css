@@ -573,3 +573,13 @@
 @media (min-width: 900px) {
   .practice-player, .practice-complete { padding-top: 37px; }
 }
+
+/* Full-screen active practice is intentional. The global shell is untouched. */
+.app-shell:has(.practice-player) .bottom-nav,
+.app-shell:has(.practice-complete) .bottom-nav {
+  display: none;
+}
+.app-shell:has(.practice-player) .viewport,
+.app-shell:has(.practice-complete) .viewport {
+  padding-bottom: 0;
+}
