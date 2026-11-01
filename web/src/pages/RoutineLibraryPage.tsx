@@ -23,6 +23,9 @@ function readBookmarks(scope: string): string[] {
 }
 
 function routineCategory(routine: Routine, exerciseCategories: string[]): string {
+  const storedGoal = (routine as Routine & { goal?: string }).goal ?? '';
+  if (storedGoal === 'Repertoire' || storedGoal === 'Jazz standards') return 'Standards';
+  if (['Improvisation', 'Technique', 'Harmony', 'Rhythm', 'Ear Training'].includes(storedGoal)) return storedGoal;
   const title = routine.title.toLowerCase();
   if (title.includes('blues') || title.includes('standard') || title.includes('song')) return 'Standards';
   if (title.includes('improv') || title.includes('solo')) return 'Improvisation';
@@ -61,7 +64,7 @@ export function RoutineLibraryPage() {
     const searchable = [routine.title, routine.description ?? '', ...linked.map(ex => ex?.title ?? '')]
       .join(' ').toLowerCase();
     if (!searchable.includes(query.trim().toLowerCase())) return false;
-    if (filters.instrument && !routine.applicable_instruments.some(i => i === 'All' || i === filters.instrument)) return false;
+    if (filters.instrument && !(routine.applicable_instruments ?? ['All']).some(i => i === 'All' || i === filters.instrument)) return false;
     if (filters.level && routine.level !== filters.level) return false;
     if (filters.duration) {
       const max = Number(filters.duration);
@@ -129,7 +132,7 @@ export function RoutineLibraryPage() {
         </label>
         <label><span className="screen-reader-only">Goal</span>
           <select value={filters.goal} onChange={e => setFilter('goal', e.target.value)}>
-            <option value="">Goal</option><option>Standards</option><option>Improvisation</option><option>Technique</option>
+            <option value="">Goal</option><option>Standards</option><option>Improvisation</option><option>Technique</option><option>Harmony</option><option>Rhythm</option><option>Ear Training</option>
           </select>
         </label>
         <label><span className="screen-reader-only">Duration</span>
