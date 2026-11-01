@@ -41,14 +41,14 @@
   position: absolute;
   z-index: 0;
   display: block;
-  width: 170px;
-  height: 205px;
+  width: 182px;
+  height: 182px;
   object-fit: contain;
   pointer-events: none;
   opacity: .87;
 }
-.tool-vine-left { left: -68px; top: -37px; transform: rotate(-11deg); }
-.tool-vine-right { right: -63px; top: -55px; transform: rotate(12deg); }
+.tool-vine-left { left: -27px; top: -13px; transform: rotate(-11deg); }
+.tool-vine-right { right: -27px; top: -18px; transform: rotate(12deg); }
 .tool-heading {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) 44px;
@@ -479,7 +479,7 @@
   .tool-heading { min-height: 38px; grid-template-columns: 38px minmax(0,1fr) 38px; }
   .tool-heading h1 { font-size: 26px; }
   .tool-back, .tool-settings { width: 38px; height: 38px; }
-  .tool-vine { width: 139px; height: 158px; }
+  .tool-vine { width: 138px; height: 138px; }
   .metronome-tempo { margin: 5px 22px 0; grid-template-columns: 44px 1fr 44px; }
   .metronome-step { width: 44px; height: 44px; font-size: 31px; }
   .metronome-bpm strong { font-size: 52px; }
