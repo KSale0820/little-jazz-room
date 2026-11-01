@@ -230,6 +230,20 @@
   object-position: bottom;
   image-rendering: pixelated;
 }
+.tool-scene-plant {
+  position: absolute;
+  z-index: 1;
+  bottom: -17px;
+  width: 110px;
+  height: 139px;
+  object-fit: contain;
+  object-position: bottom center;
+  pointer-events: none;
+}
+.tool-plant-left { left: -31px; }
+.tool-plant-right { right: -29px; transform: scaleX(-1); }
+.tool-scene-rug { z-index: 1; }
+.tool-scene-cat { z-index: 2; height: 111px; }
 .tool-metronome { padding-top: 25px; }
 .metronome-tempo {
   display: grid;
@@ -437,4 +451,47 @@
     min-height: 0;
     padding-bottom: 0;
   }
+}
+
+@media (max-height: 720px) and (max-width: 899px) {
+  .tool-page { padding-top: 9px; }
+  .tool-heading { min-height: 38px; grid-template-columns: 38px minmax(0,1fr) 38px; }
+  .tool-heading h1 { font-size: 26px; }
+  .tool-back, .tool-settings { width: 38px; height: 38px; }
+  .tool-vine { width: 139px; height: 158px; }
+  .metronome-tempo { margin: 5px 22px 0; grid-template-columns: 44px 1fr 44px; }
+  .metronome-step { width: 44px; height: 44px; font-size: 31px; }
+  .metronome-bpm strong { font-size: 52px; }
+  .metronome-bpm > span { font-size: 15px; }
+  .metronome-slider { margin: 11px 0 5px; }
+  .metronome-tap { min-height: 30px; padding: 5px 11px; }
+  .metronome-tap-row > span { font-size: 9px; }
+  .metronome-field { margin-top: 9px; }
+  .metronome-field h2 { font-size: 17px; margin-bottom: 6px; }
+  .metronome-signatures button { min-height: 38px; font-size: 17px; border-radius: 11px; }
+  .metronome-beats { min-height: 33px; }
+  .metronome-beats button { width: 33px; height: 33px; font-size: 16px; }
+  .metronome-countin { margin-top: 8px; }
+  .metronome-countin label { font-size: 16px; }
+  .metronome-count-select { min-height: 35px; font-size: 13px; }
+  .metronome-playing-status { margin: 4px 0; }
+  .metronome-play { height: 69px; width: 69px; font-size: 29px; }
+  .tool-cat-scene { height: 93px; min-height: 93px; }
+  .tool-scene-cat { height: 82px; bottom: 7px; }
+  .tool-scene-rug { height: 87px; bottom: -14px; }
+  .tool-scene-plant { height: 101px; width: 88px; bottom: -18px; }
+  .tool-tuner .tuner-modes { margin-top: 5px; min-height: 38px; }
+  .tuner-modes button { min-height: 30px; font-size: 13px; }
+  .tuner-reading { min-height: 77px; margin-top: 6px; }
+  .tuner-reading strong { font-size: 49px; }
+  .tuner-reading > span { font-size: 16px; }
+  .tuner-gauge { height: 91px; margin-top: 0; }
+  .tuner-status { font-size: 14px; padding: 5px 12px; }
+  .tuner-measurements { margin-top: 6px; }
+  .tuner-measurements strong { font-size: 19px; }
+  .tuner-measurements span { font-size: 10px; }
+  .tuner-mic { margin-top: 7px; min-height: 37px; }
+  .tuner-reference { min-height: 62px; margin-top: 7px; }
+  .tuner-reference-play { width: 43px; height: 43px; flex-basis: 43px; }
+  .tuner-reference strong { font-size: 15px; }
 }
