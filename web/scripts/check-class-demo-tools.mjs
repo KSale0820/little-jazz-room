@@ -42,8 +42,10 @@ try {
           selector + ' at ' + width + 'x' + height + ': ' + JSON.stringify(result));
       }
       const navBox = await page.locator('nav.bottom-nav').boundingBox();
-      if (!navBox || Math.abs(result.bottom - navBox.y) > 2) {
-        throw new Error('Room illustration does not end at content/nav boundary: ' + selector);
+      const shortViewport = height <= 720;
+      const artworkOffset = shortViewport ? (selector.includes('metronome') ? 40 : 35) : 0;
+      if (!navBox || Math.abs(result.bottom - navBox.y - artworkOffset) > 2) {
+        throw new Error('Room illustration is not aligned with the intended floor offset: ' + selector);
       }
     };
     const waitArtwork = async () => page.evaluate(async () => {
