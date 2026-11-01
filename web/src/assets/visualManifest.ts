@@ -60,6 +60,11 @@ export const VISUAL_ASSETS = {
     profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
     closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
   },
+  progress: {
+    roomBackground: '/visuals/progress/g01-room-background.png',
+    goalLeaves: '/visuals/progress/g01-goal-leaves.png',
+    sleepCushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
+  },
   garden: {
     stage0: '/visuals/garden/garden-stage-0.png',
     stage1: '/visuals/garden/garden-stage-1.png',

@@ -1,0 +1,36 @@
+name: G01 Progress screenshot verification
+on:
+  push:
+    branches: [class-demo-g01]
+  workflow_dispatch:
+jobs:
+  g01-screenshots:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Start Vite
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/g01-vite.log 2>&1 &
+          for i in $(seq 1 40); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+      - name: Capture real G01 screens
+        run: node scripts/check-class-demo-progress.mjs
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: g01-progress-screenshots
+          path: web/docs/screenshots/class-demo/progress/
+          if-no-files-found: warn
