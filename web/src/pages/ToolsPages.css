@@ -523,6 +523,12 @@
   .tuner-reference strong { font-size: 15px; }
 }
 
+/* Keep the floor and rug beneath the tools, not behind their controls, on compact screens. */
+@media (max-height: 720px) and (max-width: 899px) {
+  .tool-tuner > .tool-bottom-art { bottom: -35px; }
+  .tool-metronome > .tool-bottom-art { bottom: -40px; }
+}
+
 /* On shorter phones keep the sitting companion on the rug at screen-right. */
 @media (max-height: 720px) and (max-width: 899px) {
   .tool-metronome-scene .tool-scene-cat {
