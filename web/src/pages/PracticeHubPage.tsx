@@ -64,12 +64,12 @@ export function PracticeHubPage() {
       <section className="p01-tools" aria-labelledby="p01-tools-heading">
         <h2 id="p01-tools-heading">Quick Tools</h2>
         <div className="p01-tool-grid">
-          <button type="button" className="p01-tool" onClick={() => setPreview('tuner')}>
+          <button type="button" className="p01-tool" onClick={() => navigate('/tuner')}>
             <span className="p01-tuning-fork" aria-hidden="true" />
             <strong>Tuner</strong>
             <small>Check your pitch.</small>
           </button>
-          <button type="button" className="p01-tool" onClick={() => setPreview('metronome')}>
+          <button type="button" className="p01-tool" onClick={() => navigate('/metronome')}>
             <span className="p01-metronome-symbol" style={{
               WebkitMaskImage: `url("${VISUAL_ASSETS.icons.metronome}")`,
               maskImage: `url("${VISUAL_ASSETS.icons.metronome}")`,
