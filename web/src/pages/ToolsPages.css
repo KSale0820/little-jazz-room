@@ -33,6 +33,11 @@
   user-select: none;
 }
 .tool-page.tool-has-background > .tool-bottom-art { opacity: 1; }
+.tool-tuner > .tool-bottom-art {
+  /* Keep controls on ivory, reserving the darker plants and rug for the bottom scene. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 33%, #000 84%);
+  mask-image: linear-gradient(to bottom, transparent 33%, #000 84%);
+}
 .tool-metronome > .tool-bottom-art {
   /* Fade the tall bookshelf behind the controls; leave its lower shelves and rug visible. */
   -webkit-mask-image: linear-gradient(to bottom, transparent 35%, #000 78%);
@@ -206,7 +211,7 @@
   min-height: 72px;
   padding: 10px 12px;
   border: 1px solid #e4ddcd;
-  background: #fffaf1b0;
+  background: #fffbf2f0;
   border-radius: 16px;
   margin-top: 13px;
 }
