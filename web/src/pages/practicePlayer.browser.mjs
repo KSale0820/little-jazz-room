@@ -61,7 +61,7 @@ try {
     await capture(page, folder, 'P02-paused-chart');
 
     const columnCount = await page.locator('.practice-chart-scroll .chord-grid').evaluate(el =>
-      getComputedStyle(el).gridTemplateColumns.split(/\\s+/).length);
+      getComputedStyle(el).gridTemplateColumns.split(/\s+/).length);
     check(columnCount === 4, 'P02 chart stylesheet missing or grid not four columns');
     const measureCount = await page.locator('.practice-chart-scroll .measure').count();
     check(measureCount > 0, 'No jazz measures available');
