@@ -33,6 +33,12 @@
   user-select: none;
 }
 .tool-page.tool-has-background > .tool-bottom-art { opacity: 1; }
+.tool-metronome > .tool-bottom-art {
+  /* Fade the tall bookshelf behind the controls; leave its lower shelves and rug visible. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 35%, #000 78%);
+  mask-image: linear-gradient(to bottom, transparent 35%, #000 78%);
+}
+
 .tool-has-background .tool-cat-scene { background: transparent; }
 .tool-has-background .tool-scene-rug,
 .tool-has-background .tool-scene-plant { display: none; }
