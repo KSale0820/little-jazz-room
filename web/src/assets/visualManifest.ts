@@ -92,6 +92,11 @@ export const VISUAL_ASSETS = {
       rug: '/visuals/shared-mvp/companion-surfaces/oatmeal-oval-rug.png',
     },
   },
+  /** Approved P04/P05 transparent botanical room backgrounds. */
+  tools: {
+    tunerBackground: '/visuals/tools/p04-tuner-background.png',
+    metronomeBackground: '/visuals/tools/p05-metronome-background.png',
+  },
   approvedDecor: {
     books: '/visuals/decor/books.png',
     brassLamp: '/visuals/decor/brass-lamp.png',
