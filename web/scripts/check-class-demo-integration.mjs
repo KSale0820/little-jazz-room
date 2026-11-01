@@ -77,7 +77,7 @@ try {
     await page.getByRole('button', { name: 'Open ' + title + ' in player' }).waitFor();
 
     await page.goto(base + '/', { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: 'Browse Tracks' }).click();
+    await page.getByRole('button', { name: 'Browse Tracks', exact: true }).click();
     await page.waitForURL(url => url.pathname === '/tracks');
     await page.getByRole('button', { name: 'Practice After-Hours Blues with its linked chart' }).click();
     await page.waitForURL(url => url.pathname === '/player' && url.searchParams.get('chart') === 'blues-f-12');
