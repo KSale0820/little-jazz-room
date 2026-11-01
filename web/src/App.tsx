@@ -7,6 +7,10 @@ import { ExplorePage } from './pages/ExplorePage';
 import { HomePage } from './pages/HomePage';
 import { PracticePage } from './pages/PracticePage';
 import { ProfilePage } from './pages/ProfilePage';
+import { TracksPage } from './pages/TracksPage';
+import { PracticeHubPage } from './pages/PracticeHubPage';
+import { RoutineLibraryPage } from './pages/RoutineLibraryPage';
+import { ProgressPage } from './pages/ProgressPage';
 import { SignInPage, SignUpRedirect } from './pages/SignInPage';
 
 export default function App() {
@@ -21,7 +25,12 @@ export default function App() {
               <Route index element={<HomePage />} />
               <Route path="explore" element={<ExplorePage />} />
               <Route path="create" element={<CreatePage />} />
-              <Route path="practice" element={<PracticePage />} />
+              <Route path="tracks" element={<TracksPage />} />
+              <Route path="charts" element={<TracksPage />} />
+              <Route path="routines" element={<RoutineLibraryPage />} />
+              <Route path="practice" element={<PracticeHubPage />} />
+              <Route path="player" element={<PracticePage />} />
+              <Route path="progress" element={<ProgressPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

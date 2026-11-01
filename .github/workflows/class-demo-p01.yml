@@ -1,0 +1,48 @@
+name: P01 Practice Hub visual QA
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/src/pages/PracticeHubPage.tsx'
+      - 'web/src/pages/PracticeHubPage.css'
+      - 'web/scripts/check-class-demo-p01.mjs'
+      - '.github/workflows/class-demo-p01.yml'
+  workflow_dispatch:
+
+jobs:
+  p01-mobile-qa:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Unit tests
+        run: npm test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start app
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/p01-vite.log 2>&1 &
+          for i in $(seq 1 40); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+      - name: Check P01 and capture both iPhone sizes
+        run: node scripts/check-class-demo-p01.mjs
+      - name: Upload actual screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p01-practice-hub-390x844-and-375x667
+          path: web/docs/screenshots/class-demo-p01/P01-practice-hub-*.png
+          if-no-files-found: warn

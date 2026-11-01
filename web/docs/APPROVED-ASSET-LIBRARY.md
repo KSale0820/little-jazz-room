@@ -188,8 +188,8 @@ Stitch should:
 - `npm run test:rls` was not run. It needs live Supabase credentials.
 
 
-### Sleeping poses — added 2026-10-31
+### Sleeping poses — integrated for class MVP (2026-11-01)
 
-Seven transparent, optimized 128×128 PNGs are in `web/public/visuals/cats/sleeping/`: `pepper.png`, `patches.png`, `mochi.png`, `milo.png`, `luna.png`, `maple.png`, `chai.png`.
+The source branch `master` added seven transparent 128×128 sleeping sprites for Chai, Luna, Maple, Milo, Mochi, Patches, and Pepper. These original PNG blobs are preserved at `web/public/visuals/cats/sleeping/{id}.png`. The class-demo branch also adds the approved 128×128 sleeping Biscuit sprite at the same location, completing all eight companions.
 
-Use `<CatSprite catId={catId} variant="sleeping" />` (or `catSleepingUrls(catId)`). The seven variants load the pose first and fall back to existing full-body art. Biscuit uses the existing full-body art until its separately approved sleeping image is supplied. Original existing cat art is unchanged. For large illustrations, replace the 128-pixel optimized render with a higher-resolution approved transparent PNG at the same path.
+`CatSprite variant="sleeping"` and `catSleepingUrls(id)` resolve sleeping poses from `VISUAL_ASSETS.cat.sleepingFile(id)`; H01 uses the same manifest path. The class MVP deliberately uses only the eight newly approved companion sets and removes legacy cat fallbacks. Do not restore legacy artwork during merges. The Home room and its eight companion screenshots have been approved by the owner.

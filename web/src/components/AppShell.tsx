@@ -6,10 +6,9 @@ import './AppShell.css';
 
 const NAV: { to: string; route: NavRoute; label: string }[] = [
   { to: '/', route: 'home', label: 'Home' },
-  { to: '/explore', route: 'explore', label: 'Explore' },
-  { to: '/create', route: 'create', label: 'Create' },
+  { to: '/tracks', route: 'tracks', label: 'Tracks' },
   { to: '/practice', route: 'practice', label: 'Practice' },
-  { to: '/profile', route: 'profile', label: 'Profile' },
+  { to: '/progress', route: 'progress', label: 'Progress' },
 ];
 
 export function AppShell() {
@@ -53,10 +52,6 @@ export function AppShell() {
       </aside>
       <div className="app-main">
         <main className="app-shell">
-          <div className="phone-status" aria-hidden>
-            <span>9:41</span>
-            <span>◼︎ ▮ ▰</span>
-          </div>
           {configured ? (
             <div className="mobile-auth-bar">
               {user ? (

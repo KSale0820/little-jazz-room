@@ -93,7 +93,7 @@ export function ExplorePage() {
               className="minirow row-button"
               onClick={() => {
                 setActiveRoutineId(r.id);
-                navigate('/practice');
+                navigate('/player');
               }}
             >
               <span>
@@ -144,7 +144,7 @@ export function ExplorePage() {
               {charts.length} original blues, bossa, rhythm, songbook and modal studies
             </p>
           </div>
-          <button type="button" className="pill" onClick={() => navigate('/practice')}>
+          <button type="button" className="pill" onClick={() => navigate('/player')}>
             View charts
           </button>
         </div>

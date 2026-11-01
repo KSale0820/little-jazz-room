@@ -20,6 +20,8 @@ export const VISUAL_ASSETS = {
     books: '/decor/books.png',
   },
   room: {
+    /** Exact user-provided H01 room image, with no UI or cat baked in. */
+    h01: '/visuals/room/h01-approved-room.jpeg',
     /** Live cat-free hero room (1440×800 landscape). */
     hero: {
       sunshine: '/room/home-hero-sunshine.png',
@@ -52,17 +54,18 @@ export const VISUAL_ASSETS = {
     },
   },
   cat: {
-    fullBodyFile: (id: CatId) => `/visuals/cats/full-body/${id}.png`,
-    profileFile: (id: CatId) => `/visuals/cats/profiles/${id}.png`,
-    closeupFile: (id: CatId) => `/visuals/cats/closeups/${id}.png`,
-    /** Optional sleeping overlay. Biscuit is awaiting a final approved pose. */
+    /** The user's approved October 31 class-MVP art pack. Sole source of cat illustrations. */
     sleepingFile: (id: CatId) => `/visuals/cats/sleeping/${id}.png`,
-    /** Previous art. Used only after an approved file fails to load. */
-    legacy: {
-      floorFile: (id: CatId) => `/jazz-cat-assets/${id}.png`,
-      portraitFile: (id: CatId) => `/jazz-cat-assets/${id}-portrait.png`,
-      spriteFile: (id: CatId) => `/jazz-cat-assets/${id}.svg`,
-    },
+    fullBodyFile: (id: CatId) => `/visuals/cats/approved-class-mvp/full-body/${id}.png`,
+    /** Approved sitting poses. Preserve the original full-resolution PNG binaries. */
+    sittingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sitting/${id}.png`,
+    profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
+    closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
+  },
+  progress: {
+    roomBackground: '/visuals/progress/g01-room-background.png',
+    goalLeaves: '/visuals/progress/g01-goal-leaves.png',
+    sleepCushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
   },
   garden: {
     stage0: '/visuals/garden/garden-stage-0.png',
@@ -75,6 +78,26 @@ export const VISUAL_ASSETS = {
     create: '/visuals/vignettes/create-vignette.png',
     practice: '/visuals/vignettes/practice-vignette.png',
     profile: '/visuals/vignettes/profile-vignette.png',
+  },
+  /** Approved reusable class-MVP illustrations; each path is an original supplied PNG. */
+  sharedMvp: {
+    botanicals: {
+      topLeft: '/visuals/shared-mvp/botanicals/pothos-top-left.png',
+      topRight: '/visuals/shared-mvp/botanicals/pothos-top-right.png',
+      shortTrail: '/visuals/shared-mvp/botanicals/pothos-short-trail.png',
+    },
+    practice: {
+      vinyl: '/visuals/shared-mvp/practice/free-practice-vinyl.png',
+      stand: '/visuals/shared-mvp/practice/guided-practice-stand.png',
+    },
+    covers: {
+      evening: '/visuals/shared-mvp/covers/recent-evening-window.png',
+      rainy: '/visuals/shared-mvp/covers/recent-rainy-studio.png',
+    },
+    companionSurfaces: {
+      cushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
+      rug: '/visuals/shared-mvp/companion-surfaces/oatmeal-oval-rug.png',
+    },
   },
   approvedDecor: {
     books: '/visuals/decor/books.png',
@@ -128,35 +151,25 @@ export function roomArtUrls(lighting: RoomLightingAsset): string[] {
   ];
 }
 
-/** Approved profile first, then the previous portrait PNG, then the SVG wrapper. */
+/** No legacy cat fallbacks: an absent image is an installation error, never an excuse to show old art. */
 export function catPortraitUrls(id: CatId): string[] {
-  return [
-    VISUAL_ASSETS.cat.profileFile(id),
-    VISUAL_ASSETS.cat.legacy.portraitFile(id),
-    VISUAL_ASSETS.cat.legacy.spriteFile(id),
-  ];
+  return [VISUAL_ASSETS.cat.profileFile(id)];
 }
 
-/** Approved full-body first, then the previous floor PNG, then the SVG wrapper. */
 export function catFloorUrls(id: CatId): string[] {
-  return [
-    VISUAL_ASSETS.cat.fullBodyFile(id),
-    VISUAL_ASSETS.cat.legacy.floorFile(id),
-    VISUAL_ASSETS.cat.legacy.spriteFile(id),
-  ];
+  return [VISUAL_ASSETS.cat.fullBodyFile(id)];
 }
 
-/** Approved close-up, then the approved profile, then the previous portrait and SVG. */
 export function catCloseupUrls(id: CatId): string[] {
-  return [
-    VISUAL_ASSETS.cat.closeupFile(id),
-    VISUAL_ASSETS.cat.profileFile(id),
-    VISUAL_ASSETS.cat.legacy.portraitFile(id),
-    VISUAL_ASSETS.cat.legacy.spriteFile(id),
-  ];
+  return [VISUAL_ASSETS.cat.closeupFile(id)];
 }
 
-/** Sleeping pose when approved, with the existing full-body art as fallback. */
+/** All eight companions now have approved sleeping poses. Never fall back to legacy cats. */
 export function catSleepingUrls(id: CatId): string[] {
-  return id === 'biscuit' ? catFloorUrls(id) : [VISUAL_ASSETS.cat.sleepingFile(id), ...catFloorUrls(id)];
+  return [VISUAL_ASSETS.cat.sleepingFile(id)];
+}
+
+/** All eight approved sitting poses, with no legacy fallback. */
+export function catSittingUrls(id: CatId): string[] {
+  return [VISUAL_ASSETS.cat.sittingFile(id)];
 }

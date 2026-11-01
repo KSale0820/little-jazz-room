@@ -355,8 +355,8 @@ small,
   border-top: 1px solid #e5e0d4;
   /* hidden by default; shown only on narrow screens */
   display: none;
-  grid-template-columns: repeat(5, 1fr);
-  padding: 8px 5px 14px;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 8px 5px max(12px, env(safe-area-inset-bottom));
 }
 
 /* Show bottom nav only on mobile — avoids cascade conflict with AppShell.css */
@@ -377,7 +377,8 @@ small,
   gap: 4px;
   min-width: 0;
   text-decoration: none;
-  padding: 4px 2px;
+  padding: 6px 2px;
+  min-height: 52px;
 }
 
 .bottom-nav a.current {

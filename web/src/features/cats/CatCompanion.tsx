@@ -63,7 +63,7 @@ export function useCatSelection(repository?: CatPreferenceRepository, accountKey
 export function CatSprite({ catId, size = 96, className = '', decorative = false, animated = false, variant = 'portrait' }:
   { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'floor' | 'closeup' | 'sleeping' }) {
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
-  // floor = full-body; sleeping = new sleeping pose (with fallback); portrait = profile; closeup = face. Each list falls back to older art.
+  // floor = approved full-body; sleeping = PR #8 pose; portrait = approved profile; closeup = approved face. No legacy cat images.
   const candidates = variant === 'sleeping' ? catSleepingUrls(catId)
     : variant === 'floor' ? catFloorUrls(catId)
     : variant === 'closeup' ? catCloseupUrls(catId)

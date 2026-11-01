@@ -139,7 +139,14 @@
 
 @media (max-width: 899px) {
   .app-shell {
+    height: 100dvh;
     min-height: 100dvh;
+  }
+  .viewport {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: calc(78px + env(safe-area-inset-bottom));
   }
 
   .viewport {
@@ -148,5 +155,61 @@
 
   .app-sidebar .team-auth-panel {
     display: none;
+  }
+}
+
+
+/* Class MVP: Home is immersive; team auth remains reachable via /signin and
+   Settings/Profile, not floating over the approved Home artwork. */
+.app-shell:has(.h01-page) .mobile-auth-bar { display: none; }
+
+/* Desktop browser previews deliberately display one iPhone, not a second
+   desktop UI. Navigation remains the same four tabs as on a phone. */
+@media (min-width: 900px) {
+  .app-root {
+    display: flex;
+    width: 100%;
+    max-width: none;
+    justify-content: center;
+    padding: 22px;
+  }
+  .app-sidebar { display: none; }
+  .app-main { width: min(430px, 100%); display: flex; justify-content: center; }
+  .app-shell {
+    width: 100%;
+    max-width: 430px;
+    min-height: 844px;
+    height: 844px;
+    margin: 0;
+    border-radius: 18px;
+    background: var(--cream);
+    overflow: hidden;
+  }
+  .app-shell .bottom-nav { display: grid; }
+  .app-shell .viewport {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+  }
+}
+
+/* H01-only safe scrolling: the fixed tabs never cover the last Home card. */
+@media (max-width: 899px) {
+  .app-shell:has(.h01-page) .viewport {
+    height: calc(100dvh - 76px - env(safe-area-inset-bottom));
+    min-height: 0;
+    overflow-y: auto;
+    padding-bottom: 0;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+}
+@media (min-width: 900px) {
+  .app-shell:has(.h01-page) .viewport {
+    height: calc(100% - 76px);
+    min-height: 0;
+    padding-bottom: 0;
   }
 }

@@ -1,0 +1,36 @@
+.demo-page { padding: 42px 18px 24px; color: #1d2b26; background: #fff8ee; min-height: 100%; }
+.demo-header { display: flex; align-items: start; justify-content: space-between; gap: 14px; margin: 0 0 22px; }
+.demo-heading { font: 700 clamp(27px, 7vw, 34px)/1.13 Georgia, 'Times New Roman', serif; color: #31503b; }
+.demo-eyebrow { font: 700 10px/1.4 system-ui, sans-serif; letter-spacing: .12em; color: #8d866c; text-transform: uppercase; margin-bottom: 6px; }
+.demo-subtitle { font-size: 12px; color: #69776b; margin-top: 6px; line-height: 1.5; }
+.demo-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 14px; border: 1px solid #d1d8cc; border-radius: 12px; background: #fffcf6; color: #31503b; text-decoration: none; font-size: 12px; font-weight: 700; }
+.demo-link:focus-visible,.demo-card:focus-visible,.demo-row:focus-visible,.demo-primary:focus-visible { outline: 3px solid #cda953; outline-offset: 3px; }
+.demo-primary { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height: 48px; border: 0; border-radius: 12px; background:#31503b; color:white; font: 700 14px Georgia,serif; text-decoration:none; cursor:pointer; }
+.demo-primary:hover { background:#416249; }
+.demo-card { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 98px; margin: 0 0 12px; padding: 13px; border: 1px solid #e0dacb; border-radius: 16px; background: #fffdf7; color: inherit; text-align:left; text-decoration:none; cursor:pointer; box-shadow:0 3px 8px #50452a0a; }
+.demo-card-tint { background: #edf1e4; }
+.demo-card-peach { background: #fbebe0; }
+.demo-card-image { width: 70px; height: 70px; object-fit:contain; flex-shrink:0; border-radius: 12px; }
+.demo-card-copy { flex: 1; min-width:0; }
+.demo-card-title { font: 700 19px/1.2 Georgia,serif; color: #234c3d; }
+.demo-card-desc { font-size: 12px; color:#667265; margin-top:6px; line-height:1.45; }
+.demo-chevron { margin-left: auto; font-size: 26px; color:#31503b; }
+.demo-section-title { font: 700 18px Georgia,serif; color:#31503b; margin: 22px 0 12px; }
+.demo-preview { font-size: 11px; color:#6b6b5a; background:#f2eddf; border-radius:999px; padding: 5px 9px; display:inline-block; }
+.demo-search { width:100%; min-height: 44px; padding: 12px 13px; font:inherit; font-size:13px; border:1px solid #ded8c9; border-radius: 12px; background:#fffdf9; color:#253d30; margin-bottom: 14px; }
+.demo-filter-group { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 8px; }
+.demo-filter { flex: 0 0 auto; min-height: 40px; border:1px solid #ded8c9; background:#fffdf8; color:#31503b; border-radius:999px; padding:0 14px; font-size:12px; }
+.demo-filter[aria-pressed="true"] { background:#31503b; border-color:#31503b; color:#fff; }
+.demo-row { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:72px; padding:11px 13px; margin-bottom:9px; border-radius:12px; border:1px solid #e2decf; background:#fffdf7; color:#31503b; text-align:left; text-decoration:none; cursor:pointer; }
+.demo-row-title { display:block; font-size:14px; font-weight:700; }
+.demo-row-meta { display:block; font-size:11px; margin-top:5px; color:#738071; }
+.demo-stats { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:16px 0; }
+.demo-stat { padding:13px; background:#fffdf7; border-radius:12px; border:1px solid #e0dacb; }
+.demo-stat strong { display:block; font:700 28px Georgia,serif; color:#31503b; }
+.demo-stat span { font-size:11px; color:#69756a; }
+.demo-cat-art { display:flex; align-items:center; justify-content:space-between; overflow:hidden; height:148px; padding:8px 12px; border-radius:15px; background:linear-gradient(110deg,#f3e3cb,#e8ebd9); }
+.demo-cat-art img { height: 140px; width: 155px; object-fit:contain; object-position:bottom center; }
+.demo-history { list-style:none; padding:0; margin:0; }
+.demo-history li { padding:12px 2px; border-bottom:1px solid #e1ddcd; font-size:13px; }
+.demo-history small { display:block; margin-top:4px; font-size:11px; color:#6d7669; }
+@media (min-width:900px) { .demo-page { padding:50px 36px 40px; } }
