@@ -77,12 +77,16 @@ try {
     await page.waitForTimeout(1100);
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
+    console.log('P06_CAT_DIAG', JSON.stringify(await page.locator('.practice-sleeping-cat').evaluate(async img => {
+      const response = await fetch(img.src);
+      return { src: img.src, width: img.naturalWidth, complete: img.complete, status: response.status, mime: response.headers.get('content-type') };
+    })));
+    await capture(page, folder, 'P06-free-completion');
     await page.waitForFunction(() => {
       const cat = document.querySelector('.practice-sleeping-cat');
       return cat instanceof HTMLImageElement && cat.complete && cat.naturalWidth > 0;
     }, null, { timeout: 10000 });
     check(await page.locator('.practice-complete-companion').count() === 1, 'Missing selected companion on P06');
-    await capture(page, folder, 'P06-free-completion');
     await page.getByRole('textbox', { name: /Notes/ }).fill('Stayed with the changes.');
     await page.getByRole('button', { name: '4 stars' }).click();
     await page.getByRole('button', { name: 'Save Session', exact: true }).click();
