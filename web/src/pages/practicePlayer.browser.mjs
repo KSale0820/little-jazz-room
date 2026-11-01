@@ -72,7 +72,7 @@ try {
 
     await page.getByRole('button', { name: 'Resume practice timer' }).click();
     await page.waitForTimeout(1100);
-    await page.getByRole('button', { name: 'Finish Session' }).click();
+    await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
     await capture(page, folder, 'P06-free-completion');
     await page.getByRole('textbox', { name: /Notes/ }).fill('Stayed with the changes.');
@@ -95,7 +95,7 @@ try {
     await capture(page, folder, 'P02-guided-step-two');
     await page.getByRole('tab', { name: 'Player' }).click();
     await capture(page, folder, 'P02-guided-player');
-    await page.getByRole('button', { name: 'Finish Session' }).click();
+    await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await capture(page, folder, 'P06-guided-completion');
     await page.getByRole('button', { name: 'Home', exact: true }).click();
     check((await storageSessions(page)).length === 2, 'Guided completion did not save once on exit');
