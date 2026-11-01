@@ -47,7 +47,7 @@ try {
         await page.getByRole('button', { name: 'See all' }).click();
         await page.screenshot({ path: join(out, 'g01-history-' + width + 'x' + height + '.png'), fullPage: true });
         await page.getByRole('button', { name: 'Practice Again' }).click();
-        await page.waitForURL(/\\/player$/);
+        await page.waitForURL(url => new URL(url).pathname === '/player');
       }
       await context.close();
     }
