@@ -451,8 +451,8 @@
   position: absolute;
   z-index: -1;
   top: 24px;
-  width: 104px;
-  height: 135px;
+  width: 120px;
+  height: 140px;
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
@@ -460,11 +460,11 @@
   opacity: .78;
 }
 .practice-complete-hero::before {
-  left: -65px;
+  left: -41px;
   background-image: url('/visuals/shared-mvp/botanicals/pothos-top-left.png');
 }
 .practice-complete-hero::after {
-  right: -65px;
+  right: -41px;
   background-image: url('/visuals/shared-mvp/botanicals/pothos-top-right.png');
 }
 .practice-confetti {
@@ -614,7 +614,7 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  min-height: 143px;
+  min-height: 163px;
   margin-top: 8px;
   isolation: isolate;
 }
@@ -634,8 +634,8 @@
 .practice-complete-footer::after { right: -53px; transform: rotate(160deg); }
 .practice-playing-cat {
   display: block;
-  width: 178px;
-  height: 130px;
+  width: 202px;
+  height: 150px;
   object-fit: contain;
   object-position: center bottom;
   filter: drop-shadow(0 3px 2px #39392820);
@@ -647,47 +647,23 @@
 }
 @media (max-height: 700px) {
   .practice-player { padding-top: 28px; }
-  .practice-complete { padding: 26px 16px 12px; }
-  .practice-complete-hero { min-height: 155px; margin-bottom: 6px; padding-top: 1px; }
-  .practice-celebrate, .practice-celebrate svg { width: 55px; height: 55px; }
-  .practice-complete h1 { font-size: 28px; }
-  .practice-complete-time { font-size: 23px; margin-top: 5px; }
+  .practice-complete { padding: 19px 14px 8px; }
+  .practice-complete-hero { min-height: 144px; margin-bottom: 5px; padding-top: 0; }
+  .practice-celebrate, .practice-celebrate svg { width: 50px; height: 50px; }
+  .practice-complete h1 { font-size: 27px; }
+  .practice-complete-time { font-size: 22px; margin-top: 3px; }
   .practice-complete-date { margin-top: 4px; }
-  .practice-complete-summary { min-height: 74px; margin-bottom: 9px; }
-  .practice-complete-summary img { width: 75px; height: 60px; }
-  .practice-complete-notes { margin-bottom: 7px; }
-  .practice-complete textarea { min-height: 44px; height: 44px; }
-  .practice-rating { margin-bottom: 9px; }
-  .practice-primary, .practice-secondary { min-height: 41px; }
-  .practice-secondary { margin-top: 7px; }
-  .practice-local-hint { margin-top: 5px; }
-  .practice-complete-footer { min-height: 120px; margin-top: 5px; }
-  .practice-playing-cat { height: 108px; width: 150px; }
+  .practice-complete-summary { min-height: 70px; margin-bottom: 8px; }
+  .practice-complete-summary img { width: 70px; height: 55px; }
+  .practice-complete-notes { margin-bottom: 4px; }
+  .practice-complete textarea { min-height: 40px; height: 40px; }
+  .practice-rating { margin-bottom: 6px; min-height: 35px; }
+  .practice-primary, .practice-secondary { min-height: 40px; }
+  .practice-secondary { margin-top: 5px; }
+  .practice-local-hint { margin-top: 3px; }
+  .practice-complete-footer { min-height: 106px; margin-top: 1px; }
+  .practice-playing-cat { height: 94px; width: 145px; }
 }
-.practice-confetti i:nth-child(1) { left: 5%; top: 14px; }
-.practice-confetti i:nth-child(2) { left: 13%; top: 6px; }
-.practice-confetti i:nth-child(3) { left: 25%; top: 12px; }
-.practice-confetti i:nth-child(4) { left: 38%; top: 5px; }
-.practice-confetti i:nth-child(5) { left: 49%; top: 19px; }
-.practice-confetti i:nth-child(6) { left: 65%; top: 7px; }
-.practice-confetti i:nth-child(7) { left: 77%; top: 15px; }
-.practice-confetti i:nth-child(8) { left: 92%; top: 10px; }
-.practice-confetti i:nth-child(9) { left: 6%; top: 50px; }
-.practice-confetti i:nth-child(10) { left: 15%; top: 45px; }
-.practice-confetti i:nth-child(11) { left: 87%; top: 44px; }
-.practice-confetti i:nth-child(12) { left: 95%; top: 58px; }
-.practice-confetti i:nth-child(13) { left: 4%; top: 91px; }
-.practice-confetti i:nth-child(14) { left: 13%; top: 118px; }
-.practice-confetti i:nth-child(15) { left: 24%; top: 138px; }
-.practice-confetti i:nth-child(16) { left: 86%; top: 122px; }
-.practice-confetti i:nth-child(17) { left: 95%; top: 139px; }
-.practice-confetti i:nth-child(18) { left: 8%; top: 154px; }
-.practice-confetti i:nth-child(19) { left: 74%; top: 154px; }
-.practice-confetti i:nth-child(20) { left: 93%; top: 164px; }
-.practice-confetti i:nth-child(21) { left: 4%; top: 127px; }
-.practice-confetti i:nth-child(22) { left: 95%; top: 93px; }
-.practice-confetti i:nth-child(23) { left: 58%; top: 5px; }
-.practice-confetti i:nth-child(24) { left: 37%; top: 150px; }
 @media (min-width: 900px) {
   .practice-player, .practice-complete { padding-top: 37px; }
 }
