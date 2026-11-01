@@ -20,17 +20,15 @@
   position: absolute;
   z-index: 0;
   pointer-events: none;
-  background-image: url('/visuals/decor/hanging-plant.png');
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: .46;
-  width: 115px;
-  height: 162px;
-  top: -44px;
+  display: block;
+  width: 235px;
+  height: 235px;
+  object-fit: contain;
+  opacity: .9;
+  top: -21px;
 }
-.p01-botanical-left { left: -66px; transform: rotate(28deg); }
-.p01-botanical-right { right: -62px; transform: scaleX(-1) rotate(25deg); }
+.p01-botanical-left { left: -12px; }
+.p01-botanical-right { right: -14px; }
 .p01-header { padding-left: 33px; margin-bottom: 18px; }
 .p01-greeting {
   color: var(--p01-green);
@@ -79,14 +77,13 @@
   border-radius: 13px;
 }
 .p01-path-art img {
-  position: absolute;
-  width: 180px;
-  height: 90px;
-  max-width: none;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  max-width: none;
 }
-.p01-path-art-record img { left: -52px; }
-.p01-path-art-score img { right: -1px; }
+.p01-path-art-record img { transform: scale(1.24); }
+.p01-path-art-score img { transform: scale(1.38) translateY(2px); }
 .p01-path-text { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 7px; }
 .p01-path-text strong {
   font: 700 21px/1.12 Georgia, 'Palatino Linotype', serif;
@@ -235,13 +232,10 @@
   background: #d8c9a6;
 }
 .p01-recent-image img {
-  width: 135px;
-  height: 78px;
-  max-width: none;
-  object-fit: contain;
-  position: absolute;
-  left: -45px;
-  top: -4px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .p01-recent-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 5px; }
 .p01-recent-copy strong { font: 700 15px/1.18 Georgia, 'Palatino Linotype', serif; }
@@ -250,27 +244,44 @@
   position: relative;
   display: flex;
   align-items: end;
-  min-height: 94px;
-  margin: -52px -22px 0;
+  min-height: 98px;
+  margin: -39px -22px 0;
   pointer-events: none;
 }
-.p01-footer-plant {
-  width: 113px;
-  height: 104px;
+.p01-footer-vine {
+  width: 145px;
+  height: 115px;
+  margin-left: -53px;
+  margin-bottom: -13px;
   object-fit: contain;
-  object-position: bottom left;
-  opacity: .87;
-  margin-left: -25px;
+  opacity: .83;
+  transform: rotate(-18deg);
+}
+.p01-sleep-nook {
+  position: relative;
+  width: 166px;
+  height: 113px;
+  margin-left: auto;
+  margin-right: 0;
+  flex: 0 0 166px;
+}
+.p01-sleep-cushion {
+  position: absolute;
+  width: 172px;
+  height: 94px;
+  bottom: -10px;
+  right: -4px;
+  object-fit: contain;
 }
 .p01-sleeping-cat {
-  width: 136px;
-  height: 116px;
+  position: absolute;
+  width: 137px;
+  height: 109px;
+  bottom: 15px;
+  right: 15px;
   object-fit: contain;
-  object-position: bottom right;
+  object-position: bottom;
   image-rendering: pixelated;
-  margin-left: auto;
-  margin-right: -2px;
-  transform: translateY(-13px);
 }
 .p01-page button:not(:disabled):hover { filter: brightness(.985); }
 .p01-page button:not(:disabled):active { transform: translateY(1px); }
