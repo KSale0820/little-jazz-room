@@ -45,6 +45,9 @@ try {
     must(asSeconds(await clock.innerText())===paused, 'WebKit paused timer advanced');
     await page.goto(url+'/routines',{waitUntil:'networkidle'});
     await page.getByRole('button',{name:'Open Daily Jazz Warm-Up in player'}).click();
+    await page.waitForURL(next => next.pathname === '/player');
+    await page.getByText('Guided Practice', { exact: true }).waitFor();
+    await page.locator('.practice-utility-row').waitFor();
     must(await page.locator('.practice-utility-row').count()===1, 'WebKit Guided Practice missing tools');
     await page.locator('.practice-utility-row').getByRole('button', {name:/Tuner/}).click();
     await page.getByRole('dialog',{name:'Tuner within practice'}).waitFor();
