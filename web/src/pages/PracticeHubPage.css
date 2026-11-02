@@ -160,28 +160,6 @@
   mask-size: contain;
 }
 .p01-resume-symbol { color: #2e503e; font: 700 39px/1.15 Georgia, serif; height: 46px; }
-.p01-preview {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: space-between;
-  padding: 8px 10px;
-  margin-top: 10px;
-  border-radius: 11px;
-  background: #e8ecdb;
-  color: var(--p01-ink);
-  font-size: 11px;
-  line-height: 1.4;
-}
-.p01-preview button {
-  min-height: 44px;
-  padding: 0 10px;
-  border: 1px solid #c9d1c4;
-  border-radius: 9px;
-  background: #fffdf7;
-  color: var(--p01-green);
-  font-size: 11px;
-}
 .p01-recent {
   margin-top: 16px;
   padding: 13px;

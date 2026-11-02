@@ -80,8 +80,22 @@ try {
       console.log('Captured ' + path);
       if (state === 'completed') {
         await page.reload({ waitUntil: 'networkidle' });
-        const stat = await page.locator('.g01-stats').innerText();
-        if (!stat.includes('60')) throw new Error('Saved session totals did not persist');
+        // The G01 weekly total must reset on Monday. The fixture spans three
+        // calendar days, which do not necessarily belong to the same week.
+        const expectedWeekMinutes = await page.evaluate(() => {
+          const now = new Date();
+          const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
+          const sessions = JSON.parse(localStorage.getItem(
+            'little-jazz-room:practice-sessions:v1:anonymous') || '[]');
+          return Math.round(sessions.filter(session =>
+            new Date(session.finishedAt) >= monday)
+            .reduce((total, session) => total + session.durationSeconds, 0) / 60);
+        });
+        const actualWeekMinutes = Number(await page.locator('.g01-stat').nth(1).locator('strong').innerText());
+        if (actualWeekMinutes !== expectedWeekMinutes) throw new Error(
+          'Saved session weekly total did not persist: expected ' +
+          expectedWeekMinutes + ', got ' + actualWeekMinutes);
         await page.getByRole('button', { name: 'See all' }).click();
         await page.screenshot({ path: join(out, 'g01-history-' + width + 'x' + height + '.png'), fullPage: true });
         await page.getByRole('button', { name: 'Practice Again' }).click();

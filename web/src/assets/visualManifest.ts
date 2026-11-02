@@ -2,9 +2,9 @@
  * Central visual asset manifest — exact public URLs and fallbacks.
  * Never crop APPROVED-VISUAL-REFERENCE.png for runtime assets.
  *
- * Approved portrait room art is registered under `room.approved` and is not
- * live. Home still uses the 1440×800 landscape heroes until hotspot geometry
- * is updated. See web/docs/APPROVED-ASSET-LIBRARY.md.
+ * H01 loads `room.h01` first, with `room.approved[lighting]` as a fallback.
+ * The older landscape `room.hero` entries are retained for legacy screens.
+ * See web/docs/APPROVED-ASSET-LIBRARY.md.
  */
 import type { CatId } from '../features/cats/CatCompanion';
 import type { ResolvedLighting } from '../lib/roomLighting';
