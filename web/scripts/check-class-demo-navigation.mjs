@@ -61,7 +61,7 @@ try {
     await page.screenshot({ path: join(out, 'explore-charts-' + width + 'x' + height + '.png') });
     await page.locator('.demo-row').first().click();
     await requireUrl('/player');
-    assert(await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).isVisible(), 'Chart to Player not working');
+    await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).waitFor({ state: 'visible' });
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     assert(overflow <= 1, 'Unexpected horizontal overflow');
