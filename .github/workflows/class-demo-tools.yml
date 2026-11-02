@@ -4,11 +4,15 @@ on:
     branches: [class-demo-2026-10-31]
     paths:
       - 'web/src/pages/TunerPage.tsx'
+      - 'web/src/pages/PracticePage.tsx'
+      - 'web/src/pages/PracticePage.css'
+      - 'web/src/pages/ExplorePage.tsx'
       - 'web/src/pages/MetronomePage.tsx'
       - 'web/src/pages/ToolsPages.css'
       - 'web/src/pages/toolsAudio.ts'
       - 'web/scripts/check-class-demo-tools.mjs'
       - 'web/scripts/check-class-demo-integration.mjs'
+      - 'web/scripts/check-class-demo-navigation.mjs'
       - '.github/workflows/class-demo-tools.yml'
   workflow_dispatch:
 
@@ -44,6 +48,15 @@ jobs:
         run: node scripts/check-class-demo-tools.mjs
       - name: Full routine, session, and progress walkthrough
         run: node scripts/check-class-demo-integration.mjs
+      - name: Verify Player tool shortcuts and Explore chart navigation
+        run: node scripts/check-class-demo-navigation.mjs
+      - name: Upload navigation screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: class-demo-navigation-fixed-390x844-and-375x667
+          path: web/docs/screenshots/class-demo-navigation/
+          if-no-files-found: warn
       - name: Upload integration screenshots
         if: always()
         uses: actions/upload-artifact@v4

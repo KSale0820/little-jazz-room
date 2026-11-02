@@ -374,8 +374,10 @@ export function PracticePage() {
         <p className="practice-reference-note">Tempo is a reference setting. No audio or metronome sound is playing.</p>
         <button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button>
       </div>
-      <div className="practice-utility-row" aria-label="Unavailable preview tools">
-        {['Mixer', 'Tuner', 'Metronome'].map(item => <button key={item} type="button" disabled title={item + ' is Preview only'}>{item}<span>Preview</span></button>)}
+      <div className="practice-utility-row" aria-label="Practice tools">
+        <button type="button" disabled title="Mixer is Preview only">Mixer<span>Preview</span></button>
+        <button type="button" onClick={() => navigate('/tuner')}>Tuner<span>Open tool</span></button>
+        <button type="button" onClick={() => navigate('/metronome')}>Metronome<span>Open tool</span></button>
       </div>
     </section>
   );
