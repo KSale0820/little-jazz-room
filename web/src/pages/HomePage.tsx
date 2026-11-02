@@ -96,7 +96,7 @@ export function HomePage() {
             <span className="h01-sprig" aria-hidden="true"><svg viewBox="0 0 48 56" width="31" height="39" fill="none" aria-hidden="true"><path d="M6 52C15 38 21 27 29 8" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"/><path d="M15 39C2 41 4 26 7 23c9 1 15 9 8 16ZM25 22C18 11 25 2 36 2c1 12-3 19-11 20ZM31 18C42 9 49 16 44 27c-10 2-15-2-13-9Z" fill="currentColor"/></svg></span>
             <div>
               <h1>{greeting}</h1>
-              <p>Let's practice with a backing track.</p>
+              <p>Let's practice with a chart or routine.</p>
             </div>
           </div>
           <button type="button" className="h01-settings-button" aria-label="Settings" onClick={() => navigate('/profile')}>⚙</button>
