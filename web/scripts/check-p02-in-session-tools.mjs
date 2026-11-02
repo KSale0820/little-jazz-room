@@ -48,6 +48,9 @@ try {
     await loop.click();
     check(await loop.getAttribute('aria-pressed') === 'false', 'Loop tile did not disable chart highlight');
     await page.screenshot({ path: join(out, 'P02-free-chart-' + width + 'x' + height + '.png') });
+    await page.getByRole('tab', { name: 'Player' }).click();
+    await page.screenshot({ path: join(out, 'P02-free-player-' + width + 'x' + height + '.png') });
+    await page.getByRole('tab', { name: 'Chart' }).click();
 
     // The practice timer runs while the tuner is mounted as an in-session modal.
     await page.getByRole('button', { name: 'Start practice timer' }).click();
@@ -115,6 +118,7 @@ try {
     check(seconds(await clock.textContent()) === paused, 'Opening Tuner resumed an intentionally paused session');
     await page.getByRole('dialog').getByRole('button', { name: 'Close tool and return to session' }).click();
     check(await page.getByRole('button', { name: 'Resume practice timer' }).isVisible(), 'Paused state was lost');
+    await page.screenshot({ path: join(out, 'P02-paused-chart-' + width + 'x' + height + '.png') });
 
     // Approved UI has the same five working tool tiles in Guided Practice.
     await page.goto(base + '/routines', { waitUntil: 'networkidle' });
