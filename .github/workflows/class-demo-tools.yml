@@ -10,6 +10,7 @@ on:
       - 'web/scripts/check-class-demo-tools.mjs'
       - 'web/scripts/check-class-demo-integration.mjs'
       - 'web/scripts/check-class-demo-exhaustive.mjs'
+      - 'web/scripts/check-class-demo-webkit.mjs'
       - '.github/workflows/class-demo-tools.yml'
   workflow_dispatch:
 
@@ -33,7 +34,7 @@ jobs:
       - name: Unit tests
         run: npm test
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
       - name: Start app
         run: |
           npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/class-demo-tools-vite.log 2>&1 &
@@ -51,6 +52,15 @@ jobs:
         run: node scripts/check-class-demo-tracks.mjs
       - name: Practice Hub navigation QA
         run: node scripts/check-class-demo-p01.mjs
+      - name: Safari-engine WebKit screen and controls QA
+        run: node scripts/check-class-demo-webkit.mjs
+      - name: Upload WebKit screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: class-demo-webkit-390x844-and-375x667
+          path: web/docs/screenshots/class-demo-webkit/
+          if-no-files-found: warn
       - name: Upload exhaustive screenshots, button inventory and report
         if: always()
         uses: actions/upload-artifact@v4
