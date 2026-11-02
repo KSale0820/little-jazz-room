@@ -15,6 +15,8 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
   const [roomArtLoaded, setRoomArtLoaded] = useState(false);
+  const [roomArtSource, setRoomArtSource] = useState<string>(VISUAL_ASSETS.tools.metronomeBackground);
+  const newRoomArtLoaded = roomArtLoaded && roomArtSource === VISUAL_ASSETS.tools.metronomeBackground;
   const [bpm, setBpm] = useState(100);
   const [signature, setSignature] = useState<Signature>('4/4');
   const [accents, setAccents] = useState<boolean[]>(defaultAccents('4/4'));
@@ -198,9 +200,14 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
 
   const beatCount = beatsPerMeasure(signature);
   return (
-    <section className={`tool-page tool-metronome${roomArtLoaded ? ' tool-has-background' : ''}`} aria-label="Metronome">
-      <img className="tool-bottom-art" src={VISUAL_ASSETS.tools.metronomeBackground} alt="" aria-hidden="true"
-        onLoad={() => setRoomArtLoaded(true)} onError={() => setRoomArtLoaded(false)} />
+    <section className={`tool-page tool-metronome${roomArtLoaded ? ' tool-has-background' : ''}${newRoomArtLoaded ? ' tool-has-new-room' : ''}`} aria-label="Metronome">
+      <img className="tool-bottom-art" src={roomArtSource} alt="" aria-hidden="true"
+        onLoad={() => setRoomArtLoaded(true)} onError={() => {
+          setRoomArtLoaded(false);
+          if (roomArtSource !== VISUAL_ASSETS.tools.metronomeFallback) {
+            setRoomArtSource(VISUAL_ASSETS.tools.metronomeFallback);
+          }
+        }} />
       <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
       <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
       <header className="tool-heading">

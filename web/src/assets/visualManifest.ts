@@ -103,7 +103,8 @@ export const VISUAL_ASSETS = {
   /** Approved P04/P05 transparent botanical room backgrounds. */
   tools: {
     tunerBackground: '/visuals/tools/p04-tuner-background.png',
-    metronomeBackground: '/visuals/tools/p05-metronome-background.png',
+    metronomeBackground: '/visuals/tools/p05-metronome-room-2026-11-02.webp',
+    metronomeFallback: '/visuals/tools/p05-metronome-background.png',
   },
   approvedDecor: {
     books: '/visuals/decor/books.png',
