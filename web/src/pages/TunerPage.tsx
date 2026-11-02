@@ -10,7 +10,7 @@ import './ToolsPages.css';
 
 type MicStatus = 'idle' | 'requesting' | 'listening' | 'denied' | 'unsupported' | 'error';
 
-export function TunerPage() {
+export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
   const [roomArtLoaded, setRoomArtLoaded] = useState(false);
@@ -198,7 +198,7 @@ export function TunerPage() {
       <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
       <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
       <header className="tool-heading">
-        <button className="tool-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
+        <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))} aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
         <h1>Tuner</h1>
         <button className="tool-settings" type="button" aria-label="Tuner help" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)}>⚙</button>
       </header>
