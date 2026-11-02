@@ -4,6 +4,7 @@ import { VISUAL_ASSETS } from '../assets/visualManifest';
 const NAV_PIXELS = {
   home: 'M3 9h2V7h2V5h2V3h4v2h2v2h2v2h2v9h-5v-6h-4v6H3z',
   tracks: 'M11 2a9 9 0 1 0 .01 0z M11 8a3 3 0 1 1 -.01 6 3 3 0 0 1 .01-6z',
+  routines: 'M4 3h15v2H4z M4 17h15v2H4z M4 5h2v12H4z M17 5h2v12h-2z M8 8h3v2H8z M12 8h4v2h-4z M8 12h3v2H8z M12 12h4v2h-4z',
   progress: 'M3 18h4v-6H3z M9 18h4V8H9z M15 18h4V4h-4z',
   explore: 'M3 3h11v2h3v2h2v7h-2v3h-3v-2h-2v-2h-2V7H3z',
   create: 'M9 2h4v7h7v4h-7v7H9v-7H2V9h7z',
