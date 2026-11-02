@@ -1,110 +1,82 @@
-// P02: prove every chart page renders completely, including the B and final
-// A sections of AABA, and that Guided pages no longer conceal later measures.
+// All notes on one screen: no score tabs, no clipped measures, on both phones.
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 const url = process.env.APP_URL || 'http://127.0.0.1:5174';
-const folder = join(process.cwd(), 'docs/screenshots/class-demo-p02-chart-scale');
-mkdirSync(folder, { recursive: true });
-const results = [];
+const dir = join(process.cwd(), 'docs/screenshots/class-demo-p02-chart-scale');
+mkdirSync(dir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
-const ensure = (v, msg) => { if (!v) throw Error(msg); };
-const names = async locator => (await locator.allInnerTexts()).map(x => x.trim());
+const results = [];
+const check = (ok, reason) => { if (!ok) throw Error(reason); };
 try {
-  for (const [width, height] of [[390,844],[375,667]]) {
-    const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-    const page = await context.newPage();
-    page.setDefaultTimeout(12000);
+  for (const [width,height] of [[390,844],[375,667]]) {
+    const ctx = await browser.newContext({viewport:{width,height},deviceScaleFactor:2,isMobile:true,hasTouch:true});
+    const page = await ctx.newPage();
     const errors = [];
-    page.on('pageerror', e => errors.push(e.message));
-    await page.goto(url + '/practice', { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: /^Free Practice/ }).click();
-    await page.waitForURL(u => u.pathname === '/player');
-    await page.getByRole('tab', { name: 'Chart' }).click();
-    ensure(await page.locator('.practice-player.practice-free').count() === 1, 'Free player missing');
-    const nav = page.getByRole('navigation', { name: 'Chart sections and measure groups' });
-    const measures = page.locator('.practice-chart-scroll .measure');
-    const score = page.locator('.practice-chart-scroll');
-    const geometry = async () => page.evaluate(() => {
-      const box = document.querySelector('.practice-chart-scroll');
-      const grid = box?.querySelector('.chord-grid');
-      const chord = box?.querySelector('.chords');
-      const row = box?.querySelector('.measure');
-      const tools = document.querySelector('.practice-utility-row');
-      if (!grid || !chord || !row || !tools) throw Error('Score or tool dock missing');
-      return {
-        bars: grid.querySelectorAll('.measure').length,
-        columns: getComputedStyle(grid).gridTemplateColumns.split(/\s+/).length,
-        chordFont: parseFloat(getComputedStyle(chord).fontSize),
-        gridHeight: grid.getBoundingClientRect().height,
-        visibleHeight: box.getBoundingClientRect().height,
-        overflowY: getComputedStyle(box).overflowY,
-        dockBottom: tools.getBoundingClientRect().bottom,
-        docOverflowX: document.documentElement.scrollWidth - innerWidth,
-      };
-    });
-    const verify = async (expectedBars, note) => {
-      const r = await geometry();
-      ensure(r.bars === expectedBars, note + ': incorrect bar count ' + JSON.stringify(r));
-      ensure(r.columns === 2, note + ': expected two wide measures per row');
-      ensure(r.chordFont >= 15, note + ': chords unreadably small');
-      ensure(r.gridHeight <= r.visibleHeight + 2, note + ': score is vertically clipped');
-      ensure(r.docOverflowX <= 1, note + ': horizontal page overflow');
-      ensure(r.dockBottom <= height + 1, note + ': bottom practice tools cut off');
-      return r;
+    page.on('pageerror',error=>errors.push(error.message));
+    page.setDefaultTimeout(12000);
+    const assess = async (bars, label) => {
+      const g = await page.evaluate(() => {
+        const chart=document.querySelector('.practice-chart-scroll.practice-chart-all');
+        const grid=chart?.querySelector('.chord-grid');
+        const tools=document.querySelector('.practice-utility-row');
+        if (!chart||!grid||!tools) throw Error('Missing chart or tool dock');
+        const rect=x=>{const r=x.getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height}};
+        const chords=[...grid.querySelectorAll('.chords span')];
+        return {
+          chart:rect(chart),grid:rect(grid),tools:rect(tools),
+          bars:grid.querySelectorAll('.measure').length,
+          cols:getComputedStyle(grid).gridTemplateColumns.split(/\\s+/).length,
+          overflowY:getComputedStyle(chart).overflowY,
+          docWidth:document.documentElement.scrollWidth,
+          docHeight:document.documentElement.scrollHeight,
+          chordFont:parseFloat(getComputedStyle(grid.querySelector('.chords')).fontSize),
+          chordOverflow:chords.some(e=>e.scrollWidth>e.clientWidth+1),
+        };
+      });
+      check(g.bars===bars,label+' missing bars '+JSON.stringify(g));
+      check(g.cols===4,label+' not four measures per row');
+      check(g.grid.height<=g.chart.height+2,label+' chart clipped');
+      check(g.chart.bottom<=height+1,label+' chart extends below screen');
+      check(g.tools.bottom<=height+1,label+' tool dock below screen');
+      check(g.docWidth<=width+1,label+' horizontal overflow');
+      check(!g.chordOverflow,label+' chord text overflows cells');
+      check(g.chordFont >= (bars>16?10:11),label+' unreadably small chords');
+      check(await page.getByRole('navigation',{name:'Chart sections and measure groups'}).count()===0,label+' requires paging');
+      return g;
     };
-    ensure((await names(nav.locator('button'))).join(',') === 'A,9–12', 'Blues should have two clearly reachable groups');
-    ensure((await names(page.locator('.practice-chart-scroll .measure-section-label'))).join(',') === 'A',
-      'Blues chart must show only sourced A, not fabricated B sections');
-    const free = await verify(8,'Free F blues');
-    await page.screenshot({ path: join(folder, 'P02-free-chart-large-' + width + 'x' + height + '.png'), animations: 'disabled' });
-    await nav.getByRole('button', { name: /measures 9 to 12/i }).click();
-    await verify(4,'Final blues phrase');
-    ensure(await page.getByRole('button', { name: /^Measure 12:/ }).count() === 1, 'Last blues measure inaccessible');
-    await page.getByRole('combobox', { name: 'Choose practice chart' }).selectOption('rhythm-bb-32');
-    ensure((await names(nav.locator('button'))).join(',') === 'A1,A2,B,A3','AABA form navigation missing');
-    await verify(8,'AABA first A');
-    await page.screenshot({ path: join(folder, 'P02-free-AABA-chart-' + width + 'x' + height + '.png'), animations: 'disabled' });
-    await nav.getByRole('button',{name: /section A2/}).click();
-    ensure(await page.getByRole('button',{name:/^Measure 9:/}).count() === 1,'Second A not visible');
-    await page.screenshot({ path: join(folder, 'P02-free-AABA-A2-' + width + 'x' + height + '.png'), animations: 'disabled' });
-    await nav.getByRole('button',{name: /section B,/}).click();
-    ensure(await page.getByRole('button',{name:/^Measure 17:/}).count() === 1,'Bridge starts at bar 17');
-    ensure((await names(page.locator('.practice-chart-scroll .measure-section-label'))).join(',') === 'B','Bridge B label missing');
-    await verify(8,'AABA bridge');
-    await page.screenshot({ path: join(folder, 'P02-free-AABA-B-' + width + 'x' + height + '.png'), animations: 'disabled' });
-    await nav.getByRole('button',{name: /section A3/}).click();
-    ensure(await page.getByRole('button',{name:/^Measure 32:/}).count() === 1,'Final A section cut off');
-    await verify(8,'AABA final A');
-    await page.screenshot({ path: join(folder, 'P02-free-AABA-A3-' + width + 'x' + height + '.png'), animations: 'disabled' });
-    await nav.getByRole('button',{name: /section A1/}).click();
+    await page.goto(url+'/practice',{waitUntil:'networkidle'});
+    await page.getByRole('button',{name:/^Free Practice/}).click();
+    await page.waitForURL(u=>u.pathname==='/player');
+    await page.getByRole('tab',{name:'Chart'}).click();
+    const blues=await assess(12,'Free blues '+width+'x'+height);
+    await page.screenshot({path:join(dir,'P02-free-complete-blues-'+width+'x'+height+'.png'),animations:'disabled'});
+    await page.getByRole('combobox',{name:'Choose practice chart'}).selectOption('rhythm-bb-32');
+    const aaba=await assess(32,'Free AABA '+width+'x'+height);
+    check((await page.locator('.practice-chart-scroll .measure-section-label').allTextContents()).join(',')==='A,A,B,A','AABA form markers missing');
+    check(await page.getByRole('button',{name:/^Measure 32:/}).count()===1,'Last A not rendered');
+    check(await page.getByRole('button',{name:/^Measure 17:/}).count()===1,'Bridge not rendered');
+    await page.screenshot({path:join(dir,'P02-free-complete-AABA-'+width+'x'+height+'.png'),animations:'disabled'});
     await page.getByRole('button',{name:/^Measure 8:/}).click();
     await page.getByRole('button',{name:'Next measure'}).click();
-    ensure(await page.getByRole('button',{name:/^Measure 9:/}).getAttribute('aria-pressed') === 'true',
-      'Measure transport fails to advance from A1 to A2');
-    await page.getByRole('button', { name: 'Start practice timer' }).click();
+    check(await page.getByRole('button',{name:/^Measure 9:/}).getAttribute('aria-pressed')==='true','Measure transport failed');
+    await page.getByRole('button',{name:'Start practice timer'}).click();
     await page.waitForTimeout(1150);
-    ensure(await page.locator('[data-testid="session-elapsed"]').innerText() !== '00:00', 'Timer not working');
+    check((await page.getByTestId('session-elapsed').innerText())!=='00:00','Session timer failed');
     await page.locator('.practice-utility-row').getByRole('button',{name:/Tuner/}).click();
     await page.getByRole('dialog',{name:'Tuner within practice'}).waitFor();
     await page.getByRole('dialog').getByRole('button',{name:'Close tool and return to session'}).click();
-    ensure(await page.getByRole('button',{name:'Pause practice timer'}).isVisible(), 'Tuner reset timer');
-    await page.goto(url + '/routines', { waitUntil: 'networkidle' });
+    check(await page.getByRole('button',{name:'Pause practice timer'}).isVisible(),'Overlay reset timer');
+    await page.goto(url+'/routines',{waitUntil:'networkidle'});
     await page.getByRole('button',{name:'Open Daily Jazz Warm-Up in player'}).click();
-    await page.waitForURL(u => u.pathname === '/player');
-    ensure(await page.locator('.practice-player.practice-guided').count() === 1, 'Guided player missing');
-    const guidedNav = page.getByRole('navigation',{name:'Chart sections and measure groups'});
-    ensure((await names(guidedNav.locator('button'))).join(',') === '1–4,5–8,9–12', 'Guided page tabs missing');
-    const guided = await verify(4,'Guided first four bars');
-    await page.screenshot({ path: join(folder, 'P02-guided-chart-original-scale-' + width + 'x' + height + '.png'), animations: 'disabled' });
-    await guidedNav.getByRole('button',{name:/measures 9 to 12/i}).click();
-    await verify(4,'Guided final four bars');
-    ensure(await page.getByRole('button',{name:/^Measure 12:/}).count() === 1, 'Guided chart final bar inaccessible');
-    await page.screenshot({ path: join(folder, 'P02-guided-chart-last-bars-' + width + 'x' + height + '.png'), animations: 'disabled' });
-    ensure(errors.length === 0, 'Uncaught page exceptions: ' + errors.join(' | '));
-    results.push({ width,height,free,guided,status:'PASS' });
-    console.log('PASS P02 complete paged charts and AABA at ' + width + 'x' + height + ': ' + JSON.stringify({free,guided}));
-    await context.close();
+    await page.waitForURL(u=>u.pathname==='/player');
+    const guided=await assess(12,'Guided blues '+width+'x'+height);
+    check(await page.getByRole('button',{name:/^Measure 12:/}).count()===1,'Last guided measure not visible');
+    await page.screenshot({path:join(dir,'P02-guided-complete-blues-'+width+'x'+height+'.png'),animations:'disabled'});
+    check(errors.length===0,'Browser exceptions '+errors.join(' | '));
+    results.push({width,height,blues,aaba,guided,status:'PASS'});
+    console.log('PASS complete unpaged 12/32-bar charts and guided at '+width+'x'+height);
+    await ctx.close();
   }
-} finally { await browser.close(); }
-writeFileSync(join(folder,'chart-scale-results.json'),JSON.stringify(results,null,2));
+} finally {await browser.close();}
+writeFileSync(join(dir,'chart-scale-results.json'),JSON.stringify(results,null,2));
