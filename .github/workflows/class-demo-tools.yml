@@ -14,6 +14,7 @@ on:
       - 'web/scripts/check-class-demo-integration.mjs'
       - 'web/scripts/check-class-demo-navigation.mjs'
       - 'web/scripts/check-p02-in-session-tools.mjs'
+      - 'web/scripts/check-p02-overlay-webkit.mjs'
       - '.github/workflows/class-demo-tools.yml'
   workflow_dispatch:
 
@@ -37,7 +38,7 @@ jobs:
       - name: Unit tests
         run: npm test
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
       - name: Start app
         run: |
           npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/class-demo-tools-vite.log 2>&1 &
@@ -53,6 +54,15 @@ jobs:
         run: node scripts/check-class-demo-navigation.mjs
       - name: P02 free-only tool overlays preserve active session
         run: node scripts/check-p02-in-session-tools.mjs
+      - name: Safari WebKit free practice overlays and timer
+        run: node scripts/check-p02-overlay-webkit.mjs
+      - name: Upload Safari overlay screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p02-safari-webkit-overlay-390x844-and-375x667
+          path: web/docs/screenshots/class-demo-p02-webkit/
+          if-no-files-found: warn
       - name: Upload free/guided and tool overlay screenshots
         if: always()
         uses: actions/upload-artifact@v4
