@@ -545,3 +545,9 @@
     font-size: 11.3px;
   }
 }
+
+
+/* Override the prior dense-score row gap so AABA also has an unbroken grid. */
+.practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet {
+  row-gap: 0;
+}
