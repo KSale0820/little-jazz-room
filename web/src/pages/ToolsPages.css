@@ -43,6 +43,13 @@
   -webkit-mask-image: linear-gradient(to bottom, transparent 35%, #000 78%);
   mask-image: linear-gradient(to bottom, transparent 35%, #000 78%);
 }
+/* The replacement illustration is a 1170 × 1637 bottom-aligned room layer.
+   Its natural aspect ratio stays intact and its blank wall blends into ivory. */
+.tool-metronome.tool-has-new-room > .tool-bottom-art {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 14%, #000 58%);
+  mask-image: linear-gradient(to bottom, transparent 14%, #000 58%);
+}
+.tool-metronome.tool-has-new-room > .tool-vine { display: none; }
 
 .tool-has-background .tool-cat-scene { background: transparent; }
 /* The taller P05 sitting pose must extend above its decorative floor strip without losing ears or face. */
@@ -288,6 +295,7 @@
   bottom: 18px;
   width: 200px;
   height: 168px;
+  transform: scaleX(-1); /* Right-side companion faces the central Play button. */
 }
 .tool-metronome { padding-top: 25px; }
 .metronome-tempo {
@@ -545,6 +553,7 @@
 @media (max-height: 720px) and (max-width: 899px) {
   .tool-tuner > .tool-bottom-art { bottom: -35px; }
   .tool-metronome > .tool-bottom-art { bottom: -40px; }
+  .tool-metronome.tool-has-new-room > .tool-bottom-art { bottom: 0; }
 }
 
 /* On shorter phones keep the sitting companion on the rug at screen-right. */
