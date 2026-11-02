@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { ChordGrid } from '../components/ChordGrid';
 import { chartsById, exercisesById } from '../data/seed';
 import { formatChartMeta } from '../lib/chords';
@@ -9,10 +10,13 @@ import type { WrittenPitch } from '../types/content';
 import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
+import { TunerPage } from './TunerPage';
+import { MetronomePage } from './MetronomePage';
 import './PracticePage.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'chart' | 'player';
+type PracticeTool = 'tuner' | 'metronome';
 type Completion = {
   id: string;
   finishedAt: string;
@@ -51,6 +55,9 @@ export function PracticePage() {
   const [selectedBar, setSelectedBar] = useState(0);
   const [loopValue, setLoopValue] = useState('all');
   const [panel, setPanel] = useState<Panel>('chart');
+  const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
+  const toolTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const toolOverlayRef = useRef<HTMLDivElement | null>(null);
   const [tempo, setTempo] = useState(100);
 
   // Prior steps are committed as milliseconds; the current step retains its
@@ -64,6 +71,21 @@ export function PracticePage() {
   const [rating, setRating] = useState(0);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
   const savePromiseRef = useRef<Promise<boolean> | null>(null);
+
+  const openTool = (tool: PracticeTool, trigger: HTMLButtonElement) => {
+    toolTriggerRef.current = trigger;
+    setActiveTool(tool);
+  };
+  const closeTool = () => {
+    setActiveTool(null);
+    requestAnimationFrame(() => toolTriggerRef.current?.focus());
+  };
+
+  useEffect(() => {
+    if (!activeTool) return;
+    const focusId = requestAnimationFrame(() => toolOverlayRef.current?.querySelector<HTMLElement>('.tool-back')?.focus());
+    return () => cancelAnimationFrame(focusId);
+  }, [activeTool]);
 
   const chart = chartsById[chartId] ?? charts[0]!;
   const chosenExercise = exercises.find(item => item.id === playableStep?.exercise_id);
@@ -296,6 +318,7 @@ export function PracticePage() {
   }
 
   return (
+    <>
     <section className="practice-player" aria-label="Shared practice player">
       <header className="practice-player-head">
         <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
@@ -374,11 +397,39 @@ export function PracticePage() {
         <p className="practice-reference-note">Tempo is a reference setting. No audio or metronome sound is playing.</p>
         <button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button>
       </div>
-      <div className="practice-utility-row" aria-label="Practice tools">
-        <button type="button" disabled title="Mixer is Preview only">Mixer<span>Preview</span></button>
-        <button type="button" onClick={() => navigate('/tuner')}>Tuner<span>Open tool</span></button>
-        <button type="button" onClick={() => navigate('/metronome')}>Metronome<span>Open tool</span></button>
-      </div>
+      {!routine && (
+        <div className="practice-utility-row" aria-label="Free practice tools">
+          <button type="button" disabled title="Mixer is Preview only">Mixer<span>Preview</span></button>
+          <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>Tuner<span>Open tool</span></button>
+          <button type="button" onClick={event => openTool('metronome', event.currentTarget)}>Metronome<span>Open tool</span></button>
+        </div>
+      )}
     </section>
+    {activeTool && createPortal(
+      <div
+        ref={toolOverlayRef}
+        className="practice-tool-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-label={activeTool === 'tuner' ? 'Tuner within free practice' : 'Metronome within free practice'}
+        onKeyDown={event => {
+          if (event.key === 'Escape') { event.preventDefault(); closeTool(); }
+          if (event.key !== 'Tab') return;
+          const controls = [...(toolOverlayRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled)') ?? [])];
+          if (!controls.length) return;
+          const first = controls[0];
+          const last = controls[controls.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault(); last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault(); first.focus();
+          }
+        }}
+      >
+        {activeTool === 'tuner' ? <TunerPage onClose={closeTool} /> : <MetronomePage onClose={closeTool} />}
+      </div>,
+      document.querySelector('.app-shell') ?? document.body
+    )}
+    </>
   );
 }
