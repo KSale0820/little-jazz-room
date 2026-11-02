@@ -12,6 +12,8 @@ interface ChordGridProps {
   onSelectBar: (index: number) => void;
   /** Hide formal-section A/B labels in the practice Player while preserving measure numbers. */
   showSectionLabels?: boolean;
+  /** Show two measures per row, with supplied form letters in a left gutter. */
+  practiceSheet?: boolean;
 }
 
 export function ChordGrid({
@@ -22,11 +24,12 @@ export function ChordGrid({
   loopRange,
   onSelectBar,
   showSectionLabels = true,
+  practiceSheet = false,
 }: ChordGridProps) {
   const trans = chartTransposeSemitones(chart, chartKey, writtenPitch);
 
   return (
-    <div className="chord-grid" role="group" aria-label={`Chord chart: ${chart.title}`}>
+    <div className={`chord-grid${practiceSheet ? " practice-sheet" : ""}`} role="group" aria-label={`Chord chart: ${chart.title}`}>
       {chart.bars.map((bar, i) => {
         const items = bar.events.map(e => spellChord(e, trans));
         const looped =
@@ -41,9 +44,12 @@ export function ChordGrid({
             aria-pressed={selectedBar === i}
             onClick={() => onSelectBar(i)}
           >
+            {showSectionLabels && practiceSheet && bar.section && (
+              <span className="measure-section-label" aria-label={`Section ${bar.section}`}>{bar.section}</span>
+            )}
             <span className="measure-num">
               {bar.number}
-              {showSectionLabels && bar.section ? ` · ${bar.section}` : ''}
+              {showSectionLabels && !practiceSheet && bar.section ? ` · ${bar.section}` : ''}
             </span>
             <span className={`chords ${items.length > 1 ? 'two' : ''}`}>
               {items.map(c => (
