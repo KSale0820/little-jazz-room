@@ -10,6 +10,8 @@ interface ChordGridProps {
   selectedBar: number;
   loopRange: [number, number] | null;
   onSelectBar: (index: number) => void;
+  /** Hide formal-section A/B labels in the practice Player while preserving measure numbers. */
+  showSectionLabels?: boolean;
 }
 
 export function ChordGrid({
@@ -19,6 +21,7 @@ export function ChordGrid({
   selectedBar,
   loopRange,
   onSelectBar,
+  showSectionLabels = true,
 }: ChordGridProps) {
   const trans = chartTransposeSemitones(chart, chartKey, writtenPitch);
 
@@ -40,7 +43,7 @@ export function ChordGrid({
           >
             <span className="measure-num">
               {bar.number}
-              {bar.section ? ` · ${bar.section}` : ''}
+              {showSectionLabels && bar.section ? ` · ${bar.section}` : ''}
             </span>
             <span className={`chords ${items.length > 1 ? 'two' : ''}`}>
               {items.map(c => (
