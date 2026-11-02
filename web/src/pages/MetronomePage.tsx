@@ -11,7 +11,7 @@ import './ToolsPages.css';
 type Signature = '2/4' | '3/4' | '4/4' | '6/8';
 type ScheduledBeat = { time: number; index: number; countIn: boolean };
 
-export function MetronomePage() {
+export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
   const [roomArtLoaded, setRoomArtLoaded] = useState(false);
@@ -204,7 +204,7 @@ export function MetronomePage() {
       <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
       <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
       <header className="tool-heading">
-        <button className="tool-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
+        <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))} aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
         <h1>Metronome</h1>
         <span className="tool-heading-spacer" />
       </header>

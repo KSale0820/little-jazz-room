@@ -21,7 +21,7 @@ try {
     const open = async path => { await page.goto(base + path, { waitUntil: 'networkidle' }); };
     const requireUrl = async expected => page.waitForURL(url => url.pathname === expected);
 
-    // Two existing Player shortcuts must open real tools in both Player modes.
+    // Free Player shortcuts must open in-session overlays; Guided also includes these approved controls.
     await open('/practice');
     await page.getByRole('button', { name: /^Free Practice/ }).click();
     await requireUrl('/player');
@@ -32,28 +32,25 @@ try {
     assert(await utilities.getByText('Preview').count() === 1, 'Only Mixer should show Preview');
 
     await utilities.getByRole('button', { name: /Tuner/ }).click();
-    await requireUrl('/tuner');
-    await page.getByRole('heading', { name: 'Tuner' }).waitFor();
-    await page.getByRole('button', { name: 'Back to Practice' }).click();
-    await requireUrl('/practice');
+    await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
+    assert(new URL(page.url()).pathname === '/player', 'Tuner must not navigate away from Player');
+    await page.getByRole('dialog').getByRole('button', { name: 'Close tool and return to session' }).click();
 
-    await open('/practice');
-    await page.getByRole('button', { name: /^Free Practice/ }).click();
-    await requireUrl('/player');
     await page.locator('.practice-utility-row').getByRole('button', { name: /Metronome/ }).click();
-    await requireUrl('/metronome');
-    await page.getByRole('heading', { name: 'Metronome' }).waitFor();
-    await page.getByRole('button', { name: 'Back to Practice' }).click();
-    await requireUrl('/practice');
+    await page.getByRole('dialog', { name: 'Metronome within practice' }).waitFor();
+    assert(new URL(page.url()).pathname === '/player', 'Metronome must not navigate away from Player');
+    await page.getByRole('dialog').getByRole('button', { name: 'Close tool and return to session' }).click();
+
+    await page.screenshot({ path: join(out, 'player-shortcuts-' + width + 'x' + height + '.png') });
 
     await open('/routines');
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
     await requireUrl('/player');
-    assert(await page.getByText('Guided Practice').isVisible(), 'Guided mode missing');
-    assert(await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).isEnabled(), 'Guided player tuner disabled');
-    assert(await page.locator('.practice-utility-row').getByRole('button', { name: /Metronome/ }).isEnabled(), 'Guided player metronome disabled');
-
-    await page.screenshot({ path: join(out, 'player-shortcuts-' + width + 'x' + height + '.png') });
+    await page.getByText('Guided Practice', { exact: true }).first().waitFor({ state: 'visible' });
+    assert(await page.locator('.practice-utility-row').count() === 1, 'Guided practice must show approved tools');
+    await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).click();
+    await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
+    await page.getByRole('dialog').getByRole('button', { name: 'Close tool and return to session' }).click();
 
     // Explore must go to the chart *library*, not a free-practice Player.
     await open('/explore');
@@ -64,12 +61,12 @@ try {
     await page.screenshot({ path: join(out, 'explore-charts-' + width + 'x' + height + '.png') });
     await page.locator('.demo-row').first().click();
     await requireUrl('/player');
-    assert(await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).isVisible(), 'Chart to Player not working');
+    await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).waitFor({ state: 'visible' });
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     assert(overflow <= 1, 'Unexpected horizontal overflow');
     assert(errors.length === 0, 'Browser errors: ' + errors.join(' | '));
-    console.log('PASS navigation fixes at ' + width + 'x' + height + ': P02 Tuner, Metronome in free/guided; Mixer Preview; Explore charts library -> linked player; back links');
+    console.log('PASS navigation fixes at ' + width + 'x' + height + ': P02 in-session Tuner and Metronome in both modes; Mixer Preview; Explore charts library -> linked player; back links');
     await context.close();
   }
 } finally { await browser.close(); }

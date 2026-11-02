@@ -481,7 +481,7 @@
   .tuner-reference { margin-top: 8px; }
 }
 @media (max-width: 899px) {
-  .app-shell:has(.tool-page) .viewport {
+  .app-shell:has(.viewport > .tool-page) .viewport {
     height: calc(100dvh - 76px - env(safe-area-inset-bottom));
     min-height: 0;
     padding-bottom: 0;
@@ -491,7 +491,7 @@
   }
 }
 @media (min-width: 900px) {
-  .app-shell:has(.tool-page) .viewport {
+  .app-shell:has(.viewport > .tool-page) .viewport {
     height: calc(100% - 76px);
     min-height: 0;
     padding-bottom: 0;
