@@ -144,7 +144,7 @@ export function ExplorePage() {
               {charts.length} original blues, bossa, rhythm, songbook and modal studies
             </p>
           </div>
-          <button type="button" className="pill" onClick={() => navigate('/player')}>
+          <button type="button" className="pill" onClick={() => navigate('/charts')}>
             View charts
           </button>
         </div>
