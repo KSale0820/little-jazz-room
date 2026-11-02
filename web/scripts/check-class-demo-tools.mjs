@@ -82,7 +82,7 @@ try {
     const missingTunerArt = await page.locator('.tool-tuner img').evaluateAll(
       images => images.filter(img => !img.naturalWidth).map(img => img.src));
     if (missingTunerArt.length) throw new Error('Missing tuner art: ' + missingTunerArt.join(', '));
-    await assertApprovedBackground('.tool-tuner .tool-bottom-art', 1154);
+    await assertApprovedBackground('.tool-tuner .tool-bottom-art', 780);
     await page.screenshot({ path: join(output, 'P04-tuner-' + width + 'x' + height + '.png'), fullPage: false });
     console.log('SCREENSHOT_PREVIEW_P04_' + width + 'x' + height + ':' + (await page.screenshot({ type: 'jpeg', quality: 62 })).toString('base64'));
     await page.getByRole('button', { name: 'Enable microphone' }).click();
