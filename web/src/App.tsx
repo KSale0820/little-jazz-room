@@ -4,7 +4,6 @@ import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import { CreatePage } from './pages/CreatePage';
 import { ExplorePage } from './pages/ExplorePage';
-import { HomePage } from './pages/HomePage';
 import { PracticePage } from './pages/PracticePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { TracksPage } from './pages/TracksPage';
@@ -24,7 +23,7 @@ export default function App() {
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpRedirect />} />
             <Route element={<AppShell />}>
-              <Route index element={<HomePage />} />
+              <Route index element={<Navigate to="/practice" replace />} />
               <Route path="explore" element={<ExplorePage />} />
               <Route path="create" element={<CreatePage />} />
               <Route path="tracks" element={<TracksPage />} />
