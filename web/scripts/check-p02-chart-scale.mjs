@@ -32,6 +32,19 @@ try {
           docHeight:document.documentElement.scrollHeight,
           chordFont:parseFloat(getComputedStyle(grid.querySelector('.chords')).fontSize),
           chordOverflow:chords.some(e=>e.scrollWidth>e.clientWidth+1),
+          gridRules: (() => {
+            const cells=[...grid.querySelectorAll('.measure')];
+            const style=el=>getComputedStyle(el);
+            return {
+              rowGap: parseFloat(style(grid).rowGap),
+              top: parseFloat(style(cells[0]).borderTopWidth),
+              left: parseFloat(style(cells[0]).borderLeftWidth),
+              between: parseFloat(style(cells[1]).borderLeftWidth),
+              right: parseFloat(style(cells[3]).borderRightWidth),
+              bottom: parseFloat(style(cells[cells.length-1]).borderBottomWidth),
+              section: parseFloat(style(cells[Math.min(8,cells.length-1)]).borderTopWidth),
+            };
+          })(),
         };
       });
       check(g.bars===bars,label+' missing bars '+JSON.stringify(g));
@@ -41,6 +54,11 @@ try {
       check(g.tools.bottom<=height+1,label+' tool dock below screen');
       check(g.docWidth<=width+1,label+' horizontal overflow');
       check(!g.chordOverflow,label+' chord text overflows cells');
+      check(g.gridRules.rowGap===0,label+' grid has separated rows, not full horizontal lines');
+      check(g.gridRules.top>=1 && g.gridRules.left>=1 && g.gridRules.between>=1 &&
+        g.gridRules.right>=1 && g.gridRules.bottom>=1,
+        label+' missing full grid borders: '+JSON.stringify(g.gridRules));
+      if(bars>16) check(g.gridRules.section>=2,label+' AABA section divider not visible');
       check(g.chordFont >= (bars>16?10:11),label+' unreadably small chords');
       check(await page.getByRole('navigation',{name:'Chart sections and measure groups'}).count()===0,label+' requires paging');
       return g;
