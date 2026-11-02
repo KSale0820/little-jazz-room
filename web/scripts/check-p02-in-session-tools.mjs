@@ -36,7 +36,17 @@ try {
     await openFree();
     check(await page.getByText('Free Practice', { exact: true }).isVisible(), 'P02 Free mode not selected');
     check(await page.locator('.practice-utility-row').count() === 1, 'Free mode must display tool shortcuts');
+    check(await page.locator('.practice-utility-row button').count() === 5, 'Approved layout requires five tool buttons');
     check(await page.getByRole('button', { name: /Mixer Preview/ }).isDisabled(), 'Mixer must remain Preview');
+    await page.locator('.practice-utility-row').getByRole('button', { name: 'Tempo/Key' }).click();
+    await page.getByRole('dialog', { name: 'Tempo and key settings' }).waitFor();
+    await page.getByRole('dialog').getByRole('combobox', { name: 'Transpose concert chart key' }).selectOption('G');
+    await page.getByRole('dialog').getByRole('button', { name: 'Close settings and return to session' }).click();
+    const loop = page.locator('.practice-utility-row').getByRole('button', { name: 'Loop' });
+    await loop.click();
+    check(await loop.getAttribute('aria-pressed') === 'true', 'Loop tile did not enable chart highlight');
+    await loop.click();
+    check(await loop.getAttribute('aria-pressed') === 'false', 'Loop tile did not disable chart highlight');
     await page.screenshot({ path: join(out, 'P02-free-chart-' + width + 'x' + height + '.png') });
 
     // The practice timer runs while the tuner is mounted as an in-session modal.
@@ -112,6 +122,10 @@ try {
     await page.waitForURL(url => url.pathname === '/player');
     await page.getByText('Guided Practice', { exact: true }).waitFor();
     check(await page.locator('.practice-utility-row').count() === 1, 'Guided mode missing approved tools');
+    check(await page.locator('.practice-utility-row button').count() === 5, 'Guided must display five approved tools');
+    await page.locator('.practice-utility-row').getByRole('button', { name: 'Tempo/Key' }).click();
+    await page.getByRole('dialog', { name: 'Tempo and key settings' }).waitFor();
+    await page.getByRole('dialog').getByRole('button', { name: 'Close settings and return to session' }).click();
     await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).click();
     await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
     check(new URL(page.url()).pathname === '/player', 'Guided Tuner changed route');
