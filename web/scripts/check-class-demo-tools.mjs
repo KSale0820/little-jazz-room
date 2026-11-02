@@ -9,7 +9,7 @@ const output = join(process.cwd(), 'docs', 'screenshots', 'class-demo-tools');
 mkdirSync(output, { recursive: true });
 // Reject a stale, missing, or accidentally recompressed background, not just a 200 response.
 for (const [file, expected] of [
-  ['p04-tuner-background.png', '8f9cca3247363c50b470a2f2c09f2ea358aa58d4da6b2854f55dbfa36355085a'],
+  ['p04-tuner-background.png', '5f2d0624f6e8d0af90e686a791e5bd6a19f4416649d85e44c57bad975f07d01e'],
   ['p05-metronome-room-2026-11-02.webp', '65d614f02c7665c64e0a05557efe48a24f180780425700db634e4025c788213f'],
 ]) {
   let actual;
