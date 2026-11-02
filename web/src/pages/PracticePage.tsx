@@ -86,7 +86,6 @@ export function PracticePage() {
   const [chartKey, setChartKey] = useState(chartsById[initialChart]?.concert_key ?? 'F');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
   const [selectedBar, setSelectedBar] = useState(0);
-  const [chartPage, setChartPage] = useState(0);
   const [loopValue, setLoopValue] = useState('all');
   const [panel, setPanel] = useState<Panel>('chart');
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
@@ -122,31 +121,6 @@ export function PracticePage() {
   }, [activeTool]);
 
   const chart = chartsById[chartId] ?? charts[0]!;
-  // Show a complete passage on each page. Free charts use eight-bar phrases;
-  // Guided charts use four bars to accommodate the routine step information.
-  const chartPageSize = routine ? 4 : 8;
-  const scorePages = useMemo(() => {
-    const groups = Array.from({ length: Math.ceil(chart.bars.length / chartPageSize) }, (_, index) => {
-      const first = index * chartPageSize;
-      const end = Math.min(first + chartPageSize, chart.bars.length);
-      const section = chartPageSize === 8 ? chart.bars[first]?.section : null;
-      return { first, end, section, label: `${first + 1}–${end}` };
-    });
-    return groups.map(page => {
-      if (!page.section) return page;
-      const matching = groups.filter(item => item.section === page.section);
-      const ordinal = matching.findIndex(item => item.first === page.first) + 1;
-      return { ...page, label: matching.length > 1 ? `${page.section}${ordinal}` : page.section };
-    });
-  }, [chart, chartPageSize]);
-  const displayedPage = Math.min(chartPage, Math.max(0, scorePages.length - 1));
-  const displayedScore = scorePages[displayedPage];
-  function selectBar(index: number) {
-    const next = Math.max(0, Math.min(index, chart.bars.length - 1));
-    setSelectedBar(next);
-    setChartPage(Math.floor(next / chartPageSize));
-  }
-
   const chosenExercise = exercises.find(item => item.id === playableStep?.exercise_id);
   const stepMinutes = currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0;
   const targetSeconds = stepMinutes * 60;
@@ -174,7 +148,6 @@ export function PracticePage() {
     setChartId(chosen.id);
     setChartKey(chosen.concert_key);
     setSelectedBar(0);
-    setChartPage(0);
     setLoopValue('all');
   }, [playableStep?.chart_id, playableStep?.exercise_id]);
 
@@ -210,7 +183,6 @@ export function PracticePage() {
     setChartKey(next.concert_key);
     setLoopValue('all');
     setSelectedBar(0);
-    setChartPage(0);
   }
 
   function toggleTimer() {
@@ -308,7 +280,6 @@ export function PracticePage() {
     setStartedAtMs(null);
     setNowMs(performance.now());
     setSelectedBar(0);
-    setChartPage(0);
     setCompletion(null);
     setNotes('');
     setRating(0);
@@ -417,27 +388,13 @@ export function PracticePage() {
               {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
             </select>
           </div>
-          {scorePages.length > 1 && (
-            <nav className="practice-score-pages" aria-label="Chart sections and measure groups">
-              {scorePages.map((page, index) => (
-                <button key={page.first} type="button"
-                  className={displayedPage === index ? 'selected' : undefined}
-                  aria-label={`Show ${page.section ? 'section ' + page.label + ', ' : ''}measures ${page.first + 1} to ${page.end}`}
-                  aria-current={displayedPage === index ? 'page' : undefined}
-                  onClick={() => setChartPage(index)}>{page.label}</button>
-              ))}
-            </nav>
-          )}
-          <div className="practice-chart-scroll" aria-label={`Chord measures ${displayedScore.first + 1} to ${displayedScore.end} of ${chart.bars.length}`}>
-            <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch} selectedBar={selectedBar}
-              loopRange={loopRange} onSelectBar={selectBar} showSectionLabels practiceSheet
-              displayRange={[displayedScore.first, displayedScore.end]} />
+          <div className={`practice-chart-scroll practice-chart-all ${chart.bars.length > 16 ? 'chart-dense' : 'chart-standard'}`}
+            aria-label={`Complete chord chart, all ${chart.bars.length} measures visible`}>
+            <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
+              selectedBar={selectedBar} loopRange={loopRange}
+              onSelectBar={setSelectedBar} showSectionLabels practiceSheet />
           </div>
-          <p className="practice-chart-caption" aria-live="polite">
-            Measures {displayedScore.first + 1}–{displayedScore.end} of {chart.bars.length}
-            {scorePages.length > 1 ? ` · Page ${displayedPage + 1} of ${scorePages.length}` : ''}
-            {' · Tap a chord to select'}
-          </p>
+          <p className="practice-chart-caption">All {chart.bars.length} measures · Tap a chord to mark your place</p>
         </div>
       ) : (
         <div className="practice-art-panel" role="tabpanel" aria-label="Chart only player">
@@ -474,12 +431,12 @@ export function PracticePage() {
             onClick={() => setLoopValue(current => current === 'all' ? (loopOptions[1]?.value ?? 'all') : 'all')}>
             <PracticeToolGlyph name="loop" />
           </button>
-          <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => selectBar((selectedBar + chart.bars.length - 1) % chart.bars.length)}>◀❙</button>
+          <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => setSelectedBar((selectedBar + chart.bars.length - 1) % chart.bars.length)}>◀❙</button>
           <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
             {isRunning ? 'Ⅱ' : '▶'}
             <span className="practice-timer-label">{isRunning ? 'Pause' : (priorMs + stepMs) ? 'Resume' : 'Start'}</span>
           </button>
-          <button className="practice-measure-btn" type="button" aria-label="Next measure" onClick={() => selectBar((selectedBar + 1) % chart.bars.length)}>❙▶</button>
+          <button className="practice-measure-btn" type="button" aria-label="Next measure" onClick={() => setSelectedBar((selectedBar + 1) % chart.bars.length)}>❙▶</button>
           <button className="practice-secondary-transport" type="button" aria-label="Toggle Chart or Player view"
             onClick={() => setPanel(current => current === 'chart' ? 'player' : 'chart')}>☷</button>
         </div>
