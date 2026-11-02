@@ -1,3 +1,5 @@
+// Former H01 landing QA, retained as the root-redirect/navigation regression
+// check. H01 assets and implementation remain in the repo but are not routable.
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -6,141 +8,61 @@ const baseUrl = process.env.APP_URL || 'http://127.0.0.1:5174';
 const outDir = join(process.cwd(), 'docs/screenshots/class-demo');
 mkdirSync(outDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
-const checks = [
-  { label: 'Piano: open Practice', path: '/practice' },
-  { label: 'Music stand: browse routines', path: '/routines' },
-  { label: 'Bookshelf: browse charts', path: '/charts' },
-  { label: 'Record player: browse tracks', path: '/tracks' },
+const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const expectedTabs = [
+  ['Practice', '/practice'],
+  ['Tracks', '/tracks'],
+  ['Routines', '/routines'],
+  ['Progress', '/progress'],
 ];
+
 try {
   for (const [width, height] of [[390, 844], [375, 667]]) {
-    const context = await browser.newContext({ viewport: { width, height }, isMobile: true, deviceScaleFactor: 2 });
-    const page = await context.newPage();
-    const errors = [];
-    page.on('pageerror', e => errors.push(e.message));
-    await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-    await page.evaluate(() => localStorage.setItem('little-jazz-room:room-lighting:v1', 'twilight'));
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.locator('.h01-room-image').waitFor({ state: 'visible' });
-    await page.evaluate(async () => {
-      await Promise.all([...document.images].map(img => img.decode().catch(() => {})));
-      if (document.fonts?.ready) await document.fonts.ready;
-    });
-    const room = await page.locator('.h01-room-image').evaluate(el => ({ width: el.naturalWidth, height: el.naturalHeight }));
-    const approvedPhoto = room.width === 1122 && room.height === 1402;
-    const pendingFallback = room.width === 941 && room.height === 1672;
-    if (!approvedPhoto && !pendingFallback) throw new Error(`Home room failed to load at ${width}x${height}`);
-    console.log(`H01 room source: ${approvedPhoto ? 'user-approved photograph' : 'temporary older room; new photo not installed'}`);
-    // Default local companion is Luna; her PR #8 sleeping pose must render.
-    const cat = await page.locator('.h01-sleeping-sprite').evaluate(el => ({ width: el.naturalWidth, height: el.naturalHeight }));
-    if (cat.width !== 128 || cat.height !== 128) {
-      throw new Error(`Approved Luna sleeping cat failed to load at ${width}x${height}`);
-    }
-    // User-added Biscuit must resolve to the new sleeping PNG, not full-body art.
-    await page.evaluate(() => localStorage.setItem('little-jazz-room:selected-cat:v1', 'biscuit'));
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    const biscuit = await page.locator('.h01-sleeping-sprite').evaluate(el => ({
-      src: el.getAttribute('src'), width: el.naturalWidth, height: el.naturalHeight,
-    }));
-    if (!biscuit.src?.endsWith('/visuals/cats/sleeping/biscuit.png') || biscuit.width !== 128 || biscuit.height !== 128) {
-      throw new Error(`Biscuit sleeping sprite failed to load at ${width}x${height}: ${JSON.stringify(biscuit)}`);
-    }
-    const nav = page.locator('nav.bottom-nav a');
-    if (await nav.count() !== 4) throw new Error('Expected exactly four navigation tabs');
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
-    if (overflow > 1) throw new Error(`Horizontal page overflow: ${overflow}px`);
-    const authVisible = await page.locator('.mobile-auth-bar').isVisible();
-    if (authVisible) throw new Error('Team sign-in bar overlaps Home artwork');
-    const sceneViewport = await page.locator('.viewport').boundingBox();
-    const bottomNav = await page.locator('nav.bottom-nav').boundingBox();
-    if (!sceneViewport || !bottomNav || sceneViewport.y + sceneViewport.height > bottomNav.y + 1) {
-      throw new Error(`H01 viewport overlaps fixed nav at ${width}x${height}`);
-    }
-    const screenshotPath = join(outDir, `home-${width}x${height}.png`);
-    await page.screenshot({ path: screenshotPath, fullPage: false });
-    await page.locator('.h01-stats-card').scrollIntoViewIfNeeded();
-    const stats = await page.locator('.h01-stats-card').boundingBox();
-    const navAfterScroll = await page.locator('nav.bottom-nav').boundingBox();
-    if (!stats || !navAfterScroll || stats.y + stats.height > navAfterScroll.y + 1) {
-      throw new Error(`Progress card inaccessible above navigation at ${width}x${height}`);
-    }
-    await page.screenshot({ path: join(outDir, `home-${width}x${height}-stats-visible.png`), fullPage: false });
-    await page.evaluate(() => document.querySelector('.viewport')?.scrollTo(0, 0));
-    for (const {label,path} of checks) {
-      await page.getByRole('button', { name: label }).click();
-      await page.waitForURL(new RegExp(`${path.replace('/', '\\/')}$`));
-      await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-    }
-    // Verify both visual states and capture the corrected Practice tab without changing any UI.
-    const practiceTab = page.locator('nav.bottom-nav a[href="/practice"]');
-    const practiceIcon = practiceTab.locator('.pix');
-    const readPracticeIcon = () => practiceIcon.evaluate(el => {
-      const style = getComputedStyle(el);
-      const bounds = el.getBoundingClientRect();
-      return {
-        tag: el.tagName.toLowerCase(),
-        mask: style.maskImage || style.webkitMaskImage,
-        width: bounds.width, height: bounds.height,
-        color: getComputedStyle(el.closest('a')).color,
-        background: style.backgroundColor,
-      };
-    });
-    const inactive = await readPracticeIcon();
-    if (inactive.tag !== 'span' ||
-        !inactive.mask.includes('/visuals/icons/nav-practice.svg') ||
-        inactive.width !== 23 || inactive.height !== 23 ||
-        inactive.background !== inactive.color) {
-      throw new Error(`Incorrect inactive Practice icon at ${width}x${height}: ${JSON.stringify(inactive)}`);
-    }
-    await practiceTab.click();
-    await page.waitForURL(url => new URL(url).pathname === '/practice');
-    const active = await readPracticeIcon();
-    if (!(await practiceTab.evaluate(el => el.classList.contains('current'))) ||
-        active.mask !== inactive.mask || active.background !== active.color ||
-        active.color === inactive.color) {
-      throw new Error(`Incorrect active Practice icon at ${width}x${height}: ${JSON.stringify(active)}`);
-    }
-    await page.evaluate(async () => {
-      await Promise.all([...document.images].map(img => img.decode().catch(() => {})));
-      if (document.fonts?.ready) await document.fonts.ready;
-    });
-    const practiceScreenshot = join(outDir, `practice-${width}x${height}.png`);
-    await page.screenshot({ path: practiceScreenshot, fullPage: false });
-    console.log(`PASS Practice nav ${width}x${height}: approved mask, 23px, active/inactive colors, /practice route; screenshot ${practiceScreenshot}`);
-    console.log(`PASS H01 ${width}x${height}: room loaded, navigation, four hotspots, no overflow; screenshot ${screenshotPath}`);
-    if (errors.length) throw new Error(`Browser errors: ${errors.join(' | ')}`);
-    await context.close();
-  }
-  // Screenshot gallery: one real H01 render for each of the eight approved cats.
-  // All screenshots use the same 390x844 viewport and identical local demo state.
-  for (const catId of ['luna', 'milo', 'maple', 'mochi', 'pepper', 'patches', 'chai', 'biscuit']) {
     const context = await browser.newContext({
-      viewport: { width: 390, height: 844 }, isMobile: true,
-      deviceScaleFactor: 2, hasTouch: true,
+      viewport: { width, height }, isMobile: true, hasTouch: true, deviceScaleFactor: 2,
     });
-    await context.addInitScript(id => {
-      localStorage.setItem('little-jazz-room:selected-cat:v1', id);
-      localStorage.setItem('little-jazz-room:room-lighting:v1', 'twilight');
-    }, catId);
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.goto(baseUrl, { waitUntil: 'networkidle' });
-    const sprite = page.locator('.h01-sleeping-sprite');
-    await sprite.waitFor({ state: 'visible' });
-    await page.waitForFunction(id => {
-      const img = document.querySelector('.h01-sleeping-sprite');
-      return img instanceof HTMLImageElement &&
-        img.getAttribute('src') === `/visuals/cats/sleeping/${id}.png` &&
-        img.complete && img.naturalWidth === 128 && img.naturalHeight === 128;
-    }, catId);
+    await page.goto(baseUrl + '/', { waitUntil: 'networkidle' });
+    await page.waitForURL(url => url.pathname === '/practice');
+    await page.locator('.p01-page').waitFor({ state: 'visible' });
+    assert((await page.locator('.h01-page').count()) === 0, 'H01 should not load at root');
+    const nav = page.locator('nav.bottom-nav a');
+    assert(await nav.count() === 4, 'Four bottom tabs required');
+    const actualTabs = await nav.evaluateAll(
+      links => links.map(link => [link.textContent?.trim(), link.getAttribute('href')])
+    );
+    assert(JSON.stringify(actualTabs) === JSON.stringify(expectedTabs),
+      'Incorrect practice-first navigation: ' + JSON.stringify(actualTabs));
+    const practiceTab = page.locator('nav.bottom-nav a[href="/practice"]');
+    const active = await practiceTab.evaluate(link => ({
+      current: link.classList.contains('current'),
+      icon: getComputedStyle(link.querySelector('.pix')).maskImage,
+    }));
+    assert(active.current && active.icon.includes('/visuals/icons/nav-practice.svg'),
+      'Practice tab should use its approved active pixel icon');
+    const artPreserved = await page.evaluate(async () => {
+      const response = await fetch('/visuals/room/h01-approved-room.jpeg');
+      return response.ok && response.headers.get('content-type')?.startsWith('image/');
+    });
+    assert(artPreserved, 'Approved H01 room asset must remain available');
+
     await page.evaluate(() => document.fonts?.ready);
-    const rendered = await page.locator('.h01-companion').isVisible();
-    if (!rendered) throw new Error(`Companion ${catId} was not visible on H01`);
-    const filename = `home-cat-${catId}-390x844.png`;
-    await page.screenshot({ path: join(outDir, filename), fullPage: false });
-    if (errors.length) throw new Error(`Browser errors for ${catId}: ${errors.join(' | ')}`);
-    console.log(`PASS H01 CAT ${catId}: approved sleeping sprite loaded; screenshot ${filename}`);
+    await page.screenshot({
+      path: join(outDir, `practice-first-root-${width}x${height}.png`),
+      fullPage: false,
+    });
+    for (const [label, path] of expectedTabs.slice(1)) {
+      await page.locator('nav.bottom-nav').getByRole('link', { name: label, exact: true }).click();
+      await page.waitForURL(url => url.pathname === path);
+    }
+    await page.locator('nav.bottom-nav').getByRole('link', { name: 'Practice' }).click();
+    await page.waitForURL(url => url.pathname === '/practice');
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    assert(overflow <= 1, 'Horizontal overflow: ' + overflow);
+    assert(errors.length === 0, 'Browser errors: ' + errors.join(' | '));
+    console.log(`PASS practice-first root, tab order, approved icon, retained room asset at ${width}x${height}`);
     await context.close();
   }
 } finally {
