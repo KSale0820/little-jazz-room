@@ -412,12 +412,11 @@ export function PracticePage() {
       {panel === 'chart' ? (
         <div className="practice-notation-panel" role="tabpanel" aria-label="Jazz chord chart">
           <div className="practice-chart-toolbar">
-            <label htmlFor="player-chart">Study chart</label>
+            <label htmlFor="player-chart">{routine && !playableStep?.chart_id ? "Reference chart" : "Study chart"}</label>
             <select id="player-chart" value={chartId} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
               {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
             </select>
           </div>
-          {routine && !playableStep?.chart_id && <p className="practice-reference-note">Reference chart only. This step has no assigned chart.</p>}
           {scorePages.length > 1 && (
             <nav className="practice-score-pages" aria-label="Chart sections and measure groups">
               {scorePages.map((page, index) => (
