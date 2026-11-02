@@ -9,6 +9,7 @@ on:
       - 'web/src/pages/toolsAudio.ts'
       - 'web/scripts/check-class-demo-tools.mjs'
       - 'web/scripts/check-class-demo-integration.mjs'
+      - 'web/scripts/check-class-demo-exhaustive.mjs'
       - '.github/workflows/class-demo-tools.yml'
   workflow_dispatch:
 
@@ -44,6 +45,19 @@ jobs:
         run: node scripts/check-class-demo-tools.mjs
       - name: Full routine, session, and progress walkthrough
         run: node scripts/check-class-demo-integration.mjs
+      - name: Exhaustive control, navigation, asset and responsive QA
+        run: node scripts/check-class-demo-exhaustive.mjs
+      - name: Tracks, favorites, filters and persistence QA
+        run: node scripts/check-class-demo-tracks.mjs
+      - name: Practice Hub navigation QA
+        run: node scripts/check-class-demo-p01.mjs
+      - name: Upload exhaustive screenshots, button inventory and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: class-demo-exhaustive-qa-390x844-and-375x667
+          path: web/docs/screenshots/class-demo-exhaustive/
+          if-no-files-found: warn
       - name: Upload integration screenshots
         if: always()
         uses: actions/upload-artifact@v4
