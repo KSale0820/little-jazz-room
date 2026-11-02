@@ -22,7 +22,8 @@ try {
 
     await page.goto(base + '/', { waitUntil: 'networkidle' });
     assert(await page.locator('nav.bottom-nav a').count() === 4, 'Expected four approved navigation tabs');
-    await page.getByRole('button', { name: 'Choose another routine' }).click();
+    assert(new URL(page.url()).pathname === '/practice', 'Root should open Practice');
+    await page.getByRole('button', { name: /Follow a Routine/ }).click();
     await page.waitForURL(url => url.pathname === '/routines');
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).waitFor();
 
@@ -77,7 +78,7 @@ try {
     await page.getByRole('button', { name: 'Open ' + title + ' in player' }).waitFor();
 
     await page.goto(base + '/', { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: 'Browse Tracks', exact: true }).click();
+    await page.getByRole('button', { name: /Practice with a Track/ }).click();
     await page.waitForURL(url => url.pathname === '/tracks');
     await page.getByRole('button', { name: 'Practice After-Hours Blues with its linked chart' }).click();
     await page.waitForURL(url => url.pathname === '/player' && url.searchParams.get('chart') === 'blues-f-12');
@@ -87,7 +88,7 @@ try {
     assert(overflow <= 1, 'Unexpected horizontal page overflow: ' + overflow + 'px');
     assert(errors.length === 0, 'Browser exceptions: ' + errors.join(' | '));
     console.log('PASS integrated local demo at ' + width + 'x' + height
-      + ': Home, seeded routine, custom builder, saved routine, timer, rate, single-save, Progress/reload, tracks/chart');
+      + ': Practice-first, seeded routine, custom builder, saved routine, timer, rate, single-save, Progress/reload, tracks/chart');
     await context.close();
   }
 } finally {
