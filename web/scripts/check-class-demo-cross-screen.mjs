@@ -94,7 +94,7 @@ try {
       'P02 Free: full 12-bar chart not present');
     await verify('P02-free-chart', '.practice-player');
     await page.getByRole('tab', { name: 'Player' }).click();
-    await page.getByText('Chart Only · No Recording').waitFor();
+    await page.locator('.practice-no-audio strong').getByText('Chart Only · No Recording').waitFor();
     await verify('P02-free-player', '.practice-player');
 
     await page.goto(base + '/routines', { waitUntil: 'networkidle' });
