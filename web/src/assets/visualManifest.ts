@@ -56,6 +56,7 @@ export const VISUAL_ASSETS = {
   cat: {
     /** The user's approved October 31 class-MVP art pack. Sole source of cat illustrations. */
     sleepingFile: (id: CatId) => `/visuals/cats/sleeping/${id}.png`,
+    ...{ sittingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sitting/${id}.png` },
     fullBodyFile: (id: CatId) => `/visuals/cats/approved-class-mvp/full-body/${id}.png`,
     /** Approved sitting poses. Preserve the original full-resolution PNG binaries. */
     sittingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sitting/${id}.png`,
@@ -98,6 +99,11 @@ export const VISUAL_ASSETS = {
       cushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
       rug: '/visuals/shared-mvp/companion-surfaces/oatmeal-oval-rug.png',
     },
+  },
+  /** Approved P04/P05 transparent botanical room backgrounds. */
+  tools: {
+    tunerBackground: '/visuals/tools/p04-tuner-background.png',
+    metronomeBackground: '/visuals/tools/p05-metronome-background.png',
   },
   approvedDecor: {
     books: '/visuals/decor/books.png',

@@ -9,6 +9,8 @@ import { PracticePage } from './pages/PracticePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { TracksPage } from './pages/TracksPage';
 import { PracticeHubPage } from './pages/PracticeHubPage';
+import { TunerPage } from './pages/TunerPage';
+import { MetronomePage } from './pages/MetronomePage';
 import { RoutineLibraryPage } from './pages/RoutineLibraryPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { SignInPage, SignUpRedirect } from './pages/SignInPage';
@@ -29,6 +31,8 @@ export default function App() {
               <Route path="charts" element={<TracksPage />} />
               <Route path="routines" element={<RoutineLibraryPage />} />
               <Route path="practice" element={<PracticeHubPage />} />
+              <Route path="tuner" element={<TunerPage />} />
+              <Route path="metronome" element={<MetronomePage />} />
               <Route path="player" element={<PracticePage />} />
               <Route path="progress" element={<ProgressPage />} />
               <Route path="profile" element={<ProfilePage />} />
