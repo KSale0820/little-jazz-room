@@ -111,7 +111,7 @@ try {
 
     await check('P01: free/guided/tools/recent/history', async () => {
       await route(page, '/practice');
-      must(await page.getByRole('button', { name: /Resume Continue your last session/ }).isDisabled(), 'Resume enabled before any session');
+      must(await page.getByRole('button', { name: /^Resume/ }).isDisabled(), 'Resume enabled before any session');
       for (const [label, path] of [
         [/^Free Practice/, '/player'], [/^Guided Practice/, '/routines'],
         [/^Tuner Check your pitch/, '/tuner'], [/^Metronome Keep steady time/, '/metronome'],
@@ -140,7 +140,7 @@ try {
       must(await page.locator('.t01-track-card').count() === 4, 'Clear search did not reset');
       await page.getByRole('button', { name: /Filters/ }).click();
       must(await page.getByRole('dialog', { name: 'Filter tracks' }).isVisible(), 'Filter dialog not open');
-      await page.getByRole('button', { name: 'Close filters' }).click();
+      await page.getByRole('button', { name: 'Close filters', exact: true }).click();
       must(!(await page.getByRole('dialog', { name: 'Filter tracks' }).count()), 'Filter dialog did not close');
       await page.getByRole('button', { name: 'Difficulty' }).click();
       await page.getByRole('dialog').getByRole('button', { name: 'Intermediate' }).click();
@@ -263,10 +263,10 @@ try {
       await page.getByRole('button', { name: 'Pause practice timer' }).click();
       must((await page.locator('[data-testid="session-elapsed"]').innerText()) !== '00:00', 'Timer did not advance');
       await page.getByRole('button', { name: 'Resume practice timer' }).click();
-      await page.getByRole('button', { name: 'Finish Session' }).click();
+      await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
       must(await page.getByRole('heading', { name: 'Great practice!' }).isVisible(), 'Completion not shown');
       await page.getByRole('button', { name: '5 stars' }).click();
-      await page.getByLabel('Practice notes').fill('Integration QA checked');
+      await page.locator('#practice-notes').fill('Integration QA checked');
       await page.getByRole('button', { name: 'Save Session', exact: true }).click();
       must(await page.getByRole('button', { name: /Session Saved/ }).isVisible(), 'Save not acknowledged');
       const sessions = await page.evaluate(() => JSON.parse(localStorage.getItem('little-jazz-room:practice-sessions:v1:anonymous') || '[]'));
@@ -276,8 +276,8 @@ try {
       await page.getByRole('button', { name: 'Practice Again' }).click();
       must(pathname(page) === '/player', 'Practice Again should route to player');
       await route(page, '/practice');
-      must(!(await page.getByRole('button', { name: /Resume Continue your last session/ }).isDisabled()), 'Resume remained disabled after session saved');
-      await clickRoute(page, page.getByRole('button', { name: /Resume Continue your last session/ }), '/player');
+      must(!(await page.getByRole('button', { name: /^Resume/ }).isDisabled()), 'Resume remained disabled after session saved');
+      await clickRoute(page, page.getByRole('button', { name: /^Resume/ }), '/player');
       await route(page, '/progress');
       await page.reload({ waitUntil: 'networkidle' });
       must(await page.getByText(/Free practice/i).count() >= 0, 'Progress did not reload');
@@ -346,12 +346,14 @@ try {
       await accent.click();
       must((await accent.getAttribute('aria-pressed')) !== prior, 'Accent not toggled');
       const countIn = page.getByRole('checkbox', { name: 'Count-in' });
-      await countIn.check();
+      if (!(await countIn.isChecked())) await page.locator('.metronome-countin label').click();
+      must(await countIn.isChecked(), 'Count-in switch did not turn on');
       const chooseBars = page.getByRole('button', { name: 'Toggle count-in between one and two measures' });
       const first = await chooseBars.innerText();
       await chooseBars.click();
       must((await chooseBars.innerText()) !== first, 'Count-in bar count unchanged');
-      await countIn.uncheck();
+      await page.locator('.metronome-countin label').click();
+      must(!(await countIn.isChecked()), 'Count-in switch did not turn off');
       must(await chooseBars.isDisabled(), 'Count-in selector enabled while disabled');
       await page.getByRole('button', { name: 'Tap Tempo' }).click();
       await page.waitForTimeout(400);
