@@ -55,6 +55,8 @@ try {
       'Tool labels differ from reference: ' + names.join(','));
     ensure(await page.locator('.practice-utility-row .practice-tool-glyph').count() === 5,
       'Expected five reference-style pictograms');
+    const dockBottom = await page.locator('.practice-utility-row').evaluate(el => el.getBoundingClientRect().bottom);
+    ensure(dockBottom <= height + 1, 'Tool icons are cut off on the mobile screen: bottom=' + dockBottom + ' viewport=' + height);
     await page.getByRole('combobox', { name: 'Choose practice chart' }).selectOption('rhythm-bb-32');
     const aaba = await page.locator('.practice-chart-scroll .measure-section-label').allTextContents();
     ensure(aaba.join(',') === 'A,A,B,A', 'AABA form labels did not return: ' + aaba.join(','));
