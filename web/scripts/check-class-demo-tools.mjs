@@ -10,7 +10,7 @@ mkdirSync(output, { recursive: true });
 // Reject a stale, missing, or accidentally recompressed background, not just a 200 response.
 for (const [file, expected] of [
   ['p04-tuner-background.png', '8f9cca3247363c50b470a2f2c09f2ea358aa58d4da6b2854f55dbfa36355085a'],
-  ['p05-metronome-background.png', '5d18e2166d144ef7af5edcb16dc2e55e15a0515a62525331ab2b310641de40d8'],
+  ['p05-metronome-room-2026-11-02.webp', '65d614f02c7665c64e0a05557efe48a24f180780425700db634e4025c788213f'],
 ]) {
   let actual;
   try {
@@ -60,7 +60,9 @@ try {
       }
       const navBox = await page.locator('nav.bottom-nav').boundingBox();
       const shortViewport = height <= 720;
-      const artworkOffset = shortViewport ? (selector.includes('metronome') ? 40 : 35) : 0;
+      const usesNewMetronomeRoom = await page.locator('.tool-metronome').count() > 0 &&
+        await page.locator('.tool-metronome').evaluate(element => element.classList.contains('tool-has-new-room'));
+      const artworkOffset = shortViewport ? (selector.includes('metronome') ? (usesNewMetronomeRoom ? 0 : 40) : 35) : 0;
       if (!navBox || Math.abs(result.bottom - navBox.y - artworkOffset) > 6) {
         throw new Error('Room illustration is not aligned with the intended floor offset: ' + selector + ' ' + JSON.stringify({ artwork: result, nav: navBox, artworkOffset, width, height }));
       }
@@ -109,6 +111,15 @@ try {
       images => images.filter(img => !img.naturalWidth).map(img => img.src));
     if (missingMetronomeArt.length) throw new Error('Missing metronome art: ' + missingMetronomeArt.join(', '));
     await assertApprovedBackground('.tool-metronome .tool-bottom-art', 1637);
+    if (await page.locator('.tool-metronome .tool-bottom-art').getAttribute('src')
+      !== '/visuals/tools/p05-metronome-room-2026-11-02.webp') {
+      throw new Error('The replacement P05 room artwork is not loaded');
+    }
+    const direction = await page.locator('.tool-metronome-scene .tool-scene-cat')
+      .evaluate(img => getComputedStyle(img).transform);
+    if (direction !== 'matrix(-1, 0, 0, 1, 0, 0)') {
+      throw new Error('The sitting companion must face inward toward the Play control');
+    }
     const toolNav = await page.locator('nav.bottom-nav').boundingBox();
     const playButton = await page.getByRole('button', { name: 'Start metronome' }).boundingBox();
     const catImage = await page.locator('.tool-metronome .tool-scene-cat').boundingBox();
