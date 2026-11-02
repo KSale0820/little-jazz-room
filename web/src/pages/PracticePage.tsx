@@ -35,15 +35,35 @@ type Completion = {
  */
 type PracticeToolIcon = 'mixer' | 'tempo' | 'loop' | 'tuner' | 'metronome';
 function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
-  const base = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  // Approved P02: thin rounded evergreen outlines, matching five tool tiles.
   const paths: Record<PracticeToolIcon, React.ReactNode> = {
-    mixer: <><path d="M5 3v18M12 3v18M19 3v18" /><circle cx="5" cy="9" r="2.2" fill="#f3eee2"/><circle cx="12" cy="15" r="2.2" fill="#f3eee2"/><circle cx="19" cy="7" r="2.2" fill="#f3eee2"/></>,
-    tempo: <><circle cx="12" cy="13" r="8.5"/><path d="M12 4v3M12 13l-3.2-4.2M12 2v2M17.8 6.2l1.5-1.5"/><path d="M9 1h6" /></>,
-    loop: <><path d="M19.8 8.8A8 8 0 0 0 5 7L3 10M3 5v5h5M4.2 15.2A8 8 0 0 0 19 17l2-3M21 19v-5h-5" /></>,
-    tuner: <><path d="M12 4v15M7 7v7a5 5 0 0 0 10 0V7M7 7h2M15 7h2M9 20h6"/></>,
-    metronome: <><path d="M7 20 11 4h3l4 16zM4 20h16M13 7l5-4M11 16l5-9"/></>,
+    mixer: <>
+      <path d="M8 3v26M16 3v26M24 3v26" />
+      <rect x="5.3" y="11" width="5.4" height="7" rx="2.6" fill="#eeecdf" />
+      <rect x="13.3" y="17" width="5.4" height="7" rx="2.6" fill="#eeecdf" />
+      <rect x="21.3" y="8" width="5.4" height="7" rx="2.6" fill="#eeecdf" />
+    </>,
+    tempo: <>
+      <circle cx="16" cy="18" r="11" />
+      <path d="M16 7V3M12 3h8M16 18V10M16 18l4.6 5.4M23.8 8.8l2.3-2.3" />
+    </>,
+    loop: <>
+      <path d="M23.8 9.6A10.6 10.6 0 0 0 7 9L5 12.5" />
+      <path d="M5.2 6.5 5 12.6l6-.3M8.2 22.4A10.6 10.6 0 0 0 25 23l2-3.5" />
+      <path d="M26.8 25.5 27 19.4l-6 .3" />
+    </>,
+    tuner: <><path d="M10 5v12a6 6 0 0 0 12 0V5M16 23v6M12.5 29h7" /></>,
+    metronome: <>
+      <path d="M7 27 12.7 7h6L25 27Z M5 27h22" />
+      <path d="m16.4 21 7.2-15" />
+      <path d="M22.1 6.3 26 4.6" />
+      <circle cx="16.4" cy="21" r="1.3" fill="currentColor" stroke="none" />
+    </>,
   };
-  return <svg viewBox="0 0 24 24" aria-hidden="true" className="practice-tool-glyph" {...base}>{paths[name]}</svg>;
+  return <svg viewBox="0 0 32 32" aria-hidden="true" className="practice-tool-glyph"
+    fill="none" stroke="currentColor" strokeWidth="2.05" strokeLinecap="round" strokeLinejoin="round">
+    {paths[name]}
+  </svg>;
 }
 export function PracticePage() {
   const navigate = useNavigate();
@@ -370,7 +390,7 @@ export function PracticePage() {
           </div>
           {routine && !playableStep?.chart_id && <p className="practice-reference-note">Reference chart only. This step has no assigned chart.</p>}
           <div className="practice-chart-scroll" tabIndex={0} aria-label="Scrollable measure grid">
-            <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch} selectedBar={selectedBar} loopRange={loopRange} onSelectBar={setSelectedBar} showSectionLabels={false} />
+            <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch} selectedBar={selectedBar} loopRange={loopRange} onSelectBar={setSelectedBar} showSectionLabels practiceSheet />
           </div>
           <p className="practice-chart-caption">{chart.bars.length} measures · Tap to select · Original harmony study</p>
         </div>
