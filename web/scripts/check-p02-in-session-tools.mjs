@@ -44,7 +44,7 @@ try {
     await page.waitForTimeout(1150);
     const beforeTuner = seconds(await clock.textContent());
     await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).click();
-    await page.getByRole('dialog', { name: 'Tuner within free practice' }).waitFor();
+    await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
     check(new URL(page.url()).pathname === '/player', 'Tuner changed the Player route');
     check(await page.locator('.practice-player').count() === 1, 'Player unmounted beneath Tuner');
     check(await page.getByRole('dialog').getByText('No pitch detected').isVisible(), 'Embedded Tuner did not initialize');
@@ -81,7 +81,7 @@ try {
       };
     });
     await page.locator('.practice-utility-row').getByRole('button', { name: /Metronome/ }).click();
-    await page.getByRole('dialog', { name: 'Metronome within free practice' }).waitFor();
+    await page.getByRole('dialog', { name: 'Metronome within practice' }).waitFor();
     await page.screenshot({ path: join(out, 'P02-metronome-overlay-' + width + 'x' + height + '.png') });
     check(new URL(page.url()).pathname === '/player', 'Metronome changed the Player route');
     await page.getByRole('dialog').getByRole('button', { name: 'Increase tempo by 1 BPM' }).click();
@@ -106,15 +106,22 @@ try {
     await page.getByRole('dialog').getByRole('button', { name: 'Close tool and return to session' }).click();
     check(await page.getByRole('button', { name: 'Resume practice timer' }).isVisible(), 'Paused state was lost');
 
-    // No tools appear for Guided Practice, in chart or player views.
+    // Approved UI has the same five working tool tiles in Guided Practice.
     await page.goto(base + '/routines', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
     await page.waitForURL(url => url.pathname === '/player');
     await page.getByText('Guided Practice', { exact: true }).waitFor();
-    check(await page.locator('.practice-utility-row').count() === 0, 'Guided mode incorrectly shows Free Practice tools');
+    check(await page.locator('.practice-utility-row').count() === 1, 'Guided mode missing approved tools');
+    await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).click();
+    await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
+    check(new URL(page.url()).pathname === '/player', 'Guided Tuner changed route');
+    await page.getByRole('dialog').getByRole('button', { name: 'Close tool and return to session' }).click();
     await page.screenshot({ path: join(out, 'P02-guided-chart-' + width + 'x' + height + '.png') });
     await page.getByRole('tab', { name: 'Player' }).click();
-    check(await page.locator('.practice-utility-row').count() === 0, 'Guided player panel shows tools');
+    check(await page.locator('.practice-utility-row').count() === 1, 'Guided Player panel missing tools');
+    await page.locator('.practice-utility-row').getByRole('button', { name: /Metronome/ }).click();
+    await page.getByRole('dialog', { name: 'Metronome within practice' }).waitFor();
+    await page.getByRole('dialog').getByRole('button', { name: 'Close tool and return to session' }).click();
     await page.screenshot({ path: join(out, 'P02-guided-player-' + width + 'x' + height + '.png') });
     await page.getByRole('button', { name: 'Next Step' }).click();
     check(await page.getByText(/Step 2 of/).count() > 0, 'Guided step navigation regressed');
@@ -128,7 +135,7 @@ try {
     await page.waitForURL(url => url.pathname === '/practice');
     await noOverflow();
     check(errors.length === 0, 'Browser errors: ' + errors.join(' | '));
-    console.log('PASS P02 in-session overlays ' + width + 'x' + height + ': free-only, real mic and metronome, session clock persists, audio cleans up, guided tool-free, dedicated routes intact');
+    console.log('PASS P02 in-session overlays ' + width + 'x' + height + ': free-only, real mic and metronome, session clock persists, audio cleans up, guided tool overlays, dedicated routes intact');
     await ctx.close();
   }
 } finally { await browser.close(); }
