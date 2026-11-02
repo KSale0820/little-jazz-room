@@ -399,3 +399,100 @@
   .practice-free .practice-chart-scroll .chord-grid.practice-sheet .measure { min-height: 39px; }
   .practice-guided .practice-chart-scroll .chord-grid.practice-sheet .measure { min-height: 43px; }
 }
+
+
+/* One-screen chord sheet: all measures remain visible, no swiping, no tabs.
+   Four measures per line matches common jazz chord-chart shorthand. Longer
+   standards use a denser but fully readable text treatment. */
+.practice-player .practice-chart-scroll.practice-chart-all {
+  max-height: none;
+  height: auto;
+  min-height: 0;
+  margin: 5px 0 3px;
+  padding: 0;
+  overflow: visible;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet {
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  column-gap: 0;
+  row-gap: 3px;
+  padding-left: 22px;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure {
+  min-width: 0;
+  min-height: 53px;
+  padding: 2px 2px;
+  border-left: 1px solid #809188;
+  border-right: 0;
+  border-radius: 0;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .practice-sheet .measure:nth-child(2n) { border-right: 0; }
+.practice-player .practice-chart-scroll.practice-chart-all .practice-sheet .measure:nth-child(4n) { border-right: 1px solid #809188; }
+.practice-player .practice-chart-scroll.practice-chart-all .practice-sheet .measure-section-label {
+  left: -21px;
+  width: 20px;
+  font: 700 13px/1 Georgia,serif;
+  color: #1c4b3e;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .practice-sheet .chords,
+.practice-player .practice-chart-scroll.practice-chart-all .practice-sheet .chords.two {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-width: 0;
+  font: 600 clamp(12px,3.45vw,14px)/1.15 system-ui,sans-serif;
+  letter-spacing: -.025em;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .practice-sheet .chords.two {
+  font-size: clamp(11px,3vw,12px);
+}
+.practice-player .practice-chart-scroll.practice-chart-all .practice-sheet .chords span {
+  overflow: visible;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet { row-gap: 1px; }
+.practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .measure {
+  min-height: 29px;
+  padding: 1px 1px;
+}
+.practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chords,
+.practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chords.two {
+  font-size: clamp(10.5px,2.86vw,12px);
+  line-height: 1.14;
+}
+.practice-player .practice-chart-scroll.practice-chart-all.chart-dense .measure-section-label { font-size: 12px; }
+.practice-player .practice-notation-panel .practice-chart-caption {
+  font-size: 10px;
+  margin: 5px 0 3px;
+}
+/* Compact 375x667: use shorter rows, preserve the actual chord symbols and
+   all 32 measures instead of adding a separate page or clipping the grid. */
+@media (max-height:720px) and (max-width:899px) {
+  .practice-player .practice-chart-scroll.practice-chart-all { margin: 2px 0; }
+  .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure {
+    min-height: 38px;
+    padding: 1px;
+  }
+  .practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .measure {
+    min-height: 23px;
+    padding: 0 1px;
+  }
+  .practice-player .practice-chart-scroll.practice-chart-all .practice-sheet .chords,
+  .practice-player .practice-chart-scroll.practice-chart-all .practice-sheet .chords.two {
+    font-size: 11.5px;
+  }
+  .practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chords,
+  .practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chords.two {
+    font-size: 10.6px;
+    line-height: 1.12;
+  }
+  .practice-player .practice-notation-panel .practice-chart-caption { margin: 3px 0 2px; }
+  .practice-guided .practice-guided-head {
+    margin: 3px 0;
+    padding: 6px 10px;
+  }
+  .practice-guided .practice-step-controls { margin: 2px 0 4px; }
+}
