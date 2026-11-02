@@ -403,6 +403,10 @@
   cursor: not-allowed;
   font-size: 11px;
 }
+.practice-utility-row button:not(:disabled) {
+  color: #285143;
+  cursor: pointer;
+}
 .practice-utility-row span {
   display: block;
   font-size: 9px;
