@@ -62,7 +62,7 @@ try {
 
     const columnCount = await page.locator('.practice-chart-scroll .chord-grid').evaluate(el =>
       getComputedStyle(el).gridTemplateColumns.split(/\s+/).length);
-    check(columnCount === 4, 'P02 chart stylesheet missing or grid not four columns');
+    check(columnCount === 2, 'P02 approved score should show two measures per row');
     const measureCount = await page.locator('.practice-chart-scroll .measure').count();
     check(measureCount > 0, 'No jazz measures available');
     const chordsFit = await page.locator('.practice-chart-scroll .chords').evaluateAll(elements =>
