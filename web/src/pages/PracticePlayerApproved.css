@@ -212,6 +212,10 @@
   left: 7px;
   font-size: 10px;
   line-height: 1.15;
+  color: #a65c48;
+}
+.practice-free .practice-chart-scroll .measure-num::first-letter {
+  color: #a65c48;
 }
 .practice-free .practice-chart-scroll .chords,
 .practice-free .practice-chart-scroll .chords.two {
