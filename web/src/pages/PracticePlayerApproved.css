@@ -158,3 +158,18 @@
   .practice-timer-button { width: 59px; height: 59px; font-size: 24px; }
   .practice-finish-action { min-height: 21px; }
 }
+
+/* Three approved-style controls below the artwork/transport in Player mode. */
+.practice-player .practice-transport > .practice-player-pills {
+  display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; margin: 5px 0 7px;
+}
+.practice-player-pills label { font-size: 0; min-width: 0; }
+.practice-player-pills select {
+  appearance: auto; -webkit-appearance: auto;
+  width: 100%; min-height: 39px; border: 0; border-radius: 999px;
+  background: #ece9df; font: 600 12px system-ui,sans-serif;
+  color: #12382f; padding: 5px 7px; text-align: center;
+}
+@media (max-height:720px) and (max-width:899px) {
+  .practice-player-pills select { min-height:32px; font-size:11px; }
+}
