@@ -188,3 +188,41 @@
 @media (max-height: 720px) and (max-width: 899px) {
   .practice-player { min-height: calc(100dvh - 76px); }
 }
+
+
+/* Free chart matches the approved large-format practice sheet. The existing
+   chord grid and audio/session behavior are unchanged. Long charts scroll
+   inside this sheet so playback controls remain reachable. */
+.practice-free .practice-chart-scroll {
+  max-height: clamp(250px, 40dvh, 345px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 5px 0 2px;
+}
+.practice-free .practice-chart-scroll .measure {
+  min-height: clamp(84px, 11.8dvh, 104px);
+  padding: 23px 3px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.practice-free .practice-chart-scroll .measure-num {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  font-size: 10px;
+  line-height: 1.15;
+}
+.practice-free .practice-chart-scroll .chords,
+.practice-free .practice-chart-scroll .chords.two {
+  font-size: clamp(15px, 4.15vw, 18px);
+  line-height: 1.25;
+  gap: 3px 4px;
+  align-content: center;
+  font-weight: 500;
+}
+.practice-free .practice-chart-scroll .chords.two span { font-size: .84em; }
+.practice-free .practice-chart-caption { margin-top: 7px; }
+@media (max-height: 720px) and (max-width: 899px) {
+  .practice-free .practice-chart-scroll { max-height: clamp(240px, 40dvh, 300px); }
+}
