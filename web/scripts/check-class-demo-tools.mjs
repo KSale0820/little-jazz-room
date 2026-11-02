@@ -73,7 +73,7 @@ try {
     });
 
     await page.goto(base + '/practice', { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: /Tuner Check your pitch/ }).click();
+    await page.getByRole('button', { name: 'Tuner', exact: true }).click();
     await page.waitForURL(url => url.pathname === '/tuner');
     await page.getByRole('heading', { name: 'Tuner' }).waitFor();
     await waitArtwork();
@@ -102,7 +102,7 @@ try {
     }
 
     await page.goto(base + '/practice', { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: /Metronome Keep steady time/ }).click();
+    await page.getByRole('button', { name: 'Metronome', exact: true }).click();
     await page.waitForURL(url => url.pathname === '/metronome');
     await page.getByRole('heading', { name: 'Metronome' }).waitFor();
     await waitArtwork();
