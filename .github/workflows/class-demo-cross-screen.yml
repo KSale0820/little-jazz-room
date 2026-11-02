@@ -1,0 +1,92 @@
+name: Class demo cross-screen integration QA
+
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/**'
+      - '.github/workflows/class-demo-cross-screen.yml'
+  workflow_dispatch:
+
+jobs:
+  integration-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install packages
+        run: npm ci
+      - name: Production build
+        run: npm run build
+      - name: Unit tests
+        run: npm test
+      - name: Verify approved companion binaries
+        run: node scripts/verify-approved-cats.mjs
+      - name: Install mobile browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Start Vite test server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/jazz-room-integration-vite.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5174/ > /dev/null
+      - name: Screenshot every core screen at both phone sizes and check assets and nav
+        run: node scripts/check-class-demo-cross-screen.mjs
+      - name: Home hotspots and visual QA
+        run: node scripts/check-class-demo-home.mjs
+      - name: Tracks categories, favorites and linked charts
+        run: node scripts/check-class-demo-tracks.mjs
+      - name: Practice Hub routes and quick tools
+        run: node scripts/check-class-demo-p01.mjs
+      - name: Full session, feedback, progress persistence and custom routine walkthrough
+        run: node scripts/check-class-demo-integration.mjs
+      - name: Progress illustration, companion selection and session history
+        run: node scripts/check-class-demo-progress.mjs
+      - name: Shared Player tool routing and legacy navigation
+        run: node scripts/check-class-demo-navigation.mjs
+      - name: All 12 and 32 measures and paired chord beats visible on phones
+        run: node scripts/check-p02-chart-scale.mjs
+      - name: P02 audio-tool overlays preserve the session
+        run: node scripts/check-p02-in-session-tools.mjs
+      - name: Safari WebKit timer and in-session tool smoke test
+        run: node scripts/check-p02-overlay-webkit.mjs
+      - name: Tuner live pitch, metronome audio and mobile layout
+        run: node scripts/check-class-demo-tools.mjs
+      - name: Upload complete cross-screen screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: class-demo-final-cross-screen-390x844-and-375x667
+          path: web/docs/screenshots/class-demo-cross-screen/
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Upload workflow and functional screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: class-demo-final-workflows-390x844-and-375x667
+          path: |
+            web/docs/screenshots/class-demo/
+            web/docs/screenshots/class-demo-tracks/
+            web/docs/screenshots/class-demo-p01/
+            web/docs/screenshots/class-demo-integration/
+            web/docs/screenshots/class-demo-p02-chart-scale/
+            web/docs/screenshots/class-demo-p02-overlays/
+            web/docs/screenshots/class-demo-p02-webkit/
+            web/docs/screenshots/class-demo-tools/
+            web/docs/screenshots/class-demo-navigation/
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Dump Vite log on failure
+        if: failure()
+        run: tail -n 80 /tmp/jazz-room-integration-vite.log || true
