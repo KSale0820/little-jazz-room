@@ -551,3 +551,35 @@
 .practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet {
   row-gap: 0;
 }
+
+
+/* A measure can contain two real chord changes (e.g. beat 1 Cm7, beat 3 F7).
+   Print them side by side on their musical halves, not stacked on top of each
+   other. The thin inner divider is distinct from the outer measure grid. */
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two,
+.practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .chords.two {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  font: 600 clamp(10px,2.8vw,11.5px)/1.15 system-ui,sans-serif;
+  letter-spacing: -.045em;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 1px 0;
+  white-space: nowrap;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two span + span {
+  border-left: 1px dashed #a5b5a8;
+}
+@media (max-height:720px) and (max-width:899px) {
+  .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two,
+  .practice-player .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .chords.two {
+    font-size: 10.2px;
+  }
+}
