@@ -333,7 +333,7 @@ export function PracticePage() {
 
   return (
     <>
-    <section className="practice-player" aria-label="Shared practice player">
+    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'}`} aria-label="Shared practice player">
       <header className="practice-player-head">
         <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
         <div className="practice-title-group">
@@ -370,7 +370,7 @@ export function PracticePage() {
           </div>
           {routine && !playableStep?.chart_id && <p className="practice-reference-note">Reference chart only. This step has no assigned chart.</p>}
           <div className="practice-chart-scroll" tabIndex={0} aria-label="Scrollable measure grid">
-            <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch} selectedBar={selectedBar} loopRange={loopRange} onSelectBar={setSelectedBar} />
+            <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch} selectedBar={selectedBar} loopRange={loopRange} onSelectBar={setSelectedBar} showSectionLabels={false} />
           </div>
           <p className="practice-chart-caption">{chart.bars.length} measures · Tap to select · Original harmony study</p>
         </div>
