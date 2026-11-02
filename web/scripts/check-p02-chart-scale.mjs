@@ -32,6 +32,18 @@ try {
           docHeight:document.documentElement.scrollHeight,
           chordFont:parseFloat(getComputedStyle(grid.querySelector('.chords')).fontSize),
           chordOverflow:chords.some(e=>e.scrollWidth>e.clientWidth+1),
+          chordPairs:[...grid.querySelectorAll('.chords.two')].map(el=>{
+            const spans=[...el.querySelectorAll('span')];
+            const [a,b]=spans.map(x=>x.getBoundingClientRect());
+            return {
+              beat1:spans[0]?.dataset.beat,beat2:spans[1]?.dataset.beat,
+              duration1:spans[0]?.dataset.durationBeats,duration2:spans[1]?.dataset.durationBeats,
+              leftBeforeRight:a?.right<=b?.left+1,
+              sameRow:Math.abs((a.top+a.bottom)/2-(b.top+b.bottom)/2)<2,
+              noOverlap: a?.right<=b?.left+1,
+              twoColumns:getComputedStyle(el).gridTemplateColumns.split(/\s+/).length===2,
+            };
+          }),
           gridRules: (() => {
             const cells=[...grid.querySelectorAll('.measure')];
             const style=el=>getComputedStyle(el);
@@ -54,6 +66,11 @@ try {
       check(g.tools.bottom<=height+1,label+' tool dock below screen');
       check(g.docWidth<=width+1,label+' horizontal overflow');
       check(!g.chordOverflow,label+' chord text overflows cells');
+      check(g.chordPairs.every(p=>p.twoColumns && p.leftBeforeRight && p.sameRow && p.noOverlap),
+        label+' two-chord measures are stacked or overlap: '+JSON.stringify(g.chordPairs));
+      if(bars===12) check(g.chordPairs.length===5 &&
+        g.chordPairs.every(p=>p.beat1==='1' && p.duration1==='2' && p.beat2==='3' && p.duration2==='2'),
+        label+' must preserve five real beat-1/beat-3 changes: '+JSON.stringify(g.chordPairs));
       check(g.gridRules.rowGap===0,label+' grid has separated rows, not full horizontal lines');
       check(g.gridRules.top>=1 && g.gridRules.left>=1 && g.gridRules.between>=1 &&
         g.gridRules.right>=1 && g.gridRules.bottom>=1,
