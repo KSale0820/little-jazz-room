@@ -14,6 +14,8 @@ interface ChordGridProps {
   showSectionLabels?: boolean;
   /** Show two measures per row, with supplied form letters in a left gutter. */
   practiceSheet?: boolean;
+  /** Zero-based [start, end) slice displayed on a mobile chart page. */
+  displayRange?: [number, number];
 }
 
 export function ChordGrid({
@@ -25,12 +27,15 @@ export function ChordGrid({
   onSelectBar,
   showSectionLabels = true,
   practiceSheet = false,
+  displayRange,
 }: ChordGridProps) {
   const trans = chartTransposeSemitones(chart, chartKey, writtenPitch);
+  const visibleBars = displayRange ? chart.bars.slice(displayRange[0], displayRange[1]) : chart.bars;
 
   return (
     <div className={`chord-grid${practiceSheet ? " practice-sheet" : ""}`} role="group" aria-label={`Chord chart: ${chart.title}`}>
-      {chart.bars.map((bar, i) => {
+      {visibleBars.map((bar, i) => {
+        const chartIndex = (displayRange?.[0] ?? 0) + i;
         const items = bar.events.map(e => spellChord(e, trans));
         const looped =
           loopRange && bar.number >= loopRange[0] && bar.number <= loopRange[1];
@@ -39,10 +44,10 @@ export function ChordGrid({
           <button
             type="button"
             key={bar.number}
-            className={`measure ${selectedBar === i ? 'chosen' : ''} ${looped ? 'looped' : ''}`}
+            className={`measure ${selectedBar === chartIndex ? 'chosen' : ''} ${looped ? 'looped' : ''}`}
             aria-label={label}
-            aria-pressed={selectedBar === i}
-            onClick={() => onSelectBar(i)}
+            aria-pressed={selectedBar === chartIndex}
+            onClick={() => onSelectBar(chartIndex)}
           >
             {showSectionLabels && practiceSheet && bar.section && (
               <span className="measure-section-label" aria-label={`Section ${bar.section}`}>{bar.section}</span>
