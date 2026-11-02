@@ -16,7 +16,7 @@ import './PracticePage.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'chart' | 'player';
-type PracticeTool = 'tuner' | 'metronome';
+type PracticeTool = 'tuner' | 'metronome' | 'settings';
 type Completion = {
   id: string;
   finishedAt: string;
@@ -32,6 +32,18 @@ type Completion = {
  * background tab, rather than counting setInterval callbacks. It never starts
  * an audio transport: this demo has no licensed/recorded audio available.
  */
+type PracticeToolIcon = 'mixer' | 'tempo' | 'loop' | 'tuner' | 'metronome';
+function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
+  const base = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  const paths: Record<PracticeToolIcon, React.ReactNode> = {
+    mixer: <><path d="M5 3v18M12 3v18M19 3v18" /><circle cx="5" cy="9" r="2.2" fill="#f3eee2"/><circle cx="12" cy="15" r="2.2" fill="#f3eee2"/><circle cx="19" cy="7" r="2.2" fill="#f3eee2"/></>,
+    tempo: <><circle cx="12" cy="13" r="8.5"/><path d="M12 4v3M12 13l-3.2-4.2M12 2v2M17.8 6.2l1.5-1.5"/><path d="M9 1h6" /></>,
+    loop: <><path d="M19.8 8.8A8 8 0 0 0 5 7L3 10M3 5v5h5M4.2 15.2A8 8 0 0 0 19 17l2-3M21 19v-5h-5" /></>,
+    tuner: <><path d="M12 4v15M7 7v7a5 5 0 0 0 10 0V7M7 7h2M15 7h2M9 20h6"/></>,
+    metronome: <><path d="M7 20 11 4h3l4 16zM4 20h16M13 7l5-4M11 16l5-9"/></>,
+  };
+  return <svg viewBox="0 0 24 24" aria-hidden="true" className="practice-tool-glyph" {...base}>{paths[name]}</svg>;
+}
 export function PracticePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -96,6 +108,7 @@ export function PracticePage() {
   const elapsedSeconds = Math.floor((priorMs + currentStepMs) / 1000);
   const stepSeconds = Math.floor(currentStepMs / 1000);
   const formProgress = routine ? Math.round(((stepIndex + 1) / routine.steps.length) * 100) : 0;
+  const stepProgress = targetSeconds ? Math.min(100, Math.round(stepSeconds / targetSeconds * 100)) : 0;
 
   useEffect(() => {
     setStepIndex(0);
@@ -329,18 +342,15 @@ export function PracticePage() {
             ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length + ' · ' + (playableStep?.title ?? 'Exercise')
             : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
         </div>
-        <button className="practice-more" type="button" aria-label="Finish session" onClick={finishSession}>Finish</button>
+        <button className="practice-more" type="button" aria-label="Finish session" onClick={finishSession}>⋮</button>
       </header>
 
       <p className="practice-audio-state"><strong>Chart Only</strong> · No recording available</p>
 
       {routine && (
-        <div className="practice-guided-head">
-          <div className="practice-progress-track" role="progressbar" aria-label="Routine steps completed" aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={stepIndex}>
-            <span style={{ width: formProgress + '%' }} />
-          </div>
-          <div className="practice-step-copy"><strong>{playableStep?.title ?? 'Exercise'}</strong><span>{stepMinutes} min suggested</span></div>
-          <p>{playableStep?.instructions ?? 'Follow the exercise and practice at your own pace.'}</p>
+        <div className="practice-guided-progress" role="progressbar" aria-label="Routine steps completed"
+          aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={stepIndex}>
+          <span style={{ width: formProgress + '%' }} />
         </div>
       )}
 
@@ -365,12 +375,18 @@ export function PracticePage() {
         </div>
       ) : (
         <div className="practice-art-panel" role="tabpanel" aria-label="Chart only player">
-          <img src={VISUAL_ASSETS.room.approved.twilight} alt="Warm and cozy jazz practice room" />
+          <img src={VISUAL_ASSETS.sharedMvp.covers.rainy} alt="Cozy rainy-night jazz practice room" />
           <div className="practice-art-caption"><strong>{chart.title}</strong><span>{formatChartMeta(chart)}</span></div>
           <div className="practice-no-audio"><strong>Chart Only · No Recording</strong><p>Backing-track playback and stem mixing are unavailable. Your practice timer works independently.</p></div>
         </div>
       )}
 
+      {routine && panel === 'chart' && (
+        <aside className="practice-guided-head" aria-label="Current guided exercise">
+          <strong>{playableStep?.title ?? 'Exercise'}</strong>
+          <p>{playableStep?.instructions ?? 'Follow the exercise and practice at your own pace.'}</p>
+        </aside>
+      )}
       {routine && (
         <div className="practice-step-controls">
           <button type="button" onClick={() => goStep(-1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
@@ -380,30 +396,44 @@ export function PracticePage() {
       )}
 
       <div className="practice-transport">
-        <div className="practice-clock"><strong data-testid="session-elapsed">{formatPracticeTime(elapsedSeconds)}</strong><span>{isRunning ? 'Practicing' : elapsedSeconds ? 'Paused' : 'Ready'} · Step {formatPracticeTime(stepSeconds)}{targetSeconds ? ' / ' + formatPracticeTime(targetSeconds) : ''}</span></div>
-        <div className="practice-control-row">
-          <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => setSelectedBar(bar => (bar + chart.bars.length - 1) % chart.bars.length)}>‹‹</button>
-          <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
-            {isRunning ? 'Ⅱ' : '▶'}<span>{isRunning ? 'Pause' : (priorMs + stepMs) ? 'Resume' : 'Start'}</span>
-          </button>
-          <button className="practice-measure-btn" type="button" aria-label="Next measure" onClick={() => setSelectedBar(bar => (bar + 1) % chart.bars.length)}>››</button>
+        <div className="practice-timeline" role="progressbar" aria-label="Practice step timer progress"
+          aria-valuemin={0} aria-valuemax={targetSeconds || 1} aria-valuenow={Math.min(stepSeconds, targetSeconds || 1)}>
+          <span style={{ width: stepProgress + '%' }} />
+          <i style={{ left: stepProgress + '%' }} />
         </div>
-        <div className="practice-chart-controls">
+        <div className="practice-clock"><strong data-testid="session-elapsed">{formatPracticeTime(elapsedSeconds)}</strong><span>{targetSeconds ? formatPracticeTime(targetSeconds) + ' step goal' : (isRunning ? 'Practicing' : elapsedSeconds ? 'Paused' : 'Ready') + ' · No recording'}</span></div>
+        <div className="practice-control-row">
+          <button className="practice-secondary-transport" type="button" aria-label="Toggle highlighted loop"
+            aria-pressed={loopValue !== 'all'}
+            onClick={() => setLoopValue(current => current === 'all' ? (loopOptions[1]?.value ?? 'all') : 'all')}>
+            <PracticeToolGlyph name="loop" />
+          </button>
+          <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => setSelectedBar(bar => (bar + chart.bars.length - 1) % chart.bars.length)}>◀❙</button>
+          <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
+            {isRunning ? 'Ⅱ' : '▶'}
+            <span className="practice-timer-label">{isRunning ? 'Pause' : (priorMs + stepMs) ? 'Resume' : 'Start'}</span>
+          </button>
+          <button className="practice-measure-btn" type="button" aria-label="Next measure" onClick={() => setSelectedBar(bar => (bar + 1) % chart.bars.length)}>❙▶</button>
+          <button className="practice-secondary-transport" type="button" aria-label="Toggle Chart or Player view"
+            onClick={() => setPanel(current => current === 'chart' ? 'player' : 'chart')}>☷</button>
+        </div>
+        <div className="practice-chart-controls" id="practice-inline-settings">
           <label>Key<select value={chartKey} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
           <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
           <label>Tempo<select value={tempo} onChange={event => setTempo(Number(event.target.value))} aria-label="Reference tempo in beats per minute">{[60, 70, 80, 90, 100, 110, 120, 140, 160, 180].concat(chosenExercise?.suggested_bpm ?? []).filter((bpm, index, all) => all.indexOf(bpm) === index).sort((a,b) => a-b).map(bpm => <option key={bpm} value={bpm}>{bpm} BPM</option>)}</select></label>
           <label>Loop<select value={loopValue} onChange={event => setLoopValue(event.target.value)} aria-label="Highlight loop measures">{loopOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
         </div>
-        <p className="practice-reference-note">Tempo is a reference setting. No audio or metronome sound is playing.</p>
+        <p className="practice-reference-note">Tempo is a reference setting. No backing track is playing.</p>
         <button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button>
       </div>
-      {!routine && (
-        <div className="practice-utility-row" aria-label="Free practice tools">
-          <button type="button" disabled title="Mixer is Preview only">Mixer<span>Preview</span></button>
-          <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>Tuner<span>Open tool</span></button>
-          <button type="button" onClick={event => openTool('metronome', event.currentTarget)}>Metronome<span>Open tool</span></button>
-        </div>
-      )}
+      <div className="practice-utility-row" aria-label="Practice tools">
+        <button type="button" disabled title="Mixer is Preview only"><PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small></button>
+        <button type="button" onClick={event => openTool('settings', event.currentTarget)}><PracticeToolGlyph name="tempo" /><span>Tempo/Key</span></button>
+        <button type="button" onClick={() => setLoopValue(current => current === 'all' ? (loopOptions[1]?.value ?? 'all') : 'all')}
+          aria-pressed={loopValue !== 'all'}><PracticeToolGlyph name="loop" /><span>Loop</span></button>
+        <button type="button" onClick={event => openTool('tuner', event.currentTarget)}><PracticeToolGlyph name="tuner" /><span>Tuner</span></button>
+        <button type="button" onClick={event => openTool('metronome', event.currentTarget)}><PracticeToolGlyph name="metronome" /><span>Metronome</span></button>
+      </div>
     </section>
     {activeTool && createPortal(
       <div
@@ -411,7 +441,7 @@ export function PracticePage() {
         className="practice-tool-overlay"
         role="dialog"
         aria-modal="true"
-        aria-label={activeTool === 'tuner' ? 'Tuner within free practice' : 'Metronome within free practice'}
+        aria-label={activeTool === 'tuner' ? 'Tuner within practice' : activeTool === 'metronome' ? 'Metronome within practice' : 'Tempo and key settings'}
         onKeyDown={event => {
           if (event.key === 'Escape') { event.preventDefault(); closeTool(); }
           if (event.key !== 'Tab') return;
@@ -426,7 +456,18 @@ export function PracticePage() {
           }
         }}
       >
-        {activeTool === 'tuner' ? <TunerPage onClose={closeTool} /> : <MetronomePage onClose={closeTool} />}
+        {activeTool === 'tuner' ? <TunerPage onClose={closeTool} /> : activeTool === 'metronome' ? <MetronomePage onClose={closeTool} /> : (
+          <div className="practice-settings-dialog">
+            <header><h2>Tempo &amp; Key</h2><button type="button" onClick={closeTool} aria-label="Close settings and return to session">×</button></header>
+            <p>Set chart transposition and your reference practice tempo. No recording is available.</p>
+            <div className="practice-chart-controls">
+              <label>Key<select value={chartKey} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b','♭')}</option>)}</select></label>
+              <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
+              <label>Tempo<select value={tempo} onChange={event => setTempo(Number(event.target.value))} aria-label="Reference tempo in beats per minute">{[60,70,80,90,100,110,120,140,160,180].map(bpm => <option key={bpm} value={bpm}>{bpm} BPM</option>)}</select></label>
+              <label>Loop<select value={loopValue} onChange={event => setLoopValue(event.target.value)} aria-label="Highlight loop measures">{loopOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+            </div>
+          </div>
+        )}
       </div>,
       document.querySelector('.app-shell') ?? document.body
     )}
