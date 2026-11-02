@@ -45,6 +45,8 @@
 }
 
 .tool-has-background .tool-cat-scene { background: transparent; }
+/* The taller P05 sitting pose must extend above its decorative floor strip without losing ears or face. */
+.tool-has-background .tool-metronome-scene { overflow: visible; }
 .tool-has-background .tool-scene-rug,
 .tool-has-background .tool-scene-plant { display: none; }
 
