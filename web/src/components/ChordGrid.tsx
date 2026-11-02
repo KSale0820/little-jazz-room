@@ -57,9 +57,13 @@ export function ChordGrid({
               {showSectionLabels && !practiceSheet && bar.section ? ` · ${bar.section}` : ''}
             </span>
             <span className={`chords ${items.length > 1 ? 'two' : ''}`}>
-              {items.map(c => (
-                <span key={c}>{c}</span>
-              ))}
+              {items.map((c, eventIndex) => {
+                const event = bar.events[eventIndex];
+                return (
+                  <span key={eventIndex} data-beat={event.beat} data-duration-beats={event.duration_beats}
+                    title={`Beats ${event.beat}–${event.beat + event.duration_beats - 1}`}>{c}</span>
+                );
+              })}
             </span>
           </button>
         );
