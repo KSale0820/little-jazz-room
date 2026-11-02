@@ -1,15 +1,11 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import './PracticeHubPage.css';
 
-type QuickTool = 'tuner' | 'metronome';
-
 export function PracticeHubPage() {
   const navigate = useNavigate();
   const { catId, sessions, routines, setActiveRoutineId } = useApp();
-  const [preview, setPreview] = useState<QuickTool | null>(null);
   const latestSession = [...sessions].sort((a, b) => b.finishedAt.localeCompare(a.finishedAt))[0];
   const recentRoutine = latestSession?.routineId
     ? routines.find(routine => routine.id === latestSession.routineId)
@@ -44,7 +40,7 @@ export function PracticeHubPage() {
           </span>
           <span className="p01-path-text">
             <strong>Free Practice</strong>
-            <span>Pick a track and start playing.</span>
+            <span>Open a chart and practice at your own pace.</span>
           </span>
           <span className="p01-chevron" aria-hidden="true">›</span>
         </button>
@@ -83,12 +79,6 @@ export function PracticeHubPage() {
             <small>{latestSession ? 'Continue your last session.' : 'No session yet.'}</small>
           </button>
         </div>
-        {preview ? (
-          <div className="p01-preview" role="status">
-            <span><strong>{preview === 'tuner' ? 'Tuner' : 'Metronome'} preview</strong> · {preview === 'tuner' ? 'Microphone tuning is coming soon.' : 'Beat controls are coming soon.'}</span>
-            <button type="button" onClick={() => setPreview(null)} aria-label="Dismiss tool preview">Close</button>
-          </div>
-        ) : null}
       </section>
 
       <section className="p01-recent" aria-labelledby="p01-recent-heading">
