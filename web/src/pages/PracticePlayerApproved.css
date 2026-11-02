@@ -173,3 +173,18 @@
 @media (max-height:720px) and (max-width:899px) {
   .practice-player-pills select { min-height:32px; font-size:11px; }
 }
+
+/* Place the approved five-tool dock toward the bottom of tall mobile screens. */
+.practice-player { display: flex; flex-direction: column; min-height: calc(100dvh - 76px); }
+.practice-player > .practice-utility-row { margin-top: auto; }
+/* Keep the artwork caption *on the image*, with the honest no-recording notice below. */
+.practice-art-panel { display: grid; grid-template-columns: minmax(0,1fr); grid-template-rows: auto auto; }
+.practice-art-panel > img { grid-area: 1 / 1; }
+.practice-art-panel > .practice-art-caption {
+  grid-area: 1 / 1; align-self: end; position: relative;
+  left: auto; right: auto; top: auto; bottom: auto; z-index: 1;
+}
+.practice-art-panel > .practice-no-audio { grid-area: 2 / 1; }
+@media (max-height: 720px) and (max-width: 899px) {
+  .practice-player { min-height: calc(100dvh - 76px); }
+}
