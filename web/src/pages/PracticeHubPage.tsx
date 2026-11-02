@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
+import { timeGreeting } from '../lib/greeting';
 import './PracticeHubPage.css';
 
 export function PracticeHubPage() {
@@ -28,7 +29,7 @@ export function PracticeHubPage() {
       <img className="p01-botanical p01-botanical-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
 
       <header className="p01-header">
-        <p className="p01-greeting">Good morning,</p>
+        <p className="p01-greeting">{timeGreeting().replace(/\.$/, ",")}</p>
         <h1>Let&apos;s Practice</h1>
         <p className="p01-intro">Choose how you want to practice today.</p>
       </header>
