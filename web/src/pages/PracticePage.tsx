@@ -13,6 +13,7 @@ import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { TunerPage } from './TunerPage';
 import { MetronomePage } from './MetronomePage';
 import './PracticePage.css';
+import './PracticePlayerApproved.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'chart' | 'player';
