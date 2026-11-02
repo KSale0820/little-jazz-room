@@ -11,7 +11,7 @@ Expected SHA-256:
 
 `65d614f02c7665c64e0a05557efe48a24f180780425700db634e4025c788213f`
 
-This binary is **not yet committed**; GitHub's connected text/code writer cannot transfer container-stored image bytes. Do not claim P05 visual QA is complete or merge this branch until it is uploaded.
+The resized WebP binary is **committed in this branch** and validated against its exact Git blob and SHA-256 hashes. Complete the P05 phone screenshots and QA before merging this PR.
 
 ## Code changes
 - P05 uses the new file first and falls back to the original `p05-metronome-background.png` if it cannot load.
