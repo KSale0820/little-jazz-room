@@ -26,7 +26,7 @@ try {
         return {
           chart:rect(chart),grid:rect(grid),tools:rect(tools),
           bars:grid.querySelectorAll('.measure').length,
-          cols:getComputedStyle(grid).gridTemplateColumns.split(/\\s+/).length,
+          cols:getComputedStyle(grid).gridTemplateColumns.split(/\s+/).length,
           overflowY:getComputedStyle(chart).overflowY,
           docWidth:document.documentElement.scrollWidth,
           docHeight:document.documentElement.scrollHeight,
