@@ -5,9 +5,9 @@ import { useAuth } from '../context/AuthContext';
 import './AppShell.css';
 
 const NAV: { to: string; route: NavRoute; label: string }[] = [
-  { to: '/', route: 'home', label: 'Home' },
-  { to: '/tracks', route: 'tracks', label: 'Tracks' },
   { to: '/practice', route: 'practice', label: 'Practice' },
+  { to: '/tracks', route: 'tracks', label: 'Tracks' },
+  { to: '/routines', route: 'routines', label: 'Routines' },
   { to: '/progress', route: 'progress', label: 'Progress' },
 ];
 
@@ -43,7 +43,7 @@ export function AppShell() {
         ) : null}
         <nav className="sidebar-nav">
           {NAV.map(({ to, route, label }) => (
-            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => (isActive ? 'current' : undefined)}>
+            <NavLink key={to} to={to} end className={({ isActive }) => (isActive ? 'current' : undefined)}>
               <PixelIcon route={route} />
               {label}
             </NavLink>
@@ -70,7 +70,7 @@ export function AppShell() {
           </div>
           <nav className="bottom-nav" aria-label="Main navigation">
             {NAV.map(({ to, route, label }) => (
-              <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => (isActive ? 'current' : undefined)}>
+              <NavLink key={to} to={to} end className={({ isActive }) => (isActive ? 'current' : undefined)}>
                 <PixelIcon route={route} />
                 {label}
               </NavLink>
