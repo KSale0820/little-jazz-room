@@ -732,3 +732,18 @@
   .practice-complete-hero-grid { min-height: 123px; }
   .practice-complete-summary { margin-top: 11px; margin-bottom: 10px; }
 }
+
+/* Free Practice keeps its mounted player and running timer below this in-session tool dialog. */
+.practice-tool-overlay {
+  position: absolute;
+  z-index: 50;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  background: #fff8ee;
+  scrollbar-width: none;
+}
+.practice-tool-overlay > .tool-page {
+  min-height: 100%;
+}
