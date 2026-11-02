@@ -96,7 +96,7 @@ export function PracticePage() {
 
   useEffect(() => {
     if (!activeTool) return;
-    const focusId = requestAnimationFrame(() => toolOverlayRef.current?.querySelector<HTMLElement>('.tool-back')?.focus());
+    const focusId = requestAnimationFrame(() => toolOverlayRef.current?.querySelector<HTMLElement>('.tool-back, .practice-settings-dialog header button')?.focus());
     return () => cancelAnimationFrame(focusId);
   }, [activeTool]);
 
@@ -418,12 +418,13 @@ export function PracticePage() {
           <button className="practice-secondary-transport" type="button" aria-label="Toggle Chart or Player view"
             onClick={() => setPanel(current => current === 'chart' ? 'player' : 'chart')}>☷</button>
         </div>
-        <div className="practice-chart-controls" id="practice-inline-settings">
-          <label>Key<select value={chartKey} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
-          <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
-          <label>Tempo<select value={tempo} onChange={event => setTempo(Number(event.target.value))} aria-label="Reference tempo in beats per minute">{[60, 70, 80, 90, 100, 110, 120, 140, 160, 180].concat(chosenExercise?.suggested_bpm ?? []).filter((bpm, index, all) => all.indexOf(bpm) === index).sort((a,b) => a-b).map(bpm => <option key={bpm} value={bpm}>{bpm} BPM</option>)}</select></label>
-          <label>Loop<select value={loopValue} onChange={event => setLoopValue(event.target.value)} aria-label="Highlight loop measures">{loopOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-        </div>
+        {panel === 'player' && (
+          <div className="practice-chart-controls practice-player-pills" id="practice-inline-settings">
+            <label>Key<select value={chartKey} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
+            <label>Tempo<select value={tempo} onChange={event => setTempo(Number(event.target.value))} aria-label="Reference tempo in beats per minute">{[60, 70, 80, 90, 100, 110, 120, 140, 160, 180].concat(chosenExercise?.suggested_bpm ?? []).filter((bpm, index, all) => all.indexOf(bpm) === index).sort((a,b) => a-b).map(bpm => <option key={bpm} value={bpm}>{bpm} BPM</option>)}</select></label>
+            <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
+          </div>
+        )}
         <p className="practice-reference-note">Tempo is a reference setting. No backing track is playing.</p>
         <button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button>
       </div>
