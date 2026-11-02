@@ -305,7 +305,8 @@
 .practice-free .practice-chart-scroll { max-height: clamp(260px,40dvh,345px); margin: 4px 0 3px; }
 .practice-guided .practice-chart-scroll { max-height: clamp(148px,25dvh,216px); }
 @media (max-height:720px) and (max-width:899px) {
-  .practice-free .practice-chart-scroll { max-height: clamp(238px,40dvh,288px); }
+  /* Short phones prioritize a readable scrollable score AND a fully visible tool dock. */
+  .practice-free .practice-chart-scroll { max-height: min(31dvh, 214px); }
   .practice-guided .practice-chart-scroll { max-height: clamp(140px,23dvh,180px); }
   .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure { min-height: 44px; }
 }
