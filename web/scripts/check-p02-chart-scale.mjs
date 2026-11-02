@@ -1,5 +1,5 @@
-// Regression: approved Free Practice shows a large readable chart without A/BA section labels.
-// Guided remains compact. Do not confuse these screen variants in screenshots.
+// Regression: P02 shows a readable two-bars-per-row score and real A/B/A/AABA sections.
+// Free sheet stays large; Guided uses the same notation in a shorter viewport.
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -21,9 +21,13 @@ try {
     await page.waitForURL(u => u.pathname === '/player');
     await page.getByRole('tab', { name: 'Chart' }).click();
     ensure(await page.locator('.practice-player.practice-free').count() === 1, 'Free variant class missing');
-    const measureNums = await page.locator('.practice-chart-scroll .measure-num').allInnerTexts();
-    ensure(measureNums.length >= 12, 'Expected at least a 12-measure chart');
-    ensure(measureNums.every(s => /^\d+$/.test(s.trim())), 'Formal A/BA section labels are visible');
+    const measures = page.locator('.practice-chart-scroll .measure');
+    ensure(await measures.count() >= 12, 'Expected at least a 12-measure chart');
+    ensure(await page.locator('.practice-chart-scroll .measure-section-label').allTextContents().then(x => x.join(',')) === 'A',
+      'The blues chart should show only its sourced A section, not fabricated B sections');
+    const columns = await page.locator('.practice-chart-scroll .chord-grid').evaluate(el =>
+      getComputedStyle(el).gridTemplateColumns.split(/\s+/).length);
+    ensure(columns === 2, 'Expected two wide measures per row like approved reference');
     const geometry = await page.evaluate(() => {
       const grid = document.querySelector('.practice-chart-scroll .chord-grid');
       const measure = document.querySelector('.practice-chart-scroll .measure');
@@ -40,10 +44,22 @@ try {
       };
     });
     ensure(geometry.gridHeight >= (height === 844 ? 285 : 245), 'Free chord grid too small: ' + JSON.stringify(geometry));
-    ensure(geometry.measureHeight >= 83, 'Measures too compressed: ' + JSON.stringify(geometry));
+    ensure(geometry.measureHeight >= 44, 'Score rows too compressed: ' + JSON.stringify(geometry));
     ensure(geometry.chordFont >= 15, 'Chords too small: ' + JSON.stringify(geometry));
     ensure(geometry.overflow <= 1, 'Horizontal overflow: ' + geometry.overflow);
     await page.screenshot({ path: join(folder, 'P02-free-chart-large-' + width + 'x' + height + '.png'), animations: 'disabled' });
+    const tools = page.locator('.practice-utility-row button');
+    ensure(await tools.count() === 5, 'Reference requires five tool tiles');
+    const names = await tools.allInnerTexts();
+    ensure(['Mixer','Tempo/Key','Loop','Tuner','Metronome'].every((x,i) => names[i].includes(x)),
+      'Tool labels differ from reference: ' + names.join(','));
+    ensure(await page.locator('.practice-utility-row .practice-tool-glyph').count() === 5,
+      'Expected five reference-style pictograms');
+    await page.getByRole('combobox', { name: 'Choose practice chart' }).selectOption('rhythm-bb-32');
+    const aaba = await page.locator('.practice-chart-scroll .measure-section-label').allTextContents();
+    ensure(aaba.join(',') === 'A,A,B,A', 'AABA form labels did not return: ' + aaba.join(','));
+    await page.screenshot({ path: join(folder, 'P02-free-AABA-chart-' + width + 'x' + height + '.png'), animations: 'disabled' });
+    await page.getByRole('combobox', { name: 'Choose practice chart' }).selectOption('blues-f-12');
     await page.getByRole('button', { name: 'Start practice timer' }).click();
     await page.waitForTimeout(1200);
     ensure(await page.locator('[data-testid="session-elapsed"]').innerText() !== '00:00', 'Timer failed beneath enlarged grid');
@@ -55,12 +71,12 @@ try {
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
     await page.waitForURL(u => u.pathname === '/player');
     ensure(await page.locator('.practice-player.practice-guided').count() === 1, 'Guided variant class missing');
-    const guidedHeight = await page.locator('.practice-chart-scroll .measure').first().evaluate(el => el.getBoundingClientRect().height);
-    ensure(guidedHeight < geometry.measureHeight - 20, 'Guided chart unexpectedly enlarged');
+    const guidedHeight = await page.locator('.practice-chart-scroll').evaluate(el => el.getBoundingClientRect().height);
+    ensure(guidedHeight <= (height === 844 ? 218 : 182), 'Guided chart not compact: ' + guidedHeight);
     ensure(await page.locator('.practice-utility-row button').count() === 5, 'Guided tools disappeared');
     await page.screenshot({ path: join(folder, 'P02-guided-chart-original-scale-' + width + 'x' + height + '.png'), animations: 'disabled' });
     ensure(errors.length === 0, 'Page exceptions: ' + errors.join(' | '));
-    console.log('PASS Free Chart scale + no A/BA labels at ' + width + 'x' + height + ': ' + JSON.stringify(geometry));
+    console.log('PASS readable two-bar sheet + AABA sections and matching tool glyphs at ' + width + 'x' + height + ': ' + JSON.stringify(geometry));
     results.push({ width, height, ...geometry, guidedMeasureHeight: guidedHeight, status: 'PASS' });
     await context.close();
   }
