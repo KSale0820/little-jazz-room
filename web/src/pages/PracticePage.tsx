@@ -254,7 +254,10 @@ export function PracticePage() {
     const beats = beatsPerMeasure(chart);
     const duration = sequenceDuration(chart, activeSections);
     const raw = rawChartBeat(musicalClock, now, tempo);
-    const next = Math.max(0, Math.min(duration - beats, Math.floor(raw / beats) * beats + delta * beats));
+    const offset = activeSections && repeatWholePlan ? raw % duration : raw;
+    const intended = Math.floor(offset / beats) * beats + delta * beats;
+    const next = activeSections && repeatWholePlan
+      ? (intended + duration) % duration : Math.max(0, Math.min(duration - beats, intended));
     setMusicalClock({ chartBeat: next, startedAtMs: isRunning ? now : null });
     setNowMs(now);
   }
