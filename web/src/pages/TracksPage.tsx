@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
+import { RECORDED_BACKING_TRACKS, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
 import './DemoPages.css';
 import './TracksPage.css';
 
@@ -31,6 +32,18 @@ const TRACK_PREVIEWS: TrackPreview[] = [
   { id: 'moonlit', chartId: 'rhythm-bb-32', title: 'Moonlit Changes', subtitle: 'Ballad · ii–V–I study', style: 'Ballad', key: 'B♭', bpm: 72, difficulty: 'Intermediate', instruments: ['Piano', 'Guitar', 'Bass', 'Trumpet', 'Tenor Saxophone'], blues: false },
   { id: 'staircase', chartId: 'ballad-eb-16', title: 'Blue Staircase', subtitle: 'Bebop · original study', style: 'Bebop', key: 'E♭', bpm: 124, difficulty: 'Intermediate', instruments: ['Piano', 'Guitar', 'Bass', 'Alto Saxophone', 'Tenor Saxophone'], blues: false },
   { id: 'sunday', chartId: 'minor-bossa-cm-16', title: 'Sunday Walk', subtitle: 'Easy bossa · original study', style: 'Bossa', key: 'C minor', bpm: null, difficulty: 'Beginner', instruments: ['Piano', 'Guitar', 'Bass', 'Drums'], blues: false },
+];
+
+/** Include real stereo recordings only when a rights-cleared file is registered. */
+const TRACK_CATALOG: Array<TrackPreview & { recordingId: string | null }> = [
+  ...TRACK_PREVIEWS.filter(preview => !RECORDED_BACKING_TRACKS.some(item => item.id === preview.id))
+    .map(preview => ({ ...preview, recordingId: null })),
+  ...RECORDED_BACKING_TRACKS.filter(isUsableRecordedTrack).map(item => ({
+    id: item.id, chartId: item.chartId, title: item.title, subtitle: item.subtitle,
+    style: item.style, key: item.key, bpm: item.recordedBpm,
+    difficulty: item.difficulty, instruments: item.instruments, blues: item.blues,
+    recordingId: item.id,
+  })),
 ];
 
 const CATEGORIES: Category[] = ['Recent', 'Favorites', 'Standards', 'Blues', 'Original studies'];
@@ -89,7 +102,7 @@ export function TracksPage() {
     return match && (chartFilter === 'All' || (chartFilter === 'Blues' ? isBlues : !isBlues));
   }), [charts, query, chartFilter]);
 
-  const catalog = useMemo(() => TRACK_PREVIEWS.flatMap(track => {
+  const catalog = useMemo(() => TRACK_CATALOG.flatMap(track => {
     const chart = charts.find(candidate => candidate.id === track.chartId);
     return chart ? [{ ...track, chart }] : [];
   }), [charts]);
@@ -103,7 +116,7 @@ export function TracksPage() {
     if (applied.style !== 'All' && track.style !== applied.style) return false;
     if (applied.key !== 'All' && track.key !== applied.key) return false;
     if (applied.difficulty !== 'All' && track.difficulty !== applied.difficulty) return false;
-    return true; // All four entries have a real linked seed chart.
+    return true; // Every visible result has an existing linked chart.
   }), [catalog, query, category, favorites, applied]);
   const activeFilterCount = Object.entries(applied).filter(([key, value]) => key !== 'chartOnly' && value !== 'All').length + (applied.chartOnly ? 1 : 0);
 
@@ -117,9 +130,10 @@ export function TracksPage() {
     setFavorites(next);
     try { localStorage.setItem(favoritesKey, JSON.stringify(next)); } catch { /* Local storage is optional. */ }
   };
-  const openChart = (id: string) => {
+  const openChart = (id: string, recordingId: string | null = null) => {
     setActiveRoutineId(null);
-    navigate('/player?chart=' + encodeURIComponent(id));
+    navigate('/player?chart=' + encodeURIComponent(id) +
+      (recordingId ? '&recording=' + encodeURIComponent(recordingId) : ''));
   };
   const reset = () => {
     setCategory('Recent');
@@ -208,11 +222,11 @@ export function TracksPage() {
               const isFavorite = favorites.includes(track.id);
               return (
                 <article className="t01-track-card" key={track.id}>
-                  <button type="button" className="t01-card-open" aria-label={'Practice ' + track.title + ' with its linked chart'} onClick={() => openChart(track.chart.id)}>
+                  <button type="button" className="t01-card-open" aria-label={'Practice ' + track.title + ' with its linked chart' + (track.recordingId ? ' and recording' : '')} onClick={() => openChart(track.chart.id, track.recordingId)}>
                     <span className="t01-card-title">{track.title}</span>
                     <span className="t01-card-subtitle">{track.subtitle}</span>
                     <span className="t01-card-footer">
-                      <span className="t01-status t01-audio"><TrackIcon name="unavailable" /> Audio pending</span>
+                      <span className="t01-status t01-audio">{track.recordingId ? 'Recording available' : <><TrackIcon name="unavailable" /> Audio pending</>}</span>
                       <span className="t01-status t01-chart"><TrackIcon name="book" /> Chart</span>
                       <span className="t01-card-spacer" />
                       <span className="t01-card-tempo">{track.bpm === null ? '' : track.bpm + ' BPM · '}{track.key}</span>
