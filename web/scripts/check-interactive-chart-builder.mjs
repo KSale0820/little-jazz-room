@@ -18,17 +18,22 @@ try {
     await page.goto(baseUrl + '/charts/new', { waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'Create Chart' }).waitFor();
     assert.equal(await page.getByRole('textbox', { name: 'Key', exact: true }).count(), 1);
-    assert.equal(await page.getByRole('textbox', { name: 'Time signature' }).inputValue(), '4/4');
+    assert.equal(await page.getByRole('textbox', { name: 'Time signature numerator' }).inputValue(), '4');
+    assert.equal(await page.getByRole('textbox', { name: 'Time signature denominator' }).inputValue(), '4');
     assert.equal(await page.locator('.chart-builder-key-scroll').count(), 0);
     await page.getByRole('textbox', { name: 'Key', exact: true }).fill('Bb');
-    await page.getByRole('textbox', { name: 'Time signature' }).click();
+    await page.getByRole('textbox', { name: 'Time signature numerator' }).click();
     assert.equal(await page.getByRole('textbox', { name: 'Key', exact: true }).inputValue(), 'B♭');
     await page.getByRole('button', { name: 'Raise key one semitone' }).click();
     assert.equal(await page.getByRole('textbox', { name: 'Key', exact: true }).inputValue(), 'B');
-    await page.getByRole('textbox', { name: 'Time signature' }).fill('3/4');
+    await page.getByRole('textbox', { name: 'Time signature numerator' }).fill('6');
+    await page.getByRole('textbox', { name: 'Time signature denominator' }).fill('8');
     await page.getByRole('textbox', { name: 'Chart name' }).click();
-    assert.equal(await page.getByRole('textbox', { name: 'Time signature' }).inputValue(), '3/4');
-    await page.getByRole('textbox', { name: 'Time signature' }).fill('4/4');
+    assert.equal(await page.getByRole('textbox', { name: 'Time signature numerator' }).inputValue(), '6');
+    assert.equal(await page.getByRole('textbox', { name: 'Time signature denominator' }).inputValue(), '8');
+    // This demo returns to 4/4 for the two-beat split acceptance check.
+    await page.getByRole('textbox', { name: 'Time signature numerator' }).fill('4');
+    await page.getByRole('textbox', { name: 'Time signature denominator' }).fill('4');
     await page.getByRole('textbox', { name: 'Chart name' }).click();
     await page.getByLabel('Feel (optional)').selectOption('Other');
     await page.getByRole('textbox', { name: 'Describe your feel' }).fill('Slow funk');
@@ -47,6 +52,9 @@ try {
     await selectedInput.fill('Dm7');
     const nearBar = await page.locator('.chart-editor-row').first().locator('.chart-builder-selection').count();
     assert.equal(nearBar, 1, 'Selected bar tools should be directly beneath its chart row');
+    assert.equal(await page.locator('.chart-builder-toolbar button').count(), 9);
+    assert.equal(await page.locator('.chart-builder-toolbar').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length), 9);
+    await page.getByLabel('Section starts here').selectOption('A');
     await page.screenshot({ path: path.join(out, size + '-02-complete.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Split Measure' }).click();
@@ -56,6 +64,12 @@ try {
     await page.getByRole('textbox', { name: 'Red style note for this measure' }).fill('Swing feel');
     await page.screenshot({ path: path.join(out, size + '-04-annotation.png'), fullPage: true });
 
+    // Start section B on measure 3, then append another A section to make A–B–A.
+    await page.getByRole('textbox', { name: 'Measure 3 chord 1' }).focus();
+    await page.getByLabel('Section starts here').selectOption('B');
+    await page.getByRole('textbox', { name: 'Measure 1 chord 1' }).focus();
+    await page.getByRole('button', { name: 'Copy section A' }).click();
+    await page.getByRole('textbox', { name: 'Measure 5 chord 1' }).waitFor();
     await page.getByRole('button', { name: 'Save Chart' }).click();
     await page.getByRole('heading', { name: 'My Charts', exact: true }).waitFor();
     await page.getByRole('heading', { name: 'My First ii–V–I' }).waitFor();
@@ -71,6 +85,8 @@ try {
         if (!charts.length) throw new Error('Saved charts were not persisted');
         const chart = charts[0];
         if (chart.feel !== 'Slow funk') throw new Error('Custom feel not preserved');
+        if (chart.bars.length !== 6 || chart.bars[2].section !== 'B' || chart.bars[4].section !== 'A')
+          throw new Error('A-B-A section duplication did not persist');
         if (chart.bars[0].events.length !== 2 || chart.bars[0].events[1].beat !== 3
             || chart.bars[0].annotation !== 'Swing feel') throw new Error('Saved chart beat events/annotation incorrect');
         return chart.id;
