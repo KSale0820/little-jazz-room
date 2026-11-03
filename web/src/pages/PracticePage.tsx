@@ -89,6 +89,11 @@ export function PracticePage() {
   const [loopValue, setLoopValue] = useState('all');
   const [loopStart, setLoopStart] = useState(1);
   const [loopEnd, setLoopEnd] = useState(4);
+  const [loopOpen, setLoopOpen] = useState(false);
+  const [draftStart, setDraftStart] = useState(1);
+  const [draftEnd, setDraftEnd] = useState(4);
+  const loopTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const loopDialogRef = useRef<HTMLDivElement | null>(null);
   const [musicalClock, setMusicalClock] = useState({ chartBeat: 0, startedAtMs: null as number | null });
   const [panel, setPanel] = useState<Panel>('chart');
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
@@ -181,15 +186,12 @@ export function PracticePage() {
   }, [loopValue, loopStart, loopEnd]);
 
   const playhead = locatePlayhead(chart, musicalClock, nowMs, tempo, loopRange);
-
-  const loopOptions = useMemo(() => {
-    const groups = Array.from({ length: Math.ceil(chart.bars.length / 4) }, (_, i) => {
-      const first = 1 + i * 4;
-      const last = Math.min(chart.bars.length, first + 3);
-      return { value: first + '-' + last, label: 'Bars ' + first + '–' + last };
-    });
-    return [{ value: 'all', label: 'Full Chart' }, ...groups, { value: 'custom', label: 'Custom Range' }];
-  }, [chart]);
+  const loopSummary = loopRange ? 'Bars ' + loopRange[0] + '–' + loopRange[1] : 'Full chart';
+  const loopSections = useMemo(() => Array.from({ length: Math.ceil(chart.bars.length / 4) }, (_, index) => {
+    const start = index * 4 + 1;
+    const end = Math.min(chart.bars.length, start + 3);
+    return { start, end };
+  }), [chart]);
 
   function chooseChart(id: string) {
     const next = chartsById[id];
@@ -235,6 +237,37 @@ export function PracticePage() {
     setLoopEnd(end);
     setNowMs(now);
   }
+
+  function openLoop(trigger: HTMLButtonElement) {
+    loopTriggerRef.current = trigger;
+    const start = loopRange?.[0] ?? playhead.barIndex + 1;
+    const end = loopRange?.[1] ?? Math.min(chart.bars.length, start + 3);
+    setDraftStart(start);
+    setDraftEnd(end);
+    setLoopOpen(true);
+  }
+
+  function closeLoop() {
+    setLoopOpen(false);
+    requestAnimationFrame(() => loopTriggerRef.current?.focus());
+  }
+
+  function chooseLoop(value: string, start?: number, end?: number) {
+    changeLoop(value, start, end);
+    closeLoop();
+  }
+
+  function chooseLoopLength(bars: number) {
+    const start = playhead.barIndex + 1;
+    const end = Math.min(chart.bars.length, start + bars - 1);
+    chooseLoop('custom', start, end);
+  }
+
+  useEffect(() => {
+    if (!loopOpen) return;
+    const id = requestAnimationFrame(() => loopDialogRef.current?.querySelector<HTMLElement>('.practice-loop-close')?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [loopOpen]);
 
   function moveToBar(index: number) {
     const now = performance.now();
@@ -498,7 +531,7 @@ export function PracticePage() {
         </div>
         <div className="practice-clock"><strong data-testid="session-elapsed">{formatPracticeTime(elapsedSeconds)}</strong><span>{targetSeconds ? formatPracticeTime(targetSeconds) + ' step goal' : (isRunning ? 'Practicing' : elapsedSeconds ? 'Paused' : 'Ready') + ' · No recording'}</span></div>
         <div className="practice-control-row">
-          <button className="practice-secondary-transport" type="button" aria-label="Jump to loop start" onClick={() => moveToBar(loopRange ? loopRange[0] - 1 : 0)}>
+          <button className="practice-secondary-transport" type="button" aria-label="Configure loop" onClick={event => openLoop(event.currentTarget)}>
             <PracticeToolGlyph name="loop" />
           </button>
           <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => stepMeasure(-1)}>◀❙</button>
@@ -551,26 +584,13 @@ export function PracticePage() {
             </select>
           </div>
           <div className="practice-control-field">
-            <label htmlFor="practice-loop">Loop: {loopRange ? 'Bars ' + loopRange[0] + '–' + loopRange[1] : 'Full Chart'}</label>
-            <select id="practice-loop" value={loopValue} onChange={event => changeLoop(event.target.value)}>
-              {loopOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select>
+            <span className="practice-control-heading">Loop</span>
+            <button type="button" className="practice-loop-open" onClick={event => openLoop(event.currentTarget)} aria-haspopup="dialog">
+              <span>{loopSummary}</span><span aria-hidden="true">Edit ›</span>
+            </button>
           </div>
         </div>
-        {loopValue === 'custom' && (
-          <div className="practice-custom-loop" role="group" aria-label="Custom loop measure range">
-            <label>From bar
-              <select aria-label="Loop start bar" value={loopStart} onChange={event => changeLoop('custom', Number(event.target.value), Math.max(Number(event.target.value), loopEnd))}>
-                {chart.bars.map((bar, index) => <option key={index} value={index + 1}>{bar.number}</option>)}
-              </select>
-            </label>
-            <label>To bar
-              <select aria-label="Loop end bar" value={loopEnd} onChange={event => changeLoop('custom', Math.min(loopStart, Number(event.target.value)), Number(event.target.value))}>
-                {chart.bars.map((bar, index) => <option key={index} value={index + 1}>{bar.number}</option>)}
-              </select>
-            </label>
-          </div>
-        )}
+
       </section>
       <div className="practice-utility-row practice-utility-tools" aria-label="Practice tools">
         <button type="button" disabled title="Mixer is Preview only"><PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small></button>
@@ -578,6 +598,69 @@ export function PracticePage() {
         <button type="button" onClick={event => openTool('metronome', event.currentTarget)}><PracticeToolGlyph name="metronome" /><span>Metronome</span></button>
       </div>
     </section>
+
+    {loopOpen && createPortal(
+      <div className="practice-loop-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) closeLoop(); }}>
+        <div className="practice-loop-sheet" ref={loopDialogRef} role="dialog" aria-modal="true" aria-labelledby="practice-loop-heading"
+          onKeyDown={event => {
+            if (event.key === 'Escape') { event.preventDefault(); closeLoop(); }
+            if (event.key !== 'Tab') return;
+            const controls = [...(loopDialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled)') ?? [])];
+            if (!controls.length) return;
+            if (event.shiftKey && document.activeElement === controls[0]) { event.preventDefault(); controls[controls.length - 1].focus(); }
+            else if (!event.shiftKey && document.activeElement === controls[controls.length - 1]) { event.preventDefault(); controls[0].focus(); }
+          }}>
+          <header>
+            <div><span className="practice-loop-eyebrow">CHART PRACTICE</span><h2 id="practice-loop-heading">Repeat a section</h2></div>
+            <button type="button" className="practice-loop-close" aria-label="Close loop settings" onClick={closeLoop}>×</button>
+          </header>
+          <p className="practice-loop-intro">Choose which bars repeat as you practice. No audio track is playing.</p>
+          <div className="practice-loop-current" aria-live="polite">Currently repeating: <strong>{loopSummary}</strong></div>
+          <div className="practice-loop-section">
+            <h3>Quick choices</h3>
+            <div className="practice-loop-choice-grid">
+              <button type="button" className={!loopRange ? 'active' : undefined} onClick={() => chooseLoop('all')}>Full chart</button>
+              {[1, 2, 4, 8, 16].filter(bars => bars <= chart.bars.length).map(bars => (
+                <button key={bars} type="button" onClick={() => chooseLoopLength(bars)}>{bars === 1 ? 'This bar' : bars + ' bars from here'}</button>
+              ))}
+            </div>
+          </div>
+          <div className="practice-loop-section">
+            <h3>Four-bar phrases</h3>
+            <div className="practice-loop-phrase-grid">
+              {loopSections.map(({start,end}) => <button key={start} type="button"
+                aria-pressed={loopRange?.[0] === start && loopRange?.[1] === end}
+                onClick={() => chooseLoop('custom', start, end)}>{start}–{end}</button>)}
+            </div>
+          </div>
+          <div className="practice-loop-section">
+            <h3>Custom range</h3>
+            <div className="practice-loop-custom-fields">
+              <div className="practice-loop-range-stepper" role="group" aria-label="First bar">
+                <span>From bar</span>
+                <div><button type="button" aria-label="Decrease start bar" disabled={draftStart <= 1}
+                  onClick={() => setDraftStart(value => Math.max(1, value - 1))}>−</button>
+                  <output aria-label="Start bar">{draftStart}</output>
+                  <button type="button" aria-label="Increase start bar" disabled={draftStart >= draftEnd}
+                    onClick={() => setDraftStart(value => Math.min(draftEnd, value + 1))}>+</button></div>
+              </div>
+              <div className="practice-loop-range-stepper" role="group" aria-label="Last bar">
+                <span>To bar</span>
+                <div><button type="button" aria-label="Decrease end bar" disabled={draftEnd <= draftStart}
+                  onClick={() => setDraftEnd(value => Math.max(draftStart, value - 1))}>−</button>
+                  <output aria-label="End bar">{draftEnd}</output>
+                  <button type="button" aria-label="Increase end bar" disabled={draftEnd >= chart.bars.length}
+                    onClick={() => setDraftEnd(value => Math.min(chart.bars.length, value + 1))}>+</button></div>
+              </div>
+            </div>
+            <button type="button" className="practice-loop-apply" onClick={() => chooseLoop('custom', draftStart, draftEnd)}>
+              Repeat bars {draftStart}–{draftEnd}
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.querySelector('.app-shell') ?? document.body
+    )}
     {activeTool && createPortal(
       <div
         ref={toolOverlayRef}
