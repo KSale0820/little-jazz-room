@@ -17,6 +17,21 @@ try {
     page.on('pageerror', err => errors.push(err.message));
     await page.goto(baseUrl + '/charts/new', { waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'Create Chart' }).waitFor();
+    assert.equal(await page.getByRole('textbox', { name: 'Key', exact: true }).count(), 1);
+    assert.equal(await page.getByRole('textbox', { name: 'Time signature' }).inputValue(), '4/4');
+    assert.equal(await page.locator('.chart-builder-key-scroll').count(), 0);
+    await page.getByRole('textbox', { name: 'Key', exact: true }).fill('Bb');
+    await page.getByRole('textbox', { name: 'Time signature' }).click();
+    assert.equal(await page.getByRole('textbox', { name: 'Key', exact: true }).inputValue(), 'B♭');
+    await page.getByRole('button', { name: 'Raise key one semitone' }).click();
+    assert.equal(await page.getByRole('textbox', { name: 'Key', exact: true }).inputValue(), 'B');
+    await page.getByRole('textbox', { name: 'Time signature' }).fill('3/4');
+    await page.getByRole('textbox', { name: 'Chart name' }).click();
+    assert.equal(await page.getByRole('textbox', { name: 'Time signature' }).inputValue(), '3/4');
+    await page.getByRole('textbox', { name: 'Time signature' }).fill('4/4');
+    await page.getByRole('textbox', { name: 'Chart name' }).click();
+    await page.getByLabel('Feel (optional)').selectOption('Other');
+    await page.getByRole('textbox', { name: 'Describe your feel' }).fill('Slow funk');
     await page.screenshot({ path: path.join(out, size + '-01-empty.png'), fullPage: true });
 
     await page.getByRole('textbox', { name: 'Chart name' }).fill('My First ii–V–I');
@@ -24,6 +39,14 @@ try {
       await page.getByRole('textbox', { name: 'Measure ' + (index + 1) + ' chord 1' }).fill(chord);
     }
     await page.getByRole('textbox', { name: 'Measure 1 chord 1' }).focus();
+    const selectedInput = page.getByRole('textbox', { name: 'Measure 1 chord 1' });
+    await selectedInput.fill('Bm7');
+    await selectedInput.evaluate(input => input.setSelectionRange(1, 1));
+    await page.getByRole('button', { name: 'Insert flat symbol' }).click();
+    assert.equal(await selectedInput.inputValue(), 'B♭m7');
+    await selectedInput.fill('Dm7');
+    const nearBar = await page.locator('.chart-editor-row').first().locator('.chart-builder-selection').count();
+    assert.equal(nearBar, 1, 'Selected bar tools should be directly beneath its chart row');
     await page.screenshot({ path: path.join(out, size + '-02-complete.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Split Measure' }).click();
@@ -47,6 +70,7 @@ try {
         const charts = JSON.parse(localStorage.getItem(key) ?? '[]');
         if (!charts.length) throw new Error('Saved charts were not persisted');
         const chart = charts[0];
+        if (chart.feel !== 'Slow funk') throw new Error('Custom feel not preserved');
         if (chart.bars[0].events.length !== 2 || chart.bars[0].events[1].beat !== 3
             || chart.bars[0].annotation !== 'Swing feel') throw new Error('Saved chart beat events/annotation incorrect');
         return chart.id;

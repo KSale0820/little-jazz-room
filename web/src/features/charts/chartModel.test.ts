@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  blankDraftBar, buildChartFromDraft, draftFromChart, formatChordSymbol, freshChartDraft,
+  blankDraftBar, buildChartFromDraft, draftFromChart, formatChordSymbol, freshChartDraft, parseChartMeter,
   mergeDraftChord, normalizeChartKey, parseChordSymbol, renumberDraftBars,
   resizeDraftSplit, retimeDraftBars, splitDraftChord, stepChartKey, transposeDraftChords,
   validateDraftBars,
@@ -30,6 +30,17 @@ describe('chart chord notation', () => {
     expect(normalizeChartKey('Bb')).toBe('B♭');
     expect(normalizeChartKey('F#')).toBe('F♯');
     expect(normalizeChartKey('Db')).toBe('D♭');
+  });
+});
+
+describe('time signature entry', () => {
+  it('accepts quarter-note fractions and rejects unsupported meters', () => {
+    expect(parseChartMeter('4/4')).toBe(4);
+    expect(parseChartMeter(' 3 / 4 ')).toBe(3);
+    expect(parseChartMeter('2/4')).toBe(2);
+    expect(parseChartMeter('6/8')).toBeNull();
+    expect(parseChartMeter('8/4')).toBeNull();
+    expect(parseChartMeter('4')).toBeNull();
   });
 });
 
