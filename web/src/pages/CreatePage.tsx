@@ -29,6 +29,7 @@ interface ChartReturnDraft {
   exMinutes: number;
   exInstructions: string;
   exChartId: string;
+  editExerciseId: string | null;
 }
 const CHART_RETURN_KEY = 'little-jazz-room:create-chart-return:v1:';
 const DEMO_STEPS = ['swing-2-4', 'thirds-sevenths', 'blues-form'];
@@ -55,7 +56,7 @@ export function CreatePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { repo, exercises, charts, routines, publicRoutines, refreshLocal, showToast, teamSignedIn, saveRoutineToCloud, saveExerciseToCloud } = useApp();
-  const editId = (location.state as { editExerciseId?: string } | null)?.editExerciseId;
+  const locationEditId = (location.state as { editExerciseId?: string } | null)?.editExerciseId;
   const createdChartId = new URLSearchParams(location.search).get('createdChartId');
   const chartReturnKey = CHART_RETURN_KEY + repo.scope;
   const [chartReturnDraft] = useState<ChartReturnDraft | null>(() => {
@@ -68,6 +69,7 @@ export function CreatePage() {
     return null;
   });
 
+  const editId = locationEditId ?? chartReturnDraft?.editExerciseId ?? undefined;
   const originalDraft = useMemo(() => repo.readCreateDraft(), [repo]);
   const [title, setTitle] = useState(chartReturnDraft?.title ?? originalDraft?.title ?? 'My Morning Standards');
   const [description, setDescription] = useState(chartReturnDraft?.description ?? originalDraft?.description ?? 'A few simple steps to feel more confident playing jazz.');
@@ -106,12 +108,13 @@ export function CreatePage() {
     if (!charts.some(chart => chart.id === createdChartId)) return;
     setExChartId(createdChartId);
     setShowExerciseForm(true);
-    try { sessionStorage.removeItem(chartReturnKey); } catch { /* optional */ }
-  }, [createdChartId, charts, chartReturnKey]);
+    // Keep the return draft until the exercise is saved, including across reloads.
+  }, [createdChartId, charts]);
 
   const loadedEditId = useRef<string | null>(null);
   useEffect(() => {
     if (!editId) { loadedEditId.current = null; return; }
+    if (chartReturnDraft) { loadedEditId.current = editId; return; }
     const exercise = exercises.find(ex => ex.id === editId) ?? exercisesById[editId];
     if (exercise && loadedEditId.current !== editId) {
       loadedEditId.current = editId;
@@ -191,6 +194,7 @@ export function CreatePage() {
     const formDraft: ChartReturnDraft = {
       title, description, visibility, instrument, goal, steps,
       exTitle, exCategory, exLevel, exMinutes, exInstructions, exChartId,
+      editExerciseId: editId ?? null,
     };
     try { sessionStorage.setItem(chartReturnKey, JSON.stringify(formDraft)); }
     catch { showToast('Could not preserve your unfinished exercise. Check browser storage.'); return; }
@@ -269,6 +273,8 @@ export function CreatePage() {
         [...previous, { exerciseId: saved.id, minutes: saved.duration_minutes }]);
       setShowExerciseForm(false);
       setExTitle(''); setExInstructions(''); setExChartId('');
+      try { sessionStorage.removeItem(chartReturnKey); } catch { /* optional */ }
+      if (createdChartId) navigate('/create', { replace: true });
       showToast('Exercise added to this routine.');
     } finally {
       setSaving(false);
