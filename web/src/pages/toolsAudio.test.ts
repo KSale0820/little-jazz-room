@@ -164,3 +164,37 @@ describe('realistic singing input', () => {
     expect(detectPitch(noise, 48000)).toBeNull();
   });
 });
+
+describe('quiet sustained notes and capture timing', () => {
+  it('follows a falling input level without mistaking actual silence for pitch', () => {
+    const sampleRate = 48000;
+    for (const level of [0.02, 0.008, 0.003, 0.002]) {
+      const wave = Float32Array.from({ length: 8192 }, (_, i) =>
+        level * Math.sin(2 * Math.PI * 196 * i / sampleRate));
+      const pitch = detectPitch(wave, sampleRate);
+      expect(pitch).not.toBeNull();
+      expect(Math.abs(1200 * Math.log2(pitch! / 196))).toBeLessThan(35);
+    }
+    expect(detectPitch(new Float32Array(8192), sampleRate)).toBeNull();
+  });
+  it('continues tracking a long fading vocal note instead of stopping after 1 second', () => {
+    const sampleRate = 48000;
+    const length = 8192 + sampleRate * 4;
+    let phase = 0;
+    const wave = Float32Array.from({ length }, (_, i) => {
+      const t = i / sampleRate;
+      const fundamental = 220 * 2 ** (20 * Math.sin(t * 2 * Math.PI * 5) / 1200);
+      phase += 2 * Math.PI * fundamental / sampleRate;
+      const level = 0.018 * Math.exp(-t / 2.4) + 0.0015;
+      return level * (0.6 * Math.sin(phase) + 0.5 * Math.sin(2 * phase));
+    });
+    let detected = 0;
+    let count = 0;
+    for (let start = 0; start + 8192 < length; start += 4096) {
+      const pitch = detectPitch(wave.subarray(start, start + 8192), sampleRate);
+      if (pitch !== null && Math.abs(1200 * Math.log2(pitch / 220)) < 65) detected++;
+      count++;
+    }
+    expect(detected / count).toBeGreaterThanOrEqual(0.9);
+  });
+});

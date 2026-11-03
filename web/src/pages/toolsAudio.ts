@@ -60,7 +60,8 @@ export function inputRms(samples: Float32Array): number {
 
 // iPhone microphone input can be substantially quieter than desktop input.
 // YIN's periodicity check still rejects silence and broadband noise.
-export const MIN_TUNER_RMS = 0.003;
+export const MIN_TUNER_RMS = 0.0012;
+export const QUIET_TUNER_RMS = 0.003;
 
 /** YIN-style difference / cumulative mean normalized difference pitch estimate.
  * Returns null for silence, aperiodic noise, weak matches, or invalid audio.
@@ -94,8 +95,11 @@ export function detectPitch(samples: Float32Array, sampleRate: number): number |
   // YIN minima can sit above the strict 0.13 threshold used for pure tones.
   // Prefer the first good local minimum to reduce octave errors, then allow
   // a stronger fallback minimum only while the sound is still periodic.
-  const strongThreshold = 0.23;
-  const weakThreshold = 0.31;
+  // Quiet iPhone input can contain more broadband interference: be more
+  // conservative with periodicity as signal level approaches the noise floor.
+  const quiet = inputRms(samples) < QUIET_TUNER_RMS;
+  const strongThreshold = quiet ? 0.16 : 0.23;
+  const weakThreshold = quiet ? 0.22 : 0.31;
   let bestTau = -1;
   let fallbackTau = -1;
   let fallbackValue = weakThreshold;

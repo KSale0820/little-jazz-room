@@ -33,6 +33,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const microphoneRef = useRef<MediaStream | null>(null);
   const contextRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const workletRef = useRef<AudioWorkletNode | null>(null);
+  const lastWorkletFrameRef = useRef(0);
+  const [capturePath, setCapturePath] = useState<'analyser' | 'worklet'>('analyser');
   const rafRef = useRef(0);
   const toneRef = useRef<{ context: AudioContext; oscillator: OscillatorNode } | null>(null);
 
@@ -58,6 +61,11 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     recentPitchRef.current = null;
     setPitchTrail([]);
     cancelAnimationFrame(rafRef.current);
+    workletRef.current?.port.close();
+    workletRef.current?.disconnect();
+    workletRef.current = null;
+    lastWorkletFrameRef.current = 0;
+    setCapturePath('analyser');
     sourceRef.current?.disconnect();
     sourceRef.current = null;
     microphoneRef.current?.getTracks().forEach(track => track.stop());
@@ -147,7 +155,30 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       const samples = new Float32Array(analyser.fftSize);
       let lastAnalysis = 0;
       const startedAt = performance.now();
-      const analyse = (now: number) => {
+
+      // All pitch UI updates go through one handler regardless of capture
+      // backend. The worklet is fed by the audio clock, not the display clock.
+      const processSamples = (frame: Float32Array, sampleRate: number, now: number) => {
+        if (request !== requestRef.current) return;
+        const frequency = detectPitch(frame, sampleRate);
+        const measured = frequency === null ? null : readingFromFrequency(frequency, modeRef.current);
+        const stable = retainMeasuredPitch(recentPitchRef.current, measured, now);
+        recentPitchRef.current = stable.recent;
+        setReading(stable.displayed);
+        if (showPitchTrailRef.current && (frequency !== null || stable.recent === null)) {
+          setPitchTrail(previous => [
+            ...previous.filter(point => point.timestamp > now - 8000),
+            { timestamp: now, frequency },
+          ].slice(-100));
+        }
+        const level = inputRms(frame);
+        setMicSignal(stable.displayed !== null ? 'active' : level >= MIN_TUNER_RMS
+          ? 'unsteady' : now - startedAt > 1500 ? 'quiet' : 'starting');
+      };
+
+      // A fallback analyser remains connected even if Safari cannot load or
+      // later stops delivering AudioWorklet frames. No extra mic permission.
+      const analyseFallback = (now: number) => {
         if (request !== requestRef.current) return;
         if (now - lastAnalysis >= 85) {
           lastAnalysis = now;
@@ -155,32 +186,39 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
             recentPitchRef.current = null;
             setMicSignal('interrupted');
             setReading(null);
-          } else {
+          } else if (!lastWorkletFrameRef.current || now - lastWorkletFrameRef.current > 750) {
             analyser.getFloatTimeDomainData(samples);
-            const frequency = detectPitch(samples, context!.sampleRate);
-            const measured = frequency === null ? null : readingFromFrequency(frequency, modeRef.current);
-            const stable = retainMeasuredPitch(recentPitchRef.current, measured, now);
-            recentPitchRef.current = stable.recent;
-            setReading(stable.displayed);
-            if (showPitchTrailRef.current) {
-              // Draw only genuine measurements. A short missed frame does not
-              // break a sustained line; sustained silence creates a gap.
-              if (frequency !== null || stable.recent === null) {
-                setPitchTrail(previous => [
-                  ...previous.filter(point => point.timestamp > now - 8000),
-                  { timestamp: now, frequency },
-                ].slice(-100));
-              }
-            }
-            const level = inputRms(samples);
-            setMicSignal(stable.displayed !== null ? 'active' : level >= MIN_TUNER_RMS
-              ? 'unsteady' : now - startedAt > 1500 ? 'quiet' : 'starting');
+            processSamples(samples, context!.sampleRate, now);
+            setCapturePath('analyser');
           }
         }
-        rafRef.current = requestAnimationFrame(analyse);
+        rafRef.current = requestAnimationFrame(analyseFallback);
       };
       setStatus('listening');
-      rafRef.current = requestAnimationFrame(analyse);
+      rafRef.current = requestAnimationFrame(analyseFallback);
+
+      // AudioWorklet receives continuous microphone frames on the audio
+      // rendering thread. iOS Safari's requestAnimationFrame may be uneven
+      // even while the microphone remains open. Capture only: no playback.
+      if (context.audioWorklet && typeof AudioWorkletNode !== 'undefined') {
+        try {
+          await context.audioWorklet.addModule('/worklets/tuner-capture.js');
+          if (request !== requestRef.current) return;
+          const worklet = new AudioWorkletNode(context, 'ljr-tuner-capture');
+          worklet.port.onmessage = event => {
+            if (request !== requestRef.current || event.data?.type !== 'frame') return;
+            const now = performance.now();
+            lastWorkletFrameRef.current = now;
+            setCapturePath('worklet');
+            processSamples(new Float32Array(event.data.samples), event.data.sampleRate, now);
+          };
+          source.connect(worklet);
+          worklet.connect(silentOutput);
+          workletRef.current = worklet;
+        } catch {
+          // Older/limited Safari continues using the analyser, unchanged.
+        }
+      }
       stream.getAudioTracks()[0]?.addEventListener('ended', () => {
         if (request === requestRef.current) {
           stopMicrophone();
@@ -268,7 +306,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   };
 
   return (
-    <section className={`tool-page tool-tuner${roomArtLoaded ? ' tool-has-background' : ''}`} aria-label="Chromatic instrument tuner">
+    <section className={`tool-page tool-tuner${roomArtLoaded ? ' tool-has-background' : ''}`} aria-label="Chromatic instrument tuner" data-capture-path={capturePath}>
       <img className="tool-bottom-art" src={VISUAL_ASSETS.tools.tunerBackground} alt="" aria-hidden="true"
         onLoad={() => setRoomArtLoaded(true)} onError={() => setRoomArtLoaded(false)} />
       <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
