@@ -74,20 +74,19 @@ export function previewRoutineImport(
   exercises: Exercise[]
 ): RoutineImportPreview {
   const available = new Set(exercises.map(exercise => exercise.id));
-  const seen = new Set(existing.map(step => step.exerciseId));
+  // Preserve intentionally repeated practice exercises and per-occurrence durations.
+  // Each unavailable snapshot receives a stable identity keyed by source step index.
+  void existing;
   const preview: RoutineImportPreview = { additions: [], duplicates: 0, unavailable: 0 };
   routine.steps.forEach((step, index) => {
     const exerciseId = available.has(step.exercise_id) ? step.exercise_id
       : step.snapshot ? snapshotExerciseId(routine.id, index) : '';
     if (!exerciseId) { preview.unavailable++; return; }
-    if (seen.has(exerciseId)) { preview.duplicates++; return; }
-    seen.add(exerciseId);
     preview.additions.push({ exerciseId, minutes: step.duration_minutes, source: step });
   });
   return preview;
 }
 
 export function appendBuilderExercise(steps: BuilderStep[], exercise: Exercise): BuilderStep[] {
-  if (steps.some(step => step.exerciseId === exercise.id)) return steps;
   return [...steps, { exerciseId: exercise.id, minutes: exercise.duration_minutes }];
 }
