@@ -31,7 +31,7 @@ try {
       check(await lesson.getByRole('heading', { name: heading }).count() === 1, 'Missing heading: ' + heading);
     }
     check(await lesson.locator('ol li').count() > 0, 'Instructions must render the legacy exercise steps');
-    check(await lesson.locator('ol').innerText().then(text => text.includes('metronome')), 'Legacy instruction details were lost');
+    check((await lesson.locator('ol').innerText()).toLowerCase().includes('metronome'), 'Legacy instruction details were lost');
     check(await page.locator('.practice-cat-coach img').count() === 1, 'Selected approved cat artwork missing');
     check(await page.locator('.practice-coach-bubble p').innerText() !== '', 'Cat coach guidance missing');
     check(await page.locator('.practice-coach-bubble p').innerText() !== await lesson.locator('ol').innerText(), 'Cat coach replaced the lesson text');
@@ -90,7 +90,7 @@ try {
     await view('Chart').click();
     check(await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).isVisible(), 'Chart view missing');
     check(await page.locator('.measure').count() === 12, 'Chart was changed by teaching layout');
-    check(await page.getByRole('heading', { name: 'Swing on Two and Four' }).count() >= 0, 'Exercise title missing');
+    check(await page.locator('.practice-guided-head strong').innerText() === 'Swing on Two and Four', 'Chart instructional summary missing');
     await page.screenshot({ path: join(out, 'P02-guided-chart-' + width + 'x' + height + '.png'), animations: 'disabled' });
 
     await page.getByRole('button', { name: 'Start practice timer' }).click();
