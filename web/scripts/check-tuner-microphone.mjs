@@ -80,6 +80,13 @@ try {
   if (!plotted || plotted.split(' ').length < 2) {
     throw new Error('Voice pitch graph did not receive enough live microphone samples');
   }
+  for (const [width, height] of [[390, 844], [375, 667]]) {
+    await page.setViewportSize({ width, height });
+    await page.getByRole('region', { name: 'Live pitch graph' }).scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `tuner-voice-${width}x${height}.png` });
+    const overflowing = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
+    if (overflowing) throw new Error('Voice tuner overflows horizontal viewport at ' + width);
+  }
   if (errors.length) throw new Error('Page errors: ' + errors.join('; '));
   console.log('PASS: real browser microphone detected A4 at ' + frequency +
     ' and drew ' + plotted.split(' ').length + ' live graph points');
