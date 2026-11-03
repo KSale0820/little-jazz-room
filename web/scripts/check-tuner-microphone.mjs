@@ -64,7 +64,7 @@ try {
   page.on('pageerror', e => errors.push(String(e)));
   await page.goto(origin + '/tuner');
   await page.getByRole('button', { name: /Enable microphone/ }).click();
-  await page.getByRole('button', { name: /Stop microphone/ }).waitFor({ timeout: 12000 });
+  await page.getByRole('button', { name: /Stop microphone/ }).waitFor({ state: 'attached', timeout: 12000 });
   await page.getByText('A4', { exact: true }).first().waitFor({ timeout: 15000 });
   const frequency = await page.locator('.tuner-reading span').textContent();
   const measured = Number.parseFloat(frequency ?? '');
