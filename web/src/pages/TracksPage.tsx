@@ -141,11 +141,15 @@ export function TracksPage() {
             <button type="button" key={value} className="demo-filter" aria-pressed={chartFilter === value} onClick={() => setChartFilter(value)}>{value === 'All' ? 'Recent' : value === 'Other' ? 'Original studies' : value}</button>
           ))}
         </div>
+        <div className="demo-filter-group" aria-label="Personal chart actions">
+          <button type="button" className="demo-link" onClick={() => navigate("/my-charts")}>My Charts</button>
+          <button type="button" className="demo-link" onClick={() => navigate("/charts/new")}>+ Create a Chart</button>
+        </div>
         <h2 className="demo-section-title">Jazz harmony studies</h2>
         <p className="demo-subtitle" style={{ marginBottom: 12 }}>Choose a chart to open a readable measure grid.</p>
         {chartResults.map(chart => (
-          <button type="button" key={chart.id} className="demo-row" onClick={() => openChart(chart.id)}>
-            <span><span className="demo-row-title">{chart.title}</span><span className="demo-row-meta">{chart.bars.length} bars · Key {chart.concert_key} · Open chord chart</span></span>
+          <button type="button" key={chart.id} className="demo-row" onClick={() => chart.is_custom ? navigate("/charts/" + encodeURIComponent(chart.id) + "/edit") : openChart(chart.id)}>
+            <span><span className="demo-row-title">{chart.title}</span><span className="demo-row-meta">{chart.bars.length} bars · Key {chart.concert_key} · {chart.is_custom ? "Edit custom chart" : "Open chord chart"}</span></span>
             <span aria-hidden="true">›</span>
           </button>
         ))}

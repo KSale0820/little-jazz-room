@@ -47,6 +47,7 @@ try {
     await page.getByRole('button',{name:'Open Daily Jazz Warm-Up in player'}).click();
     await page.waitForURL(next => next.pathname === '/player');
     await page.getByText('Guided Practice', { exact: true }).waitFor();
+    await page.getByRole('tab', {name:'Chart'}).click();
     await page.locator('.practice-utility-row').waitFor();
     must(await page.locator('.practice-utility-row').count()===1, 'WebKit Guided Practice missing tools');
     await page.locator('.practice-utility-row').getByRole('button', {name:/Tuner/}).click();

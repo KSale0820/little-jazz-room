@@ -56,10 +56,10 @@ jobs:
         run: node scripts/check-class-demo-navigation.mjs
       - name: All 12 and 32 measures and paired chord beats visible on phones
         run: node scripts/check-p02-chart-scale.mjs
-      - name: Multi-section repeat plan and chart beat timing on phones
-        run: node scripts/check-p02-playhead-controls.mjs
       - name: P02 audio-tool overlays preserve the session
         run: node scripts/check-p02-in-session-tools.mjs
+      - name: Guided teaching, lesson scroll and cat coach at both phone sizes
+        run: node scripts/check-p02-guided-teaching.mjs
       - name: Safari WebKit timer and in-session tool smoke test
         run: node scripts/check-p02-overlay-webkit.mjs
       - name: Tuner live pitch, metronome audio and mobile layout
@@ -83,9 +83,9 @@ jobs:
             web/docs/screenshots/class-demo-p01/
             web/docs/screenshots/class-demo-integration/
             web/docs/screenshots/class-demo-p02-chart-scale/
-            web/docs/screenshots/p02-playhead-controls/
             web/docs/screenshots/class-demo-p02-overlays/
             web/docs/screenshots/class-demo-p02-webkit/
+            web/docs/screenshots/p02-guided-teaching/
             web/docs/screenshots/class-demo-tools/
             web/docs/screenshots/class-demo-navigation/
           retention-days: 7

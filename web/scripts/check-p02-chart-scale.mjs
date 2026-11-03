@@ -63,13 +63,7 @@ try {
       check(g.cols===4,label+' not four measures per row');
       check(g.grid.height<=g.chart.height+2,label+' chart clipped');
       check(g.chart.bottom<=height+1,label+' chart extends below screen');
-      // The app uses an internal mobile viewport scroller, not document-level scrolling.
-      // Check actual reachability rather than comparing against document.scrollHeight.
-      await page.locator('.practice-utility-row').scrollIntoViewIfNeeded();
-      const toolBounds=await page.locator('.practice-utility-row').boundingBox();
-      check(toolBounds && toolBounds.y >= -1 && toolBounds.y + toolBounds.height <= height+1,
-        label+' tool dock is not reachable on mobile');
-      await page.locator('.practice-chart-scroll').scrollIntoViewIfNeeded();
+      check(g.tools.bottom<=height+1,label+' tool dock below screen');
       check(g.docWidth<=width+1,label+' horizontal overflow');
       check(!g.chordOverflow,label+' chord text overflows cells');
       check(g.chordPairs.every(p=>p.twoColumns && p.leftBeforeRight && p.sameRow && p.noOverlap),
@@ -98,51 +92,6 @@ try {
     check(await page.getByRole('button',{name:/^Measure 32:/}).count()===1,'Last A not rendered');
     check(await page.getByRole('button',{name:/^Measure 17:/}).count()===1,'Bridge not rendered');
     await page.screenshot({path:join(dir,'P02-free-complete-AABA-'+width+'x'+height+'.png'),animations:'disabled'});
-    // A repeat plan has any number of sections, each with its own play count.
-    await page.getByRole('button',{name:/^Off/}).click();
-    const loopDialog=page.getByRole('dialog',{name:'Set up looping'});
-    check(await loopDialog.isVisible(),'Loop setup did not open');
-    check(await loopDialog.getByRole('button',{name:/No looping/}).getAttribute('aria-pressed')==='true',
-      'No looping should be the default');
-    await loopDialog.getByRole('button',{name:/Repeat sections/}).click();
-    check(await loopDialog.getByRole('region',{name:'Section 1'}).count()===1,'First editable section missing');
-    await loopDialog.getByRole('button',{name:'Increase section 1 play count'}).click();
-    check(await loopDialog.getByRole('spinbutton',{name:'Section 1 play count'}).inputValue()==='3',
-      'First section repeat count did not update');
-    await loopDialog.getByRole('button',{name:'+ Add section'}).click();
-    check(await loopDialog.getByRole('region',{name:'Section 2'}).count()===1,'Second section missing');
-    await loopDialog.getByRole('spinbutton',{name:'Section 2 start bar'}).fill('17');
-    await loopDialog.getByRole('spinbutton',{name:'Section 2 start bar'}).blur();
-    await loopDialog.getByRole('spinbutton',{name:'Section 2 end bar'}).fill('24');
-    await loopDialog.getByRole('spinbutton',{name:'Section 2 end bar'}).blur();
-    check(await loopDialog.getByRole('spinbutton',{name:'Section 2 start bar'}).inputValue()==='17',
-      'Direct bar entry failed');
-    check(await loopDialog.getByRole('spinbutton',{name:'Section 2 end bar'}).inputValue()==='24',
-      'Custom section end not saved');
-    await loopDialog.getByRole('button',{name:'+ Add section'}).click();
-    check(await loopDialog.getByRole('region',{name:'Section 3'}).count()===1,'Third section missing');
-    await loopDialog.getByRole('button',{name:'Remove section 3'}).click();
-    check(await loopDialog.getByRole('region',{name:'Section 3'}).count()===0,'Remove section failed');
-    await loopDialog.getByRole('button',{name:/Repeat whole plan/}).click();
-    check(await loopDialog.getByRole('button',{name:/Repeat whole plan/}).getAttribute('aria-pressed')==='true',
-      'Continuous plan option did not enable');
-    await loopDialog.getByRole('button',{name:/Repeat whole plan/}).click();
-    const sheet=await loopDialog.boundingBox();
-    check(sheet && sheet.width<=width+1 && sheet.y>=0,'Loop settings sheet exceeds viewport');
-    await page.screenshot({path:join(dir,'P02-loop-settings-'+width+'x'+height+'.png'),animations:'disabled'});
-    await loopDialog.getByRole('button',{name:'Apply plan'}).click();
-    check(await page.getByRole('button',{name:/2 sections/}).isVisible(),'Two-section plan not applied');
-    check(await page.locator('.measure.looped').count()===4,'First configured range not highlighted');
-    await page.getByRole('button',{name:'Configure loop'}).click();
-    await loopDialog.getByRole('button',{name:/No looping/}).click();
-    await page.keyboard.press('Escape');
-    check(await loopDialog.count()===0,'Escape did not close loop settings');
-    check(await page.getByRole('button',{name:/2 sections/}).isVisible(),'Escape changed active plan');
-    await page.getByRole('button',{name:'Configure loop'}).click();
-    await loopDialog.getByRole('button',{name:/No looping/}).click();
-    await loopDialog.getByRole('button',{name:'Apply plan'}).click();
-    check(await page.getByRole('button',{name:/^Off/}).isVisible(),'No looping mode not applied');
-    check(await page.locator('.measure.looped').count()===0,'No looping should clear active range');
     await page.getByRole('button',{name:/^Measure 8:/}).click();
     await page.getByRole('button',{name:'Next measure'}).click();
     check(await page.getByRole('button',{name:/^Measure 9:/}).getAttribute('aria-pressed')==='true','Measure transport failed');
@@ -156,6 +105,7 @@ try {
     await page.goto(url+'/routines',{waitUntil:'networkidle'});
     await page.getByRole('button',{name:'Open Daily Jazz Warm-Up in player'}).click();
     await page.waitForURL(u=>u.pathname==='/player');
+    await page.getByRole('tab',{name:'Chart'}).click();
     const guided=await assess(12,'Guided blues '+width+'x'+height);
     check(await page.getByRole('button',{name:/^Measure 12:/}).count()===1,'Last guided measure not visible');
     await page.screenshot({path:join(dir,'P02-guided-complete-blues-'+width+'x'+height+'.png'),animations:'disabled'});

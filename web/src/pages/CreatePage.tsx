@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { exercisesById } from '../data/seed';
 import { useApp } from '../context/AppContext';
@@ -10,6 +10,9 @@ import {
   type LocalRepository,
 } from '../repository/localRepository';
 import type { Exercise, LocalExercise, LocalRoutine, Visibility } from '../types/content';
+import {
+  appendBuilderExercise, previewRoutineImport, searchCatalogExercises, searchCatalogRoutines
+} from './routinePickerLogic';
 import './CreatePage.css';
 
 interface BuilderStep { exerciseId: string; minutes: number; }
@@ -36,19 +39,24 @@ function loadBuilderSteps(repo: LocalRepository, exercises: Exercise[]): Builder
 export function CreatePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { repo, exercises, charts, refreshLocal, showToast, teamSignedIn, saveRoutineToCloud, saveExerciseToCloud } = useApp();
+  const { repo, exercises, charts, routines, publicRoutines, refreshLocal, showToast, teamSignedIn, saveRoutineToCloud, saveExerciseToCloud } = useApp();
   const editId = (location.state as { editExerciseId?: string } | null)?.editExerciseId;
 
   const originalDraft = useMemo(() => repo.readCreateDraft(), [repo]);
   const [title, setTitle] = useState(originalDraft?.title ?? 'My Morning Standards');
-  const [description, setDescription] = useState(originalDraft?.description ?? 'A focused practice routine for building confidence on a standard.');
+  const [description, setDescription] = useState(originalDraft?.description ?? 'A few simple steps to feel more confident playing jazz.');
   const [visibility, setVisibility] = useState<Visibility>(originalDraft?.visibility ?? 'Private');
   const [instrument, setInstrument] = useState('Piano');
   const [goal, setGoal] = useState('Jazz standards');
   const [steps, setSteps] = useState<BuilderStep[]>(() => loadBuilderSteps(repo, exercises));
   const [saving, setSaving] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
-  const [pickerExerciseId, setPickerExerciseId] = useState('blues-form');
+  const pickerTriggerRef = useRef<HTMLButtonElement>(null);
+  const [pickerTab, setPickerTab] = useState<'Exercises' | 'Routines'>('Exercises');
+  const [pickerSearch, setPickerSearch] = useState('');
+  const [pickerLevel, setPickerLevel] = useState('');
+  const [pickerGoal, setPickerGoal] = useState('');
+  const [selectedRoutineId, setSelectedRoutineId] = useState<string | null>(null);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [exTitle, setExTitle] = useState('');
   const [exCategory, setExCategory] = useState('Technique');
@@ -94,6 +102,38 @@ export function CreatePage() {
 
   const exerciseFor = (id: string) => exercises.find(ex => ex.id === id) ?? exercisesById[id];
 
+  // Context includes this user's scoped local/cloud routines and public routines only.
+  const catalogRoutines = useMemo(() => Array.from(new Map(
+    [...routines, ...publicRoutines.filter(routine => routine.visibility === 'public')]
+      .map(routine => [routine.id, routine] as const)
+  ).values()), [routines, publicRoutines]);
+  const foundExercises = useMemo(() =>
+    searchCatalogExercises(exercises, pickerSearch, pickerLevel, pickerGoal),
+    [exercises, pickerSearch, pickerLevel, pickerGoal]);
+  const foundRoutines = useMemo(() =>
+    searchCatalogRoutines(catalogRoutines, exercises, pickerSearch, pickerLevel, pickerGoal),
+    [catalogRoutines, exercises, pickerSearch, pickerLevel, pickerGoal]);
+  const selectedRoutine = catalogRoutines.find(routine => routine.id === selectedRoutineId);
+  const importPreview = selectedRoutine ? previewRoutineImport(selectedRoutine, steps, exercises) : null;
+
+  const closePicker = () => {
+    setShowPicker(false);
+    setSelectedRoutineId(null);
+    pickerTriggerRef.current?.focus();
+  };
+  useEffect(() => {
+    if (!showPicker) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowPicker(false);
+        setSelectedRoutineId(null);
+        pickerTriggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showPicker]);
+
   const moveStep = (index: number, delta: number) => {
     setSteps(previous => {
       const target = index + delta;
@@ -107,11 +147,35 @@ export function CreatePage() {
   const setStepMinutes = (index: number, minutes: number) =>
     setSteps(previous => previous.map((step, i) => i === index ? { ...step, minutes } : step));
 
-  const addExistingExercise = () => {
-    const exercise = exerciseFor(pickerExerciseId);
-    if (!exercise) return;
-    setSteps(previous => [...previous, { exerciseId: exercise.id, minutes: exercise.duration_minutes }]);
-    setShowPicker(false);
+  const addExistingExercise = (exercise: Exercise) => {
+    if (steps.some(step => step.exerciseId === exercise.id)) return;
+    setSteps(previous => appendBuilderExercise(previous, exercise));
+    showToast(exercise.title + ' added.');
+  };
+
+  const addExistingRoutine = () => {
+    if (!selectedRoutine || !importPreview?.additions.length) return;
+    for (const entry of importPreview.additions) {
+      if (exerciseFor(entry.source.exercise_id)) continue;
+      const snapshot = entry.source.snapshot;
+      if (!snapshot) continue;
+      // Snapshot copies are private to this device/account; shared source routines are untouched.
+      const localCopy: LocalExercise = {
+        id: entry.exerciseId, title: snapshot.title, instructions: snapshot.instructions,
+        chart_id: snapshot.chart_id, category: 'Technique',
+        level: selectedRoutine.level, duration_minutes: entry.minutes,
+        suggested_material: 'Imported from ' + selectedRoutine.title,
+        suggested_bpm: null, audio_asset_id: null, visibility: 'private',
+        is_seed: false, applicable_instruments: ['All'],
+      };
+      repo.saveLocalExercise(localCopy);
+    }
+    setSteps(previous => [...previous, ...importPreview.additions.map(entry => ({
+      exerciseId: entry.exerciseId, minutes: entry.minutes
+    }))]);
+    refreshLocal();
+    showToast(importPreview.additions.length + ' steps added from ' + selectedRoutine.title + '.');
+    closePicker();
   };
 
   const saveExercise = async () => {
@@ -207,7 +271,7 @@ export function CreatePage() {
       <div className="builder-form">
         <label htmlFor="routineName">Routine title <span aria-hidden="true">*</span></label>
         <input id="routineName" className="builder-field" value={title} onChange={e => setTitle(e.target.value)} required />
-        <label htmlFor="desc">Description</label>
+        <label htmlFor="desc">What would you like to practice?</label>
         <textarea id="desc" className="builder-field" rows={3} value={description} onChange={e => setDescription(e.target.value)} />
         <div className="builder-two-fields">
           <div><label htmlFor="builderInstrument">Instrument</label>
@@ -216,7 +280,7 @@ export function CreatePage() {
                 <option key={value}>{value}</option>)}
             </select>
           </div>
-          <div><label htmlFor="builderGoal">Goal</label>
+          <div><label htmlFor="builderGoal">Practice goal</label>
             <select id="builderGoal" className="builder-field" value={goal} onChange={e => setGoal(e.target.value)}>
               {['Jazz standards', 'Technique', 'Improvisation', 'Ear Training', 'Rhythm', 'Harmony'].map(value =>
                 <option key={value}>{value}</option>)}
@@ -254,8 +318,9 @@ export function CreatePage() {
               <span className="builder-step-grip" aria-hidden="true"><svg width="13" height="19" viewBox="0 0 13 19" fill="currentColor"><circle cx="3" cy="3" r="1.3"/><circle cx="10" cy="3" r="1.3"/><circle cx="3" cy="9" r="1.3"/><circle cx="10" cy="9" r="1.3"/><circle cx="3" cy="15" r="1.3"/><circle cx="10" cy="15" r="1.3"/></svg></span>
               <div className="builder-step-content">
                 <strong>{index + 1}. {label}</strong>
-                <span>{exercise?.category ?? 'Exercise'}{chart ? ' · ' + chart.title : ''}</span>
-                <label className="builder-step-time">Minutes
+                <span>{exercise?.level ?? 'Exercise'}{chart ? ' · ' + chart.title : ''}</span>
+                 {exercise?.instructions && <p className="builder-step-instructions">{exercise.instructions}</p>}
+                <label className="builder-step-time">How long?
                   <input type="number" min="1" step="1" value={step.minutes}
                     aria-label={'Duration for ' + label + ' in minutes'}
                     onChange={e => setStepMinutes(index, Number(e.target.value))} />
@@ -275,21 +340,105 @@ export function CreatePage() {
       </ol>
 
       <div className="builder-add-actions">
-        <button type="button" onClick={() => setShowPicker(value => !value)}>+ Existing exercise</button>
-        <button type="button" onClick={() => setShowExerciseForm(value => !value)}>+ New exercise</button>
+        <button type="button" ref={pickerTriggerRef} onClick={() => { setPickerTab('Exercises'); setShowPicker(true); }}>+ Add Existing</button>
+        <button type="button" onClick={() => setShowExerciseForm(value => !value)}>+ Create your own exercise</button>
       </div>
 
-      {showPicker && <div className="builder-panel">
-        <label htmlFor="existingExercise">Add a warm-up, skill, or song/chart exercise</label>
-        <select className="builder-field" id="existingExercise" value={pickerExerciseId}
-          onChange={e => setPickerExerciseId(e.target.value)}>
-          {exercises.map(ex => <option key={ex.id} value={ex.id}>{ex.category} · {ex.title}{ex.chart_id ? ' (chart)' : ''}</option>)}
-        </select>
-        <button className="builder-panel-primary" type="button" onClick={addExistingExercise}>Add step</button>
+      {showPicker && <div className="builder-picker-backdrop" onMouseDown={event => {
+        if (event.target === event.currentTarget) closePicker();
+      }}>
+        <section className="builder-picker-dialog" role="dialog" aria-modal="true" aria-label="Add exercises to your routine">
+          <div className="builder-picker-top">
+            <div><p className="builder-eyebrow">Your practice library</p><h3>Add to your routine</h3></div>
+            <button type="button" className="builder-picker-close" onClick={closePicker} aria-label="Close exercise library">×</button>
+          </div>
+          <label htmlFor="builderPickerSearch" className="builder-picker-label">Search by name or skill</label>
+          <input id="builderPickerSearch" type="search" autoFocus className="builder-field"
+            placeholder="Try blues, chords, rhythm..." value={pickerSearch}
+            onChange={event => { setPickerSearch(event.target.value); setSelectedRoutineId(null); }} />
+          <div className="builder-picker-tabs" role="tablist" aria-label="Choose exercises or routines">
+            {(['Exercises', 'Routines'] as const).map(value => (
+              <button type="button" role="tab" aria-selected={pickerTab === value} key={value}
+                className={pickerTab === value ? 'is-selected' : ''}
+                onClick={() => { setPickerTab(value); setSelectedRoutineId(null); }}>{value}</button>
+            ))}
+          </div>
+          <div className="builder-picker-filters">
+            <label>Skill level
+              <select className="builder-field" value={pickerLevel}
+                onChange={event => { setPickerLevel(event.target.value); setSelectedRoutineId(null); }}>
+                <option value="">All levels</option>
+                {['Beginner', 'Intermediate', 'Advanced'].map(value => <option key={value}>{value}</option>)}
+              </select>
+            </label>
+            <label>Practice goal
+              <select className="builder-field" value={pickerGoal}
+                onChange={event => { setPickerGoal(event.target.value); setSelectedRoutineId(null); }}>
+                <option value="">All goals</option>
+                {['Rhythm', 'Technique', 'Harmony', 'Improvisation', 'Ear Training', 'Repertoire'].map(value =>
+                  <option key={value}>{value}</option>)}
+              </select>
+            </label>
+          </div>
+          <div className="builder-picker-results">
+            {pickerTab === 'Exercises' ? <>
+              <p className="builder-picker-count">{foundExercises.length} exercises</p>
+              {foundExercises.map(exercise => {
+                const added = steps.some(step => step.exerciseId === exercise.id);
+                return <article className="builder-picker-result" key={exercise.id}>
+                  <div>
+                    <h4>{exercise.title}</h4>
+                    <p>{exercise.instructions}</p>
+                    <span>{exercise.level} · {exercise.duration_minutes} min · {exercise.category}</span>
+                  </div>
+                  <button type="button" disabled={added} onClick={() => addExistingExercise(exercise)}>
+                    {added ? 'Added' : 'Add'}
+                  </button>
+                </article>;
+              })}
+              {foundExercises.length === 0 && <p className="builder-picker-empty">
+                {exercises.length ? 'No exercises match. Try another word or clear the filters.' :
+                  'Your exercise library is empty. Create your own exercise to begin.'}
+              </p>}
+            </> : <>
+              <p className="builder-picker-count">{foundRoutines.length} routines · Presets, yours and shared</p>
+              {foundRoutines.map(routine => (
+                <article className="builder-picker-result" key={routine.id}>
+                  <div>
+                    <h4>{routine.title}</h4>
+                    <p>{routine.description || 'Practice these steps in order.'}</p>
+                    <span>{routine.level} · {routine.duration_minutes} min · {routine.steps.length} steps</span>
+                  </div>
+                  <button type="button" onClick={() => setSelectedRoutineId(routine.id)}>View steps</button>
+                </article>
+              ))}
+              {foundRoutines.length === 0 && <p className="builder-picker-empty">
+                No routines match. Try another word or clear the filters.
+              </p>}
+            </>}
+          </div>
+          {selectedRoutine && importPreview && <div className="builder-picker-confirm">
+            <h4>Add from {selectedRoutine.title}?</h4>
+            <ol>{selectedRoutine.steps.map((step, index) => (
+              <li key={index}>{exerciseFor(step.exercise_id)?.title ?? step.snapshot?.title ?? 'Unavailable exercise'}
+                <span>{step.duration_minutes} min</span></li>
+            ))}</ol>
+            <p><strong>{importPreview.additions.length} steps will be added.</strong>
+              {importPreview.duplicates > 0 ? ' ' + importPreview.duplicates + ' already in your routine will be skipped.' : ''}
+              {importPreview.unavailable > 0 ? ' ' + importPreview.unavailable + ' unavailable steps cannot be copied.' : ''}
+              {' '}You can change the time or order afterward.</p>
+            <div className="builder-picker-confirm-actions">
+              <button type="button" onClick={() => setSelectedRoutineId(null)}>Back</button>
+              <button type="button" disabled={importPreview.additions.length === 0} onClick={addExistingRoutine}>
+                Add {importPreview.additions.length} {importPreview.additions.length === 1 ? 'step' : 'steps'}
+              </button>
+            </div>
+          </div>}
+        </section>
       </div>}
 
       {showExerciseForm && <div className="builder-panel builder-custom-form">
-        <h3>{editId ? 'Edit exercise' : 'New exercise'}</h3>
+        <h3>{editId ? 'Edit exercise' : 'Create your own exercise'}</h3>
         <label htmlFor="exTitle">Title</label>
         <input className="builder-field" id="exTitle" value={exTitle} onChange={e => setExTitle(e.target.value)} />
         <div className="builder-two-fields">
@@ -300,9 +449,9 @@ export function CreatePage() {
             {['Beginner', 'Intermediate', 'Advanced'].map(l => <option key={l}>{l}</option>)}
           </select></div>
         </div>
-        <label htmlFor="exMin">Duration (minutes)</label>
+        <label htmlFor="exMin">How long? (minutes)</label>
         <input id="exMin" type="number" min="1" className="builder-field" value={exMinutes} onChange={e => setExMinutes(Number(e.target.value))} />
-        <label htmlFor="exInst">Instructions</label>
+        <label htmlFor="exInst">What should you do?</label>
         <textarea id="exInst" className="builder-field" value={exInstructions} onChange={e => setExInstructions(e.target.value)} />
         <label htmlFor="exChart">Linked chart (optional)</label>
         <select id="exChart" className="builder-field" value={exChartId} onChange={e => setExChartId(e.target.value)}>

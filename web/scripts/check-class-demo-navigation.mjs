@@ -47,6 +47,7 @@ try {
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
     await requireUrl('/player');
     await page.getByText('Guided Practice', { exact: true }).first().waitFor({ state: 'visible' });
+    await page.getByRole('tab', { name: 'Chart' }).click();
     assert(await page.locator('.practice-utility-row').count() === 1, 'Guided practice must show approved tools');
     await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).click();
     await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
