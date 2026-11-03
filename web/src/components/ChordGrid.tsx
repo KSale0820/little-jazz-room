@@ -62,6 +62,7 @@ export function ChordGrid({
               {bar.number}
               {showSectionLabels && !practiceSheet && bar.section ? ` · ${bar.section}` : ''}
             </span>
+            {bar.annotation && <span className="measure-annotation">{bar.annotation}</span>}
             <span className={`chords ${items.length > 1 ? 'two' : ''}`}>
               {items.map((c, eventIndex) => {
                 const event = bar.events[eventIndex];
