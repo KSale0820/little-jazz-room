@@ -8,10 +8,13 @@ Bass. The normal approved instrument gauge remains unchanged.
   a live eight-second pitch trajectory. Up means higher pitch, down means
   lower pitch, and breaks mean silence or sound without confident pitch.
 - **Show pitch graph** reveals the trajectory in other tuner modes.
-- **Spoken notes** is optional, off by default, and available in Voice mode
-  when the browser supports SpeechSynthesis. It announces only a sustained,
-  detected note after ~850 ms, throttled to avoid constant announcements.
-  Use headphones to prevent the spoken output being captured by the mic.
+- **Spoken notes** was removed after iPhone testing because it was
+  distracting and made tuning less predictable.
+- A measured note is retained for at most 400 ms across a missed analysis
+  frame; the graph only draws actual microphone measurements and breaks
+  after sustained silence.
+- The status occupies one fixed-height line to prevent the rest of the
+  interface shifting, and all four mode labels fit at narrow phone widths.
 - The graph is drawn from real analyser samples, not decorative or invented
   data. It does not save, upload or record the mic.
 
@@ -22,7 +25,7 @@ the browser's microphone stack, verifies A4 detection, selects Voice, asserts
 that the graph receives multiple actual samples and captures 390 × 844 and
 375 × 667 screenshots. Unit tests cover pitch-to-chart transformations,
 silent gaps and voice-mode note mapping. Live iPhone Safari voice output
-and audio behavior still require physical-device checking.
+and sustained input behavior still require physical-device checking.
 
 ## Vercel
 

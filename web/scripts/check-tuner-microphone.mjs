@@ -83,9 +83,22 @@ try {
   for (const [width, height] of [[390, 844], [375, 667]]) {
     await page.setViewportSize({ width, height });
     await page.getByRole('region', { name: 'Live pitch graph' }).scrollIntoViewIfNeeded();
+    // The status row must not resize as audio readings change.
+    const statusWithNote = await page.locator('.tuner-status').evaluate(element => element.getBoundingClientRect().height);
     await page.screenshot({ path: `tuner-voice-${width}x${height}.png` });
     const overflowing = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
     if (overflowing) throw new Error('Voice tuner overflows horizontal viewport at ' + width);
+    await page.getByRole('button', { name: 'Chromatic' }).click();
+    const modeTextFits = await page.getByRole('button', { name: 'Chromatic' }).evaluate(button =>
+      button.scrollWidth <= button.clientWidth + 1);
+    if (!modeTextFits) throw new Error('Chromatic tab is cropped at ' + width);
+    const statusAfterSwitch = await page.locator('.tuner-status').evaluate(element => element.getBoundingClientRect().height);
+    if (statusWithNote !== statusAfterSwitch || statusAfterSwitch > 40) {
+      throw new Error('Status changed height at ' + width + ': ' + statusWithNote + ' -> ' + statusAfterSwitch);
+    }
+    await page.getByRole('button', { name: 'Voice' }).click();
+    const spokenOption = await page.getByRole('button', { name: /Spoken notes/ }).count();
+    if (spokenOption) throw new Error('Spoken notes toggle should be absent');
   }
   if (errors.length) throw new Error('Page errors: ' + errors.join('; '));
   console.log('PASS: real browser microphone detected A4 at ' + frequency +
