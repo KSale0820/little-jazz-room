@@ -1,12 +1,27 @@
 import type { Chart, ChartBar, ChordEvent, ChordQuality } from '../../types/content';
 
 export const CHART_KEYS = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'] as const;
-export type ChartMeter = 2 | 3 | 4;
+/** Number of written note units in a measure. ChordEvent.beat is 1-based in these units. */
+export type ChartMeter = number;
+export type ChartBeatUnit = 2 | 4 | 8;
+export interface ParsedChartMeter {
+  numerator: number;
+  denominator: ChartBeatUnit;
+}
 
-/** Only quarter-note meters are supported by the current Practice Player. */
-export function parseChartMeter(input: string): ChartMeter | null {
-  const match = input.trim().match(/^([234])\s*\/\s*4$/);
-  return match ? Number(match[1]) as ChartMeter : null;
+/** Accept common simple, irregular and compound meters while retaining exact note units. */
+export function parseChartMeter(input: string): ParsedChartMeter | null {
+  const match = input.trim().match(/^(\d{1,2})\s*\/\s*(2|4|8)$/);
+  if (!match) return null;
+  const numerator = Number(match[1]);
+  if (numerator < 1 || numerator > 12) return null;
+  return { numerator, denominator: Number(match[2]) as ChartBeatUnit };
+}
+
+/** BPM means quarter notes per minute. An event beat is the meter's denominator note. */
+export function chartEventDurationMs(durationBeats: number, meter: ParsedChartMeter, quarterBpm: number): number {
+  if (!Number.isFinite(quarterBpm) || quarterBpm <= 0) throw new Error('Tempo must be positive.');
+  return durationBeats * 4 / meter.denominator * 60000 / quarterBpm;
 }
 
 export interface DraftChord {
@@ -19,6 +34,8 @@ export interface DraftChord {
 export interface DraftBar {
   id: string;
   number: number;
+  /** Section marker starts a new A, B, C, or D phrase; null continues the previous one. */
+  section: string | null;
   annotation: string;
   events: DraftChord[];
 }
@@ -27,6 +44,7 @@ export interface ChartDraft {
   title: string;
   concert_key: string;
   beats: ChartMeter;
+  beat_unit: ChartBeatUnit;
   feel: string;
   style_instruction: string;
   bars: DraftBar[];
@@ -98,26 +116,28 @@ export function parseChordSymbol(raw: string): ParsedChord {
 }
 
 export function blankDraftBar(number: number, beats: number): DraftBar {
-  return { id: chartDraftId(), number, annotation: '', events: [
+  return { id: chartDraftId(), number, section: number === 1 ? 'A' : null, annotation: '', events: [
     { id: chartDraftId(), beat: 1, duration_beats: beats, symbol: '' },
   ] };
 }
 
 export function freshChartDraft(): ChartDraft {
-  return { title: '', concert_key: 'C', beats: 4, feel: 'Swing',
+  return { title: '', concert_key: 'C', beats: 4, beat_unit: 4, feel: 'Swing',
     style_instruction: '', bars: Array.from({ length: 4 }, (_, i) => blankDraftBar(i + 1, 4)) };
 }
 
 export function draftFromChart(chart: Chart): ChartDraft {
-  const beats = chart.time_signature[0] as ChartMeter;
+  const beats = chart.time_signature[0];
+  const beatUnit = chart.time_signature[1];
   return {
     title: chart.title,
     concert_key: normalizeChartKey(chart.concert_key) ?? 'C',
-    beats: beats === 2 || beats === 3 || beats === 4 ? beats : 4,
+    beats: beats >= 1 && beats <= 12 ? beats : 4,
+    beat_unit: beatUnit === 2 || beatUnit === 8 ? beatUnit : 4,
     feel: chart.feel || '',
     style_instruction: chart.style_instruction ?? '',
     bars: chart.bars.map(bar => ({
-      id: chartDraftId(), number: bar.number, annotation: bar.annotation ?? '',
+      id: chartDraftId(), number: bar.number, section: bar.section, annotation: bar.annotation ?? '',
       events: bar.events.map(event => ({ ...event, id: chartDraftId(), symbol: formatChordSymbol(event) })),
     })),
   };
@@ -125,6 +145,37 @@ export function draftFromChart(chart: Chart): ChartDraft {
 
 export function renumberDraftBars(bars: DraftBar[]): DraftBar[] {
   return bars.map((bar, index) => ({ ...bar, number: index + 1 }));
+}
+
+export interface DraftSection {
+  label: string;
+  start: number;
+  end: number; // exclusive
+}
+
+/** A marker opens a phrase; the following marker closes it. Repeat markers form A–B–A. */
+export function draftSections(bars: DraftBar[]): DraftSection[] {
+  const sections: DraftSection[] = [];
+  for (let index = 0; index < bars.length; index++) {
+    const label = bars[index]!.section;
+    if (!label) continue;
+    if (sections.length) sections[sections.length - 1]!.end = index;
+    sections.push({ label, start: index, end: bars.length });
+  }
+  return sections;
+}
+
+/** Append real, independent events, not repeat pointers, so the existing player stays deterministic. */
+export function duplicateDraftSection(bars: DraftBar[], label: string): { bars: DraftBar[]; newStart: number } | null {
+  const source = draftSections(bars).find(section => section.label === label);
+  if (!source) return null;
+  const copies = bars.slice(source.start, source.end).map((bar, index) => ({
+    ...bar,
+    id: chartDraftId(),
+    section: index === 0 ? label : null,
+    events: bar.events.map(event => ({ ...event, id: chartDraftId() })),
+  }));
+  return { bars: renumberDraftBars([...bars, ...copies]), newStart: bars.length };
 }
 
 export function splitDraftChord(bar: DraftBar, id: string): DraftBar {
@@ -220,7 +271,7 @@ export function validateDraftBars(bars: DraftBar[], beats: number): { bars: Char
       nextBeat = draft.beat + draft.duration_beats;
     });
     if (nextBeat !== beats + 1) errors.push('Measure ' + (barIndex + 1) + ' must contain exactly ' + beats + ' beats.');
-    result.push({ number: barIndex + 1, section: null, events, annotation: bar.annotation.trim() || undefined });
+    result.push({ number: barIndex + 1, section: bar.section ?? null, events, annotation: bar.annotation.trim() || undefined });
   });
   return { bars: result, errors };
 }
@@ -228,6 +279,8 @@ export function validateDraftBars(bars: DraftBar[], beats: number): { bars: Char
 export function buildChartFromDraft(draft: ChartDraft, id: string, existing?: Chart): Chart {
   const title = draft.title.trim();
   if (!title) throw new Error('Give your chart a name before saving.');
+  const meter = parseChartMeter(draft.beats + '/' + (draft.beat_unit ?? 4));
+  if (!meter) throw new Error('Use a valid time signature from 1–12 over 2, 4, or 8.');
   const { bars, errors } = validateDraftBars(draft.bars, draft.beats);
   if (errors.length) throw new Error(errors[0]!);
   const now = new Date().toISOString();
@@ -235,7 +288,7 @@ export function buildChartFromDraft(draft: ChartDraft, id: string, existing?: Ch
     ...existing,
     id, title,
     concert_key: draft.concert_key,
-    time_signature: [draft.beats, 4],
+    time_signature: [meter.numerator, meter.denominator],
     feel: draft.feel,
     form: bars.length + '-bar custom chart',
     style_instruction: draft.style_instruction.trim() || undefined,
