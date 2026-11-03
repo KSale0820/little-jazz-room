@@ -8,10 +8,10 @@ const base = process.env.APP_URL || 'http://127.0.0.1:5174';
 const output = join(process.cwd(), 'docs/screenshots/class-demo-cross-screen');
 mkdirSync(output, { recursive: true });
 const screens = [
-  ['H01-home', '/', '.h01-page'],
+  ['P01-practice-root', '/', '.p01-page'],
   ['T01-tracks', '/tracks', '.t01-page'],
   ['T02-charts', '/charts', '.demo-page'],
-  ['P01-practice-hub', '/practice', '.p01-page'],
+  ['P01-practice-direct', '/practice', '.p01-page'],
   ['R01-routine-library', '/routines', '.routine-library'],
   ['R03-routine-builder', '/create', '.routine-builder'],
   ['G01-progress-empty', '/progress', '.g01-page'],
@@ -71,15 +71,13 @@ try {
     for (const [name, path, selector] of screens) {
       await page.goto(base + path, { waitUntil: 'networkidle' });
       await verify(name, selector);
-      if (name === 'H01-home') {
-        check(await page.locator('.h01-hotspot').count() === 4,
-          'H01 must retain four room hotspots');
-        check(!(await page.getByText("Let's practice with a backing track.").count()),
-          'H01 must not advertise unavailable recorded playback');
-      }
-      if (name === 'P01-practice-hub') {
-        check(await page.locator('.p01-tool').count() === 3,
-          'P01 must keep Tuner, Metronome and Resume tools');
+      if (name.startsWith('P01-')) {
+        check(new URL(page.url()).pathname === '/practice',
+          'Practice-first root/direct navigation must resolve to /practice');
+        check(await page.locator('.p01-tool').count() === 2,
+          'P01 must expose Tuner and Metronome as quick tools');
+        check(await page.locator('.p01-action').count() === 3,
+          'P01 must show Free, Track, and Routine actions');
         check(!(await page.locator('.p01-preview').count()),
           'P01 must not show obsolete microphone or metronome preview');
       }
