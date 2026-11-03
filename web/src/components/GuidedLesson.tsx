@@ -5,16 +5,12 @@ import type { GuidedLesson as Lesson } from '../lib/guidedLesson';
 
 interface Props {
   lesson: Lesson;
-  catId: CatId;
   stepIndex: number;
   totalSteps: number;
 }
 
 /** Compact, scrollable instructional content, independent of the shared timer. */
-export function GuidedLesson({ lesson, catId, stepIndex, totalSteps }: Props) {
-  const [coachIndex, setCoachIndex] = useState(0);
-  useEffect(() => setCoachIndex(0), [stepIndex, lesson.title]);
-  const catName = JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'Your companion';
+export function GuidedLesson({ lesson, stepIndex, totalSteps }: Props) {
 
   return (
     <section className="practice-lesson-scroll" aria-label="Guided lesson instructions" tabIndex={0}>
@@ -55,17 +51,26 @@ export function GuidedLesson({ lesson, catId, stepIndex, totalSteps }: Props) {
           </section>
         )}
 
-        <aside className="practice-cat-coach" aria-label={catName + ' your jazz coach'}>
-          <CatSprite catId={catId} variant="closeup" size={56} className="practice-coach-portrait" decorative />
-          <div className="practice-coach-bubble">
-            <strong>{catName} says</strong>
-            <p>{lesson.catPrompts[coachIndex % lesson.catPrompts.length]}</p>
-            {lesson.catPrompts.length > 1 && <button type="button" onClick={() => setCoachIndex(current => (current + 1) % lesson.catPrompts.length)}>
-              Another tip
-            </button>}
-          </div>
-        </aside>
       </div>
     </section>
+  );
+}
+
+/** Keep the selected companion and its tip visible outside the scrolling lesson. */
+export function GuidedCatCoach({ lesson, catId }: { lesson: Lesson; catId: CatId }) {
+  const [coachIndex, setCoachIndex] = useState(0);
+  useEffect(() => setCoachIndex(0), [lesson.title]);
+  const catName = JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'Your companion';
+  return (
+    <aside className="practice-cat-coach" aria-label={catName + ' your jazz coach'}>
+      <CatSprite catId={catId} variant="closeup" size={56} className="practice-coach-portrait" decorative />
+      <div className="practice-coach-bubble">
+        <strong>{catName} says</strong>
+        <p>{lesson.catPrompts[coachIndex % lesson.catPrompts.length]}</p>
+        {lesson.catPrompts.length > 1 && <button type="button" onClick={() => setCoachIndex(current => (current + 1) % lesson.catPrompts.length)}>
+          Another tip
+        </button>}
+      </div>
+    </aside>
   );
 }
