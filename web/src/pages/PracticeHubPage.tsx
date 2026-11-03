@@ -20,7 +20,7 @@ export function PracticeHubPage() {
 
   const startFreePractice = () => {
     setActiveRoutineId(null);
-    navigate('/player');
+    navigate('/player?mode=free');
   };
 
   // A saved session has finished. This starts another session with the same
@@ -28,7 +28,7 @@ export function PracticeHubPage() {
   const continuePractice = () => {
     if (!latestSession) return;
     setActiveRoutineId(recentRoutine?.id ?? null);
-    navigate('/player');
+    navigate(recentRoutine ? '/player?routine=' + encodeURIComponent(recentRoutine.id) : '/player?mode=free');
   };
 
   return (
