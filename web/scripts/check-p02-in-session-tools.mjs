@@ -27,6 +27,7 @@ try {
       await page.goto(base + '/practice', { waitUntil: 'networkidle' });
       await page.getByRole('button', { name: /^Free Practice/ }).click();
       await page.waitForURL(url => url.pathname === '/player');
+      await page.locator('.practice-utility-row').waitFor({ state: 'attached' });
     };
     const noOverflow = async () => {
       const offset = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
@@ -40,10 +41,13 @@ try {
     check(await page.getByRole('button', { name: /Mixer Preview/ }).isDisabled(), 'Mixer must remain Preview');
     await page.locator('#practice-key').selectOption('G');
     check(await page.locator('#practice-key').inputValue() === 'G', 'Independent key picker failed');
-    await page.locator('#practice-loop').selectOption('5-8');
+    await page.getByRole('button',{name:'Full chart'}).click();
+    const loopSettings=page.getByRole('dialog',{name:'Repeat a section'});
+    await loopSettings.getByRole('button',{name:'5–8'}).click();
     check(await page.locator('.measure.looped').count() === 4, 'Loop control did not highlight bars 5–8');
-    await page.locator('#practice-loop').selectOption('all');
-    check(await page.locator('.measure.looped').count() === 0, 'Full Chart did not clear range');
+    await page.getByRole('button',{name:'Bars 5–8'}).click();
+    await loopSettings.getByRole('button',{name:'Full chart'}).click();
+    check(await page.locator('.measure.looped').count() === 0, 'Full chart did not clear range');
     await page.screenshot({ path: join(out, 'P02-free-chart-' + width + 'x' + height + '.png') });
     await page.getByRole('tab', { name: 'Player' }).click();
     await page.screenshot({ path: join(out, 'P02-free-player-' + width + 'x' + height + '.png') });
@@ -126,7 +130,7 @@ try {
     check(await page.locator('.practice-utility-row button').count() === 3, 'Guided must preserve the three in-session tools');
     check(await page.locator('#practice-key').isVisible(), 'Guided Key control missing');
     check(await page.locator('#practice-bpm').isVisible(), 'Guided BPM control missing');
-    check(await page.locator('#practice-loop').isVisible(), 'Guided Loop control missing');
+    check(await page.getByRole('button',{name:'Full chart'}).isVisible(), 'Guided Loop settings control missing');
     await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).click();
     await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
     check(new URL(page.url()).pathname === '/player', 'Guided Tuner changed route');
