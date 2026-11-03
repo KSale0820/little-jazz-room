@@ -77,12 +77,12 @@ describe('searchable exercise and routine picker', () => {
       .some(r => r.id === 'first-improv')).toBe(true);
   });
 
-  it('adds an exercise once and uses its own suggested duration', () => {
+  it('adds repeat occurrences independently with suggested durations', () => {
     const ex = seedExercises.find(item => item.id === 'blues-scale')!;
     const initial = [{ exerciseId: 'swing-2-4', minutes: 7 }];
     const added = appendBuilderExercise(initial, ex);
     expect(added).toEqual([...initial, { exerciseId: ex.id, minutes: ex.duration_minutes }]);
-    expect(appendBuilderExercise(added, ex)).toBe(added);
+    expect(appendBuilderExercise(added, ex)).toEqual([...added, { exerciseId: ex.id, minutes: ex.duration_minutes }]);
     expect(initial).toHaveLength(1);
   });
 
@@ -101,7 +101,7 @@ describe('searchable exercise and routine picker', () => {
     expect(source.steps[0]?.duration_minutes).toBe(3);
   });
 
-  it('skips existing steps and safely materializes private snapshots without nesting routines', () => {
+  it('keeps repeated steps and safely materializes private snapshots without nesting routines', () => {
     const shared: Routine = {
       id: 'public-abc', title: 'Shared Routine', level: 'Beginner',
       duration_minutes: 7, visibility: 'public', applicable_instruments: ['All'],
@@ -112,12 +112,14 @@ describe('searchable exercise and routine picker', () => {
       ]
     };
     const result = previewRoutineImport(shared, [{ exerciseId: 'swing-2-4', minutes: 9 }], seedExercises);
-    expect(result.duplicates).toBe(1);
-    expect(result.additions).toEqual([{ exerciseId: snapshotExerciseId('public-abc', 1),
-      minutes: 4, source: shared.steps[1] }]);
+    expect(result.duplicates).toBe(0);
+    expect(result.additions).toEqual([
+      { exerciseId: 'swing-2-4', minutes: 3, source: shared.steps[0] },
+      { exerciseId: snapshotExerciseId('public-abc', 1), minutes: 4, source: shared.steps[1] },
+    ]);
     expect(result.unavailable).toBe(0);
     expect(previewRoutineImport(shared, [{ exerciseId: snapshotExerciseId('public-abc', 1), minutes: 4 },
-      { exerciseId: 'swing-2-4', minutes: 9 }], seedExercises).additions).toHaveLength(0);
+      { exerciseId: 'swing-2-4', minutes: 9 }], seedExercises).additions).toHaveLength(2);
     const noSnapshot: Routine = { ...shared, steps: [{ exercise_id: 'unknown', duration_minutes: 2 }] };
     expect(previewRoutineImport(noSnapshot, [], seedExercises).unavailable).toBe(1);
   });
