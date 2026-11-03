@@ -66,6 +66,18 @@ it.skipIf(!process.env.CI)('visually captures R01/R03 and completes the class-de
       await expect.poll(async () => page.getByText('Demo Practice ' + width).count()).toBeGreaterThan(0);
       await page.getByRole('button', { name: 'Open Demo Practice ' + width + ' in player' }).click();
       await page.waitForURL('**/player');
+      // Lessons should be a separate, scrollable view: never a wall of text
+      // pushing the approved full chord sheet or practice controls down.
+      await expect.poll(async () => page.getByRole('tab', { name: 'Instructions' }).isVisible()).toBe(true);
+      await page.getByRole('tab', { name: 'Instructions' }).click();
+      await expect.poll(async () => page.getByRole('tabpanel', { name: 'Guided practice instructions' }).isVisible()).toBe(true);
+      await expect.poll(async () => page.getByRole('tabpanel', { name: 'Jazz chord chart' }).count()).toBe(0);
+      await expect.poll(async () => page.locator('.practice-lesson-panel').count()).toBe(1);
+      recordImage('P02-instructions-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
+      await page.getByRole('button', { name: 'Return to chart' }).click();
+      await expect.poll(async () => page.getByRole('tabpanel', { name: 'Jazz chord chart' }).isVisible()).toBe(true);
+      await expect.poll(async () => page.locator('.practice-guided-head').count()).toBe(0);
+      recordImage('P02-chart-clean-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
       await page.reload();
       await page.goto('http://127.0.0.1:5187/routines?tab=my');
       await expect.poll(async () => page.getByRole('button', { name: 'Open Demo Practice ' + width + ' in player' }).count()).toBe(1);
