@@ -15,17 +15,29 @@ type StepperProps = {
   value: number;
   onDecrease: () => void;
   onIncrease: () => void;
+  onSet: (value: number) => void;
   min: number;
   max: number;
 };
 
-function Stepper({ title, value, onDecrease, onIncrease, min, max }: StepperProps) {
+function Stepper({ title, value, onDecrease, onIncrease, onSet, min, max }: StepperProps) {
+  const [entry, setEntry] = useState(String(value));
+  useEffect(() => setEntry(String(value)), [value]);
+  function commit() {
+    const number = Number(entry);
+    if (entry.trim() === '' || !Number.isFinite(number)) { setEntry(String(value)); return; }
+    const next = Math.max(min, Math.min(max, Math.round(number)));
+    onSet(next);
+    setEntry(String(next));
+  }
   return (
     <div className="practice-loop-range-stepper" role="group" aria-label={title}>
       <span>{title}</span>
       <div>
         <button type="button" aria-label={'Decrease ' + title.toLowerCase()} disabled={value <= min} onClick={onDecrease}>−</button>
-        <output aria-label={title}>{value}</output>
+        <input type="number" inputMode="numeric" aria-label={title} min={min} max={max} step={1}
+          value={entry} onChange={event => setEntry(event.target.value)} onBlur={commit}
+          onKeyDown={event => { if (event.key === 'Enter') event.currentTarget.blur(); }} />
         <button type="button" aria-label={'Increase ' + title.toLowerCase()} disabled={value >= max} onClick={onIncrease}>+</button>
       </div>
     </div>
@@ -108,19 +120,22 @@ export function LoopPlanSettings({ totalBars, enabled, sections, repeatPlan, onA
                   </header>
                   <div className="practice-loop-custom-fields">
                     <Stepper title={'Section ' + (index + 1) + ' start bar'} value={section.startBar}
-                      min={1} max={section.endBar}
+                      min={1} max={totalBars}
                       onDecrease={() => updateSection(index, { startBar: section.startBar - 1 })}
-                      onIncrease={() => updateSection(index, { startBar: section.startBar + 1 })} />
+                      onIncrease={() => updateSection(index, { startBar: Math.min(totalBars, section.startBar + 1), endBar: Math.max(section.endBar, section.startBar + 1) })}
+                      onSet={value => updateSection(index, { startBar: value, endBar: Math.max(value, section.endBar) })} />
                     <Stepper title={'Section ' + (index + 1) + ' end bar'} value={section.endBar}
-                      min={section.startBar} max={totalBars}
-                      onDecrease={() => updateSection(index, { endBar: section.endBar - 1 })}
-                      onIncrease={() => updateSection(index, { endBar: section.endBar + 1 })} />
+                      min={1} max={totalBars}
+                      onDecrease={() => updateSection(index, { endBar: section.endBar - 1, startBar: Math.min(section.startBar, section.endBar - 1) })}
+                      onIncrease={() => updateSection(index, { endBar: section.endBar + 1 })}
+                      onSet={value => updateSection(index, { endBar: value, startBar: Math.min(value, section.startBar) })} />
                   </div>
                   <div className="practice-loop-repeat-row">
                     <Stepper title={'Section ' + (index + 1) + ' play count'} value={section.plays}
                       min={1} max={32}
                       onDecrease={() => updateSection(index, { plays: section.plays - 1 })}
-                      onIncrease={() => updateSection(index, { plays: section.plays + 1 })} />
+                      onIncrease={() => updateSection(index, { plays: section.plays + 1 })}
+                      onSet={value => updateSection(index, { plays: value })} />
                     <span>{section.plays === 1 ? 'Play once' : 'Play ' + section.plays + ' times'}</span>
                   </div>
                 </section>
