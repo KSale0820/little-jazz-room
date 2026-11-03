@@ -1,6 +1,6 @@
 # Little Jazz Room: Native + recorded-audio feasibility
 
-Status: **engineering prototype, not device-verified**. Branch: feature/native-audio-foundation.
+Status: **both native projects generated; iOS simulator compilation passed; no device runtime verification**. Branch: feature/native-audio-foundation.
 Base: class-demo-2026-10-31. No app navigation, Practice Player, Supabase schema,
 or approved visual asset changes are made.
 
@@ -50,9 +50,10 @@ cannot be played. The max prototype file size is 250 MiB.
 
 **Actual native import and persistence have NOT been tested on a phone yet.**
 Files App / Android provider URIs, codec support, memory headroom, interruption
-and restart recovery still need instrumented device validation. The workflow
-on GitHub can compile/test web code and generate an Android scaffold; that is
-not a physical-device test or iOS build.
+and restart recovery still need instrumented device validation. GitHub Actions successfully ran the Vite/TypeScript build and unit tests,
+generated and synced the Android scaffold, generated an iOS project via SPM,
+and built the unsigned iOS Simulator target with Xcode. These steps did **not**
+launch a native app, test actual file imports, or run device audio.
 
 ## Local privacy and backup
 
@@ -133,7 +134,7 @@ sample-zero and sample rate with explicit offset/length metadata.
 
 | Test | Browser/unit | iOS simulator | iPhone hardware | Android simulator/hardware |
 | --- | --- | --- | --- | --- |
-| Vite build, TypeScript, unit tests | CI result only | not run | not run | not run |
+| Vite build, TypeScript, unit tests | **passed** on GitHub Actions Ubuntu | not run | not run | not run |
 | Native shell/routes/assets | not sufficient | not run | not run | not run |
 | OS file picker, import, persistence, delete | code only | not run | not run | not run |
 | Offline imported-file playback after restart | code only | not run | not run | not run |
@@ -145,12 +146,13 @@ sample-zero and sample rate with explicit offset/length metadata.
 
 ### Exact environment blocker
 
-The coding runtime is Linux with Node 22 and **no macOS/Xcode, iOS simulator,
-connected iPhone, Android SDK/emulator or physical Android phone**, and has
-no outbound npm/GitHub network access. It cannot run Xcode or conduct real
-phone tests. The Android scaffold and npm dependency resolution are delegated
-to a GitHub Actions Ubuntu job. iOS scaffold creation and native iPhone audio
-validation must run on a Mac with Xcode 26+, ideally an actual iPhone.
+The local coding runtime is Linux with Node 22 and **no macOS/Xcode, connected
+iPhone, Android SDK/emulator or physical Android phone**, and has no outbound
+npm/GitHub network access. GitHub Actions Ubuntu generated Android project
+sources; GitHub Actions macOS-26 generated the SPM iOS project and completed
+an unsigned **iOS Simulator compilation**. Neither runner launched an iOS or
+Android app. Import, audible drift, app lock, audio routes, storage pressure,
+and privacy on a physical iPhone remain unverified.
 
 ### Suggested device acceptance test
 
