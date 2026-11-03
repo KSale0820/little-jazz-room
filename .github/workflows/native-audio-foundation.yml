@@ -1,0 +1,58 @@
+name: Native audio foundation checks and Android scaffold
+
+on:
+  push:
+    branches:
+      - feature/native-audio-foundation
+  pull_request:
+    paths:
+      - 'web/**'
+      - '.github/workflows/native-audio-foundation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  native-foundation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Resolve pinned Capacitor dependencies
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Clean install
+        run: npm ci
+      - name: TypeScript and Vite build (both entry pages)
+        run: npm run build
+      - name: Unit tests
+        run: npm test
+      - name: Add or sync Android scaffold
+        run: |
+          if [ ! -f android/app/build.gradle ]; then npx cap add android; fi
+          npx cap sync android
+          npm run native:privacy
+      - name: Compile Android debug APK (no device installation)
+        working-directory: web/android
+        run: ./gradlew assembleDebug --no-daemon
+      - name: Record lockfile and native Android scaffold on feature branch
+        if: github.event_name == 'push'
+        working-directory: .
+        run: |
+          git add web/package-lock.json web/android
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(native): lock dependencies and generate Android project [skip ci]'
+            git push origin HEAD:feature/native-audio-foundation
+          fi

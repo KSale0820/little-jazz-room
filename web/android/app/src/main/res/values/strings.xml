@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Little Jazz Room</string>
+    <string name="title_activity_main">Little Jazz Room</string>
+    <string name="package_name">com.littlejazzroom.app</string>
+    <string name="custom_url_scheme">com.littlejazzroom.app</string>
+</resources>

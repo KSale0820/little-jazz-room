@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Little Jazz Room | Native Audio Lab</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #fff8ee; color: #1d2b26;
+      margin: 0 auto; max-width: 580px; padding: 24px 16px 60px; }
+    h1 { font-size: 1.5rem; } h2 { font-size: 1.2rem; margin-top: 32px; }
+    p { line-height: 1.5; } button, input { margin: 5px; }
+    button { background: #31503b; color: white; border: 0; border-radius: 7px; padding: 12px; }
+    button:disabled { opacity: .5; } .item { border-top: 1px solid #ced8ce; padding: 12px 0; }
+    .warn { color: #95430e; } label { display: block; margin: 7px 0; }
+  </style>
+</head>
+<body>
+  <h1>Native audio feasibility lab</h1>
+  <p>Engineering-only test harness; not part of the customer UI or shared Practice Player.</p>
+  <p id="environment" class="warn">Checking native support...</p>
+  <h2>Private audio import</h2>
+  <label>Pick an audio recording from this phone
+    <input id="file" type="file" accept="audio/*,.wav,.m4a,.mp3,.aac,.aiff,.flac,.ogg,.caf" />
+  </label>
+  <p id="import-status" role="status">Choose a file to import.</p>
+  <div id="imports"></div>
+  <audio id="recording-player" controls preload="none" style="width:100%"></audio>
+  <h2>Shared-clock recorded-stem architecture test</h2>
+  <p>These are locally generated PCM test pulses, not licensed backing tracks and not MIDI.</p>
+  <button id="start">Start / resume stems</button>
+  <button id="pause">Pause stems</button>
+  <button id="reset">Replay from 0</button>
+  <label>Seek (seconds)
+    <input id="seek" type="range" min="0" max="12" step=".1" value="0" />
+  </label>
+  <label><input id="loop" type="checkbox" /> Loop between seconds 2 and 6</label>
+  <div id="stem-controls"></div>
+  <p id="stem-status" role="status">Press Start to unlock the audio clock.</p>
+  <p class="warn">Scheduled start skew is not a physical output/drift measurement.
+    Use headphones and physical-device tests before production decisions.</p>
+  <script type="module" src="/src/native-audio/lab.ts"></script>
+</body>
+</html>
