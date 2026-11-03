@@ -41,13 +41,20 @@ try {
     check(await page.getByRole('button', { name: /Mixer Preview/ }).isDisabled(), 'Mixer must remain Preview');
     await page.locator('.practice-utility-row').getByRole('button', { name: 'Tempo/Key' }).click();
     await page.getByRole('dialog', { name: 'Tempo and key settings' }).waitFor();
-    await page.getByRole('dialog').getByRole('combobox', { name: 'Transpose concert chart key' }).selectOption('G');
+    await page.getByRole('dialog').getByRole('combobox', { name: 'Concert chart key' }).selectOption('G');
     await page.getByRole('dialog').getByRole('button', { name: 'Close settings and return to session' }).click();
     const loop = page.locator('.practice-utility-row').getByRole('button', { name: 'Loop' });
     await loop.click();
-    check(await loop.getAttribute('aria-pressed') === 'true', 'Loop tile did not enable chart highlight');
+    const loopDialog = page.getByRole('dialog', { name: 'Set up looping' });
+    await loopDialog.getByRole('button', { name: /Repeat sections/ }).click();
+    await loopDialog.getByRole('button', { name: 'Apply plan' }).click();
+    check(await loop.getAttribute('aria-pressed') === 'true', 'Loop plan did not enable section repeat');
     await loop.click();
-    check(await loop.getAttribute('aria-pressed') === 'false', 'Loop tile did not disable chart highlight');
+    await page.getByRole('dialog', { name: 'Set up looping' })
+      .getByRole('button', { name: /No looping/ }).click();
+    await page.getByRole('dialog', { name: 'Set up looping' })
+      .getByRole('button', { name: 'Apply plan' }).click();
+    check(await loop.getAttribute('aria-pressed') === 'false', 'Loop plan did not return to chart once');
     await page.screenshot({ path: join(out, 'P02-free-chart-' + width + 'x' + height + '.png') });
     await page.getByRole('tab', { name: 'Player' }).click();
     await page.screenshot({ path: join(out, 'P02-free-player-' + width + 'x' + height + '.png') });
