@@ -1,19 +1,32 @@
-# Recorded backing tracks: phase 1 (no stems required)
+# Recorded backing tracks: stereo audio without stems
 
-**Owner:** Product & Integration. **Scope:** stereo recording playback infrastructure only. No remix, uploads UI, Supabase, key/tempo DSP, stem isolation, or design changes.
+## First track: Autumn Leaves
 
-## When the first tracks arrive
+The project owner supplied an MP4 and confirmed that it is their video. Only the **AAC stereo audio** is used; there is no video component.
 
-1. Use a recording you own or are licensed to use inside the app. Keep a clear rights note for each file.
-2. Put the audio in `web/public/audio/backing-tracks/`. Prefer MP3 for broad mobile support; AAC/M4A or WAV also work. Keep original audio files out of commits until usage rights and repo-size are confirmed. This is a **public** Vite asset location: do not place private or restricted recordings here.
-3. Add metadata to `web/src/features/recordings/recordingCatalog.ts`: unique `id`, descriptive title/subtitle, linked **existing** `chartId`, `src` path, original `recordedBpm`, and `chartStartSeconds` (seconds until the actual first chart beat, including any pickup/count-in). Supply the remaining track filters and `rightsNote`. Do not create fake chart IDs. An empty catalog is the intentional default.
-4. Verify the song's structure against its chord chart. BPM is in **quarter notes per minute**; 6/8 chord events use eighth-note beat units. A single tempo/offset assumes a fixed-speed performance. Human tempo variation or rubato will require per-bar/beat sync markers in a subsequent phase.
-5. Test on Safari iPhone, desktop Chromium, and the two approved CSS viewport sizes. Confirm play/pause, scrub, restart, no autoplay, no leaked audio after navigation, and session completion. A file that fails to load must display an error, not silently fall back to chart-only playback.
+- **Track title:** Autumn Leaves
+- **ID:** `autumn-leaves`
+- **Audio asset path:** `web/public/audio/backing-tracks/autumn-leaves.m4a`
+- **Duration:** approximately 4:06
+- **Format:** AAC audio in an M4A container, stereo, 44.1 kHz, about 128 kb/s
+- **Status:** Metadata and audio-only UI prepared. The M4A binary is **not yet present in GitHub**; the Tracks card stays disabled and marked Audio pending until the asset exists.
 
-## Important constraints
+The audio file was supplied separately in this conversation. To enable it in the deployed app, upload the extracted `autumn-leaves-backing-track.m4a` to the target branch under `web/public/audio/backing-tracks/`, renaming it to `autumn-leaves.m4a`. No re-encoding is needed. Commit **only the audio**, never the original MP4 video.
 
-- One ordinary stereo file per track is sufficient. Playback runs at its **original** pitch and tempo. The existing chart reference transposition/tempo controls are NOT DSP controls for the recorded audio.
-- Do not loop/trim a recording by repeating an arbitrary section of the visual chart; this foundation repeats visual chart measures over recording time only.
-- Do not route production backing audio through the synthetic-tone `native-audio/stemTransport.ts` feasibility lab.
-- The existing shared P02 UI and Practice-first navigation are authoritative. Do not replace it with a new audio screen.
-- Do not merge this branch into the demo or `master` until CI and the first actual recording on a device are accepted.
+The source video shows an Autumn Leaves chord sequence with a G-minor tonal center, but its recorded BPM and precise first-beat offset are not verified. Therefore `chartId`, `recordedBpm`, and `chartStartSeconds` are intentionally null. The Player opens in **audio-only mode** and never substitutes an unrelated seed chart.
+
+## Adding additional owner recordings
+
+1. Verify permission to distribute the recording. A single stereo MP3, M4A, or WAV is enough; separated stems are optional future work.
+2. Add the file to `web/public/audio/backing-tracks/` and register metadata in `web/src/features/recordings/recordingCatalog.ts`.
+3. If you have a matching chord chart, set its existing stable `chartId`, the original `recordedBpm` (quarter-note BPM), and `chartStartSeconds` (actual first chart beat after any count-in). Only then enable chart synchronization.
+4. If those facts are unknown, leave chart synchronization disabled. Audio-only playback supports Play/Pause, Seek, Restart, Finish and saved practice duration.
+5. Test on iPhone Safari. Validate the exact recording from the installed/deployed origin, not a local or synthetic placeholder.
+
+## Integration constraints
+
+- Recorded sound plays at its original pitch and speed. Chart transposition/reference tempo controls do not change audio.
+- Do not use `native-audio/stemTransport.ts` synthetic tones as backing audio.
+- Do not change the approved chart-first P02 design. Audio-only mode is an additive view only when no chart is linked.
+- Supabase/file-upload UI, stem mixing, DSP transposition, and tempo-stretching are not included.
+- Do not merge this PR until build, tests, mobile QA, and actual playback from the uploaded M4A are verified.
