@@ -75,7 +75,7 @@ try {
       assert(goalBox && goalBox.y + goalBox.height <= nav.y + 1,
         'Daily progress obscured by fixed bottom navigation');
       await page.screenshot({
-        path: join(out, `P01-practice-first-${state}-${width}x${height}.png`),
+        path: join(out, `P01-practice-hub-practice-first-${state}-${width}x${height}.png`),
         fullPage: false,
       });
 
