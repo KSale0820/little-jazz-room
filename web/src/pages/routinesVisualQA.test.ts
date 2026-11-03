@@ -58,9 +58,16 @@ it.skipIf(!process.env.CI)('visually captures R01/R03 and completes the class-de
         recordImage('R03-bottom-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
       }
 
+      await page.getByRole('button', { name: '+ Add Existing' }).click();
+      await page.getByRole('dialog', { name: 'Add exercises to your routine' }).waitFor();
+      recordImage('R03-picker-exercises-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
+      await page.getByRole('tab', { name: 'Routines' }).click();
+      await page.getByRole('button', { name: 'View steps' }).first().click();
+      recordImage('R03-picker-routines-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
+      await page.getByRole('button', { name: 'Close exercise library' }).click();
       await page.getByLabel('Routine title').fill('Demo Practice ' + width);
-      await page.getByLabel('Duration for Swing on Two and Four in minutes').fill('7');
-      await page.getByRole('button', { name: 'Move Guide Tones Through ii–V–I up' }).click();
+      await page.getByLabel('Duration for Feel the Swing Beat in minutes').fill('7');
+      await page.getByRole('button', { name: 'Move Practice the Important Notes in Each Chord up' }).click();
       await page.getByRole('button', { name: /Save routine/ }).click();
       await page.waitForURL('**/routines?tab=my');
       await expect.poll(async () => page.getByText('Demo Practice ' + width).count()).toBeGreaterThan(0);
