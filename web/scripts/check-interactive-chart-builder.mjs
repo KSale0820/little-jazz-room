@@ -27,6 +27,7 @@ try {
     await page.getByRole('button', { name: 'Raise key one semitone' }).click();
     assert.equal(await page.getByRole('textbox', { name: 'Key', exact: true }).inputValue(), 'B');
     await page.getByRole('textbox', { name: 'Time signature numerator' }).fill('6');
+    await page.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Time signature denominator');
     await page.getByRole('textbox', { name: 'Time signature denominator' }).fill('8');
     await page.getByRole('textbox', { name: 'Chart name' }).click();
     assert.equal(await page.getByRole('textbox', { name: 'Time signature numerator' }).inputValue(), '6');
@@ -70,6 +71,7 @@ try {
     await page.getByRole('textbox', { name: 'Measure 1 chord 1' }).focus();
     await page.getByRole('button', { name: 'Copy section A' }).click();
     await page.getByRole('textbox', { name: 'Measure 5 chord 1' }).waitFor();
+    await page.screenshot({ path: path.join(out, size + '-05-aba.png'), fullPage: true });
     await page.getByRole('button', { name: 'Save Chart' }).click();
     await page.getByRole('heading', { name: 'My Charts', exact: true }).waitFor();
     await page.getByRole('heading', { name: 'My First ii–V–I' }).waitFor();
