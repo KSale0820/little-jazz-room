@@ -206,7 +206,7 @@ export function PracticePage() {
 
   function setKeyBySemitone(delta: number) {
     const index = CHROMA.indexOf(chartKey);
-    setChartKey(CHROMA[((index < 0 ? 0 : index) + delta + 12) % 12]);
+    setChartKey(CHROMA[((index < 0 ? 0 : index) + delta + 12) % 12]!);
   }
 
   function changeTempo(nextBpm: number) {
