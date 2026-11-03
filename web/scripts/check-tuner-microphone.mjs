@@ -74,8 +74,12 @@ try {
   // The same actual microphone stream must drive the Voice mode graph.
   await page.getByRole('button', { name: 'Voice' }).click();
   await page.getByRole('region', { name: 'Live pitch graph' }).waitFor();
-  await page.locator('.tuner-trail-plot polyline[points]:not([points=""])').first()
-    .waitFor({ state: 'attached', timeout: 12000 });
+  // An initially attached SVG polyline can contain only one point.
+  // Wait for two *real* measured points before asserting a live trajectory.
+  await page.waitForFunction(() => {
+    const svgLine = document.querySelector('.tuner-trail-plot polyline');
+    return (svgLine?.getAttribute('points')?.trim().split(/\\s+/).length ?? 0) >= 2;
+  }, null, { timeout: 12000 });
   const plotted = await page.locator('.tuner-trail-plot polyline').first().getAttribute('points');
   if (!plotted || plotted.split(' ').length < 2) {
     throw new Error('Voice pitch graph did not receive enough live microphone samples');
