@@ -50,16 +50,25 @@ export function readingFromFrequency(frequency: number, mode: TuningMode): Pitch
   };
 }
 
+/** RMS signal level reported from actual microphone samples. */
+export function inputRms(samples: Float32Array): number {
+  if (!samples.length) return 0;
+  let power = 0;
+  for (let i = 0; i < samples.length; i += 4) power += samples[i] * samples[i];
+  return Math.sqrt(power / Math.ceil(samples.length / 4));
+}
+
+// iPhone microphone input can be substantially quieter than desktop input.
+// YIN's periodicity check still rejects silence and broadband noise.
+export const MIN_TUNER_RMS = 0.003;
+
 /** YIN-style difference / cumulative mean normalized difference pitch estimate.
  * Returns null for silence, aperiodic noise, weak matches, or invalid audio.
  * A tuner must never manufacture a reading when a microphone has no signal.
  */
 export function detectPitch(samples: Float32Array, sampleRate: number): number | null {
   if (!Number.isFinite(sampleRate) || sampleRate <= 0 || samples.length < 4096) return null;
-  let power = 0;
-  for (let i = 0; i < samples.length; i += 4) power += samples[i] * samples[i];
-  const rms = Math.sqrt(power / Math.ceil(samples.length / 4));
-  if (rms < 0.012) return null;
+  if (inputRms(samples) < MIN_TUNER_RMS) return null;
 
   const minTau = Math.max(2, Math.floor(sampleRate / 1200));
   const maxTau = Math.min(Math.ceil(sampleRate / 38), Math.floor(samples.length / 2) - 2);

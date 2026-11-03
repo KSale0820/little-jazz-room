@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import {
-  audioContextConstructor, detectPitch, readingFromFrequency,
+  audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, readingFromFrequency,
   type PitchReading, type TuningMode,
 } from './toolsAudio';
 import './ToolsPages.css';
 
 type MicStatus = 'idle' | 'requesting' | 'listening' | 'denied' | 'unsupported' | 'error';
+type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
 
 export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
@@ -17,11 +18,13 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const [mode, setMode] = useState<TuningMode>('chromatic');
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
+  const [micSignal, setMicSignal] = useState<MicSignal>('starting');
   const [message, setMessage] = useState('');
   const [referencePlaying, setReferencePlaying] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const modeRef = useRef(mode);
   const requestRef = useRef(0);
+  const permissionPendingRef = useRef(false);
   const microphoneRef = useRef<MediaStream | null>(null);
   const contextRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
@@ -32,6 +35,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
 
   const stopMicrophone = useCallback(() => {
     requestRef.current++;
+    permissionPendingRef.current = false;
     cancelAnimationFrame(rafRef.current);
     sourceRef.current?.disconnect();
     sourceRef.current = null;
@@ -54,7 +58,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
 
   useEffect(() => {
     const onHidden = () => {
-      if (document.hidden) {
+      // Safari may report a transient visibility change during the permission
+      // sheet. Do not cancel a pending getUserMedia() when that happens.
+      if (document.hidden && !permissionPendingRef.current) {
         stopMicrophone();
         stopReference();
         setReading(null);
@@ -78,7 +84,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     stopMicrophone();
     setReading(null);
     setStatus('requesting');
+    setMicSignal('starting');
     setMessage('');
+    permissionPendingRef.current = true;
     const request = requestRef.current;
     let stream: MediaStream | null = null;
     let context: AudioContext | null = null;
@@ -86,12 +94,14 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       const AudioCtor = audioContextConstructor();
       if (!AudioCtor) throw new Error('Web Audio is unavailable.');
       context = new AudioCtor();
-      // Resume during the user gesture, which is important for iOS Safari.
-      await context.resume();
+      // Start unlocking Web Audio and requesting the mic in the SAME tap.
+      // Do not await resume() first: it can remain pending in iOS Safari.
+      void context.resume().catch(() => undefined);
       stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
         video: false,
       });
+      permissionPendingRef.current = false;
       if (request !== requestRef.current) {
         stream.getTracks().forEach(track => track.stop());
         void context.close().catch(() => undefined);
@@ -104,16 +114,32 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       analyser.smoothingTimeConstant = 0;
       const source = context.createMediaStreamSource(stream);
       source.connect(analyser);
+      // Keep the capture graph active even on WebKit builds that only pull
+      // audio from nodes connected to destination. Gain 0 prevents feedback.
+      const silentOutput = context.createGain();
+      silentOutput.gain.value = 0;
+      analyser.connect(silentOutput);
+      silentOutput.connect(context.destination);
       sourceRef.current = source;
+      if (context.state !== 'running') void context.resume().catch(() => undefined);
       const samples = new Float32Array(analyser.fftSize);
       let lastAnalysis = 0;
+      const startedAt = performance.now();
       const analyse = (now: number) => {
         if (request !== requestRef.current) return;
         if (now - lastAnalysis >= 105) {
           lastAnalysis = now;
-          analyser.getFloatTimeDomainData(samples);
-          const frequency = detectPitch(samples, context!.sampleRate);
-          setReading(frequency === null ? null : readingFromFrequency(frequency, modeRef.current));
+          if (context!.state !== 'running') {
+            setMicSignal('interrupted');
+            setReading(null);
+          } else {
+            analyser.getFloatTimeDomainData(samples);
+            const frequency = detectPitch(samples, context!.sampleRate);
+            setReading(frequency === null ? null : readingFromFrequency(frequency, modeRef.current));
+            const level = inputRms(samples);
+            setMicSignal(frequency !== null ? 'active' : level >= MIN_TUNER_RMS
+              ? 'unsteady' : now - startedAt > 1500 ? 'quiet' : 'starting');
+          }
         }
         rafRef.current = requestAnimationFrame(analyse);
       };
@@ -131,6 +157,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       if (stream) stream.getTracks().forEach(track => track.stop());
       if (context) void context.close().catch(() => undefined);
       if (request !== requestRef.current) return;
+      permissionPendingRef.current = false;
       const name = error instanceof DOMException ? error.name : '';
       setStatus(name === 'NotAllowedError' || name === 'PermissionDeniedError' || name === 'SecurityError'
         ? 'denied' : name === 'NotSupportedError' ? 'unsupported' : 'error');
@@ -140,6 +167,16 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           ? 'No microphone was found on this device.'
           : 'Could not start microphone audio. Check device permissions and try again.');
     }
+  };
+
+  const resumeMicrophoneAudio = () => {
+    const context = contextRef.current;
+    if (!context) return;
+    void context.resume().then(() => {
+      setMicSignal(context.state === 'running' ? 'starting' : 'interrupted');
+    }).catch(() => {
+      setMicSignal('interrupted');
+    });
   };
 
   const toggleMicrophone = () => {
@@ -185,6 +222,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     ? Math.max(-70, Math.min(70, reading.cents * 1.4)) : null;
   const getTuningMessage = () => {
     if (status !== 'listening') return status === 'requesting' ? 'Waiting for permission…' : 'Ready to tune';
+    if (micSignal === 'interrupted') return 'Safari paused audio. Tap Resume audio below.';
+    if (micSignal === 'quiet') return 'Microphone is connected, but no sound is reaching the tuner.';
+    if (micSignal === 'unsteady') return 'Sound detected. Hold one clear note steadily.';
     if (!reading) return 'Listening for a note…';
     if (!isNearString) return 'Play an open string';
     if (isTuned) return 'In tune!';
@@ -252,6 +292,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <span aria-hidden="true">◉</span> {status === 'listening' ? 'Stop microphone' :
           status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
       </button>
+      {status === 'listening' && micSignal === 'interrupted' ? (
+        <button className="tuner-mic" type="button" onClick={resumeMicrophoneAudio}>Resume audio</button>
+      ) : null}
       {(status === 'denied' || status === 'unsupported' || status === 'error' || message) ? (
         <p className="tool-error" role="alert">{message}</p>
       ) : null}
