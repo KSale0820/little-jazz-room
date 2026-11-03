@@ -551,6 +551,71 @@
   .tuner-reference strong { font-size: 15px; }
 }
 
+/* Optional live pitch trail for any instrument or voice, within Chromatic. */
+.tuner-modes button { font-size: 14px; }
+.tuner-trail-controls {
+  display: flex;
+  justify-content: center;
+}
+.tuner-trail-controls:empty { display: none; }
+.tuner-trail-toggle {
+  border: 1px solid #c4d5c5;
+  background: #f1f3e8;
+  color: #234a3a;
+  border-radius: 12px;
+  padding: 6px 11px;
+  font: 650 12px/1.25 system-ui, sans-serif;
+  min-height: 36px;
+}
+.tuner-trail-panel {
+  margin: 8px auto 0;
+  width: min(100%, 350px);
+  border: 1px solid #e3dfcf;
+  border-radius: 14px;
+  background: rgba(255, 252, 244, .93);
+  padding: 8px 11px 7px;
+}
+.tuner-trail-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tuner-trail-heading strong {
+  font: 700 15px/1.2 Georgia, serif;
+  color: #173d33;
+}
+.tuner-trail-plot {
+  position: relative;
+  height: 91px;
+  padding: 2px 38px 0;
+}
+.tuner-trail-plot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.tuner-trail-high, .tuner-trail-low {
+  position: absolute;
+  right: 0;
+  color: #607268;
+  font: 600 11px/1 system-ui, sans-serif;
+}
+.tuner-trail-high { top: 5px; }
+.tuner-trail-low { bottom: 5px; }
+.tuner-trail-panel > small {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0;
+  color: #777d73;
+  font: 11px/1.2 system-ui, sans-serif;
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  .tuner-trail-panel { margin-top: 5px; padding: 6px 9px 5px; }
+  .tuner-trail-plot { height: 70px; }
+}
+
 /* Keep the floor and rug beneath the tools, not behind their controls, on compact screens. */
 @media (max-height: 720px) and (max-width: 899px) {
   .tool-tuner > .tool-bottom-art { bottom: -35px; }
@@ -572,3 +637,38 @@
     height: 118px;
   }
 }
+
+/* iPhone tuner QA: all three mode labels fit; no status-banner layout jumps.
+   Only the tuner is affected, leaving P05/other screens unchanged. */
+.tool-tuner .tuner-modes {
+  width: min(100%, 360px);
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) minmax(0, .9fr);
+  gap: 1px;
+}
+.tool-tuner .tuner-modes button {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  padding: 0 2px;
+  letter-spacing: -.025em;
+  font-size: clamp(12px, 3.3vw, 15px);
+}
+.tool-tuner .tuner-status {
+  display: flex;
+  flex: 0 0 36px;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 360px);
+  height: 36px;
+  min-height: 36px;
+  margin: 3px auto 0;
+  padding: 5px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 18px;
+  font: 700 clamp(12px, 3.5vw, 15px)/1.15 Georgia, serif;
+}
+.tool-tuner .tuner-trail-heading { min-height: 20px; }
+.tool-tuner .tuner-trail-heading strong { width: 100%; }

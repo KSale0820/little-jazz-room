@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import {
-  audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, readingFromFrequency,
-  type PitchReading, type TuningMode,
+  audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, pitchTrailGeometry,
+  readingFromFrequency, retainMeasuredPitch,
+  type PitchReading, type PitchTrailSample, type TuningMode, type RecentPitch,
 } from './toolsAudio';
 import './ToolsPages.css';
 
@@ -19,10 +20,14 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
   const [micSignal, setMicSignal] = useState<MicSignal>('starting');
+  const [showPitchTrail, setShowPitchTrail] = useState(false);
+  const [pitchTrail, setPitchTrail] = useState<PitchTrailSample[]>([]);
   const [message, setMessage] = useState('');
   const [referencePlaying, setReferencePlaying] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const modeRef = useRef(mode);
+  const showPitchTrailRef = useRef(false);
+  const recentPitchRef = useRef<RecentPitch>(null);
   const requestRef = useRef(0);
   const permissionPendingRef = useRef(false);
   const microphoneRef = useRef<MediaStream | null>(null);
@@ -31,11 +36,27 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const rafRef = useRef(0);
   const toneRef = useRef<{ context: AudioContext; oscillator: OscillatorNode } | null>(null);
 
-  useEffect(() => { modeRef.current = mode; setReading(null); }, [mode]);
+  useEffect(() => {
+    modeRef.current = mode;
+    recentPitchRef.current = null;
+    setReading(null);
+    setPitchTrail([]);
+  }, [mode]);
+
+  useEffect(() => {
+    showPitchTrailRef.current = showPitchTrail;
+  }, [showPitchTrail]);
+
+  const trail = useMemo(() => pitchTrailGeometry(
+    pitchTrail, pitchTrail[pitchTrail.length - 1]?.timestamp ?? 0,
+  ), [pitchTrail]);
+  const pitchTrailEnabled = showPitchTrail;
 
   const stopMicrophone = useCallback(() => {
     requestRef.current++;
     permissionPendingRef.current = false;
+    recentPitchRef.current = null;
+    setPitchTrail([]);
     cancelAnimationFrame(rafRef.current);
     sourceRef.current?.disconnect();
     sourceRef.current = null;
@@ -85,6 +106,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     setReading(null);
     setStatus('requesting');
     setMicSignal('starting');
+    setPitchTrail([]);
     setMessage('');
     permissionPendingRef.current = true;
     const request = requestRef.current;
@@ -127,17 +149,31 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       const startedAt = performance.now();
       const analyse = (now: number) => {
         if (request !== requestRef.current) return;
-        if (now - lastAnalysis >= 105) {
+        if (now - lastAnalysis >= 85) {
           lastAnalysis = now;
           if (context!.state !== 'running') {
+            recentPitchRef.current = null;
             setMicSignal('interrupted');
             setReading(null);
           } else {
             analyser.getFloatTimeDomainData(samples);
             const frequency = detectPitch(samples, context!.sampleRate);
-            setReading(frequency === null ? null : readingFromFrequency(frequency, modeRef.current));
+            const measured = frequency === null ? null : readingFromFrequency(frequency, modeRef.current);
+            const stable = retainMeasuredPitch(recentPitchRef.current, measured, now);
+            recentPitchRef.current = stable.recent;
+            setReading(stable.displayed);
+            if (showPitchTrailRef.current) {
+              // Draw only genuine measurements. A short missed frame does not
+              // break a sustained line; sustained silence creates a gap.
+              if (frequency !== null || stable.recent === null) {
+                setPitchTrail(previous => [
+                  ...previous.filter(point => point.timestamp > now - 8000),
+                  { timestamp: now, frequency },
+                ].slice(-100));
+              }
+            }
             const level = inputRms(samples);
-            setMicSignal(frequency !== null ? 'active' : level >= MIN_TUNER_RMS
+            setMicSignal(stable.displayed !== null ? 'active' : level >= MIN_TUNER_RMS
               ? 'unsteady' : now - startedAt > 1500 ? 'quiet' : 'starting');
           }
         }
@@ -221,10 +257,10 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const needleAngle = reading && isNearString
     ? Math.max(-70, Math.min(70, reading.cents * 1.4)) : null;
   const getTuningMessage = () => {
-    if (status !== 'listening') return status === 'requesting' ? 'Waiting for permission…' : 'Ready to tune';
-    if (micSignal === 'interrupted') return 'Safari paused audio. Tap Resume audio below.';
-    if (micSignal === 'quiet') return 'Microphone is connected, but no sound is reaching the tuner.';
-    if (micSignal === 'unsteady') return 'Sound detected. Hold one clear note steadily.';
+    if (status !== 'listening') return status === 'requesting' ? 'Connecting microphone…' : 'Ready to tune';
+    if (micSignal === 'interrupted') return 'Audio paused. Tap Resume audio.';
+    if (micSignal === 'quiet') return 'Listening for a note…';
+    if (micSignal === 'unsteady') return 'Sound heard. Hold a steady note.';
     if (!reading) return 'Listening for a note…';
     if (!isNearString) return 'Play an open string';
     if (isTuned) return 'In tune!';
@@ -243,7 +279,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <button className="tool-settings" type="button" aria-label="Tuner help" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)}>⚙</button>
       </header>
       {showHelp ? (
-        <p className="tool-help">Play one note at a time in a quiet room. Guitar and Bass compare detected pitches against standard open strings. For best results, use headphones with the reference tone.</p>
+        <p className="tool-help">Play or sing one sustained note at a time. Chromatic recognizes any note and can show your pitch over time. Guitar and Bass compare against standard open strings.</p>
       ) : null}
       <div className="tuner-modes" role="group" aria-label="Tuning mode">
         {(['chromatic', 'guitar', 'bass'] as const).map(option => (
@@ -288,6 +324,32 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <div><strong>{reading && isNearString ? reading.targetLabel : '—'}</strong><span>{reading && isNearString ? reading.targetFrequency.toFixed(1) + ' Hz target' : 'Target'}</span></div>
         <div><strong>{reading && isNearString ? (reading.cents >= 0 ? '+' : '') + Math.round(reading.cents) + '¢' : '—'}</strong><span>Deviation</span></div>
       </div>
+      <div className="tuner-trail-controls">
+        <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
+          onClick={() => setShowPitchTrail(value => !value)}>
+          {showPitchTrail ? 'Hide pitch graph' : 'Show pitch graph'}
+        </button>
+      </div>
+      {pitchTrailEnabled ? (
+        <section className="tuner-trail-panel" aria-label="Live pitch graph">
+          <div className="tuner-trail-heading"><strong>Pitch over time</strong></div>
+          <div className="tuner-trail-plot">
+            <span className="tuner-trail-high">{trail.highNote}</span>
+            <svg viewBox="0 0 320 102" preserveAspectRatio="none" role="img"
+              aria-label="Live graph of detected pitch over eight seconds. Higher notes appear higher. Breaks indicate silence.">
+              <line x1="0" x2="320" y1="27" y2="27" stroke="#dedecf" strokeDasharray="4 6" />
+              <line x1="0" x2="320" y1="69" y2="69" stroke="#dedecf" strokeDasharray="4 6" />
+              {trail.segments.map((segment, index) => (
+                <polyline key={index} points={segment.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ')}
+                  fill="none" stroke="#397456" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              ))}
+              {trail.current && <circle cx={trail.current.x} cy={trail.current.y} r="4.5" fill="#c69a52" />}
+            </svg>
+            <span className="tuner-trail-low">{trail.lowNote}</span>
+          </div>
+          <small>8 seconds ago <span>Now</span></small>
+        </section>
+      ) : null}
       <button className="tuner-mic" type="button" onClick={toggleMicrophone} aria-pressed={status === 'listening'}>
         <span aria-hidden="true">◉</span> {status === 'listening' ? 'Stop microphone' :
           status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
