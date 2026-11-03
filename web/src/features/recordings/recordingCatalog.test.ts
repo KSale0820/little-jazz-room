@@ -15,8 +15,10 @@ const recording: RecordedBackingTrack = {
 
 describe('recorded backing-track catalog', () => {
   it('never invents an audio recording when the catalog is empty', () => {
-    expect(RECORDED_BACKING_TRACKS).toHaveLength(0);
+    expect(RECORDED_BACKING_TRACKS).toHaveLength(1);
     expect(recordingById('after-hours')).toBeNull();
+    expect(recordingById('autumn-leaves')?.chartId).toBeNull();
+    expect(recordingById('autumn-leaves')?.src).toBe('/audio/backing-tracks/autumn-leaves.m4a');
   });
 
   it('accepts an owned static recording and rejects unsafe or unlicensed entries', () => {
@@ -25,6 +27,8 @@ describe('recorded backing-track catalog', () => {
     expect(isUsableRecordedTrack({ ...recording, src: '/audio/backing-tracks/../private.mp3' })).toBe(false);
     expect(isUsableRecordedTrack({ ...recording, src: 'https://example.com/study.mp3' })).toBe(false);
     expect(isUsableRecordedTrack({ ...recording, recordedBpm: 0 })).toBe(false);
+    expect(isUsableRecordedTrack(RECORDED_BACKING_TRACKS[0]!)).toBe(true);
+    expect(isUsableRecordedTrack({ ...recording, chartId: null, recordedBpm: null, chartStartSeconds: null })).toBe(true);
   });
 
   it('aligns the first chart beat after an audio count-in', () => {
