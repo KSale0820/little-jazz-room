@@ -845,3 +845,10 @@
   .practice-loop-sheet > header { top: -12px; }
   .practice-loop-section { margin-top: 14px; }
 }
+
+/* Musical controls may extend beyond the screen in guided mode. Keep the
+   entire controls and tool dock reachable through the active viewport scroll. */
+.app-shell:has(.practice-guided) .viewport {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
