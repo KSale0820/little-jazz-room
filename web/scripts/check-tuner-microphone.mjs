@@ -66,6 +66,23 @@ try {
   await page.getByRole('button', { name: /Enable microphone/ }).click();
   await page.getByRole('button', { name: /Stop microphone/ }).waitFor({ timeout: 12000 });
   await page.getByText('A4', { exact: true }).first().waitFor({ timeout: 15000 });
+  // Chrome uses the Web Audio rendering clock even if page animation
+  // frames are busy. Confirm it actually switched from analyser fallback.
+  await page.waitForFunction(() =>
+    document.querySelector('.tool-tuner')?.getAttribute('data-capture-path') === 'worklet',
+  null, { timeout: 12000 });
+  // Regression for the specific user report: a note worked initially,
+  // then disappeared after several seconds. Check the live display repeatedly
+  // over more than seven seconds of continuous fake microphone capture.
+  for (let tick = 0; tick < 5; tick++) {
+    await page.waitForTimeout(1500);
+    const note = await page.locator('.tuner-reading strong').textContent();
+    const backend = await page.locator('.tool-tuner').getAttribute('data-capture-path');
+    if (note !== 'A4' || backend !== 'worklet') {
+      throw new Error('Sustained A440 dropped out after ' + ((tick + 1) * 1.5) +
+        ' seconds (note=' + note + ', backend=' + backend + ')');
+    }
+  }
   const frequency = await page.locator('.tuner-reading span').textContent();
   const measured = Number.parseFloat(frequency ?? '');
   if (!Number.isFinite(measured) || Math.abs(measured - 440) > 4) {
@@ -111,6 +128,30 @@ try {
   console.log('PASS: real browser microphone detected A4 at ' + frequency +
     ' and drew ' + plotted.split(' ').length + ' live graph points');
   await page.getByRole('button', { name: /Stop microphone/ }).click();
+
+  // Fallback is important for older Safari and offline Worklet loading.
+  const fallbackContext = await browser.newContext({
+    permissions: ['microphone'], viewport: { width: 390, height: 844 },
+  });
+  // AudioWorklet module loads happen in the browser's audio worker, not
+  // always through Playwright's page network routing. Simulate an older
+  // Safari without AudioWorkletNode before app JS starts.
+  await fallbackContext.addInitScript(() => {
+    Object.defineProperty(window, 'AudioWorkletNode', {
+      value: undefined, configurable: true,
+    });
+  });
+  const fallbackPage = await fallbackContext.newPage();
+  await fallbackPage.goto(origin + '/tuner');
+  await fallbackPage.getByRole('button', { name: /Enable microphone/ }).click();
+  await fallbackPage.getByText('A4', { exact: true }).first().waitFor({ timeout: 15000 });
+  const fallbackPath = await fallbackPage.locator('.tool-tuner').getAttribute('data-capture-path');
+  const workletApi = await fallbackPage.evaluate(() => typeof AudioWorkletNode);
+  if (workletApi !== 'undefined') throw new Error('Fallback test failed to disable AudioWorkletNode');
+  if (fallbackPath !== 'analyser') throw new Error('Missing working analyser fallback: ' + fallbackPath);
+  await fallbackPage.getByRole('button', { name: /Stop microphone/ }).click();
+  await fallbackContext.close();
+  console.log('PASS: audio-clock worklet stays active; analyser fallback detects A440 when worklet fails');
   await context.close();
 } finally {
   await browser?.close();

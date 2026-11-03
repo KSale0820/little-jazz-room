@@ -5,9 +5,11 @@ on:
     branches:
       - fix/web-tuner-iphone-safari-input
       - feature/voice-pitch-trail-tuner
+      - fix/safari-sustained-pitch-capture
   pull_request:
     paths:
       - 'web/src/pages/TunerPage.tsx'
+      - 'web/public/worklets/tuner-capture.js'
       - 'web/src/pages/toolsAudio.ts'
       - 'web/src/pages/toolsAudio.test.ts'
       - 'web/scripts/check-tuner-microphone.mjs'
@@ -38,6 +40,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: voice-tuner-mobile-screenshots
+          name: sustained-tuner-mobile-screenshots
           path: web/tuner-voice-*.png
           if-no-files-found: ignore
