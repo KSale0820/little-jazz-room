@@ -1,0 +1,71 @@
+import { chromium } from 'playwright';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+
+const baseUrl = process.env.APP_URL ?? 'http://127.0.0.1:5174';
+const out = path.resolve('docs/screenshots/interactive-chart-builder');
+await fs.mkdir(out, { recursive: true });
+const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+
+try {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 375, height: 667 }]) {
+    const size = viewport.width + 'x' + viewport.height;
+    const context = await browser.newContext({ viewport, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+    const page = await context.newPage();
+    const errors = [];
+    page.on('pageerror', err => errors.push(err.message));
+    await page.goto(baseUrl + '/charts/new', { waitUntil: 'networkidle' });
+    await page.getByRole('heading', { name: 'Create Chart' }).waitFor();
+    await page.screenshot({ path: path.join(out, size + '-01-empty.png'), fullPage: true });
+
+    await page.getByRole('textbox', { name: 'Chart name' }).fill('My First ii–V–I');
+    for (const [index, chord] of ['Dm7', 'G7', 'Cmaj7', 'Cmaj7'].entries()) {
+      await page.getByRole('textbox', { name: 'Measure ' + (index + 1) + ' chord 1' }).fill(chord);
+    }
+    await page.getByRole('textbox', { name: 'Measure 1 chord 1' }).focus();
+    await page.screenshot({ path: path.join(out, size + '-02-complete.png'), fullPage: true });
+
+    await page.getByRole('button', { name: 'Split Measure' }).click();
+    await page.getByRole('textbox', { name: 'Measure 1 chord 2' }).fill('G7');
+    await page.screenshot({ path: path.join(out, size + '-03-split.png'), fullPage: true });
+    await page.getByRole('button', { name: 'Add Annotation' }).click();
+    await page.getByRole('textbox', { name: 'Red style note for this measure' }).fill('Swing feel');
+    await page.screenshot({ path: path.join(out, size + '-04-annotation.png'), fullPage: true });
+
+    await page.getByRole('button', { name: 'Save Chart' }).click();
+    await page.getByRole('heading', { name: 'My Charts', exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'My First ii–V–I' }).waitFor();
+    const id = await page.evaluate(() => {
+      const key = Object.keys(localStorage).find(value => value.startsWith('little-jazz-room:charts:v1:'));
+      const charts = JSON.parse(localStorage.getItem(key) ?? '[]');
+      assert.ok(charts.length > 0);
+      return charts[0].id;
+    }).catch(async () => {
+      return await page.evaluate(() => {
+        const key = Object.keys(localStorage).find(value => value.startsWith('little-jazz-room:charts:v1:'));
+        const charts = JSON.parse(localStorage.getItem(key) ?? '[]');
+        if (!charts.length) throw new Error('Saved charts were not persisted');
+        const chart = charts[0];
+        if (chart.bars[0].events.length !== 2 || chart.bars[0].events[1].beat !== 3
+            || chart.bars[0].annotation !== 'Swing feel') throw new Error('Saved chart beat events/annotation incorrect');
+        return chart.id;
+      });
+    });
+    assert.ok(id.startsWith('chart-local-'));
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.getByRole('heading', { name: 'My First ii–V–I' }).waitFor();
+    await page.getByRole('button', { name: 'Edit', exact: true }).first().click();
+    await page.getByRole('textbox', { name: 'Measure 1 chord 2' }).waitFor();
+    await page.getByRole('textbox', { name: 'Chart name' }).fill('My Revised ii–V–I');
+    await page.getByRole('button', { name: 'Save Chart' }).click();
+    await page.getByRole('heading', { name: 'My Revised ii–V–I' }).waitFor();
+    const documentOverflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
+    assert.equal(documentOverflow, false, 'Unexpected horizontal overflow at ' + size);
+    assert.deepEqual(errors, [], 'Unexpected browser errors at ' + size);
+    await context.close();
+  }
+  console.log('Chart editor screenshots and functional browser checks passed: 390×844, 375×667.');
+} finally {
+  await browser.close();
+}
