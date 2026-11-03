@@ -107,8 +107,11 @@ export function createLocalRepository(scope: string = LOCAL_SCOPE_ANONYMOUS): Lo
     },
     addSession(session) {
       const list = readJson<PracticeSessionRecord[]>(sessKey, []);
+      // A retry must not create a second record, even if its payload differs.
+      if (list.some(item => item.id === session.id)) return;
       list.unshift(session);
-      writeJson(sessKey, list.slice(0, 200));
+      // Unlike optional drafts, a failed session write must be reported to the user.
+      localStorage.setItem(sessKey, JSON.stringify(list.slice(0, 200)));
     },
     readCreateDraft() {
       return readJson<CreateDraft | null>(draftKey, null);
