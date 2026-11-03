@@ -4,7 +4,7 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const base = process.env.APP_URL || 'http://127.0.0.1:5174';
-const out = join(process.cwd(), 'docs', 'screenshots', 'practice-first-navigation');
+const out = join(process.cwd(), 'docs', 'screenshots', 'class-demo-p01');
 mkdirSync(out, { recursive: true });
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const browser = await chromium.launch({ headless: true });
