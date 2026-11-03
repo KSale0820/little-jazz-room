@@ -56,7 +56,7 @@ vi.mock('@capacitor/filesystem', () => ({
   },
 }));
 
-import { deleteRecording, importRecording, listRecordings, recordingPlaybackUrl } from './localRecordings';
+import { deleteRecording, discardInterruptedImports, importRecording, listRecordings, recordingPlaybackUrl } from './localRecordings';
 
 beforeEach(() => {
   memory.files.clear();
@@ -98,6 +98,18 @@ describe('native recording file lifecycle (mock filesystem; not a device test)',
     await expect(recordingPlaybackUrl(entry)).rejects.toThrow(/missing/);
     await deleteRecording(entry);
     expect(await listRecordings()).toEqual([]);
+  });
+
+  it('cleans up interrupted .part files without deleting imported metadata', async () => {
+    const file = new File([new Uint8Array(1024)], 'intact.wav', { type: 'audio/wav' });
+    await importRecording(file);
+    memory.files.set(
+      'native-audio/imports/00000000-0000-0000-0000-000000000123.wav.part',
+      new Uint8Array(200),
+    );
+    expect(await discardInterruptedImports()).toBe(1);
+    expect(await listRecordings()).toHaveLength(1);
+    expect([...memory.files.keys()].some(key => key.endsWith('.part'))).toBe(false);
   });
 
   it('rejects unsupported file types without writing bytes', async () => {

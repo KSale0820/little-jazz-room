@@ -107,6 +107,26 @@ export async function importRecording(
   }
 }
 
+
+/** Clear a force-quit import's orphaned temporary bytes on next lab launch. */
+export async function discardInterruptedImports(): Promise<number> {
+  assertNativeAudioStorage();
+  await prepare();
+  const entries = await Filesystem.readdir({ directory: location, path: folder });
+  let removed = 0;
+  for (const item of entries.files) {
+    const id = item.name.split('.')[0];
+    if (!validId.test(id) || !item.name.endsWith('.part')) continue;
+    try {
+      await Filesystem.deleteFile({ directory: location, path: folder + '/' + item.name });
+      removed++;
+    } catch {
+      // Recoverable on a subsequent launch; do not hide intact recordings.
+    }
+  }
+  return removed;
+}
+
 export async function listRecordings(): Promise<RecordingOnDevice[]> {
   assertNativeAudioStorage();
   await prepare();

@@ -43,7 +43,8 @@ The first import MUST be initiated by the file input inside the installed
 app. Choose a non-DRM audio file stored in the phone's Files/provider picker.
 Audio is copied in 256 KiB base64 chunks to the Capacitor filesystem, then
 renamed from `.part` and indexed **only on successful completion**.
-On restart, open the lab again; the list is loaded from disk, not localStorage.
+On restart, open the lab again; stale interrupted `.part` files are cleaned up,
+and the list is loaded from disk, not localStorage.
 Play via the app's file URL converted for WKWebView. Delete removes the data
 before the metadata record. A missing/corrupt file appears as missing and
 cannot be played. The max prototype file size is 250 MiB.

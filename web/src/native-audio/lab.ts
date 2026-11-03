@@ -1,6 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import {
-  deleteRecording, importRecording, listRecordings, recordingPlaybackUrl,
+  deleteRecording, discardInterruptedImports, importRecording, listRecordings, recordingPlaybackUrl,
   type RecordingOnDevice,
 } from './localRecordings';
 import { StemTransport } from './stemTransport';
@@ -145,4 +145,7 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('pagehide', () => { void transport.close(); });
 window.setInterval(redraw, 200);
 redraw();
-void refreshImports();
+void discardInterruptedImports().then(removed => {
+  if (removed) importStatus.textContent = 'Cleaned up ' + removed + ' interrupted import(s).';
+  return refreshImports();
+}).catch(error => { importStatus.textContent = String(error); });
