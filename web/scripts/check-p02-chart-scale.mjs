@@ -98,34 +98,43 @@ try {
     check(await page.getByRole('button',{name:/^Measure 32:/}).count()===1,'Last A not rendered');
     check(await page.getByRole('button',{name:/^Measure 17:/}).count()===1,'Bridge not rendered');
     await page.screenshot({path:join(dir,'P02-free-complete-AABA-'+width+'x'+height+'.png'),animations:'disabled'});
-    // Loop controls are a dedicated configuration sheet, not a dropdown.
-    await page.getByRole('button',{name:'Full chart'}).click();
-    const loopDialog=page.getByRole('dialog',{name:'Repeat a section'});
-    check(await loopDialog.isVisible(),'Loop settings sheet did not open');
-    check(await loopDialog.getByRole('button',{name:'Full chart'}).isVisible(),'Full chart option missing');
-    check(await loopDialog.getByRole('button',{name:'This bar'}).isVisible(),'Single-bar option missing');
-    check(await loopDialog.getByRole('button',{name:'8 bars from here'}).isVisible(),'Eight-bar option missing');
-    check(await loopDialog.getByRole('button',{name:'16 bars from here'}).isVisible(),'Sixteen-bar option missing');
-    check(await loopDialog.getByRole('button',{name:'9–12'}).count()===1,'Four-bar phrase shortcut missing');
+    // A repeat plan has any number of sections, each with its own play count.
+    await page.getByRole('button',{name:/^Off/}).click();
+    const loopDialog=page.getByRole('dialog',{name:'Set up looping'});
+    check(await loopDialog.isVisible(),'Loop setup did not open');
+    check(await loopDialog.getByRole('button',{name:/No looping/}).getAttribute('aria-pressed')==='true',
+      'No looping should be the default');
+    await loopDialog.getByRole('button',{name:/Repeat sections/}).click();
+    check(await loopDialog.getByRole('region',{name:'Section 1'}).count()===1,'First editable section missing');
+    await loopDialog.getByRole('button',{name:'Increase section 1 play count'}).click();
+    check(await loopDialog.getByRole('group',{name:'Section 1 play count'}).locator('output').innerText()==='3',
+      'First section repeat count did not update');
+    await loopDialog.getByRole('button',{name:'+ Add section'}).click();
+    check(await loopDialog.getByRole('region',{name:'Section 2'}).count()===1,'Second section missing');
+    await loopDialog.getByRole('button',{name:'+ Add section'}).click();
+    check(await loopDialog.getByRole('region',{name:'Section 3'}).count()===1,'Third section missing');
+    await loopDialog.getByRole('button',{name:'Remove section 3'}).click();
+    check(await loopDialog.getByRole('region',{name:'Section 3'}).count()===0,'Remove section failed');
+    await loopDialog.getByRole('button',{name:/Repeat whole plan/}).click();
+    check(await loopDialog.getByRole('button',{name:/Repeat whole plan/}).getAttribute('aria-pressed')==='true',
+      'Continuous plan option did not enable');
+    await loopDialog.getByRole('button',{name:/Repeat whole plan/}).click();
     const sheet=await loopDialog.boundingBox();
     check(sheet && sheet.width<=width+1 && sheet.y>=0,'Loop settings sheet exceeds viewport');
     await page.screenshot({path:join(dir,'P02-loop-settings-'+width+'x'+height+'.png'),animations:'disabled'});
-    await loopDialog.getByRole('button',{name:'4 bars from here'}).click();
-    check(await page.getByRole('button',{name:'Bars 1–4'}).isVisible(),'Four-bar choice not applied');
+    await loopDialog.getByRole('button',{name:'Apply plan'}).click();
+    check(await page.getByRole('button',{name:/2 sections/}).isVisible(),'Two-section plan not applied');
+    check(await page.locator('.measure.looped').count()===4,'First configured range not highlighted');
     await page.getByRole('button',{name:'Configure loop'}).click();
-    await loopDialog.getByRole('button',{name:'9–12'}).click();
-    check(await page.getByRole('button',{name:'Bars 9–12'}).isVisible(),'Phrase shortcut not applied');
-    await page.getByRole('button',{name:'Configure loop'}).click();
-    await loopDialog.getByRole('button',{name:'Increase end bar'}).click();
-    await loopDialog.getByRole('button',{name:'Increase start bar'}).click();
-    await loopDialog.getByRole('button',{name:'Repeat bars 10–13'}).click();
-    check(await page.getByRole('button',{name:'Bars 10–13'}).isVisible(),'Custom loop range not applied');
-    await page.getByRole('button',{name:'Configure loop'}).click();
+    await loopDialog.getByRole('button',{name:/No looping/}).click();
     await page.keyboard.press('Escape');
-    check(await loopDialog.count()===0,'Escape failed to close loop sheet');
+    check(await loopDialog.count()===0,'Escape did not close loop settings');
+    check(await page.getByRole('button',{name:/2 sections/}).isVisible(),'Escape changed active plan');
     await page.getByRole('button',{name:'Configure loop'}).click();
-    await loopDialog.getByRole('button',{name:'Full chart'}).click();
-    check(await page.getByRole('button',{name:'Full chart'}).isVisible(),'Full chart reset failed');
+    await loopDialog.getByRole('button',{name:/No looping/}).click();
+    await loopDialog.getByRole('button',{name:'Apply plan'}).click();
+    check(await page.getByRole('button',{name:/^Off/}).isVisible(),'No looping mode not applied');
+    check(await page.locator('.measure.looped').count()===0,'No looping should clear active range');
     await page.getByRole('button',{name:/^Measure 8:/}).click();
     await page.getByRole('button',{name:'Next measure'}).click();
     check(await page.getByRole('button',{name:/^Measure 9:/}).getAttribute('aria-pressed')==='true','Measure transport failed');
