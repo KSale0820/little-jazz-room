@@ -140,3 +140,29 @@ describe('multi-section practice loop plans', () => {
       .toMatchObject({ barIndex: 5, pass: 1 });
   });
 });
+
+describe('custom-chart meter and transposition contract', () => {
+  it('measures 6/8 in eighth-note units while BPM remains quarter notes', () => {
+    const sixEight = chart([6, 8], 2);
+    const clock = running();
+    expect(rawChartBeat(clock, 1750, 120, sixEight)).toBe(3);
+    expect(locateSequencePlayhead(sixEight, clock, 1750, 120, null))
+      .toMatchObject({ barIndex: 0, eventIndex: 1, beatInBar: 3 });
+    expect(locateSequencePlayhead(sixEight, clock, 2500, 120, null))
+      .toMatchObject({ barIndex: 1, eventIndex: 0, beatInBar: 0 });
+  });
+
+  it('preserves distinct 3/4 and 4/4 measure boundaries at the same BPM', () => {
+    expect(locateSequencePlayhead(chart([3, 4], 2), running(), 2500, 120, null).barIndex).toBe(1);
+    expect(locateSequencePlayhead(chart([4, 4], 2), running(), 2500, 120, null).barIndex).toBe(0);
+  });
+
+  it('transposes custom Unicode chart keys without pitch-class loss', () => {
+    const original = { ...chart(), concert_key: 'B♭' };
+    expect(chartTransposeSemitones(original, 'B♭', 'C')).toBe(0);
+    expect(chartTransposeSemitones(original, 'C', 'C')).toBe(2);
+    expect(spellChord({ root: 'Bb', quality: 'maj7', beat: 1, duration_beats: 4 },
+      chartTransposeSemitones(original, 'C', 'C'))).toBe('Cmaj7');
+    expect(chartTransposeSemitones(original, 'B♭', 'Bb')).toBe(2);
+  });
+});
