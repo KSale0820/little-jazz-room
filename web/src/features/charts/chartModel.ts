@@ -3,6 +3,12 @@ import type { Chart, ChartBar, ChordEvent, ChordQuality } from '../../types/cont
 export const CHART_KEYS = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'] as const;
 export type ChartMeter = 2 | 3 | 4;
 
+/** Only quarter-note meters are supported by the current Practice Player. */
+export function parseChartMeter(input: string): ChartMeter | null {
+  const match = input.trim().match(/^([234])\s*\/\s*4$/);
+  return match ? Number(match[1]) as ChartMeter : null;
+}
+
 export interface DraftChord {
   id: string;
   beat: number;

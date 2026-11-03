@@ -127,3 +127,40 @@
   .chart-builder-tools button,.chart-builder-measure-actions button { font-size:10px; }
   .chart-editor-chord input { font-size:15px; }
 }
+
+/* Compact key and time signature input, with editing tools beside the chart. */
+.chart-builder-simple-meta { align-items:stretch; gap:10px; }
+.chart-builder-simple-meta .chart-builder-field { margin-bottom:12px; }
+.chart-builder-key-field { flex:2 1 0; }
+.chart-builder-time-field { flex:1 1 0; }
+.chart-builder-inline-input { display:flex; align-items:stretch; gap:5px; }
+.chart-builder-inline-input input { width:100%; min-width:0; flex:1; }
+.chart-builder-inline-input button { flex:0 0 41px; min-height:44px; padding:0; background:#edf1e4;
+  border:1px solid #c7d1c1; border-radius:9px; color:#31503b; font-size:21px; font-weight:650; }
+.chart-builder-feel-field { margin-bottom:12px; }
+.chart-builder-custom-feel { margin-top:-5px; }
+.chart-editor-grid { display:block; overflow:visible; border:1px solid #c6cfbf; border-radius:10px; }
+.chart-editor-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.chart-editor-row + .chart-editor-row { border-top:1px solid #c6cfbf; }
+.chart-editor-row .chart-editor-measure { border-bottom:0; }
+.chart-editor-row .chart-editor-measure:nth-child(2) { border-right:0; }
+.chart-builder-selection { grid-column:1/-1; margin:0; padding:11px;
+  border-radius:0; border-top:1px solid #b8c8af; border-right:0; border-left:0; border-bottom:0; background:#f3f5ec; }
+.chart-builder-selection h3 { margin-bottom:9px; }
+.chart-builder-accidental-actions { display:flex; align-items:center; flex-wrap:wrap; gap:7px; margin-bottom:10px; }
+.chart-builder-accidental-actions > span { color:#6a786b; font-size:11px; font-weight:650; margin-right:4px; }
+.chart-builder-accidental-actions button { display:flex; align-items:center; justify-content:center; gap:7px; min-width:75px; min-height:44px;
+  border:1px solid #b9c8b4; background:#fffdf8; border-radius:9px; color:#31503b; font-size:20px; font-weight:700; }
+.chart-builder-accidental-actions button span { font:650 11px system-ui,sans-serif; }
+@media (min-width:560px) {
+ .chart-editor-row { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .chart-editor-row .chart-editor-measure:nth-child(2) { border-right:0; }
+ .chart-builder-page { max-width:740px; margin-inline:auto; }
+}
+@media (max-width:375px) {
+ .chart-builder-inline-input { gap:4px; }
+ .chart-builder-inline-input button { flex-basis:39px; }
+ .chart-builder-simple-meta { gap:7px; }
+ .chart-builder-key-field { flex:2.1 1 0; }
+ .chart-builder-time-field { flex:1 1 0; }
+}

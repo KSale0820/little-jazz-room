@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode, type RefObject } from 'react';
 import type { DraftBar } from './chartModel';
 import { parseChordSymbol } from './chartModel';
 
@@ -8,15 +8,20 @@ interface EditableChartGridProps {
   selectedChordId: string;
   onSelect: (barId: string, chordId: string) => void;
   onChordChange: (barId: string, chordId: string, symbol: string) => void;
+  selectedInputRef?: RefObject<HTMLInputElement | null>;
+  editor?: ReactNode;
 }
 
 export function EditableChartGrid({
-  bars, selectedBarId, selectedChordId, onSelect, onChordChange,
+  bars, selectedBarId, selectedChordId, onSelect, onChordChange, selectedInputRef, editor,
 }: EditableChartGridProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const rows = Array.from({ length: Math.ceil(bars.length / 2) }, (_, i) => bars.slice(i * 2, i * 2 + 2));
   return (
     <div className="chart-editor-grid" role="group" aria-label="Editable chord chart">
-      {bars.map(bar => (
+      {rows.map(row => (
+        <div key={row[0]!.id} className="chart-editor-row">
+          {row.map(bar => (
         <div key={bar.id} className={'chart-editor-measure' + (bar.id === selectedBarId ? ' is-selected' : '')}
           onClick={() => onSelect(bar.id, bar.events[0]?.id ?? '')}>
           <div className="chart-editor-measure-top">
@@ -28,6 +33,7 @@ export function EditableChartGrid({
               <div className="chart-editor-chord" key={event.id}>
                 <input
                   type="text"
+                  ref={node => { if (selectedInputRef && bar.id === selectedBarId && event.id === selectedChordId) selectedInputRef.current = node; }}
                   aria-label={'Measure ' + bar.number + ' chord ' + (index + 1)}
                   aria-invalid={Boolean(errors[event.id])}
                   value={event.symbol}
@@ -53,6 +59,9 @@ export function EditableChartGrid({
               </div>
             ))}
           </div>
+        </div>
+          ))}
+          {row.some(bar => bar.id === selectedBarId) && editor}
         </div>
       ))}
     </div>
