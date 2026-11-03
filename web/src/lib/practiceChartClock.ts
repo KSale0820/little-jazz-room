@@ -84,3 +84,91 @@ export function seekMeasure(index: number, chart: Chart, playing: boolean, nowMs
   const safe = Math.max(0, Math.min(index, chart.bars.length - 1));
   return { chartBeat: safe * beatsPerMeasure(chart), startedAtMs: playing ? nowMs : null };
 }
+
+/** A finite chart-reading sequence. Each range is played `plays` times. */
+export interface LoopSection {
+  startBar: number;
+  endBar: number;
+  plays: number;
+}
+
+export interface SequencePlayhead extends Playhead {
+  ended: boolean;
+  sectionIndex: number | null;
+  pass: number;
+  sequenceBeat: number;
+}
+
+/** Total duration of one complete repeat program, measured in chart beats. */
+export function sequenceDuration(chart: Chart, sections: LoopSection[] | null): number {
+  const beats = beatsPerMeasure(chart);
+  if (!sections?.length) return chart.bars.length * beats;
+  return sections.reduce((total, section) => total +
+    (section.endBar - section.startBar + 1) * beats * section.plays, 0);
+}
+
+/**
+ * A chart follower has a monotonic sequence clock distinct from notated bar
+ * positions. This lets bars 1–4 play 3x, then bars 9–12 play 2x, without
+ * resetting the timer or losing beat fractions between passes.
+ *
+ * No sections = one full-chart pass, NOT the previous infinite full-chart loop.
+ * repeatPlan can explicitly repeat an entire custom sequence indefinitely.
+ */
+export function locateSequencePlayhead(
+  chart: Chart,
+  clock: MusicalClock,
+  nowMs: number,
+  bpm: number,
+  sections: LoopSection[] | null,
+  repeatPlan = false,
+): SequencePlayhead {
+  const perBar = beatsPerMeasure(chart);
+  const duration = sequenceDuration(chart, sections);
+  const raw = Math.max(0, rawChartBeat(clock, nowMs, bpm));
+  const ended = duration <= 0 || (!repeatPlan && raw >= duration);
+  // Clamp just inside the final beat so the last bar stays highlighted.
+  let position = duration <= 0 ? 0 : repeatPlan && sections?.length
+    ? raw % duration : Math.min(raw, Math.max(0, duration - 0.00001));
+  let chartBeat = position;
+  let sectionIndex: number | null = null;
+  let pass = 1;
+
+  if (sections?.length) {
+    for (let index = 0; index < sections.length; index++) {
+      const part = sections[index];
+      const span = (part.endBar - part.startBar + 1) * perBar;
+      const length = span * part.plays;
+      if (position < length || index === sections.length - 1) {
+        sectionIndex = index;
+        pass = Math.min(part.plays, Math.floor(position / span) + 1);
+        chartBeat = (part.startBar - 1) * perBar + position % span;
+        break;
+      }
+      position -= length;
+    }
+  }
+
+  const barIndex = Math.max(0, Math.min(chart.bars.length - 1, Math.floor(chartBeat / perBar)));
+  const beatInBar = chartBeat - barIndex * perBar;
+  const events = chart.bars[barIndex]?.events ?? [];
+  let eventIndex: number | null = null;
+  for (let i = 0; i < events.length; i++) {
+    if (beatInBar + 1 >= events[i].beat && beatInBar + 1 < events[i].beat + events[i].duration_beats) eventIndex = i;
+  }
+  return { chartBeat, barIndex, beatInBar, eventIndex, ended, sectionIndex, pass, sequenceBeat: raw };
+}
+
+/** Seek the first occurrence of a bar in a multi-section practice program. */
+export function sequenceBeatForBar(chart: Chart, sections: LoopSection[] | null, barIndex: number): number | null {
+  const beats = beatsPerMeasure(chart);
+  if (!sections?.length) return barIndex * beats;
+  let position = 0;
+  for (const section of sections) {
+    if (barIndex + 1 >= section.startBar && barIndex + 1 <= section.endBar) {
+      return position + (barIndex + 1 - section.startBar) * beats;
+    }
+    position += (section.endBar - section.startBar + 1) * beats * section.plays;
+  }
+  return null;
+}
