@@ -30,6 +30,10 @@ try {
     assert.ok(Math.abs(keyRect.y - feelRect.y) < 4 && Math.abs(keyRect.y - meterRect.y) < 4,
       'Key, feel and meter must share a single row');
     assert.ok(feelRect.x + feelRect.width <= viewport.width + 1, 'Feel field must fit the phone width');
+    const legend = await metadata.locator('.chart-builder-time-field legend').boundingBox();
+    const feelLabel = await metadata.locator('.chart-builder-feel-field span').boundingBox();
+    assert.ok(legend && feelLabel && legend.x + legend.width + 4 <= feelLabel.x,
+      'Meter label must not overlap the adjacent Feel label');
     assert.equal(await page.getByRole('textbox', { name: 'Time signature numerator' }).inputValue(), '4');
     assert.equal(await page.getByRole('textbox', { name: 'Time signature denominator' }).inputValue(), '4');
     assert.equal(await page.locator('.chart-builder-key-scroll').count(), 0);

@@ -307,7 +307,7 @@ export function ChartBuilderPage() {
           </div>
         </label>
         <fieldset className="chart-builder-time-field" aria-label="Time signature">
-          <legend>Time signature</legend>
+          <legend title="Time signature">Meter</legend>
           <div className="chart-meter-fraction">
             <input aria-label="Time signature numerator" type="text" inputMode="numeric" pattern="[0-9]*"
               value={meterTopInput} disabled={readOnly} maxLength={2} placeholder="4"
