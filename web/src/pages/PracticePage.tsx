@@ -7,7 +7,8 @@ import { GuidedCatCoach, GuidedLesson } from '../components/GuidedLesson';
 import { normalizeGuidedLesson } from '../lib/guidedLesson';
 import { exercisesById } from '../data/seed';
 import { getChartById } from '../features/charts/chartRepository';
-import { chartBeatForRecordingTime, isUsableRecordedTrack, recordingById, recordingTimeForChartBeat } from '../features/recordings/recordingCatalog';
+import { chartBeatForRecordingTime, hasChartSync, isUsableRecordedTrack, recordingById, recordingTimeForChartBeat } from '../features/recordings/recordingCatalog';
+import { RecordingOnlyPractice } from '../features/recordings/RecordingOnlyPractice';
 import { pitchClass } from '../features/charts/chartModel';
 import { formatChartMeta } from '../lib/chords';
 import { beatsPerMeasure, locateSequencePlayhead, rawChartBeat, sequenceBeatForBar, sequenceDuration } from '../lib/practiceChartClock';
@@ -152,9 +153,13 @@ export function PracticePage() {
   const recordingFromUrl = recordingById(requestedRecording);
   const invalidRecordingLink = Boolean(requestedRecording &&
     (!recordingFromUrl || !isUsableRecordedTrack(recordingFromUrl) ||
-      recordingFromUrl.chartId !== requestedChart));
-  const activeRecording = recordingFromUrl && recordingFromUrl.chartId === chartId &&
+      (requestedChart !== null && recordingFromUrl.chartId !== requestedChart) ||
+      (requestedChart === null && recordingFromUrl.chartId !== null)));
+  const standaloneRecording = recordingFromUrl && recordingFromUrl.chartId === null &&
     isUsableRecordedTrack(recordingFromUrl) ? recordingFromUrl : null;
+  const activeRecording = recordingFromUrl && hasChartSync(recordingFromUrl) &&
+    recordingFromUrl.chartId === chartId && isUsableRecordedTrack(recordingFromUrl)
+    ? recordingFromUrl : null;
   const chosenExercise = exercisesById[playableStep?.exercise_id ?? ''] ?? exercises.find(item => item.id === playableStep?.exercise_id);
   const lesson = useMemo(() => playableStep
     ? normalizeGuidedLesson(playableStep, chosenExercise, currentStep?.snapshot)
@@ -491,6 +496,10 @@ export function PracticePage() {
     setSaveState('idle');
     setPanel(routine ? 'instructions' : 'chart');
     savePromiseRef.current = null;
+  }
+
+  if (standaloneRecording) {
+    return <RecordingOnlyPractice recording={standaloneRecording} />;
   }
 
   if (missingRoutine) {
