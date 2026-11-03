@@ -1,0 +1,52 @@
+name: Routine builder before-after mobile QA
+
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/src/pages/CreatePage*'
+      - 'web/src/pages/RoutineLibraryPage*'
+      - 'web/src/pages/routinePickerLogic*'
+      - 'web/src/pages/routinesVisualQA.test.ts'
+      - 'web/src/data/jazz-seed-content.json'
+      - 'web/scripts/capture-routine-search-qa.mjs'
+      - '.github/workflows/routine-search-qa.yml'
+
+jobs:
+  mobile-routine-qa:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install project dependencies
+        run: npm ci
+      - name: Install Chromium for browser screenshots
+        run: npx playwright install --with-deps chromium
+      - name: Build and unit test
+        run: |
+          npm run build
+          npm test
+      - name: Prepare unmodified class-demo baseline
+        run: |
+          git worktree add --detach /tmp/little-jazz-routine-before origin/class-demo-2026-10-31
+          ln -s "$GITHUB_WORKSPACE/web/node_modules" /tmp/little-jazz-routine-before/web/node_modules
+      - name: Capture before screenshots
+        run: node scripts/capture-routine-search-qa.mjs /tmp/little-jazz-routine-before/web before 5191
+      - name: Capture after screenshots and exercise import workflow
+        run: node scripts/capture-routine-search-qa.mjs . after 5192
+      - name: Upload screenshots for visual approval
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: beginner-routine-builder-before-after-390x844-375x667
+          path: web/docs/screenshots/routine-search-qa/
+          if-no-files-found: warn
