@@ -1,5 +1,5 @@
 /** Audio helpers shared by P04 (Tuner) and P05 (Metronome). No synthetic pitch data. */
-export type TuningMode = 'chromatic' | 'guitar' | 'bass' | 'voice';
+export type TuningMode = 'chromatic' | 'guitar' | 'bass';
 export type PitchReading = {
   frequency: number;
   note: string;
@@ -73,31 +73,46 @@ export function detectPitch(samples: Float32Array, sampleRate: number): number |
   const minTau = Math.max(2, Math.floor(sampleRate / 1200));
   const maxTau = Math.min(Math.ceil(sampleRate / 38), Math.floor(samples.length / 2) - 2);
   if (maxTau <= minTau) return null;
-  const differences = new Float32Array(maxTau + 2);
   const normalized = new Float32Array(maxTau + 2);
-  // Reduce per-frame correlation work for mobile Safari's main thread.
-  const count = Math.min(2048, samples.length - maxTau - 1);
+  // Analyze the most RECENT 2560 samples. The previous implementation read
+  // the oldest part of the 8192-sample buffer, making live vocal tracking lag.
+  // A wide enough window also captures multiple cycles of a lower voice.
+  const count = Math.min(2560, samples.length - maxTau - 1);
+  const offset = Math.max(0, samples.length - maxTau - count - 1);
   let cumulative = 0;
   for (let tau = 1; tau <= maxTau + 1; tau++) {
     let difference = 0;
     for (let i = 0; i < count; i += 3) {
-      const delta = samples[i] - samples[i + tau];
+      const delta = samples[offset + i] - samples[offset + i + tau];
       difference += delta * delta;
     }
-    differences[tau] = difference;
     cumulative += difference;
     normalized[tau] = cumulative > 0 ? difference * tau / cumulative : 1;
   }
 
+  // Sustained voices have vibrato, air and strong overtones; their periodic
+  // YIN minima can sit above the strict 0.13 threshold used for pure tones.
+  // Prefer the first good local minimum to reduce octave errors, then allow
+  // a stronger fallback minimum only while the sound is still periodic.
+  const strongThreshold = 0.23;
+  const weakThreshold = 0.31;
   let bestTau = -1;
+  let fallbackTau = -1;
+  let fallbackValue = weakThreshold;
   for (let tau = minTau; tau < maxTau; tau++) {
-    if (normalized[tau] < 0.13) {
-      while (tau + 1 < maxTau && normalized[tau + 1] < normalized[tau]) tau++;
+    const value = normalized[tau];
+    if (value > normalized[tau - 1] || value >= normalized[tau + 1]) continue;
+    if (value < strongThreshold) {
       bestTau = tau;
       break;
     }
+    if (value < fallbackValue) {
+      fallbackValue = value;
+      fallbackTau = tau;
+    }
   }
-  if (bestTau < 0 || normalized[bestTau] > 0.13) return null;
+  if (bestTau < 0) bestTau = fallbackTau;
+  if (bestTau < 1 || normalized[bestTau] >= weakThreshold) return null;
   const a = normalized[bestTau - 1];
   const b = normalized[bestTau];
   const c = normalized[bestTau + 1];

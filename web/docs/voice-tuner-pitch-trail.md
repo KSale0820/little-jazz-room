@@ -1,34 +1,22 @@
-# Vocal tuning and pitch graph
+# Chromatic tuner with optional pitch graph and singing support
 
-The existing P04 instrument tuner now supports an optional **Voice** mode for
-singers, humming and vocal exercises, in addition to Chromatic, Guitar and
-Bass. The normal approved instrument gauge remains unchanged.
+The separate Voice tab was removed because it duplicated Chromatic note
+detection. Sing or hum in **Chromatic**, just as with any instrument.
+Use **Show pitch graph** for an eight-second trajectory of measured pitch.
 
-- **Voice mode** uses the same actual microphone pitch detection and displays
-  a live eight-second pitch trajectory. Up means higher pitch, down means
-  lower pitch, and breaks mean silence or sound without confident pitch.
-- **Show pitch graph** reveals the trajectory in other tuner modes.
-- **Spoken notes** was removed after iPhone testing because it was
-  distracting and made tuning less predictable.
-- A measured note is retained for at most 400 ms across a missed analysis
-  frame; the graph only draws actual microphone measurements and breaks
-  after sustained silence.
-- The status occupies one fixed-height line to prevent the rest of the
-  interface shifting, and all four mode labels fit at narrow phone widths.
-- The graph is drawn from real analyser samples, not decorative or invented
-  data. It does not save, upload or record the mic.
+## Recognition improvements (iPhone Safari)
+- The YIN detector now analyzes the latest input samples rather than
+  older frames in its 8192-sample analyser.
+- Less stringent periodicity thresholds and a periodicity-validated
+  fallback aim to recognize real-world sung notes with vibrato, harmonics
+  and breathiness, without fabricating input from silence or noise.
+- The last genuinely measured pitch is held for at most 400 ms during a
+  brief missed frame. No interpolated pitches are added to the graph.
+- The tuner status retains a fixed height; there is no moving alert.
+- Three tabs only: Chromatic, Guitar, Bass. There are no spoken notes.
 
-## Verification
+Microphone audio is never recorded, uploaded or saved. Tests use simulated
+vibrato/harmonic voices and an end-to-end browser microphone A440 capture.
 
-The real Chromium `getUserMedia` test feeds a synthesized A440 wave through
-the browser's microphone stack, verifies A4 detection, selects Voice, asserts
-that the graph receives multiple actual samples and captures 390 × 844 and
-375 × 667 screenshots. Unit tests cover pitch-to-chart transformations,
-silent gaps and voice-mode note mapping. Live iPhone Safari voice output
-and sustained input behavior still require physical-device checking.
-
-## Vercel
-
-This branch is based on `fix/web-tuner-iphone-safari-input` (PR #26), where
-the iPhone microphone permission + Web Audio startup improvements were
-implemented. Merge PR #26 first, then retarget/review this feature PR.
+These changes need a physical iPhone Safari retest. Synthetic voice and
+Chromium browser tests cannot guarantee real-world iPhone singing accuracy.

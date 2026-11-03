@@ -44,13 +44,13 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   }, [mode]);
 
   useEffect(() => {
-    showPitchTrailRef.current = mode === 'voice' || showPitchTrail;
-  }, [mode, showPitchTrail]);
+    showPitchTrailRef.current = showPitchTrail;
+  }, [showPitchTrail]);
 
   const trail = useMemo(() => pitchTrailGeometry(
     pitchTrail, pitchTrail[pitchTrail.length - 1]?.timestamp ?? 0,
   ), [pitchTrail]);
-  const pitchTrailEnabled = mode === 'voice' || showPitchTrail;
+  const pitchTrailEnabled = showPitchTrail;
 
   const stopMicrophone = useCallback(() => {
     requestRef.current++;
@@ -253,7 +253,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   };
 
   const isTuned = reading !== null && Math.abs(reading.cents) <= 5;
-  const isNearString = reading && (mode === 'chromatic' || mode === 'voice' || reading.isOpenString);
+  const isNearString = reading && (mode === 'chromatic' || reading.isOpenString);
   const needleAngle = reading && isNearString
     ? Math.max(-70, Math.min(70, reading.cents * 1.4)) : null;
   const getTuningMessage = () => {
@@ -279,16 +279,15 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <button className="tool-settings" type="button" aria-label="Tuner help" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)}>⚙</button>
       </header>
       {showHelp ? (
-        <p className="tool-help">Play or sing one sustained note at a time. Chromatic recognizes any note; Guitar and Bass use standard open-string tuning. Voice follows your singing on a pitch graph.</p>
+        <p className="tool-help">Play or sing one sustained note at a time. Chromatic recognizes any note and can show your pitch over time. Guitar and Bass compare against standard open strings.</p>
       ) : null}
       <div className="tuner-modes" role="group" aria-label="Tuning mode">
-        {(['chromatic', 'guitar', 'bass', 'voice'] as const).map(option => (
+        {(['chromatic', 'guitar', 'bass'] as const).map(option => (
           <button key={option} type="button" aria-pressed={mode === option} onClick={() => setMode(option)}>
             {option[0].toUpperCase() + option.slice(1)}
           </button>
         ))}
       </div>
-      {mode === 'voice' ? <p className="tuner-voice-hint">Sing or hum. Follow your pitch as it rises and falls.</p> : null}
       <div className="tuner-reading" aria-live="off">
         <strong>{reading?.note ?? '—'}</strong>
         <span>{reading ? reading.frequency.toFixed(1) + ' Hz' : 'No pitch detected'}</span>
@@ -326,12 +325,10 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <div><strong>{reading && isNearString ? (reading.cents >= 0 ? '+' : '') + Math.round(reading.cents) + '¢' : '—'}</strong><span>Deviation</span></div>
       </div>
       <div className="tuner-trail-controls">
-        {mode !== 'voice' ? (
-          <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
-            onClick={() => setShowPitchTrail(value => !value)}>
-            {showPitchTrail ? 'Hide pitch graph' : 'Show pitch graph'}
-          </button>
-        ) : null}
+        <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
+          onClick={() => setShowPitchTrail(value => !value)}>
+          {showPitchTrail ? 'Hide pitch graph' : 'Show pitch graph'}
+        </button>
       </div>
       {pitchTrailEnabled ? (
         <section className="tuner-trail-panel" aria-label="Live pitch graph">

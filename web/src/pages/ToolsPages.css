@@ -549,24 +549,14 @@
   .tuner-reference strong { font-size: 15px; }
 }
 
-/* Opt-in vocal tuning: a real-time pitch trail, not a pre-rendered illustration. */
-.tool-tuner .tuner-modes {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  width: min(100%, 330px);
-}
+/* Optional live pitch trail for any instrument or voice, within Chromatic. */
 .tuner-modes button { font-size: 14px; }
-.tuner-voice-hint {
-  margin: 6px auto 0;
-  text-align: center;
-  color: #597066;
-  font: 12px/1.35 system-ui, sans-serif;
-}
 .tuner-trail-controls {
   display: flex;
   justify-content: center;
 }
 .tuner-trail-controls:empty { display: none; }
-.tuner-trail-toggle, .tuner-voice-toggle {
+.tuner-trail-toggle {
   border: 1px solid #c4d5c5;
   background: #f1f3e8;
   color: #234a3a;
@@ -575,8 +565,6 @@
   font: 650 12px/1.25 system-ui, sans-serif;
   min-height: 36px;
 }
-.tuner-voice-toggle[aria-pressed="true"] { background: #d5e8d7; }
-.tuner-voice-toggle:disabled { opacity: .5; }
 .tuner-trail-panel {
   margin: 8px auto 0;
   width: min(100%, 350px);
@@ -624,7 +612,6 @@
 @media (max-height: 720px) and (max-width: 899px) {
   .tuner-trail-panel { margin-top: 5px; padding: 6px 9px 5px; }
   .tuner-trail-plot { height: 70px; }
-  .tuner-voice-hint { margin-top: 3px; }
 }
 
 /* Keep the floor and rug beneath the tools, not behind their controls, on compact screens. */
@@ -649,11 +636,11 @@
   }
 }
 
-/* iPhone tuner QA: all four mode labels fit; no status-banner layout jumps.
+/* iPhone tuner QA: all three mode labels fit; no status-banner layout jumps.
    Only the tuner is affected, leaving P05/other screens unchanged. */
 .tool-tuner .tuner-modes {
   width: min(100%, 360px);
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, .72fr) minmax(0, .85fr);
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) minmax(0, .9fr);
   gap: 1px;
 }
 .tool-tuner .tuner-modes button {
