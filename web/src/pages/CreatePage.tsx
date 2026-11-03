@@ -59,7 +59,7 @@ export function CreatePage() {
   const locationEditId = (location.state as { editExerciseId?: string } | null)?.editExerciseId;
   const createdChartId = new URLSearchParams(location.search).get('createdChartId');
   const chartReturnKey = CHART_RETURN_KEY + repo.scope;
-  const [chartReturnDraft] = useState<ChartReturnDraft | null>(() => {
+  const [chartReturnDraft, setChartReturnDraft] = useState<ChartReturnDraft | null>(() => {
     if (!createdChartId) return null;
     try {
       const saved: unknown = JSON.parse(sessionStorage.getItem(chartReturnKey) ?? 'null');
@@ -274,6 +274,7 @@ export function CreatePage() {
       setShowExerciseForm(false);
       setExTitle(''); setExInstructions(''); setExChartId('');
       try { sessionStorage.removeItem(chartReturnKey); } catch { /* optional */ }
+      setChartReturnDraft(null);
       if (createdChartId) navigate('/create', { replace: true });
       showToast('Exercise added to this routine.');
     } finally {
