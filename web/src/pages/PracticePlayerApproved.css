@@ -796,3 +796,55 @@
     width: 21px; height: 21px; min-height: 21px;
   }
 }
+
+/* Teaching flow refinements: distinct chart and step actions plus a persistent
+   companion beneath the timer (never inside the scrollable lesson). */
+.practice-guided .practice-step-controls .practice-chart-shortcut {
+  background: #e9eee4;
+  color: #24513e;
+  border: 1px solid #cddcc8;
+  white-space: nowrap;
+  padding-inline: 10px;
+}
+.practice-guided .practice-step-controls .practice-next {
+  white-space: nowrap;
+  padding-inline: 10px;
+}
+.practice-guided.practice-instructions .practice-step-controls > div { flex: 1 1 0; }
+.practice-guided.practice-instructions .practice-step-controls > div span { display: none; }
+.practice-guided .practice-finish-action { display: none; }
+.practice-guided.practice-instructions .practice-coach-dock {
+  flex: 0 0 auto;
+  margin-top: 5px;
+}
+.practice-guided.practice-instructions .practice-coach-dock .practice-cat-coach {
+  margin: 0;
+  align-items: center;
+  gap: 8px;
+}
+.practice-guided.practice-instructions .practice-coach-dock .practice-coach-portrait {
+  flex: 0 0 43px;
+  width: 43px;
+  height: 43px;
+}
+.practice-guided.practice-instructions .practice-coach-dock .practice-coach-bubble {
+  padding: 6px 9px;
+}
+.practice-guided.practice-instructions .practice-coach-dock .practice-coach-bubble p {
+  font-size: 11px;
+  line-height: 1.32;
+  margin-top: 1px;
+}
+.practice-guided.practice-instructions .practice-coach-dock .practice-coach-bubble button {
+  min-height: 22px;
+  padding-top: 2px;
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  .practice-guided.practice-instructions .practice-step-controls { gap: 3px; }
+  .practice-guided.practice-instructions .practice-step-controls > button { min-height: 34px; padding-inline: 7px; font-size: 11px; }
+  .practice-guided.practice-instructions .practice-step-controls > button:first-child { min-width: 33px; padding: 0; }
+  .practice-guided.practice-instructions .practice-coach-dock { margin-top: 3px; }
+  .practice-guided.practice-instructions .practice-coach-dock .practice-coach-portrait { flex-basis: 37px; width: 37px; height: 37px; }
+  .practice-guided.practice-instructions .practice-coach-dock .practice-coach-bubble { padding: 5px 8px; }
+  .practice-guided.practice-instructions .practice-coach-dock .practice-coach-bubble p { font-size: 10px; }
+}
