@@ -583,3 +583,136 @@
     font-size: 10.2px;
   }
 }
+
+
+/* Guided lessons are their own readable view, not text below the chord sheet.
+   Match the compact chart footprint so transport and tool controls stay accessible. */
+.practice-player .practice-segments-guided {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.practice-player .practice-segments-guided button {
+  min-width: 0;
+  padding-inline: 3px;
+  font-size: clamp(11px, 3.3vw, 14px);
+}
+.practice-player .practice-lesson-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: clamp(210px, 31dvh, 280px);
+  margin: 3px 0 6px;
+  overflow: hidden;
+  border: 1px solid #d5dfd0;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #faf9ee, #ecf0e4);
+}
+.practice-player .practice-lesson-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 14px 17px 12px;
+  font: 13px/1.52 system-ui, sans-serif;
+  color: #304c3f;
+}
+.practice-player .practice-lesson-scroll:focus-visible {
+  outline: 3px solid #c6a458;
+  outline-offset: -3px;
+}
+.practice-player .practice-lesson-heading { margin-bottom: 12px; }
+.practice-player .practice-lesson-eyebrow {
+  display: block;
+  color: #698273;
+  font: 700 10px/1.4 system-ui, sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.practice-player .practice-lesson-heading h2 {
+  color: #214637;
+  font: 700 20px/1.16 Georgia, serif;
+  margin: 0;
+}
+.practice-player .practice-lesson-heading p { margin: 5px 0 0; color: #647969; font-size: 12px; }
+.practice-player .practice-lesson-goal {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #ffffffb8;
+  border-left: 3px solid #b6a168;
+  margin: 0 0 14px;
+}
+.practice-player .practice-lesson-goal strong,
+.practice-player .practice-lesson-tips strong {
+  display: block;
+  font: 700 11px/1.4 system-ui, sans-serif;
+  color: #21523f;
+  margin-bottom: 3px;
+}
+.practice-player .practice-lesson-goal p,
+.practice-player .practice-lesson-tips p,
+.practice-player .practice-lesson-legacy p { margin: 0; }
+.practice-player .practice-lesson-panel h3 {
+  color: #214637;
+  font: 700 16px/1.25 Georgia, serif;
+  margin: 0 0 9px;
+}
+.practice-player .practice-lesson-steps { list-style: none; padding: 0; margin: 0 0 14px; }
+.practice-player .practice-lesson-steps li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.practice-player .practice-lesson-step-number {
+  flex: 0 0 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fffdf6;
+  background: #245442;
+  font: 700 12px/1 system-ui, sans-serif;
+}
+.practice-player .practice-lesson-steps li > span:last-child { flex: 1; min-width: 0; }
+.practice-player .practice-lesson-tips {
+  display: grid;
+  gap: 12px;
+  padding: 12px 0 13px;
+  border-top: 1px solid #cdd7ca;
+}
+.practice-player .practice-lesson-terms {
+  margin: 2px 0 13px;
+  padding: 10px 12px;
+  border: 1px solid #d3dbcf;
+  border-radius: 10px;
+  background: #fffdf7;
+}
+.practice-player .practice-lesson-terms summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #245442;
+}
+.practice-player .practice-lesson-terms p { margin: 7px 0 0; }
+.practice-player .practice-lesson-coach {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #e1e9d9;
+  font-style: italic;
+}
+.practice-player .practice-lesson-legacy p + p { margin-top: 12px; }
+.practice-player .practice-lesson-back {
+  flex: none;
+  min-height: 37px;
+  width: 100%;
+  background: #e1eadd;
+  border: 0;
+  border-top: 1px solid #d0dbcc;
+  color: #1b523e;
+  font: 700 12px/1.25 system-ui, sans-serif;
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  .practice-player .practice-lesson-panel { height: 198px; }
+  .practice-player .practice-lesson-scroll { padding: 10px 12px; font-size: 12px; }
+  .practice-player .practice-lesson-back { min-height: 32px; }
+}
