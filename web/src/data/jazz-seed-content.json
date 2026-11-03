@@ -12,11 +12,11 @@
   "exercises": [
     {
       "id": "listen-form",
-      "title": "Hear the Form",
+      "title": "Hear Where the Blues Starts",
       "category": "Ear Training",
       "level": "Beginner",
       "duration_minutes": 3,
-      "instructions": "Clap once at the start of each 4-bar phrase while listening or counting. Name the beginning of each 12-bar chorus.",
+      "instructions": "1. Count 1–2–3–4 while listening to or imagining a 12-measure blues. 2. Clap at measures 1, 5, and 9; these start three groups of four measures. 3. Start again at measure 1. Goal: Notice when each new group begins. A group of measures is called a phrase.",
       "suggested_material": "12-bar blues; listen first; audio optional",
       "suggested_bpm": null,
       "audio_asset_id": null,
@@ -29,11 +29,11 @@
     },
     {
       "id": "swing-2-4",
-      "title": "Swing on Two and Four",
+      "title": "Feel the Swing Beat",
       "category": "Rhythm",
       "level": "Beginner",
       "duration_minutes": 4,
-      "instructions": "Set metronome clicks on beats 2 and 4. Clap or play quarter notes, then swing eighths without rushing.",
+      "instructions": "1. Count 1–2–3–4 at a comfortable speed. 2. Clap on counts 2 and 4, keeping 1 and 3 silent. 3. Play even quarter notes, then try pairs of swung eighth notes (long–short). Goal: Keep a steady beat for one minute.",
       "suggested_material": "Metronome: 2 and 4",
       "suggested_bpm": 70,
       "audio_asset_id": null,
@@ -46,11 +46,11 @@
     },
     {
       "id": "blues-scale",
-      "title": "F Blues Scale Vocabulary",
+      "title": "Play and Explore the F Blues Scale",
       "category": "Technique",
       "level": "Beginner",
       "duration_minutes": 4,
-      "instructions": "Play F, Ab, Bb, B, C, Eb, F slowly. Make two-bar questions and answers using only these notes.",
+      "instructions": "1. Slowly play F, A♭, B♭, B, C, E♭, F, then come back down. 2. Use a few of those notes to play a short musical question. 3. Answer it with another short phrase. Goal: Create two different phrases from the same notes. This note set is the F blues scale.",
       "suggested_material": "F blues; original teaching pattern",
       "suggested_bpm": 80,
       "audio_asset_id": null,
@@ -63,11 +63,11 @@
     },
     {
       "id": "chord-roots",
-      "title": "Sing the Roots",
+      "title": "Find the Starting Note of Each Chord",
       "category": "Ear Training",
       "level": "Beginner",
       "duration_minutes": 3,
-      "instructions": "Look at the progression; sing the root of each new chord before playing it. Repeat without looking.",
+      "instructions": "1. Look at the chart and name the first note in each chord: F7 starts on F, B♭7 on B♭, and C7 on C. 2. Sing each starting note, then play it. 3. Repeat without looking. Goal: Recognize each chord's root note by ear.",
       "suggested_material": "Original F blues changes",
       "suggested_bpm": 70,
       "audio_asset_id": null,
@@ -80,11 +80,11 @@
     },
     {
       "id": "thirds-sevenths",
-      "title": "Guide Tones Through ii–V–I",
+      "title": "Practice the Important Notes in Each Chord",
       "category": "Harmony",
       "level": "Beginner",
       "duration_minutes": 5,
-      "instructions": "Over Dm7 → G7 → Cmaj7, play each third and seventh. Move each voice by the smallest distance possible.",
+      "instructions": "1. Play the 3rd and 7th of Dm7 (F and C). 2. Move to G7 (B and F), then Cmaj7 (E and B). 3. Move each note as little as possible. Goal: Connect all three chords smoothly. These notes are called guide tones; the chord sequence is ii–V–I.",
       "suggested_material": "Dm7 G7 Cmaj7",
       "suggested_bpm": 75,
       "audio_asset_id": null,
@@ -97,11 +97,11 @@
     },
     {
       "id": "seventh-arpeggios",
-      "title": "Seventh-Chord Arpeggio Paths",
+      "title": "Play the Notes of Each Chord",
       "category": "Technique",
       "level": "Beginner",
       "duration_minutes": 4,
-      "instructions": "Play 1–3–5–7 and back for m7, dominant 7, and maj7 chords. Connect to the nearest tone of the next chord.",
+      "instructions": "1. Play Dm7 as D–F–A–C, one note at a time, up and down. 2. Do the same for G7 (G–B–D–F) and Cmaj7 (C–E–G–B). 3. Repeat slowly without stopping. Goal: Hear all four notes of each chord. Playing chord notes separately is called an arpeggio.",
       "suggested_material": "ii–V–I in C",
       "suggested_bpm": 80,
       "audio_asset_id": null,
@@ -114,11 +114,11 @@
     },
     {
       "id": "chord-tone-solo",
-      "title": "Solo Using Only Chord Tones",
+      "title": "Make a Solo from Chord Notes",
       "category": "Improvisation",
       "level": "Beginner",
       "duration_minutes": 5,
-      "instructions": "Improvise one 12-bar chorus using only chord roots, thirds, fifths, and sevenths. End phrases with space.",
+      "instructions": "1. Choose the F blues chart. 2. Play only the root, 3rd, 5th, or 7th of the chord shown in each measure. 3. Pause between short phrases. Goal: Play through all 12 measures once. The 12-measure round is called a chorus.",
       "suggested_material": "12-bar F jazz blues",
       "suggested_bpm": 85,
       "audio_asset_id": null,
@@ -131,11 +131,11 @@
     },
     {
       "id": "question-answer",
-      "title": "Two-Bar Call and Response",
+      "title": "Play a Musical Question and Answer",
       "category": "Improvisation",
       "level": "Beginner",
       "duration_minutes": 4,
-      "instructions": "Play a short two-bar phrase, leave two beats of silence, then answer with a related two-bar phrase.",
+      "instructions": "1. Play a short two-measure phrase. 2. Leave two beats of silence. 3. Play a similar phrase that sounds like an answer. Goal: Make three different question-and-answer pairs. Musicians also call this call and response.",
       "suggested_material": "F blues, no melody recording required",
       "suggested_bpm": 85,
       "audio_asset_id": null,
@@ -148,11 +148,11 @@
     },
     {
       "id": "blues-form",
-      "title": "Count a 12-Bar Blues",
+      "title": "Count Through a 12-Bar Blues",
       "category": "Repertoire",
       "level": "Beginner",
       "duration_minutes": 4,
-      "instructions": "Count measures 1–12 aloud while clapping beat 2 and 4. Identify IV at measure 5 and the turnaround at measures 11–12.",
+      "instructions": "1. Count four beats in each measure from 1 to 12. 2. Clap on beats 2 and 4. 3. Notice the change to B♭7 at measure 5 and the ending chords in measures 11–12. Goal: Find your way back to measure 1 without losing count. This repeating pattern is the blues form.",
       "suggested_material": "Original jazz blues form",
       "suggested_bpm": 90,
       "audio_asset_id": null,
@@ -219,11 +219,11 @@
     },
     {
       "id": "walking-bass",
-      "title": "Walking Bass: Roots and Approach Tones",
+      "title": "Walk from One Chord to the Next",
       "category": "Technique",
       "level": "Beginner",
       "duration_minutes": 5,
-      "instructions": "Play one quarter note per beat. Start with chord roots on beat 1 and approach the next root by step or chromatic neighbor.",
+      "instructions": "1. Play one note on each of the four beats. 2. Start each new chord with its root, such as F for F7. 3. On beat 4, choose a note one step away from the next chord's root. Goal: Connect four measures without stopping. A steady four-note line is called walking bass.",
       "suggested_material": "F blues form",
       "suggested_bpm": 100,
       "audio_asset_id": null,
@@ -271,11 +271,11 @@
     },
     {
       "id": "melody-by-ear",
-      "title": "Learn a Short Original Melody by Ear",
+      "title": "Learn a Short Melody by Listening",
       "category": "Repertoire",
       "level": "Beginner",
       "duration_minutes": 6,
-      "instructions": "Listen to a user-provided or original four-bar phrase; sing it before playing, then repeat it in two keys.",
+      "instructions": "1. Play a short original or personally provided four-measure melody. 2. Sing it back before touching your instrument. 3. Find the notes by ear, then try them in two keys. Goal: Play the full phrase without reading notes.",
       "suggested_material": "No copyrighted melody bundled",
       "suggested_bpm": null,
       "audio_asset_id": null,
@@ -288,11 +288,11 @@
     },
     {
       "id": "listen-bass",
-      "title": "Listen to the Bass Line",
+      "title": "Hear the Low Notes in a Song",
       "category": "Ear Training",
       "level": "Beginner",
       "duration_minutes": 4,
-      "instructions": "During a licensed recording, focus only on bass. Hum the roots and note where the line approaches the next chord.",
+      "instructions": "1. Choose a recording you have permission to use. 2. Listen only to the low bass part. 3. Hum its first note when each chord changes. Goal: Hear and follow four chord changes. The starting note of a chord is its root.",
       "suggested_material": "User-selected audio; optional",
       "suggested_bpm": null,
       "audio_asset_id": null,
@@ -305,11 +305,11 @@
     },
     {
       "id": "free-play",
-      "title": "Three Minutes of Musical Play",
+      "title": "Play Freely for Three Minutes",
       "category": "Improvisation",
       "level": "Beginner",
       "duration_minutes": 3,
-      "instructions": "Explore a phrase, groove, or voicing that interests you. No scoring or right answer; end by noting one discovery.",
+      "instructions": "1. Pick a rhythm or a few notes that sound good to you. 2. Make up short phrases without worrying about mistakes. 3. When you finish, name one sound you liked. Goal: Explore a new musical idea.",
       "suggested_material": "Backing optional",
       "suggested_bpm": null,
       "audio_asset_id": null,
@@ -322,11 +322,11 @@
     },
     {
       "id": "blues-bb-forms",
-      "title": "B♭ Blues: Say the Changes",
+      "title": "Hear the Chord Changes in B♭ Blues",
       "category": "Harmony",
       "level": "Beginner",
       "duration_minutes": 5,
-      "instructions": "Count three 4-bar phrases while naming each chord’s root. Play the third of each dominant seventh chord, then improvise one two-bar phrase.",
+      "instructions": "1. Count three groups of four measures in the B♭ blues chart. 2. Say the first note of each chord aloud. 3. Play its 3rd, then create a short two-measure phrase. Goal: Stay oriented through all 12 measures. The first note is the chord root.",
       "suggested_material": "Jazz Blues in B♭",
       "suggested_bpm": 85,
       "audio_asset_id": null,
@@ -356,11 +356,11 @@
     },
     {
       "id": "bossa-minor",
-      "title": "Minor Bossa: Guide Tones",
+      "title": "Connect Chords in a Gentle Bossa",
       "category": "Harmony",
       "level": "Beginner",
       "duration_minutes": 7,
-      "instructions": "Play thirds and sevenths of each chord in a relaxed straight-eighth-note feel. Loop bars 9–12 before playing all 16 bars.",
+      "instructions": "1. Choose the 16-measure C minor bossa chart and play slowly with even eighth notes. 2. For each chord, play its 3rd and 7th. 3. Repeat measures 9–12 before playing all 16. Goal: Change chords without stopping. These important notes are called guide tones; bossa has a relaxed Brazilian rhythm.",
       "suggested_material": "Minor Bossa in C Minor (16-bar Study)",
       "suggested_bpm": 100,
       "audio_asset_id": null,
@@ -373,11 +373,11 @@
     },
     {
       "id": "major-minor-cycle",
-      "title": "Relative Major to Minor",
+      "title": "Hear the Move from Major to Minor",
       "category": "Harmony",
       "level": "Beginner",
       "duration_minutes": 6,
-      "instructions": "Play roots then guide tones through the 8-bar cycle. Identify the move from G major to E minor, keeping time at a slow swing tempo.",
+      "instructions": "1. Look at the 16-measure major-to-minor chord study. 2. Play each chord's starting note (root), then its 3rd and 7th. 3. Listen for the change from G major to E minor. Goal: Keep a slow, steady pulse across eight measures. The 3rd and 7th are guide tones.",
       "suggested_material": "Major-to-Minor ii–V Cycle (16-bar Study)",
       "suggested_bpm": 85,
       "audio_asset_id": null,
@@ -390,11 +390,11 @@
     },
     {
       "id": "modal-space",
-      "title": "Modal Motif: Leave Space",
+      "title": "Make a Two-Note Musical Idea",
       "category": "Harmony",
       "level": "Beginner",
       "duration_minutes": 6,
-      "instructions": "Create a two-note motif in D Dorian. Repeat it with rhythmic variation and adapt the motif when the harmony shifts up a semitone.",
+      "instructions": "1. Choose two notes from D, E, F, G, A, B, C. 2. Play them as a short pattern, then repeat with a new rhythm and a pause. 3. When the chart moves up one semitone, move your two notes up one semitone too. Goal: Create a recognizable idea with space between phrases. This is modal improvisation.",
       "suggested_material": "Two-Center Modal Study in D (16 bars)",
       "suggested_bpm": 85,
       "audio_asset_id": null,
@@ -441,11 +441,11 @@
     },
     {
       "id": "minor-blues",
-      "title": "Minor Blues in Three Phrases",
+      "title": "Compare Two Ways to Play a Minor Blues",
       "category": "Harmony",
       "level": "Beginner",
       "duration_minutes": 6,
-      "instructions": "Play a chorus with the minor pentatonic scale, then one with only chord tones. Note where bars 9–10 increase harmonic tension.",
+      "instructions": "1. Play one round of the C minor blues using C, E♭, F, G, B♭. 2. Play another round using only notes from each displayed chord. 3. Listen closely at measures 9–10. Goal: Hear how the chord changes affect your note choices. Each round is a chorus.",
       "suggested_material": "Minor Jazz Blues in C",
       "suggested_bpm": 85,
       "audio_asset_id": null,
@@ -481,7 +481,7 @@
   "routines": [
     {
       "id": "first-improv",
-      "title": "First Jazz Improvisation",
+      "title": "Make Your First Jazz Solo",
       "difficulty": "Beginner",
       "goal": "Improvisation",
       "duration_minutes": 15,
@@ -511,7 +511,8 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Count a blues, try a few scale notes, then make up short questions and answers."
     },
     {
       "id": "daily-warm-up",
@@ -541,11 +542,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Feel the beat, play the notes of a few chords, and finish with free play."
     },
     {
       "id": "12bar-blues",
-      "title": "12-Bar Blues from Zero",
+      "title": "Learn a 12-Bar Blues",
       "difficulty": "Beginner",
       "goal": "Repertoire",
       "duration_minutes": 20,
@@ -567,7 +569,7 @@
           "duration_minutes": 5
         },
         {
-          "exercise_id": "one-chorus",
+          "exercise_id": "free-play",
           "duration_minutes": 5
         }
       ],
@@ -579,11 +581,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Count the blues pattern, hear the chord changes, and try your own short solo."
     },
     {
       "id": "ii-v-i-workout",
-      "title": "ii–V–I Workout",
+      "title": "Connect Three Common Jazz Chords",
       "difficulty": "Beginner",
       "goal": "Harmony",
       "duration_minutes": 15,
@@ -613,11 +616,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Practice Dm7, G7, and Cmaj7 one step at a time. Jazz players call this ii–V–I."
     },
     {
       "id": "rhythm-time",
-      "title": "Swing and Timing Practice",
+      "title": "Play with Steady Swing Rhythm",
       "difficulty": "Beginner",
       "goal": "Rhythm",
       "duration_minutes": 10,
@@ -627,7 +631,7 @@
           "duration_minutes": 4
         },
         {
-          "exercise_id": "rhythm-variation",
+          "exercise_id": "question-answer",
           "duration_minutes": 3
         },
         {
@@ -643,11 +647,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Keep a steady beat, practice musical questions and answers, and play freely."
     },
     {
       "id": "intermediate-solo",
-      "title": "Intermediate Soloing Practice",
+      "title": "Develop Longer Jazz Solos",
       "difficulty": "Intermediate",
       "goal": "Improvisation",
       "duration_minutes": 30,
@@ -685,11 +690,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Learn a short phrase by ear, vary rhythms, and connect chord tones through the blues."
     },
     {
       "id": "walking-bass",
-      "title": "Walking Bass Basics",
+      "title": "Walking Bass: Start with Four Beats",
       "difficulty": "Beginner",
       "goal": "Technique",
       "duration_minutes": 15,
@@ -719,11 +725,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "Bass"
-      ]
+      ],
+      "description": "Find chord roots, play one note per beat, and walk through the blues."
     },
     {
       "id": "comping-basics",
-      "title": "Comping with Space",
+      "title": "Leave Space When Playing Chords",
       "difficulty": "Intermediate",
       "goal": "Harmony",
       "duration_minutes": 15,
@@ -750,11 +757,12 @@
       "applicable_instruments": [
         "Piano",
         "Guitar"
-      ]
+      ],
+      "description": "Practice sparse chord accompaniment (comping) and responsive rhythms."
     },
     {
       "id": "ear-training",
-      "title": "Ear Training Mini Session",
+      "title": "Train Your Ear: Hear and Sing Notes",
       "difficulty": "Beginner",
       "goal": "Ear Training",
       "duration_minutes": 15,
@@ -784,11 +792,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Recognize where the blues begins, sing chord roots, and listen to the bass."
     },
     {
       "id": "no-backing",
-      "title": "No-Backing-Track Challenge",
+      "title": "Practice Without a Backing Track",
       "difficulty": "Beginner",
       "goal": "Rhythm",
       "duration_minutes": 10,
@@ -813,11 +822,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Use your own counting and a little free play to keep time confidently."
     },
     {
       "id": "jazz-standards-starter",
-      "title": "Jazz Standards Starter Pack",
+      "title": "Get Comfortable with Jazz Song Forms",
       "difficulty": "Beginner",
       "goal": "Repertoire",
       "duration_minutes": 14,
@@ -843,11 +853,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Listen for sections, follow a B♭ blues, and practice a major-to-minor chord change."
     },
     {
       "id": "first-minor-bossa",
-      "title": "First Minor Bossa",
+      "title": "Start Playing a Gentle Minor Bossa",
       "difficulty": "Beginner",
       "goal": "Rhythm & Harmony",
       "duration_minutes": 15,
@@ -873,11 +884,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Learn relaxed bossa rhythm and connect the important notes of each chord."
     },
     {
       "id": "rhythm-changes-starter",
-      "title": "Rhythm Changes Starter",
+      "title": "Follow the Sections of Rhythm Changes",
       "difficulty": "Intermediate",
       "goal": "Repertoire",
       "duration_minutes": 19,
@@ -903,11 +915,12 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Keep swing time and learn to move through the contrasting bridge section."
     },
     {
       "id": "forms-and-ballads",
-      "title": "Song Forms & Ballad Language",
+      "title": "Explore Song Forms and Ballad Chords",
       "difficulty": "Intermediate",
       "goal": "Harmony",
       "duration_minutes": 20,
@@ -933,7 +946,8 @@
       "is_seed": true,
       "applicable_instruments": [
         "All"
-      ]
+      ],
+      "description": "Practice ABAC forms, smooth chord movement, and two-note modal ideas."
     }
   ],
   "paths": [
