@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { ChordGrid } from '../components/ChordGrid';
-import { GuidedLesson } from '../components/GuidedLesson';
+import { GuidedCatCoach, GuidedLesson } from '../components/GuidedLesson';
 import { normalizeGuidedLesson } from '../lib/guidedLesson';
 import { chartsById, exercisesById } from '../data/seed';
 import { formatChartMeta } from '../lib/chords';
@@ -390,7 +390,7 @@ export function PracticePage() {
 
       {routine && lesson && panel === 'instructions' ? (
         <div id="practice-instructions-panel" className="practice-lesson-panel" role="tabpanel" aria-label="Instructions">
-          <GuidedLesson key={stepIndex} lesson={lesson} catId={catId} stepIndex={stepIndex} totalSteps={routine.steps.length} />
+          <GuidedLesson key={stepIndex} lesson={lesson} stepIndex={stepIndex} totalSteps={routine.steps.length} />
         </div>
       ) : panel === 'chart' ? (
         <div className="practice-notation-panel" role="tabpanel" aria-label="Jazz chord chart">
@@ -426,7 +426,8 @@ export function PracticePage() {
         <div className="practice-step-controls">
           <button type="button" onClick={() => goStep(-1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
           <div><strong>Step {stepIndex + 1} of {routine.steps.length}</strong><span>{playableStep?.title ?? 'Exercise'}</span></div>
-          <button type="button" className="practice-next" onClick={() => goStep(1)} disabled={stepIndex === routine.steps.length - 1}>Next Step ›</button>
+          <button type="button" className="practice-chart-shortcut" onClick={() => setPanel('chart')} aria-label="View chord chart for current step">View Chart</button>
+          <button type="button" className="practice-next" onClick={() => stepIndex === routine.steps.length - 1 ? finishSession() : goStep(1)}>{stepIndex === routine.steps.length - 1 ? 'Finish ✓' : 'Next Step ›'}</button>
         </div>
       )}
 
@@ -462,6 +463,9 @@ export function PracticePage() {
         <p className="practice-reference-note">Tempo is a reference setting. No backing track is playing.</p>
         <button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button>
       </div>
+      {routine && panel === 'instructions' && lesson && (
+        <div className="practice-coach-dock"><GuidedCatCoach key={stepIndex} lesson={lesson} catId={catId} /></div>
+      )}
       <div className="practice-utility-row" aria-label="Practice tools">
         <button type="button" disabled title="Mixer is Preview only"><PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small></button>
         <button type="button" onClick={event => openTool('settings', event.currentTarget)}><PracticeToolGlyph name="tempo" /><span>Tempo/Key</span></button>
