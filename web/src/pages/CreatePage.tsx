@@ -16,6 +16,21 @@ import {
 import './CreatePage.css';
 
 interface BuilderStep { exerciseId: string; minutes: number; }
+interface ChartReturnDraft {
+  title: string;
+  description: string;
+  visibility: Visibility;
+  instrument: string;
+  goal: string;
+  steps: BuilderStep[];
+  exTitle: string;
+  exCategory: string;
+  exLevel: string;
+  exMinutes: number;
+  exInstructions: string;
+  exChartId: string;
+}
+const CHART_RETURN_KEY = 'little-jazz-room:create-chart-return:v1:';
 const DEMO_STEPS = ['swing-2-4', 'thirds-sevenths', 'blues-form'];
 const STEP_DURATION_KEY = 'little-jazz-room:create-step-durations:v1:';
 
@@ -41,14 +56,25 @@ export function CreatePage() {
   const location = useLocation();
   const { repo, exercises, charts, routines, publicRoutines, refreshLocal, showToast, teamSignedIn, saveRoutineToCloud, saveExerciseToCloud } = useApp();
   const editId = (location.state as { editExerciseId?: string } | null)?.editExerciseId;
+  const createdChartId = new URLSearchParams(location.search).get('createdChartId');
+  const chartReturnKey = CHART_RETURN_KEY + repo.scope;
+  const [chartReturnDraft] = useState<ChartReturnDraft | null>(() => {
+    if (!createdChartId) return null;
+    try {
+      const saved: unknown = JSON.parse(sessionStorage.getItem(chartReturnKey) ?? 'null');
+      if (saved && typeof saved === 'object' && Array.isArray((saved as ChartReturnDraft).steps))
+        return saved as ChartReturnDraft;
+    } catch { /* draft persistence may be unavailable */ }
+    return null;
+  });
 
   const originalDraft = useMemo(() => repo.readCreateDraft(), [repo]);
-  const [title, setTitle] = useState(originalDraft?.title ?? 'My Morning Standards');
-  const [description, setDescription] = useState(originalDraft?.description ?? 'A few simple steps to feel more confident playing jazz.');
-  const [visibility, setVisibility] = useState<Visibility>(originalDraft?.visibility ?? 'Private');
-  const [instrument, setInstrument] = useState('Piano');
-  const [goal, setGoal] = useState('Jazz standards');
-  const [steps, setSteps] = useState<BuilderStep[]>(() => loadBuilderSteps(repo, exercises));
+  const [title, setTitle] = useState(chartReturnDraft?.title ?? originalDraft?.title ?? 'My Morning Standards');
+  const [description, setDescription] = useState(chartReturnDraft?.description ?? originalDraft?.description ?? 'A few simple steps to feel more confident playing jazz.');
+  const [visibility, setVisibility] = useState<Visibility>(chartReturnDraft?.visibility ?? originalDraft?.visibility ?? 'Private');
+  const [instrument, setInstrument] = useState(chartReturnDraft?.instrument ?? 'Piano');
+  const [goal, setGoal] = useState(chartReturnDraft?.goal ?? 'Jazz standards');
+  const [steps, setSteps] = useState<BuilderStep[]>(() => chartReturnDraft?.steps ?? loadBuilderSteps(repo, exercises));
   const [saving, setSaving] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const pickerTriggerRef = useRef<HTMLButtonElement>(null);
@@ -57,21 +83,31 @@ export function CreatePage() {
   const [pickerLevel, setPickerLevel] = useState('');
   const [pickerGoal, setPickerGoal] = useState('');
   const [selectedRoutineId, setSelectedRoutineId] = useState<string | null>(null);
-  const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [exTitle, setExTitle] = useState('');
-  const [exCategory, setExCategory] = useState('Technique');
-  const [exLevel, setExLevel] = useState('Beginner');
-  const [exMinutes, setExMinutes] = useState(5);
-  const [exInstructions, setExInstructions] = useState('');
-  const [exChartId, setExChartId] = useState('');
+  const [showExerciseForm, setShowExerciseForm] = useState(Boolean(chartReturnDraft));
+  const [exTitle, setExTitle] = useState(chartReturnDraft?.exTitle ?? '');
+  const [exCategory, setExCategory] = useState(chartReturnDraft?.exCategory ?? 'Technique');
+  const [exLevel, setExLevel] = useState(chartReturnDraft?.exLevel ?? 'Beginner');
+  const [exMinutes, setExMinutes] = useState(chartReturnDraft?.exMinutes ?? 5);
+  const [exInstructions, setExInstructions] = useState(chartReturnDraft?.exInstructions ?? '');
+  const [exChartId, setExChartId] = useState(chartReturnDraft?.exChartId ?? '');
+  const [chartSearch, setChartSearch] = useState('');
 
   useEffect(() => {
+    if (chartReturnDraft) return; // initial state already restored from unfinished form
     const draft = repo.readCreateDraft();
     setTitle(draft?.title ?? 'My Morning Standards');
     setDescription(draft?.description ?? 'A focused practice routine for building confidence on a standard.');
     setVisibility(draft?.visibility ?? 'Private');
     setSteps(loadBuilderSteps(repo, exercises));
   }, [repo.scope]);
+
+  useEffect(() => {
+    if (!createdChartId) return;
+    if (!charts.some(chart => chart.id === createdChartId)) return;
+    setExChartId(createdChartId);
+    setShowExerciseForm(true);
+    try { sessionStorage.removeItem(chartReturnKey); } catch { /* optional */ }
+  }, [createdChartId, charts, chartReturnKey]);
 
   const loadedEditId = useRef<string | null>(null);
   useEffect(() => {
@@ -150,8 +186,20 @@ export function CreatePage() {
   const setStepMinutes = (index: number, minutes: number) =>
     setSteps(previous => previous.map((step, i) => i === index ? { ...step, minutes } : step));
 
+  const openChartBuilder = (existingId?: string) => {
+    persistDraft();
+    const formDraft: ChartReturnDraft = {
+      title, description, visibility, instrument, goal, steps,
+      exTitle, exCategory, exLevel, exMinutes, exInstructions, exChartId,
+    };
+    try { sessionStorage.setItem(chartReturnKey, JSON.stringify(formDraft)); }
+    catch { showToast('Could not preserve your unfinished exercise. Check browser storage.'); return; }
+    navigate(existingId
+      ? '/charts/' + encodeURIComponent(existingId) + '/edit?returnTo=%2Fcreate'
+      : '/charts/new?returnTo=%2Fcreate');
+  };
+
   const addExistingExercise = (exercise: Exercise) => {
-    if (steps.some(step => step.exerciseId === exercise.id)) return;
     setSteps(previous => appendBuilderExercise(previous, exercise));
     showToast(exercise.title + ' added.');
   };
@@ -185,6 +233,10 @@ export function CreatePage() {
     if (saving) return;
     if (!exTitle.trim() || !exInstructions.trim() || !Number.isInteger(exMinutes) || exMinutes < 1) {
       showToast('Enter an exercise title, instructions, and a positive duration.');
+      return;
+    }
+    if (exChartId && !charts.some(chart => chart.id === exChartId)) {
+      showToast('The selected chart is unavailable. Select an existing chart before saving.');
       return;
     }
     const existing = editId ? exercises.find(ex => ex.id === editId) : undefined;
@@ -391,15 +443,14 @@ export function CreatePage() {
             {pickerTab === 'Exercises' ? <>
               <p className="builder-picker-count">{foundExercises.length} exercises</p>
               {foundExercises.map(exercise => {
-                const added = steps.some(step => step.exerciseId === exercise.id);
                 return <article className="builder-picker-result" key={exercise.id}>
                   <div>
                     <h4>{exercise.title}</h4>
                     <p>{exercise.instructions}</p>
                     <span>{exercise.level} · {exercise.duration_minutes} min · {exercise.category}</span>
                   </div>
-                  <button type="button" disabled={added} onClick={() => addExistingExercise(exercise)}>
-                    {added ? 'Added' : 'Add'}
+                  <button type="button" onClick={() => addExistingExercise(exercise)}>
+                    Add
                   </button>
                 </article>;
               })}
@@ -431,8 +482,7 @@ export function CreatePage() {
                 <span>{step.duration_minutes} min</span></li>
             ))}</ol>
             <p><strong>{importPreview.additions.length} steps will be added.</strong>
-              {importPreview.duplicates > 0 ? ' ' + importPreview.duplicates + ' already in your routine will be skipped.' : ''}
-              {importPreview.unavailable > 0 ? ' ' + importPreview.unavailable + ' unavailable steps cannot be copied.' : ''}
+               {importPreview.unavailable > 0 ? ' ' + importPreview.unavailable + ' unavailable steps cannot be copied.' : ''}
               {' '}You can change the time or order afterward.</p>
             <div className="builder-picker-confirm-actions">
               <button type="button" onClick={() => setSelectedRoutineId(null)}>Back</button>
@@ -460,10 +510,20 @@ export function CreatePage() {
         <input id="exMin" type="number" min="1" className="builder-field" value={exMinutes} onChange={e => setExMinutes(Number(e.target.value))} />
         <label htmlFor="exInst">What should you do?</label>
         <textarea id="exInst" className="builder-field" value={exInstructions} onChange={e => setExInstructions(e.target.value)} />
-        <label htmlFor="exChart">Linked chart (optional)</label>
+        <label htmlFor="exChartSearch">Find a chart (optional)</label>
+        <input id="exChartSearch" type="search" className="builder-field" placeholder="Search by chart name"
+          value={chartSearch} onChange={event => setChartSearch(event.target.value)} />
+        <label htmlFor="exChart">Linked chart</label>
         <select id="exChart" className="builder-field" value={exChartId} onChange={e => setExChartId(e.target.value)}>
-          <option value="">None</option>{charts.map(chart => <option key={chart.id} value={chart.id}>{chart.title}</option>)}
+          <option value="">None</option>
+          {charts.filter(chart => chart.id === exChartId || chart.title.toLowerCase().includes(chartSearch.trim().toLowerCase()))
+            .map(chart => <option key={chart.id} value={chart.id}>{chart.title}</option>)}
         </select>
+        <div className="builder-panel-actions">
+          <button type="button" onClick={() => openChartBuilder()}>+ Create Chart</button>
+          {exChartId && charts.some(chart => chart.id === exChartId && chart.is_custom) &&
+            <button type="button" onClick={() => openChartBuilder(exChartId)}>Edit Chart</button>}
+        </div>
         <div className="builder-panel-actions">
           <button type="button" onClick={() => void saveExercise()} disabled={saving}>Save exercise</button>
           <button type="button" onClick={() => setShowExerciseForm(false)}>Cancel</button>
