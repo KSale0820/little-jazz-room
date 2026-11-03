@@ -314,7 +314,8 @@ export function PracticePage() {
     setMusicalClock(current => ({ chartBeat: rawChartBeat(current, now, tempo), startedAtMs: null }));
     setNowMs(now);
     setCompletion({
-      id: 'sess-' + finishedStamp + '-' + Math.random().toString(36).slice(2, 9),
+      // One stable UUID per finished session, reused across failed save retries.
+      id: crypto.randomUUID(),
       finishedAt: new Date(finishedStamp).toISOString(),
       durationSeconds,
       routineId: routine?.id,
@@ -340,6 +341,7 @@ export function PracticePage() {
           finishedAt: record.finishedAt,
           durationSeconds: record.durationSeconds,
           routineId: record.routineId,
+          routineTitle: record.routineId ? record.title : undefined,
           exerciseId: record.exerciseId,
         });
         // Notes and rating belong to the local class demo, not the session or

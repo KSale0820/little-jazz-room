@@ -14,6 +14,7 @@ import { getSupabaseClient } from '../lib/supabase/client';
 import type { Exercise, PracticeSessionRecord, Routine } from '../types/content';
 import { useCatSelection } from '../features/cats/CatCompanion';
 import { exercisesById } from '../data/seed';
+import { buildRoutineStepSnapshots } from '../lib/routineStepSnapshots';
 import { createChartRepository, mergeCharts } from '../features/charts/chartRepository';
 
 interface AppContextValue {
@@ -28,7 +29,7 @@ interface AppContextValue {
   charts: typeof seedCharts;
   refreshLocal: () => void;
   refreshCloud: () => Promise<void>;
-  saveRoutineToCloud: (routine: Routine, stepExerciseIds: string[]) => Promise<Routine>;
+  saveRoutineToCloud: (routine: Routine) => Promise<Routine>;
   saveExerciseToCloud: (exercise: Exercise) => Promise<Exercise>;
   toast: string | null;
   showToast: (message: string) => void;
@@ -92,6 +93,8 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
   const [cloudRoutines, setCloudRoutines] = useState<Routine[]>([]);
   const [publicRoutines, setPublicRoutines] = useState<Routine[]>([]);
   const [cloudSessions, setCloudSessions] = useState<PracticeSessionRecord[]>([]);
+  // Preserve successfully saved sessions immediately even while cloud refresh is pending.
+  const [confirmedSessions, setConfirmedSessions] = useState<PracticeSessionRecord[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [focusMode, setFocusModeState] = useState(() => readBool(FOCUS_KEY, false));
   const [catMotion, setCatMotionState] = useState(() => readBool(MOTION_KEY, true));
@@ -140,11 +143,17 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
 
   const charts = useMemo(() => mergeCharts(seedCharts, createChartRepository(repo.scope).listCharts()), [repo, tick]);
   const localSessions = useMemo(() => repo.listSessions(), [repo, sessionTick]);
-  const sessions = user ? cloudSessions : localSessions;
+  const sessions = useMemo(() => {
+    if (!user) return localSessions;
+    const byId = new Map(cloudSessions.map(row => [row.id, row]));
+    for (const row of confirmedSessions) byId.set(row.id, row);
+    return [...byId.values()].sort((a, b) => b.finishedAt.localeCompare(a.finishedAt)).slice(0, 200);
+  }, [user, localSessions, cloudSessions, confirmedSessions]);
 
   const addSession = async (session: PracticeSessionRecord) => {
     if (cloudRepo) {
       await cloudRepo.addSession(session);
+      setConfirmedSessions(previous => [session, ...previous.filter(row => row.id !== session.id)].slice(0, 200));
       setCloudTick(t => t + 1);
       return;
     }
@@ -191,24 +200,13 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
     return saved;
   };
 
-  const saveRoutineToCloud = async (routine: Routine, stepExerciseIds: string[]) => {
+  const saveRoutineToCloud = async (routine: Routine) => {
     if (!cloudRepo) {
       throw new Error('Sign in to save routines to the team cloud.');
     }
-    const snapshots = stepExerciseIds.map((id, sort_order) => {
-      const ex = exercises.find(e => e.id === id) ?? exercisesById[id];
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
-      return {
-        sort_order,
-        snapshot_title: ex?.title ?? 'Exercise',
-        snapshot_instructions: ex?.instructions ?? '',
-        snapshot_duration_minutes: ex?.duration_minutes ?? 5,
-        snapshot_chart_id: ex?.chart_id ?? null,
-        seed_exercise_id: exercisesById[id] ? id : null,
-        source_exercise_id: ex && !exercisesById[id] && isUuid ? id : null,
-      };
-    });
-    const saved = await cloudRepo.saveRoutine(routine, snapshots);
+    const saved = await cloudRepo.saveRoutine(
+      routine, buildRoutineStepSnapshots(routine, exercises, exercisesById),
+    );
     await refreshCloud();
     return saved;
   };

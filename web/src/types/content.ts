@@ -135,5 +135,7 @@ export interface PracticeSessionRecord {
   finishedAt: string;
   durationSeconds: number;
   routineId?: string;
+  /** Preserved display label even when the source routine is renamed or deleted. */
+  routineTitle?: string;
   exerciseId?: string;
 }
