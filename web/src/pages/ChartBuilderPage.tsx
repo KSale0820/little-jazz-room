@@ -3,15 +3,25 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { EditableChartGrid } from '../features/charts/EditableChartGrid';
 import {
-  blankDraftBar, buildChartFromDraft, chartDraftId, draftFromChart,
+  blankDraftBar, buildChartFromDraft, chartDraftId, draftFromChart, draftSections, duplicateDraftSection,
   freshChartDraft, mergeDraftChord, normalizeChartKey, parseChartMeter, pitchClass, renumberDraftBars,
   resizeDraftSplit, retimeDraftBars, splitDraftChord, stepChartKey, transposeDraftChords,
-  type ChartDraft, type ChartMeter, type DraftBar,
+  type ChartDraft, type DraftBar, type ParsedChartMeter,
 } from '../features/charts/chartModel';
 import { createChartRepository, newLocalChartId } from '../features/charts/chartRepository';
 import './ChartBuilderPage.css';
 
 const FEELS = ['Swing', 'Blues', 'Bossa Nova', 'Ballad', 'Straight'];
+const SECTION_LABELS = ['A', 'B', 'C', 'D'] as const;
+
+type EditorGlyph = 'pencil' | 'up' | 'down' | 'copy';
+function EditorIcon({ name }: { name: EditorGlyph }) {
+  const common = { width: 19, height: 19, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
+    strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true as const };
+  if (name === 'pencil') return <svg {...common}><path d="m15.5 5.5 3 3M4 20l4.5-1 10.8-10.8a2.1 2.1 0 0 0-3-3L5.5 16z" /></svg>;
+  if (name === 'copy') return <svg {...common}><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" /></svg>;
+  return <svg {...common}><path d={name === 'up' ? 'M12 19V5m-6 6 6-6 6 6' : 'M12 5v14m-6-6 6 6 6-6'} /></svg>;
+}
 
 function copyBar(bar: DraftBar): DraftBar {
   return { ...bar, id: chartDraftId(), annotation: bar.annotation,
@@ -40,7 +50,9 @@ export function ChartBuilderPage() {
   const [draft, setDraft] = useState<ChartDraft>(initialDraft);
   const [dirty, setDirty] = useState(false);
   const [keyInput, setKeyInput] = useState(draft.concert_key);
-  const [meterInput, setMeterInput] = useState(draft.beats + '/4');
+  const [meterTopInput, setMeterTopInput] = useState(String(draft.beats));
+  const [meterBottomInput, setMeterBottomInput] = useState(String(draft.beat_unit ?? 4));
+  const bottomMeterRef = useRef<HTMLInputElement | null>(null);
   const [customFeel, setCustomFeel] = useState(() => !FEELS.includes(draft.feel));
   const selectedInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedBarId, setSelectedBarId] = useState(draft.bars[0]?.id ?? '');
@@ -53,7 +65,8 @@ export function ChartBuilderPage() {
     setDraft(initial);
     setDirty(false);
     setKeyInput(initial.concert_key);
-    setMeterInput(initial.beats + '/4');
+    setMeterTopInput(String(initial.beats));
+    setMeterBottomInput(String(initial.beat_unit ?? 4));
     setCustomFeel(!FEELS.includes(initial.feel));
     setSelectedBarId(initial.bars[0]?.id ?? '');
     setSelectedChordId(initial.bars[0]?.events[0]?.id ?? '');
@@ -94,6 +107,8 @@ export function ChartBuilderPage() {
   const selectedBar = draft.bars.find(bar => bar.id === selectedBarId) ?? draft.bars[0];
   const selectedEvent = selectedBar?.events.find(event => event.id === selectedChordId) ?? selectedBar?.events[0];
   const selectedIndex = draft.bars.findIndex(bar => bar.id === selectedBar?.id);
+  const sections = draftSections(draft.bars);
+  const selectedSection = sections.find(section => selectedIndex >= section.start && selectedIndex < section.end);
   const eventIndex = selectedBar?.events.findIndex(event => event.id === selectedEvent?.id) ?? -1;
   const leftSegment = selectedBar && selectedBar.events.length > 1
     ? selectedBar.events[Math.max(0, Math.min(eventIndex, selectedBar.events.length - 2))] : null;
@@ -121,21 +136,34 @@ export function ChartBuilderPage() {
     else if (normalized !== draft.concert_key) selectKey(normalized);
     else setKeyInput(normalized);
   };
-  const changeMeter = (beats: ChartMeter) => {
+  const changeMeter = (meter: ParsedChartMeter) => {
     try {
-      if (beats !== draft.beats) {
-        const bars = retimeDraftBars(draft.bars, beats);
-        edit(before => ({ ...before, beats, bars }));
+      if (meter.numerator !== draft.beats || meter.denominator !== (draft.beat_unit ?? 4)) {
+        const bars = meter.numerator !== draft.beats
+          ? retimeDraftBars(draft.bars, meter.numerator)
+          : draft.bars;
+        edit(before => ({ ...before, beats: meter.numerator, beat_unit: meter.denominator, bars }));
       }
-      setMeterInput(beats + '/4');
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Cannot change the time signature.');
     }
   };
   const commitMeterInput = () => {
-    const beats = parseChartMeter(meterInput);
-    if (!beats) { setError('Use 2/4, 3/4, or 4/4 for now.'); return; }
-    changeMeter(beats);
+    const meter = parseChartMeter(meterTopInput + '/' + meterBottomInput);
+    if (!meter) { setError('Enter 1–12 over 2, 4, or 8, such as 6/8 or 5/4.'); return; }
+    setMeterTopInput(String(meter.numerator));
+    setMeterBottomInput(String(meter.denominator));
+    changeMeter(meter);
+  };
+  const updateMeterTop = (raw: string) => {
+    const digits = raw.replace(/\D/g, '').slice(0, 2);
+    setMeterTopInput(digits);
+    const numerator = Number(digits);
+    // A leading "1" might become 10, 11, or 12. Enter/Tab completes 1/4.
+    if ((digits.length === 1 && numerator >= 2 && numerator <= 9)
+      || (digits.length === 2 && numerator >= 10 && numerator <= 12)) {
+      requestAnimationFrame(() => bottomMeterRef.current?.focus());
+    }
   };
   const insertAccidental = (accidental: '♭' | '♯') => {
     if (!selectedBar || !selectedEvent || readOnly) return;
@@ -188,6 +216,18 @@ export function ChartBuilderPage() {
       return { ...before, bars: renumberDraftBars(bars) };
     });
   };
+  const markSection = (label: string) => {
+    if (!selectedBar) return;
+    updateBar(selectedBar.id, bar => ({ ...bar, section: label || null }));
+  };
+  const duplicateSection = () => {
+    if (!selectedSection) return;
+    const result = duplicateDraftSection(draft.bars, selectedSection.label, selectedSection.start);
+    if (!result) return;
+    edit(before => ({ ...before, bars: result.bars }));
+    const first = result.bars[result.newStart]!;
+    select(first.id, first.events[0]?.id ?? '');
+  };
   const clearStoredDraft = () => {
     try { sessionStorage.removeItem(storageKey); } catch { /* optional */ }
   };
@@ -201,13 +241,13 @@ export function ChartBuilderPage() {
     if (readOnly || missing) return;
     const normalized = normalizeChartKey(keyInput);
     if (!normalized) { setError('Choose a key such as C, F♯ or B♭.'); return; }
-    const meter = parseChartMeter(meterInput);
-    if (!meter) { setError('Use 2/4, 3/4, or 4/4 for now.'); return; }
+    const meter = parseChartMeter(meterTopInput + '/' + meterBottomInput);
+    if (!meter) { setError('Enter 1–12 over 2, 4, or 8, such as 6/8 or 5/4.'); return; }
     try {
       const shift = (pitchClass(normalized) ?? 0) - (pitchClass(draft.concert_key) ?? 0);
       const transposed = transposeDraftChords(draft.bars, shift, normalized);
-      const bars = meter === draft.beats ? transposed : retimeDraftBars(transposed, meter);
-      const chart = buildChartFromDraft({ ...draft, concert_key: normalized, beats: meter, bars },
+      const bars = meter.numerator === draft.beats ? transposed : retimeDraftBars(transposed, meter.numerator);
+      const chart = buildChartFromDraft({ ...draft, concert_key: normalized, beats: meter.numerator, beat_unit: meter.denominator, bars },
         existing?.id ?? newLocalChartId(), existing);
       chartRepo.saveChart(chart);
       clearStoredDraft();
@@ -266,14 +306,22 @@ export function ChartBuilderPage() {
               onClick={() => selectKey(stepChartKey(normalizeChartKey(keyInput) ?? draft.concert_key, 1))}>+</button>
           </div>
         </label>
-        <label className="chart-builder-field chart-builder-time-field">
-          <span>Time signature</span>
-          <input type="text" inputMode="text" aria-label="Time signature"
-            placeholder="4/4" value={meterInput} disabled={readOnly}
-            onChange={event => setMeterInput(event.target.value)}
-            onBlur={commitMeterInput}
-            onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); event.currentTarget.blur(); } }} />
-        </label>
+        <fieldset className="chart-builder-time-field" aria-label="Time signature">
+          <legend>Time signature</legend>
+          <div className="chart-meter-fraction">
+            <input aria-label="Time signature numerator" type="text" inputMode="numeric" pattern="[0-9]*"
+              value={meterTopInput} disabled={readOnly} maxLength={2} placeholder="4"
+              onChange={event => updateMeterTop(event.target.value)}
+              onKeyDown={event => { if (event.key === 'Enter' || event.key === 'ArrowDown') { event.preventDefault(); bottomMeterRef.current?.focus(); } }} />
+            <span className="chart-meter-rule" aria-hidden="true" />
+            <input aria-label="Time signature denominator" ref={bottomMeterRef}
+              type="text" inputMode="numeric" pattern="[0-9]*"
+              value={meterBottomInput} disabled={readOnly} maxLength={1} placeholder="4"
+              onChange={event => setMeterBottomInput(event.target.value.replace(/\D/g, '').slice(0, 1))}
+              onBlur={commitMeterInput}
+              onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); event.currentTarget.blur(); } }} />
+          </div>
+        </fieldset>
       </div>
       <label className="chart-builder-field chart-builder-feel-field">
         <span>Feel (optional)</span>
@@ -312,21 +360,39 @@ export function ChartBuilderPage() {
         selectedInputRef={selectedInputRef}
         editor={selectedBar ? (
 <section className="chart-builder-selection" aria-label={'Edit measure ' + selectedBar.number}>
-        <h3>Measure {selectedBar.number} <span>{selectedBar.events.length} {selectedBar.events.length === 1 ? 'chord' : 'chords'}</span></h3>
-        <div className="chart-builder-accidental-actions" role="group" aria-label="Add an accidental to the selected chord">
-          <span>Insert in chord</span>
-          <button type="button" disabled={readOnly || !selectedEvent} aria-label="Insert flat symbol"
-            onClick={() => insertAccidental('♭')}>♭ <span>Flat</span></button>
-          <button type="button" disabled={readOnly || !selectedEvent} aria-label="Insert sharp symbol"
-            onClick={() => insertAccidental('♯')}>♯ <span>Sharp</span></button>
-        </div>
-        <div className="chart-builder-tools">
+        <div className="chart-builder-toolbar" role="toolbar" aria-label={'Edit measure ' + selectedBar.number + ' controls'}>
+          <button type="button" disabled={readOnly || !selectedEvent} title="Flat" aria-label="Insert flat symbol"
+            onClick={() => insertAccidental('♭')}>♭</button>
+          <button type="button" disabled={readOnly || !selectedEvent} title="Sharp" aria-label="Insert sharp symbol"
+            onClick={() => insertAccidental('♯')}>♯</button>
           <button type="button" disabled={readOnly || !selectedEvent || selectedEvent.duration_beats < 2}
-            onClick={split}>Split Measure</button>
+            title="Split this chord into two" aria-label="Split Measure" onClick={split}>Split</button>
           <button type="button" disabled={readOnly || selectedBar.events.length < 2}
-            onClick={merge}>Merge chords</button>
-          <button type="button" disabled={readOnly} onClick={() => setAnnotationEditing(open => !open)}>
-            {selectedBar.annotation ? 'Edit Annotation' : 'Add Annotation'}
+            title="Merge adjacent chords" aria-label="Merge chords" onClick={merge}>Merge</button>
+          <button type="button" className="is-red" disabled={readOnly} title="Annotate measure"
+            aria-label={selectedBar.annotation ? 'Edit Annotation' : 'Add Annotation'}
+            onClick={() => setAnnotationEditing(open => !open)}><EditorIcon name="pencil" /></button>
+          <button type="button" disabled={readOnly || selectedIndex === 0}
+            title="Move measure up" aria-label="Move measure up" onClick={() => move(-1)}><EditorIcon name="up" /></button>
+          <button type="button" disabled={readOnly || selectedIndex === draft.bars.length - 1}
+            title="Move measure down" aria-label="Move measure down" onClick={() => move(1)}><EditorIcon name="down" /></button>
+          <button type="button" disabled={readOnly}
+            title="Duplicate measure" aria-label="Duplicate measure" onClick={duplicate}><EditorIcon name="copy" /></button>
+          <button type="button" className="is-red" disabled={readOnly || draft.bars.length <= 1}
+            title="Delete measure" aria-label="Delete measure" onClick={remove}>−</button>
+        </div>
+        <div className="chart-builder-section-tools">
+          <label htmlFor="chart-section-label">Section starts here
+            <select id="chart-section-label" value={selectedBar.section ?? ''}
+              disabled={readOnly} onChange={event => markSection(event.target.value)}>
+              <option value="">None</option>
+              {SECTION_LABELS.map(label => <option key={label} value={label}>{label}</option>)}
+            </select>
+          </label>
+          <button type="button" disabled={readOnly || !selectedSection}
+            title="Append a copy of all measures in the selected section"
+            onClick={duplicateSection}>
+            {selectedSection ? 'Copy section ' + selectedSection.label : 'Copy section'}
           </button>
         </div>
         {leftSegment && rightSegment && leftSegment.duration_beats + rightSegment.duration_beats > 2 && (
@@ -345,12 +411,6 @@ export function ChartBuilderPage() {
           {selectedBar.annotation && <button type="button" disabled={readOnly}
             onClick={() => updateBar(selectedBar.id, bar => ({ ...bar, annotation: '' }))}>Remove note</button>}
         </div>}
-        <div className="chart-builder-measure-actions">
-          <button type="button" disabled={readOnly || selectedIndex === 0} onClick={() => move(-1)}>↑ Move</button>
-          <button type="button" disabled={readOnly || selectedIndex === draft.bars.length - 1} onClick={() => move(1)}>↓ Move</button>
-          <button type="button" disabled={readOnly} onClick={duplicate}>Duplicate</button>
-          <button type="button" disabled={readOnly || draft.bars.length <= 1} onClick={remove}>Delete</button>
-        </div>
       </section>
         ) : null} />
 
@@ -359,7 +419,7 @@ export function ChartBuilderPage() {
         <button type="button" disabled={readOnly} onClick={() => addBars(4)}>+ Add 4 measures</button>
         <button type="button" disabled={readOnly} onClick={() => addBars(8)}>+ Add 8 measures</button>
       </div>
-      <p className="chart-builder-caption">Splitting keeps the same measure number and saves the exact beat length of each chord. Style notes do not affect timing.</p>
+      <p className="chart-builder-caption">Tap a measure to edit. Label the first measure of each section A, B, C or D, then use Copy section to build an A–B–A form. Meter is counted in the written denominator notes; BPM remains quarter-note based.</p>
       <div className="chart-builder-footer">
         <button type="button" className="chart-builder-secondary" onClick={cancel}>Cancel</button>
         <button type="button" className="chart-builder-primary" disabled={readOnly} onClick={save}>Save Chart</button>
