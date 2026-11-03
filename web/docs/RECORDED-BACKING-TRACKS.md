@@ -9,9 +9,11 @@ The project owner supplied an MP4 and confirmed that it is their video. Only the
 - **Audio asset path:** `web/public/audio/backing-tracks/autumn-leaves.m4a`
 - **Duration:** approximately 4:06
 - **Format:** AAC audio in an M4A container, stereo, 44.1 kHz, about 128 kb/s
-- **Status:** Metadata and audio-only UI prepared. The M4A binary is **not yet present in GitHub**; the Tracks card stays disabled and marked Audio pending until the asset exists.
+- **Status:** Original, complete 3,971,609-byte M4A was committed to the PR branch. The Tracks card verifies the served audio MIME type before enabling playback.
+- **Verified SHA-256:** `9147983fe41de999ce934ed0e7e082c12bb43ac75593dd08eaa7b2fffcb9accc`
+- **Verified Git blob SHA-1:** `1acd6abee87eeac7724346ab56199ab7a56cec0f`
 
-The audio file was supplied separately in this conversation. To enable it in the deployed app, upload the extracted `autumn-leaves-backing-track.m4a` to the target branch under `web/public/audio/backing-tracks/`, renaming it to `autumn-leaves.m4a`. No re-encoding is needed. Commit **only the audio**, never the original MP4 video.
+The owner-supplied M4A was transferred byte-for-byte into `web/public/audio/backing-tracks/autumn-leaves.m4a`. No re-encoding occurred. The original MP4 video was not committed. Temporary base64 staging parts and the one-time assembly workflow have already been removed from the branch.
 
 The source video shows an Autumn Leaves chord sequence with a G-minor tonal center, but its recorded BPM and precise first-beat offset are not verified. Therefore `chartId`, `recordedBpm`, and `chartStartSeconds` are intentionally null. The Player opens in **audio-only mode** and never substitutes an unrelated seed chart.
 
@@ -29,4 +31,4 @@ The source video shows an Autumn Leaves chord sequence with a G-minor tonal cent
 - Do not use `native-audio/stemTransport.ts` synthetic tones as backing audio.
 - Do not change the approved chart-first P02 design. Audio-only mode is an additive view only when no chart is linked.
 - Supabase/file-upload UI, stem mixing, DSP transposition, and tempo-stretching are not included.
-- Do not merge this PR until build, tests, mobile QA, and actual playback from the uploaded M4A are verified.
+- Do not merge this PR until build, tests, mobile QA, and actual playback from the uploaded M4A are verified. The Git blob hash alone proves identical bytes, not that iPhone Safari playback has been tested.
