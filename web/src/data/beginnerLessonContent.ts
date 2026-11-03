@@ -358,7 +358,16 @@ export function withBeginnerRoutineCopy(routine: Routine): Routine {
     : routine.id === 'rhythm-time'
       ? routine.steps.map(step => step.exercise_id === 'rhythm-variation' ? { ...step, exercise_id: 'question-answer' } : step)
       : routine.steps;
-  return { ...routine, ...copy, steps };
+  const stepOrder: Record<string, string[]> = {
+    '12bar-blues': ['listen-form', 'blues-form', 'chord-roots', 'question-answer', 'chord-tone-solo'],
+    'walking-bass': ['blues-form', 'chord-roots', 'walking-bass', 'free-play'],
+    'first-minor-bossa': ['chord-roots', 'thirds-sevenths', 'bossa-minor']
+  };
+  const planned = stepOrder[routine.id];
+  const orderedSteps = planned
+    ? [...steps].sort((a, b) => planned.indexOf(a.exercise_id) - planned.indexOf(b.exercise_id))
+    : steps;
+  return { ...routine, ...copy, steps: orderedSteps };
 }
 
 /** Return structured lessons in a beginner-first learning order. */
