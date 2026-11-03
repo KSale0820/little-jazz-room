@@ -37,9 +37,28 @@ export interface Chart {
   related_standards?: string[];
 }
 
+/**
+ * Optional structured lesson payload. Legacy/cloud exercises still work using
+ * Exercise.instructions when lesson is absent.
+ */
+export interface ExerciseLesson {
+  goal: string;
+  steps: string[];
+  listenFor: string;
+  success: string;
+  terminologyHelp?: string;
+  catPrompts: string[];
+  /** Suggested order among Beginner lessons; not a prerequisite or unlock. */
+  learningOrder: number;
+}
+
 export interface Exercise {
   id: string;
   title: string;
+  /** One-sentence plain-language summary, when available. */
+  description?: string;
+  /** Structured teaching content, optional for backward compatibility. */
+  lesson?: ExerciseLesson;
   category: string;
   level: string;
   duration_minutes: number;
