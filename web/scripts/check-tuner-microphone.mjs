@@ -120,15 +120,23 @@ try {
   await page.getByRole('button', { name: /Stop microphone/ }).click();
 
   // Fallback is important for older Safari and offline Worklet loading.
-  const fallbackPage = await context.newPage();
-  await fallbackPage.route('**/worklets/tuner-capture.js', route => route.abort('failed'));
+  const fallbackContext = await browser.newContext({
+    permissions: ['microphone'], viewport: { width: 390, height: 844 },
+  });
+  let blockedWorklet = false;
+  await fallbackContext.route('**/worklets/tuner-capture.js', route => {
+    blockedWorklet = true;
+    return route.abort('failed');
+  });
+  const fallbackPage = await fallbackContext.newPage();
   await fallbackPage.goto(origin + '/tuner');
   await fallbackPage.getByRole('button', { name: /Enable microphone/ }).click();
   await fallbackPage.getByText('A4', { exact: true }).first().waitFor({ timeout: 15000 });
   const fallbackPath = await fallbackPage.locator('.tool-tuner').getAttribute('data-capture-path');
-  if (fallbackPath !== 'analyser') throw new Error('Missing working analyser fallback');
+  if (!blockedWorklet) throw new Error('Worklet request was not blocked during fallback test');
+  if (fallbackPath !== 'analyser') throw new Error('Missing working analyser fallback: ' + fallbackPath);
   await fallbackPage.getByRole('button', { name: /Stop microphone/ }).click();
-  await fallbackPage.close();
+  await fallbackContext.close();
   console.log('PASS: audio-clock worklet stays active; analyser fallback detects A440 when worklet fails');
   await context.close();
 } finally {
