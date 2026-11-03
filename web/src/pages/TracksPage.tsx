@@ -14,7 +14,7 @@ const FAVORITE_PREFIX = 'little-jazz-room:track-favorites:v1:';
 
 type TrackPreview = {
   id: string;
-  chartId: string;
+  chartId: string | null;
   title: string;
   subtitle: string;
   style: string;
@@ -75,6 +75,7 @@ function readFavorites(key: string): string[] {
 
 export function TracksPage() {
   const { charts, setActiveRoutineId } = useApp();
+  const [availableRecordings, setAvailableRecordings] = useState<string[]>([]);
   const { user } = useAuth();
   const navigate = useNavigate();
   const isCharts = useLocation().pathname === '/charts';
@@ -90,6 +91,21 @@ export function TracksPage() {
 
   useEffect(() => { setFavorites(readFavorites(favoritesKey)); }, [favoritesKey]);
   useEffect(() => {
+    let cancelled = false;
+    // Static files must really exist; Vite's HTML fallback is not audio.
+    void Promise.all(RECORDED_BACKING_TRACKS.filter(isUsableRecordedTrack).map(async recording => {
+      try {
+        const response = await fetch(recording.src, { method: 'HEAD' });
+        const type = response.headers.get('content-type') ?? '';
+        return response.ok && (/^audio\//i.test(type) || /application\/octet-stream/i.test(type))
+          ? recording.id : null;
+      } catch { return null; }
+    })).then(ids => {
+      if (!cancelled) setAvailableRecordings(ids.filter((id): id is string => id !== null));
+    });
+    return () => { cancelled = true; };
+  }, []);
+  useEffect(() => {
     if (!filterOpen) return;
     const close = (event: KeyboardEvent) => { if (event.key === 'Escape') setFilterOpen(false); };
     window.addEventListener('keydown', close);
@@ -103,15 +119,16 @@ export function TracksPage() {
   }), [charts, query, chartFilter]);
 
   const catalog = useMemo(() => TRACK_CATALOG.flatMap(track => {
-    const chart = charts.find(candidate => candidate.id === track.chartId);
-    return chart ? [{ ...track, chart }] : [];
+    const chart = track.chartId ? charts.find(candidate => candidate.id === track.chartId) ?? null : null;
+    return chart || track.recordingId ? [{ ...track, chart }] : [];
   }), [charts]);
   const filtered = useMemo(() => catalog.filter(track => {
     const term = query.trim().toLowerCase();
-    if (term && ![track.title, track.subtitle, track.style, track.key, track.chart.title].some(value => value.toLowerCase().includes(term))) return false;
+    if (term && ![track.title, track.subtitle, track.style, track.key, track.chart?.title ?? ''].some(value => value.toLowerCase().includes(term))) return false;
     if (category === 'Favorites' && !favorites.includes(track.id)) return false;
     if (category === 'Standards') return false; // All four approved previews are original studies.
     if (category === 'Blues' && !track.blues) return false;
+    if (applied.chartOnly && !track.chart) return false;
     if (applied.instrument !== 'All' && !track.instruments.includes(applied.instrument)) return false;
     if (applied.style !== 'All' && track.style !== applied.style) return false;
     if (applied.key !== 'All' && track.key !== applied.key) return false;
@@ -130,10 +147,11 @@ export function TracksPage() {
     setFavorites(next);
     try { localStorage.setItem(favoritesKey, JSON.stringify(next)); } catch { /* Local storage is optional. */ }
   };
-  const openChart = (id: string, recordingId: string | null = null) => {
+  const openChart = (id: string | null, recordingId: string | null = null) => {
     setActiveRoutineId(null);
-    navigate('/player?chart=' + encodeURIComponent(id) +
-      (recordingId ? '&recording=' + encodeURIComponent(recordingId) : ''));
+    if (!id && !recordingId) return;
+    navigate('/player?' + (id ? 'chart=' + encodeURIComponent(id) : '') +
+      (recordingId ? (id ? '&' : '') + 'recording=' + encodeURIComponent(recordingId) : ''));
   };
   const reset = () => {
     setCategory('Recent');
@@ -222,12 +240,15 @@ export function TracksPage() {
               const isFavorite = favorites.includes(track.id);
               return (
                 <article className="t01-track-card" key={track.id}>
-                  <button type="button" className="t01-card-open" aria-label={'Practice ' + track.title + ' with its linked chart' + (track.recordingId ? ' and recording' : '')} onClick={() => openChart(track.chart.id, track.recordingId)}>
+                  <button type="button" className="t01-card-open"
+                    disabled={Boolean(track.recordingId && !availableRecordings.includes(track.recordingId) && !track.chart)}
+                    aria-label={'Practice ' + track.title + (track.chart ? ' with its linked chart' : ' with audio') }
+                    onClick={() => openChart(track.chart?.id ?? null, track.recordingId)}>
                     <span className="t01-card-title">{track.title}</span>
                     <span className="t01-card-subtitle">{track.subtitle}</span>
                     <span className="t01-card-footer">
-                      <span className="t01-status t01-audio">{track.recordingId ? 'Recording available' : <><TrackIcon name="unavailable" /> Audio pending</>}</span>
-                      <span className="t01-status t01-chart"><TrackIcon name="book" /> Chart</span>
+                      <span className="t01-status t01-audio">{track.recordingId && availableRecordings.includes(track.recordingId) ? 'Recording available' : <><TrackIcon name="unavailable" /> Audio pending</>}</span>
+                      {track.chart && <span className="t01-status t01-chart"><TrackIcon name="book" /> Chart</span>}
                       <span className="t01-card-spacer" />
                       <span className="t01-card-tempo">{track.bpm === null ? '' : track.bpm + ' BPM · '}{track.key}</span>
                       <TrackIcon name="chevron" />
