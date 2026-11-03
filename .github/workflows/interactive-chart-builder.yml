@@ -1,0 +1,53 @@
+name: Interactive chart builder mobile QA
+
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/**'
+      - '.github/workflows/interactive-chart-builder.yml'
+  workflow_dispatch:
+
+jobs:
+  chart-builder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install packages
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Unit tests
+        run: npm test
+      - name: Install browser engine
+        run: npx playwright install --with-deps chromium
+      - name: Start Vite
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/chart-builder-vite.log 2>&1 &
+          for i in $(seq 1 45); do
+            curl -sf http://127.0.0.1:5174/ >/dev/null && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5174/ >/dev/null
+      - name: Test editor and capture screenshots
+        run: node scripts/check-interactive-chart-builder.mjs
+      - name: Save screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: interactive-chart-builder-390x844-and-375x667
+          path: web/docs/screenshots/interactive-chart-builder/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Show Vite errors
+        if: failure()
+        run: tail -n 70 /tmp/chart-builder-vite.log || true

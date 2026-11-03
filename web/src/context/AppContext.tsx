@@ -14,6 +14,7 @@ import { getSupabaseClient } from '../lib/supabase/client';
 import type { Exercise, PracticeSessionRecord, Routine } from '../types/content';
 import { useCatSelection } from '../features/cats/CatCompanion';
 import { exercisesById } from '../data/seed';
+import { createChartRepository, mergeCharts } from '../features/charts/chartRepository';
 
 interface AppContextValue {
   repo: LocalRepository;
@@ -136,6 +137,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, [cloudRepo, client, user?.id, cloudTick]);
 
+  const charts = useMemo(() => mergeCharts(seedCharts, createChartRepository(repo.scope).listCharts()), [repo, tick]);
   const localSessions = useMemo(() => repo.listSessions(), [repo, sessionTick]);
   const sessions = user ? cloudSessions : localSessions;
 
@@ -241,7 +243,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     routines,
     publicRoutines,
     paths: seedPaths,
-    charts: seedCharts,
+    charts,
     refreshLocal,
     refreshCloud,
     saveRoutineToCloud,
