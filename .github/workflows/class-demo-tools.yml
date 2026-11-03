@@ -103,3 +103,5 @@ jobs:
           name: p04-p05-mobile-390x844-and-375x667
           path: web/docs/screenshots/class-demo-tools/P0*.png
           if-no-files-found: warn
+
+# QA-only rerun against integrated demo SHA 0f3cd68c3727c8cb35671b4bce3d0f57c6ed0427
