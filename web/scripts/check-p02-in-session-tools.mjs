@@ -36,17 +36,14 @@ try {
     await openFree();
     check(await page.getByText('Free Practice', { exact: true }).isVisible(), 'P02 Free mode not selected');
     check(await page.locator('.practice-utility-row').count() === 1, 'Free mode must display tool shortcuts');
-    check(await page.locator('.practice-utility-row button').count() === 5, 'Approved layout requires five tool buttons');
+    check(await page.locator('.practice-utility-row button').count() === 3, 'Player must preserve the three in-session tools');
     check(await page.getByRole('button', { name: /Mixer Preview/ }).isDisabled(), 'Mixer must remain Preview');
-    await page.locator('.practice-utility-row').getByRole('button', { name: 'Tempo/Key' }).click();
-    await page.getByRole('dialog', { name: 'Tempo and key settings' }).waitFor();
-    await page.getByRole('dialog').getByRole('combobox', { name: 'Transpose concert chart key' }).selectOption('G');
-    await page.getByRole('dialog').getByRole('button', { name: 'Close settings and return to session' }).click();
-    const loop = page.locator('.practice-utility-row').getByRole('button', { name: 'Loop' });
-    await loop.click();
-    check(await loop.getAttribute('aria-pressed') === 'true', 'Loop tile did not enable chart highlight');
-    await loop.click();
-    check(await loop.getAttribute('aria-pressed') === 'false', 'Loop tile did not disable chart highlight');
+    await page.locator('#practice-key').selectOption('G');
+    check(await page.locator('#practice-key').inputValue() === 'G', 'Independent key picker failed');
+    await page.locator('#practice-loop').selectOption('5-8');
+    check(await page.locator('.measure.looped').count() === 4, 'Loop control did not highlight bars 5–8');
+    await page.locator('#practice-loop').selectOption('all');
+    check(await page.locator('.measure.looped').count() === 0, 'Full Chart did not clear range');
     await page.screenshot({ path: join(out, 'P02-free-chart-' + width + 'x' + height + '.png') });
     await page.getByRole('tab', { name: 'Player' }).click();
     await page.screenshot({ path: join(out, 'P02-free-player-' + width + 'x' + height + '.png') });
@@ -120,16 +117,16 @@ try {
     check(await page.getByRole('button', { name: 'Resume practice timer' }).isVisible(), 'Paused state was lost');
     await page.screenshot({ path: join(out, 'P02-paused-chart-' + width + 'x' + height + '.png') });
 
-    // Approved UI has the same five working tool tiles in Guided Practice.
+    // Both free and guided modes keep the same three embedded tools.
     await page.goto(base + '/routines', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
     await page.waitForURL(url => url.pathname === '/player');
     await page.getByText('Guided Practice', { exact: true }).waitFor();
     check(await page.locator('.practice-utility-row').count() === 1, 'Guided mode missing approved tools');
-    check(await page.locator('.practice-utility-row button').count() === 5, 'Guided must display five approved tools');
-    await page.locator('.practice-utility-row').getByRole('button', { name: 'Tempo/Key' }).click();
-    await page.getByRole('dialog', { name: 'Tempo and key settings' }).waitFor();
-    await page.getByRole('dialog').getByRole('button', { name: 'Close settings and return to session' }).click();
+    check(await page.locator('.practice-utility-row button').count() === 3, 'Guided must preserve the three in-session tools');
+    check(await page.locator('#practice-key').isVisible(), 'Guided Key control missing');
+    check(await page.locator('#practice-bpm').isVisible(), 'Guided BPM control missing');
+    check(await page.locator('#practice-loop').isVisible(), 'Guided Loop control missing');
     await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).click();
     await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
     check(new URL(page.url()).pathname === '/player', 'Guided Tuner changed route');
