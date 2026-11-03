@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import {
-  audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, readingFromFrequency,
-  type PitchReading, type TuningMode,
+  audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, pitchTrailGeometry,
+  readingFromFrequency, spokenNoteName,
+  type PitchReading, type PitchTrailSample, type TuningMode,
 } from './toolsAudio';
 import './ToolsPages.css';
 
@@ -19,10 +20,17 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
   const [micSignal, setMicSignal] = useState<MicSignal>('starting');
+  const [showPitchTrail, setShowPitchTrail] = useState(false);
+  const [pitchTrail, setPitchTrail] = useState<PitchTrailSample[]>([]);
+  const [spokenNotes, setSpokenNotes] = useState(false);
   const [message, setMessage] = useState('');
   const [referencePlaying, setReferencePlaying] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const modeRef = useRef(mode);
+  const showPitchTrailRef = useRef(false);
+  const spokenNotesRef = useRef(false);
+  const speechCandidateRef = useRef({ note: '', since: 0 });
+  const lastSpokenRef = useRef({ note: '', at: 0 });
   const requestRef = useRef(0);
   const permissionPendingRef = useRef(false);
   const microphoneRef = useRef<MediaStream | null>(null);
@@ -31,11 +39,53 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const rafRef = useRef(0);
   const toneRef = useRef<{ context: AudioContext; oscillator: OscillatorNode } | null>(null);
 
-  useEffect(() => { modeRef.current = mode; setReading(null); }, [mode]);
+  useEffect(() => {
+    modeRef.current = mode;
+    setReading(null);
+    setPitchTrail([]);
+    speechCandidateRef.current = { note: '', since: 0 };
+    if (mode !== 'voice') {
+      spokenNotesRef.current = false;
+      setSpokenNotes(false);
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    showPitchTrailRef.current = mode === 'voice' || showPitchTrail;
+  }, [mode, showPitchTrail]);
+
+  const trail = useMemo(() => pitchTrailGeometry(
+    pitchTrail, pitchTrail[pitchTrail.length - 1]?.timestamp ?? 0,
+  ), [pitchTrail]);
+  const pitchTrailEnabled = mode === 'voice' || showPitchTrail;
+  const spokenNotesSupported = typeof window !== 'undefined'
+    && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+
+  const toggleSpokenNotes = () => {
+    if (!spokenNotesSupported) return;
+    const next = !spokenNotesRef.current;
+    spokenNotesRef.current = next;
+    setSpokenNotes(next);
+    window.speechSynthesis.cancel();
+    speechCandidateRef.current = { note: '', since: 0 };
+    lastSpokenRef.current = { note: '', at: 0 };
+    if (next) {
+      // The initial utterance is triggered directly by a user tap. Safari
+      // may otherwise leave speech synthesis locked on later async analysis.
+      const start = new SpeechSynthesisUtterance('Spoken notes on');
+      start.rate = 1.1;
+      window.speechSynthesis.speak(start);
+    }
+  };
 
   const stopMicrophone = useCallback(() => {
     requestRef.current++;
     permissionPendingRef.current = false;
+    spokenNotesRef.current = false;
+    setSpokenNotes(false);
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+    setPitchTrail([]);
     cancelAnimationFrame(rafRef.current);
     sourceRef.current?.disconnect();
     sourceRef.current = null;
@@ -85,6 +135,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     setReading(null);
     setStatus('requesting');
     setMicSignal('starting');
+    setPitchTrail([]);
     setMessage('');
     permissionPendingRef.current = true;
     const request = requestRef.current;
@@ -135,7 +186,35 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           } else {
             analyser.getFloatTimeDomainData(samples);
             const frequency = detectPitch(samples, context!.sampleRate);
-            setReading(frequency === null ? null : readingFromFrequency(frequency, modeRef.current));
+            const detected = frequency === null ? null : readingFromFrequency(frequency, modeRef.current);
+            setReading(detected);
+            if (showPitchTrailRef.current) {
+              setPitchTrail(previous => [
+                ...previous.filter(point => point.timestamp > now - 8000),
+                { timestamp: now, frequency },
+              ].slice(-90));
+            }
+            // Optional browser TTS. Say only a stable detected note, never
+            // an interpolated pitch or a fake result during mic silence.
+            if (modeRef.current === 'voice' && spokenNotesRef.current
+              && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+              const candidate = speechCandidateRef.current;
+              if (!detected) {
+                candidate.note = '';
+                candidate.since = now;
+              } else if (candidate.note !== detected.note) {
+                candidate.note = detected.note;
+                candidate.since = now;
+              } else if (now - candidate.since >= 850
+                && now - lastSpokenRef.current.at >= 4000
+                && !window.speechSynthesis.speaking) {
+                const utterance = new SpeechSynthesisUtterance(spokenNoteName(detected.note));
+                utterance.rate = 1.1;
+                window.speechSynthesis.speak(utterance);
+                lastSpokenRef.current = { note: detected.note, at: now };
+                candidate.since = now;
+              }
+            }
             const level = inputRms(samples);
             setMicSignal(frequency !== null ? 'active' : level >= MIN_TUNER_RMS
               ? 'unsteady' : now - startedAt > 1500 ? 'quiet' : 'starting');
@@ -217,7 +296,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   };
 
   const isTuned = reading !== null && Math.abs(reading.cents) <= 5;
-  const isNearString = reading && (mode === 'chromatic' || reading.isOpenString);
+  const isNearString = reading && (mode === 'chromatic' || mode === 'voice' || reading.isOpenString);
   const needleAngle = reading && isNearString
     ? Math.max(-70, Math.min(70, reading.cents * 1.4)) : null;
   const getTuningMessage = () => {
@@ -243,15 +322,16 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <button className="tool-settings" type="button" aria-label="Tuner help" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)}>⚙</button>
       </header>
       {showHelp ? (
-        <p className="tool-help">Play one note at a time in a quiet room. Guitar and Bass compare detected pitches against standard open strings. For best results, use headphones with the reference tone.</p>
+        <p className="tool-help">Play or sing one note at a time in a quiet room. Voice mode follows your sung pitch over time. Spoken notes announce detected notes; headphones help prevent feedback. Guitar and Bass compare against standard open strings.</p>
       ) : null}
       <div className="tuner-modes" role="group" aria-label="Tuning mode">
-        {(['chromatic', 'guitar', 'bass'] as const).map(option => (
+        {(['chromatic', 'guitar', 'bass', 'voice'] as const).map(option => (
           <button key={option} type="button" aria-pressed={mode === option} onClick={() => setMode(option)}>
             {option[0].toUpperCase() + option.slice(1)}
           </button>
         ))}
       </div>
+      {mode === 'voice' ? <p className="tuner-voice-hint">Sing or hum. Follow your pitch as it rises and falls.</p> : null}
       <div className="tuner-reading" aria-live="off">
         <strong>{reading?.note ?? '—'}</strong>
         <span>{reading ? reading.frequency.toFixed(1) + ' Hz' : 'No pitch detected'}</span>
@@ -288,6 +368,42 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <div><strong>{reading && isNearString ? reading.targetLabel : '—'}</strong><span>{reading && isNearString ? reading.targetFrequency.toFixed(1) + ' Hz target' : 'Target'}</span></div>
         <div><strong>{reading && isNearString ? (reading.cents >= 0 ? '+' : '') + Math.round(reading.cents) + '¢' : '—'}</strong><span>Deviation</span></div>
       </div>
+      <div className="tuner-trail-controls">
+        {mode !== 'voice' ? (
+          <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
+            onClick={() => setShowPitchTrail(value => !value)}>
+            {showPitchTrail ? 'Hide pitch graph' : 'Show pitch graph'}
+          </button>
+        ) : null}
+      </div>
+      {pitchTrailEnabled ? (
+        <section className="tuner-trail-panel" aria-label="Live pitch graph">
+          <div className="tuner-trail-heading">
+            <strong>Pitch over time</strong>
+            {mode === 'voice' && (
+              <button type="button" className="tuner-voice-toggle" aria-pressed={spokenNotes}
+                disabled={!spokenNotesSupported} onClick={toggleSpokenNotes}>
+                Spoken notes: {spokenNotes ? 'On' : 'Off'}
+              </button>
+            )}
+          </div>
+          <div className="tuner-trail-plot">
+            <span className="tuner-trail-high">{trail.highNote}</span>
+            <svg viewBox="0 0 320 102" preserveAspectRatio="none" role="img"
+              aria-label="Live graph of detected pitch over eight seconds. Higher notes appear higher. Breaks indicate silence.">
+              <line x1="0" x2="320" y1="27" y2="27" stroke="#dedecf" strokeDasharray="4 6" />
+              <line x1="0" x2="320" y1="69" y2="69" stroke="#dedecf" strokeDasharray="4 6" />
+              {trail.segments.map((segment, index) => (
+                <polyline key={index} points={segment.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ')}
+                  fill="none" stroke="#397456" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              ))}
+              {trail.current && <circle cx={trail.current.x} cy={trail.current.y} r="4.5" fill="#c69a52" />}
+            </svg>
+            <span className="tuner-trail-low">{trail.lowNote}</span>
+          </div>
+          <small>8 seconds ago <span>Now</span></small>
+        </section>
+      ) : null}
       <button className="tuner-mic" type="button" onClick={toggleMicrophone} aria-pressed={status === 'listening'}>
         <span aria-hidden="true">◉</span> {status === 'listening' ? 'Stop microphone' :
           status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
