@@ -13,6 +13,8 @@ import { MetronomePage } from './pages/MetronomePage';
 import { RoutineLibraryPage } from './pages/RoutineLibraryPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { SignInPage, SignUpRedirect } from './pages/SignInPage';
+import { ChartBuilderPage } from './pages/ChartBuilderPage';
+import { ChartLibraryPage } from './pages/ChartLibraryPage';
 
 export default function App() {
   return (
@@ -28,6 +30,9 @@ export default function App() {
               <Route path="create" element={<CreatePage />} />
               <Route path="tracks" element={<TracksPage />} />
               <Route path="charts" element={<TracksPage />} />
+              <Route path="my-charts" element={<ChartLibraryPage />} />
+              <Route path="charts/new" element={<ChartBuilderPage />} />
+              <Route path="charts/:chartId/edit" element={<ChartBuilderPage />} />
               <Route path="routines" element={<RoutineLibraryPage />} />
               <Route path="practice" element={<PracticeHubPage />} />
               <Route path="tuner" element={<TunerPage />} />

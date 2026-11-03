@@ -1,0 +1,129 @@
+.chart-builder-page {
+  min-height: 100%;
+  background: #fff8ee;
+  color: #1d2b26;
+  padding: 20px 16px max(28px, env(safe-area-inset-bottom));
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.chart-builder-page button, .chart-builder-page input, .chart-builder-page select { font: inherit; }
+.chart-builder-page button { cursor: pointer; }
+.chart-builder-page button:disabled { cursor: not-allowed; opacity: .43; }
+.chart-builder-page button:focus-visible, .chart-builder-page input:focus-visible,
+.chart-builder-page select:focus-visible { outline: 3px solid #cda953; outline-offset: 2px; }
+.chart-builder-header { display:flex; align-items:center; justify-content:space-between; gap:9px; margin-bottom:18px; }
+.chart-builder-header h1 { color:#31503b; font:700 29px/1.1 Georgia,serif; margin:2px 0; }
+.chart-builder-eyebrow { color:#8d866c; font-size:10px; font-weight:750; letter-spacing:.1em; margin:0 0 5px; }
+.chart-builder-header-actions { display:flex; flex:0 0 auto; gap:6px; align-items:center; }
+.chart-builder-primary, .chart-builder-secondary {
+  display:inline-flex; align-items:center; justify-content:center; min-height:44px; border-radius:11px;
+  font-size:13px !important; font-weight:700 !important; padding:9px 13px; border:1px solid #31503b;
+}
+.chart-builder-primary { background:#31503b; color:white; }
+.chart-builder-secondary { background:#fffdf7; color:#31503b; }
+.chart-builder-error { background:#f9eae7; border-left:3px solid #ad4f49; border-radius:7px;
+  padding:11px; color:#9b3832; font-size:13px; line-height:1.35; margin:10px 0; }
+.chart-builder-notice { color:#31503b; background:#edf1e4; padding:11px; border-radius:10px; font-size:12px; margin:10px 0; }
+.chart-builder-field { display:flex; flex-direction:column; gap:6px; margin:0 0 17px; min-width:0; flex:1; }
+.chart-builder-field span, .chart-builder-field-label, .chart-builder-meter legend {
+  font-size:11px; font-weight:750; color:#31503b; letter-spacing:.015em;
+}
+.chart-builder-field input, .chart-builder-field select, .chart-builder-key-type input,
+.chart-builder-annotation-edit input {
+  width:100%; min-width:0; min-height:44px; border:1px solid #d6d8c9; border-radius:10px;
+  padding:10px 12px; color:#1d2b26; background:#fffdf8; font-size:14px;
+}
+.chart-builder-key-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:10px 0 7px; }
+.chart-builder-current-key { display:inline-block; margin-left:12px; font:700 25px Georgia,serif; color:#31503b; }
+.chart-builder-key-arrows { display:flex; gap:7px; }
+.chart-builder-key-arrows button { min-height:44px; min-width:48px; border:1px solid #d8d9cc; border-radius:10px;
+  background:#fffdf8; color:#31503b; font-size:22px; }
+.chart-builder-key-scroll { display:flex; gap:7px; overflow-x:auto; scrollbar-width:thin; padding:4px 0 12px; scroll-snap-type:x proximity; }
+.chart-builder-key-scroll button { flex:0 0 47px; min-height:46px; scroll-snap-align:start;
+  background:#fffdf8; border:1px solid #d9d8cb; border-radius:10px; color:#31503b; font-size:15px; font-weight:650; }
+.chart-builder-key-scroll button[aria-pressed="true"] { background:#31503b; color:#fff; border-color:#31503b; }
+.chart-builder-key-type { display:flex; gap:7px; margin-bottom:18px; }
+.chart-builder-key-type input { flex:1; }
+.chart-builder-key-type button { min-height:44px; padding:0 12px; white-space:nowrap;
+  border:1px solid #31503b; color:#31503b; background:#edf1e4; border-radius:10px; font-size:12px; font-weight:750; }
+.chart-builder-meta-row { display:flex; gap:12px; align-items:flex-end; margin-bottom:2px; }
+.chart-builder-meter { border:0; padding:0; margin:0 0 17px; min-width:0; }
+.chart-builder-meter legend { margin-bottom:7px; padding:0; }
+.chart-builder-meter div { display:flex; gap:5px; }
+.chart-builder-meter button { min-width:44px; min-height:44px; padding:8px; background:#fffdf8; color:#31503b;
+  border:1px solid #d8d8c8; border-radius:9px; font-size:12px; }
+.chart-builder-meter button[aria-pressed="true"] { background:#31503b; color:white; }
+.chart-builder-chart-heading { display:flex; align-items:end; justify-content:space-between; gap:7px; margin:15px 0 10px; }
+.chart-builder-chart-heading h2,.chart-builder-section-title { margin:0 0 5px; font:700 20px Georgia,serif; color:#31503b; }
+.chart-builder-chart-heading p { margin:0; color:#667467; font-size:12px; line-height:1.4; max-width:265px; }
+.chart-builder-chart-heading > span { color:#738173; white-space:nowrap; font-size:11px; padding-bottom:3px; }
+.chart-editor-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); background:#fffdf7;
+  border:1px solid #c6cfbf; border-radius:10px; overflow:hidden; }
+.chart-editor-measure { min-width:0; min-height:104px; border-right:1px solid #c6cfbf;
+  border-bottom:1px solid #c6cfbf; padding:8px 6px 10px; background:#fffdf7; }
+.chart-editor-measure:nth-child(2n) { border-right:0; }
+.chart-editor-measure.is-selected { background:#f0f3e7; box-shadow:inset 0 0 0 2px #a6b792; }
+.chart-editor-measure-top { display:flex; align-items:start; flex-direction:column; min-height:25px; gap:3px; padding:0 2px; }
+.chart-editor-measure-number { color:#78867c; font-size:10px; font-weight:700; }
+.chart-editor-annotation { color:#aa4841; font-size:11px; font-style:italic; font-weight:650;
+  line-height:1.25; overflow-wrap:anywhere; }
+.chart-editor-chords { display:flex; align-items:start; justify-content:center; gap:4px; overflow-x:auto; padding:6px 1px; }
+.chart-editor-chord { flex:1 0 0; min-width:0; text-align:center; position:relative; }
+.chart-editor-chord input { width:100%; min-width:0; min-height:44px; padding:6px 3px; text-align:center;
+  font:700 17px Georgia,serif; border:1px solid transparent; border-radius:6px; background:transparent; color:#31503b; }
+.chart-editor-chord input::placeholder { color:#aaa99c; font-size:13px; font-style:italic; font-weight:400; }
+.chart-editor-chord input.is-selected,.chart-editor-chord input:focus { background:#fff; border-color:#9bb18e; }
+.chart-editor-chord input[aria-invalid="true"] { border-color:#a84640; }
+.chart-editor-chord small { display:block; margin-top:0; color:#879084; font-size:9px; white-space:nowrap; }
+.chart-editor-chord-error { display:block; font-size:10px; line-height:1.25; color:#a84640; }
+.chart-builder-selection { margin:16px 0 0; padding:14px 12px; border:1px solid #d8dfcf; background:#f5f6ed; border-radius:13px; }
+.chart-builder-selection h3 { display:flex; justify-content:space-between; align-items:center;
+  font:700 16px Georgia,serif; color:#31503b; margin:0 0 13px; }
+.chart-builder-selection h3 span { font:500 11px system-ui,sans-serif; color:#718275; }
+.chart-builder-tools { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+.chart-builder-tools button,.chart-builder-measure-actions button,.chart-builder-add-row button {
+  min-width:0; min-height:44px; border:1px solid #b9c8b4; border-radius:9px;
+  background:#fffdf8; color:#31503b; padding:8px 5px; font-size:11px; font-weight:700;
+}
+.chart-builder-tools button:first-child { background:#31503b; border-color:#31503b; color:#fff; }
+.chart-builder-split-adjust { display:flex; flex-direction:column; gap:8px; margin:15px 0;
+  color:#526c57; font-size:12px; font-weight:650; }
+.chart-builder-split-adjust input { width:100%; accent-color:#31503b; min-height:30px; }
+.chart-builder-annotation-edit { display:flex; flex-direction:column; align-items:start; gap:9px; margin:14px 0 0;
+  padding:11px; border-left:3px solid #a94c47; background:#fff7f3; border-radius:8px; }
+.chart-builder-annotation-edit label { display:block; width:100%; color:#a34440; font-size:12px; font-weight:700; }
+.chart-builder-annotation-edit input { margin-top:6px; border-color:#dbb1aa; }
+.chart-builder-annotation-edit button { border:0; background:transparent; color:#a34440; text-decoration:underline;
+  font-size:12px; min-height:36px; }
+.chart-builder-measure-actions { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; margin-top:14px; }
+.chart-builder-measure-actions button:last-child { color:#9c4843; border-color:#dcb9b1; }
+.chart-builder-add-row { display:flex; flex-wrap:wrap; gap:7px; margin-top:14px; }
+.chart-builder-add-row button { flex:1 0 auto; }
+.chart-builder-caption { color:#6d796c; font-size:11px; line-height:1.5; margin:12px 0; }
+.chart-builder-footer { display:flex; gap:10px; margin:22px 0 0; }
+.chart-builder-footer button { flex:1; }
+.chart-library-create { width:100%; margin:4px 0 20px; }
+.chart-builder-section-title { display:flex; gap:9px; align-items:center; margin-top:25px; }
+.chart-builder-section-title span { font:600 11px system-ui,sans-serif; padding:3px 7px; border-radius:30px; background:#e8eddf; }
+.chart-library-card { padding:14px; margin:11px 0; border:1px solid #dfe0d2; border-radius:12px; background:#fffdf7; }
+.chart-library-card h3 { margin:0; font:700 17px Georgia,serif; color:#31503b; }
+.chart-library-card p { margin:6px 0 0; color:#6c7b71; font-size:12px; }
+.chart-library-card .chart-library-instruction { color:#a54b45; font-style:italic; }
+.chart-library-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:13px; }
+.chart-library-actions button { min-height:44px; padding:7px 12px; border-radius:9px;
+  border:1px solid #b9c8b4; color:#31503b; background:#f2f4ea; font-size:12px; font-weight:700; }
+.chart-library-actions .chart-library-delete { color:#98423a; border-color:#dbb1aa; background:#fff7f3; }
+.chart-library-empty { color:#728073; font-size:13px; padding:12px 0; }
+@media (min-width:560px) {
+  .chart-builder-page { padding:26px 25px 32px; }
+  .chart-editor-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .chart-editor-measure:nth-child(2n) { border-right:1px solid #c6cfbf; }
+  .chart-editor-measure:nth-child(4n) { border-right:0; }
+}
+@media (max-width:375px) {
+  .chart-builder-page { padding:16px 12px 22px; }
+  .chart-builder-header h1 { font-size:26px; }
+  .chart-builder-header-actions { gap:4px; }
+  .chart-builder-header-actions button { padding:8px; font-size:12px !important; }
+  .chart-builder-tools button,.chart-builder-measure-actions button { font-size:10px; }
+  .chart-editor-chord input { font-size:15px; }
+}
