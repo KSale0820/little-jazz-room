@@ -69,9 +69,11 @@ try {
 
     await page.screenshot({ path: join(out, 'P02-guided-instructions-' + width + 'x' + height + '.png'), animations: 'disabled' });
     await page.screenshot({ path: join(out, 'P02-guided-cat-coach-' + width + 'x' + height + '.png'), animations: 'disabled' });
+    const firstCoachTip = await page.locator('.practice-coach-bubble p').innerText();
     await page.getByRole('button', { name: 'Another tip' }).click();
-    check((await page.locator('.practice-coach-bubble p').innerText()).includes('Listen'),
-      'Cat coach did not advance to another short tip');
+    const secondCoachTip = await page.locator('.practice-coach-bubble p').innerText();
+    check(secondCoachTip.length > 0 && secondCoachTip !== firstCoachTip,
+      'Cat coach did not advance to another distinct short tip');
 
     // A long incoming structured lesson must scroll INSIDE the reading region
     // while transport stays onscreen; no need to change seed data for this test.

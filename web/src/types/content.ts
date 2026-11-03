@@ -43,9 +43,25 @@ export interface Chart {
   related_standards?: string[];
 }
 
+/** Optional structured lesson content. Legacy/custom exercises retain string instructions. */
+export interface ExerciseLesson {
+  goal: string;
+  steps: string[];
+  listenFor: string;
+  success: string;
+  terminologyHelp?: string;
+  catPrompts: string[];
+  /** Suggested beginner learning order, not a prerequisite. */
+  learningOrder: number;
+}
+
 export interface Exercise {
   id: string;
   title: string;
+  /** One-sentence beginner-friendly overview, when available. */
+  description?: string;
+  /** Structured lesson, optional to support legacy/cloud content. */
+  lesson?: ExerciseLesson;
   category: string;
   level: string;
   duration_minutes: number;
