@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   beatIntervalSeconds, beatsPerMeasure, clampBpm, defaultAccents,
-  detectPitch, midiToFrequency, readingFromFrequency,
+  detectPitch, inputRms, midiToFrequency, readingFromFrequency,
 } from './toolsAudio';
 
 describe('real tuner pitch calculations', () => {
@@ -21,6 +21,15 @@ describe('real tuner pitch calculations', () => {
   it('does not invent pitch for invalid or silent samples', () => {
     expect(readingFromFrequency(0, 'chromatic')).toBeNull();
     expect(detectPitch(new Float32Array(8192), 48000)).toBeNull();
+  });
+
+  it('detects a low-volume iPhone microphone note while rejecting silence', () => {
+    const sampleRate = 48000;
+    const quietNote = Float32Array.from({ length: 8192 }, (_, i) =>
+      Math.sin(2 * Math.PI * 440 * i / sampleRate) * 0.008);
+    expect(inputRms(quietNote)).toBeGreaterThan(0.003);
+    expect(detectPitch(quietNote, sampleRate)).toBeCloseTo(440, 0);
+    expect(inputRms(new Float32Array(8192))).toBe(0);
   });
 
   it('recognizes a clean actual monophonic sine wave', () => {
