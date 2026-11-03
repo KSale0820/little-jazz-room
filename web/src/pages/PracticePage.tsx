@@ -91,7 +91,7 @@ export function PracticePage() {
     () => currentStep ? resolvePlayableStep(currentStep, exercises, exercisesById) : null,
     [currentStep, exercises],
   );
-  const initialChart = requestedChart ?? charts[0]?.id ?? 'blues-f-12';
+  const initialChart = requestedChart ?? playableStep?.chart_id ?? charts[0]?.id ?? 'blues-f-12';
   const [chartId, setChartId] = useState(initialChart);
   const [chartKey, setChartKey] = useState(getChartById(initialChart, charts)?.concert_key ?? 'F');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
