@@ -296,7 +296,7 @@ export function ChartBuilderPage() {
           <span>Key</span>
           <div className="chart-builder-inline-input">
             <input type="text" aria-label="Key" value={keyInput} disabled={readOnly}
-              placeholder="C, B♭, F♯…" spellCheck={false} autoComplete="off"
+              placeholder="C" spellCheck={false} autoComplete="off"
               onChange={event => setKeyInput(event.target.value)}
               onBlur={commitKeyInput}
               onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); event.currentTarget.blur(); } }} />
@@ -322,10 +322,9 @@ export function ChartBuilderPage() {
               onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); event.currentTarget.blur(); } }} />
           </div>
         </fieldset>
-      </div>
-      <label className="chart-builder-field chart-builder-feel-field">
-        <span>Feel (optional)</span>
-        <select value={customFeel ? 'Other' : draft.feel} disabled={readOnly}
+        <label className="chart-builder-field chart-builder-feel-field">
+          <span>Feel</span>
+          <select aria-label="Feel (optional)" value={customFeel ? 'Other' : draft.feel} disabled={readOnly}
           onChange={event => {
             const other = event.target.value === 'Other';
             setCustomFeel(other);
@@ -333,8 +332,9 @@ export function ChartBuilderPage() {
           }}>
           {FEELS.map(feel => <option key={feel} value={feel}>{feel}</option>)}
           <option value="Other">Other…</option>
-        </select>
-      </label>
+          </select>
+        </label>
+      </div>
       {customFeel && <label className="chart-builder-field chart-builder-custom-feel">
         <span>Describe your feel (optional)</span>
         <input type="text" aria-label="Describe your feel" maxLength={80}

@@ -18,6 +18,18 @@ try {
     await page.goto(baseUrl + '/charts/new', { waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'Create Chart' }).waitFor();
     assert.equal(await page.getByRole('textbox', { name: 'Key', exact: true }).count(), 1);
+    const metadata = page.locator('.chart-builder-simple-meta');
+    assert.equal(await metadata.locator('.chart-builder-key-field').count(), 1);
+    assert.equal(await metadata.locator('.chart-builder-time-field').count(), 1);
+    assert.equal(await metadata.locator('.chart-builder-feel-field').count(), 1);
+    const keyRect = await metadata.locator('.chart-builder-key-field').boundingBox();
+    const feelRect = await metadata.locator('.chart-builder-feel-field').boundingBox();
+    const meterRect = await metadata.locator('.chart-builder-time-field').boundingBox();
+    assert.ok(keyRect && feelRect && meterRect, 'Metadata controls must be visible');
+    assert.ok(keyRect.width <= 144, 'Key field should be compact on a phone');
+    assert.ok(Math.abs(keyRect.y - feelRect.y) < 4 && Math.abs(keyRect.y - meterRect.y) < 4,
+      'Key, feel and meter must share a single row');
+    assert.ok(feelRect.x + feelRect.width <= viewport.width + 1, 'Feel field must fit the phone width');
     assert.equal(await page.getByRole('textbox', { name: 'Time signature numerator' }).inputValue(), '4');
     assert.equal(await page.getByRole('textbox', { name: 'Time signature denominator' }).inputValue(), '4');
     assert.equal(await page.locator('.chart-builder-key-scroll').count(), 0);

@@ -248,3 +248,66 @@
   .chart-builder-toolbar button {height:42px; font-size:9px; border-radius:6px;}
   .chart-builder-toolbar button svg {width:17px; height:17px;}
 }
+
+/* Review pass: compact Key / Time Signature / Feel in one row on phones. */
+.chart-builder-page .chart-builder-simple-meta {
+  display: grid;
+  grid-template-columns: 136px 68px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  max-width: 580px;
+  margin: 0 0 4px;
+}
+.chart-builder-page .chart-builder-simple-meta .chart-builder-field,
+.chart-builder-page .chart-builder-simple-meta .chart-builder-time-field {
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+}
+.chart-builder-page .chart-builder-inline-input {
+  gap: 4px;
+  width: 100%;
+}
+.chart-builder-page .chart-builder-inline-input input {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  padding: 8px 5px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+.chart-builder-page .chart-builder-inline-input button {
+  flex: 0 0 34px;
+  min-width: 34px;
+  min-height: 44px;
+  font-size: 19px;
+  border-radius: 9px;
+}
+.chart-builder-page .chart-builder-time-field {
+  flex: none;
+}
+.chart-builder-page .chart-builder-time-field legend {
+  white-space: nowrap;
+}
+.chart-builder-page .chart-meter-fraction {
+  width: 62px;
+  max-width: 100%;
+}
+.chart-builder-page .chart-builder-feel-field select {
+  min-width: 0;
+  width: 100%;
+  padding: 10px 6px;
+  text-overflow: ellipsis;
+}
+@media (max-width: 375px) {
+  .chart-builder-page .chart-builder-simple-meta {
+    grid-template-columns: 132px 65px minmax(0, 1fr);
+    gap: 7px;
+  }
+  .chart-builder-page .chart-builder-inline-input button {
+    flex-basis: 32px;
+    min-width: 32px;
+  }
+  .chart-builder-page .chart-meter-fraction { width: 60px; }
+}
