@@ -5,7 +5,9 @@ import { ChordGrid } from '../components/ChordGrid';
 import { LoopPlanSettings } from '../components/LoopPlanSettings';
 import { GuidedCatCoach, GuidedLesson } from '../components/GuidedLesson';
 import { normalizeGuidedLesson } from '../lib/guidedLesson';
-import { chartsById, exercisesById } from '../data/seed';
+import { exercisesById } from '../data/seed';
+import { getChartById } from '../features/charts/chartRepository';
+import { pitchClass } from '../features/charts/chartModel';
 import { formatChartMeta } from '../lib/chords';
 import { beatsPerMeasure, locateSequencePlayhead, rawChartBeat, sequenceBeatForBar, sequenceDuration } from '../lib/practiceChartClock';
 import type { LoopSection } from '../lib/practiceChartClock';
@@ -76,19 +78,18 @@ export function PracticePage() {
   const {
     charts, exercises, routines, activeRoutineId, addSession, showToast, catId,
   } = useApp();
-  const routine = activeRoutineId ? routines.find(item => item.id === activeRoutineId) ?? null : null;
+  const requestedChart = searchParams.get('chart');
+  // Explicit chart deep links open Free Practice even if the last routine is active.
+  const routine = !requestedChart && activeRoutineId ? routines.find(item => item.id === activeRoutineId) ?? null : null;
   const [stepIndex, setStepIndex] = useState(0);
   const currentStep = routine?.steps[stepIndex] ?? null;
   const playableStep = useMemo(
     () => currentStep ? resolvePlayableStep(currentStep, exercises, exercisesById) : null,
     [currentStep, exercises],
   );
-  const requestedChart = searchParams.get('chart');
-  const initialChart = requestedChart && chartsById[requestedChart]
-    ? requestedChart
-    : charts[0]?.id ?? 'blues-f-12';
+  const initialChart = requestedChart ?? charts[0]?.id ?? 'blues-f-12';
   const [chartId, setChartId] = useState(initialChart);
-  const [chartKey, setChartKey] = useState(chartsById[initialChart]?.concert_key ?? 'F');
+  const [chartKey, setChartKey] = useState(getChartById(initialChart, charts)?.concert_key ?? 'F');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
   const [loopEnabled, setLoopEnabled] = useState(false);
   const [loopSections, setLoopSections] = useState<LoopSection[]>([{ startBar: 1, endBar: 4, plays: 2 }]);
@@ -96,7 +97,7 @@ export function PracticePage() {
   const [loopOpen, setLoopOpen] = useState(false);
   const loopTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [musicalClock, setMusicalClock] = useState({ chartBeat: 0, startedAtMs: null as number | null });
-  const [panel, setPanel] = useState<Panel>(activeRoutineId ? 'instructions' : 'chart');
+  const [panel, setPanel] = useState<Panel>(routine ? 'instructions' : 'chart');
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
   const toolTriggerRef = useRef<HTMLButtonElement | null>(null);
   const toolOverlayRef = useRef<HTMLDivElement | null>(null);
@@ -130,7 +131,10 @@ export function PracticePage() {
     return () => cancelAnimationFrame(focusId);
   }, [activeTool]);
 
-  const chart = chartsById[chartId] ?? charts[0]!;
+  const resolvedChart = getChartById(chartId, charts);
+  const missingChart = !resolvedChart;
+  // Hooks remain unconditional, but a missing chart renders an explicit error below.
+  const chart = resolvedChart ?? charts[0]!;
   const chosenExercise = exercisesById[playableStep?.exercise_id ?? ''] ?? exercises.find(item => item.id === playableStep?.exercise_id);
   const lesson = useMemo(() => playableStep
     ? normalizeGuidedLesson(playableStep, chosenExercise, currentStep?.snapshot)
@@ -146,7 +150,7 @@ export function PracticePage() {
 
   useEffect(() => {
     setStepIndex(0);
-    setPanel(activeRoutineId ? 'instructions' : 'chart');
+    setPanel(routine ? 'instructions' : 'chart');
     setPriorMs(0);
     setStepMs(0);
     setStartedAtMs(null);
@@ -155,18 +159,30 @@ export function PracticePage() {
     setCompletion(null);
     setSaveState('idle');
     savePromiseRef.current = null;
-  }, [activeRoutineId]);
+  }, [activeRoutineId, requestedChart]);
 
   useEffect(() => {
-    if (!playableStep?.chart_id || !chartsById[playableStep.chart_id]) return;
-    const chosen = chartsById[playableStep.chart_id];
+    if (!requestedChart) return;
+    setChartId(requestedChart);
+    setChartKey(getChartById(requestedChart, charts)?.concert_key ?? 'F');
+    setLoopEnabled(false);
+    setMusicalClock({ chartBeat: 0, startedAtMs: null });
+  }, [requestedChart]);
+
+  useEffect(() => {
+    if (!playableStep?.chart_id || requestedChart) return;
+    const chosen = getChartById(playableStep.chart_id, charts);
+    if (!chosen) {
+      setChartId(playableStep.chart_id);
+      return;
+    }
     setChartId(chosen.id);
     setChartKey(chosen.concert_key);
     setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setLoopEnabled(false);
     setLoopSections([{ startBar: 1, endBar: Math.min(chosen.bars.length, 4), plays: 2 }]);
     setRepeatWholePlan(false);
-  }, [playableStep?.chart_id, playableStep?.exercise_id]);
+  }, [playableStep?.chart_id, playableStep?.exercise_id, charts, requestedChart]);
 
   useEffect(() => {
     if (chosenExercise?.suggested_bpm != null) {
@@ -194,7 +210,7 @@ export function PracticePage() {
     : 'Chart once';
 
   function chooseChart(id: string) {
-    const next = chartsById[id];
+    const next = getChartById(id, charts);
     if (!next) return;
     const now = performance.now();
     setChartId(id);
@@ -207,7 +223,7 @@ export function PracticePage() {
   }
 
   function setKeyBySemitone(delta: number) {
-    const index = CHROMA.indexOf(chartKey);
+    const index = pitchClass(chartKey) ?? -1;
     setChartKey(CHROMA[((index < 0 ? 0 : index) + delta + 12) % 12]!);
   }
 
@@ -216,7 +232,7 @@ export function PracticePage() {
     if (!Number.isFinite(bpm)) return;
     const now = performance.now();
     setMusicalClock(current => ({
-      chartBeat: rawChartBeat(current, now, tempo),
+      chartBeat: rawChartBeat(current, now, tempo, chart),
       startedAtMs: current.startedAtMs === null ? null : now,
     }));
     setTempo(bpm);
@@ -261,7 +277,7 @@ export function PracticePage() {
     const now = performance.now();
     const beats = beatsPerMeasure(chart);
     const duration = sequenceDuration(chart, activeSections);
-    const raw = rawChartBeat(musicalClock, now, tempo);
+    const raw = rawChartBeat(musicalClock, now, tempo, chart);
     const offset = activeSections && repeatWholePlan ? raw % duration : raw;
     const intended = Math.floor(offset / beats) * beats + delta * beats;
     const next = activeSections && repeatWholePlan
@@ -274,7 +290,7 @@ export function PracticePage() {
     const now = performance.now();
     const playing = startedAtMs === null;
     setMusicalClock(current => {
-      const beat = rawChartBeat(current, now, tempo);
+      const beat = rawChartBeat(current, now, tempo, chart);
       const duration = sequenceDuration(chart, activeSections);
       return {
         chartBeat: playing && (!activeSections || !repeatWholePlan) && beat >= duration ? 0 : beat,
@@ -311,7 +327,7 @@ export function PracticePage() {
     const durationSeconds = Math.floor((priorMs + finalStepMs) / 1000);
     setStepMs(finalStepMs);
     setStartedAtMs(null);
-    setMusicalClock(current => ({ chartBeat: rawChartBeat(current, now, tempo), startedAtMs: null }));
+    setMusicalClock(current => ({ chartBeat: rawChartBeat(current, now, tempo, chart), startedAtMs: null }));
     setNowMs(now);
     setCompletion({
       id: 'sess-' + finishedStamp + '-' + Math.random().toString(36).slice(2, 9),
@@ -382,6 +398,14 @@ export function PracticePage() {
     setSaveState('idle');
     setPanel(routine ? 'instructions' : 'chart');
     savePromiseRef.current = null;
+  }
+
+  if (missingChart) {
+    return <section className="practice-player" role="alert" aria-label="Chart unavailable">
+      <h1>Chart unavailable</h1>
+      <p>The requested chart could not be found for this account. Nothing else was substituted.</p>
+      <button type="button" onClick={() => navigate('/my-charts')}>Back to My Charts</button>
+    </section>;
   }
 
   if (completion) {
@@ -458,6 +482,7 @@ export function PracticePage() {
           <p>{routine
             ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length + ' · ' + (playableStep?.title ?? 'Exercise')
             : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
+          {chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
         </div>
         <button className="practice-more" type="button" aria-label="Finish session" onClick={finishSession}>⋮</button>
       </header>
@@ -543,7 +568,7 @@ export function PracticePage() {
         </div>
         {panel === 'player' && (
           <div className="practice-chart-controls practice-player-pills" id="practice-inline-settings">
-            <label>Key<select value={chartKey} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
+            <label>Key<select value={CHROMA[pitchClass(chartKey) ?? 0]} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
             <label>Tempo<select value={tempo} onChange={event => changeTempo(Number(event.target.value))} aria-label="Reference tempo in beats per minute">{[60, 70, 80, 90, 100, 110, 120, 140, 160, 180].concat(chosenExercise?.suggested_bpm ?? []).filter((bpm, index, all) => all.indexOf(bpm) === index).sort((a,b) => a-b).map(bpm => <option key={bpm} value={bpm}>{bpm} BPM</option>)}</select></label>
             <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
           </div>
