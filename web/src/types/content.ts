@@ -20,6 +20,8 @@ export interface ChartBar {
   number: number;
   section: string | null;
   events: ChordEvent[];
+  /** Optional visual instruction, never a timed chord event. */
+  annotation?: string;
 }
 
 export interface Chart {
@@ -30,6 +32,10 @@ export interface Chart {
   feel: string;
   form: string;
   bars: ChartBar[];
+  style_instruction?: string;
+  is_custom?: boolean;
+  created_at?: string;
+  updated_at?: string;
   license?: string;
   difficulty?: string;
   practice_focus?: string;
