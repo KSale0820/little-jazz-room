@@ -49,8 +49,9 @@ try {
         const bounds = el.getBoundingClientRect();
         return {
           width: el.naturalWidth, height: el.naturalHeight,
-          opacity: Number(style.opacity), bottom: bounds.bottom,
-          boundingWidth: bounds.width,
+          opacity: Number(style.opacity), top: bounds.top, bottom: bounds.bottom,
+          boundingWidth: bounds.width, cssBottom: parseFloat(style.bottom),
+          pageBottom: el.closest('.tool-page')?.getBoundingClientRect().bottom,
         };
       });
       if (result.width !== 1170 || result.height !== expectedHeight ||
@@ -59,12 +60,29 @@ try {
           selector + ' at ' + width + 'x' + height + ': ' + JSON.stringify(result));
       }
       const navBox = await page.locator('nav.bottom-nav').boundingBox();
+      const viewportBox = await page.locator('.viewport').boundingBox();
       const shortViewport = height <= 720;
       const usesNewMetronomeRoom = await page.locator('.tool-metronome').count() > 0 &&
         await page.locator('.tool-metronome').evaluate(element => element.classList.contains('tool-has-new-room'));
-      const artworkOffset = shortViewport ? (selector.includes('metronome') ? (usesNewMetronomeRoom ? 0 : 40) : 35) : 0;
-      if (!navBox || Math.abs(result.bottom - navBox.y - artworkOffset) > 6) {
-        throw new Error('Room illustration is not aligned with the intended floor offset: ' + selector + ' ' + JSON.stringify({ artwork: result, nav: navBox, artworkOffset, width, height }));
+      // The approved P04 screenshots at 390×844 and 375×667 show the room art
+      // clipped by the scroll viewport above the fixed navigation. The page's
+      // content can extend below that viewport, so an image's raw bounding-box
+      // bottom is NOT its visible floor position and must not equal nav.y.
+      // Keep the intended CSS floor offset and require the VISIBLE artwork to
+      // terminate at the navigation boundary, without changing the art or CSS.
+      const floorOffset = shortViewport
+        ? (selector.includes('metronome') ? (usesNewMetronomeRoom ? 0 : 40) : 35) : 0;
+      const expectedCssBottom = -floorOffset;
+      const viewportBottom = viewportBox ? viewportBox.y + viewportBox.height : NaN;
+      const visibleBottom = Math.min(result.bottom, viewportBottom);
+      if (!navBox || !viewportBox ||
+          Math.abs(result.cssBottom - expectedCssBottom) > 1 ||
+          Math.abs(result.bottom - ((result.pageBottom ?? NaN) + floorOffset)) > 2 ||
+          result.top >= viewportBottom ||
+          Math.abs(visibleBottom - navBox.y) > 6) {
+        throw new Error('Approved room illustration is not aligned with the visible viewport floor: ' +
+          selector + ' ' + JSON.stringify({ artwork: result, nav: navBox,
+            viewport: viewportBox, expectedCssBottom, visibleBottom, width, height }));
       }
     };
     const waitArtwork = async () => page.evaluate(async () => {
