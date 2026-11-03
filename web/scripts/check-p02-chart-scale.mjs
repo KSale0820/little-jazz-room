@@ -105,6 +105,7 @@ try {
     await page.goto(url+'/routines',{waitUntil:'networkidle'});
     await page.getByRole('button',{name:'Open Daily Jazz Warm-Up in player'}).click();
     await page.waitForURL(u=>u.pathname==='/player');
+    await page.getByRole('tab',{name:'Chart'}).click();
     const guided=await assess(12,'Guided blues '+width+'x'+height);
     check(await page.getByRole('button',{name:/^Measure 12:/}).count()===1,'Last guided measure not visible');
     await page.screenshot({path:join(dir,'P02-guided-complete-blues-'+width+'x'+height+'.png'),animations:'disabled'});
