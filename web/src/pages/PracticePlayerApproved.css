@@ -774,3 +774,25 @@
   .practice-lesson-steps ol { gap: 8px; }
   .practice-cat-coach .practice-coach-portrait { width: 48px; height: 48px; flex-basis: 48px; }
 }
+
+
+/* Short iPhones: keep the approved Guided Player art, but fit the tool dock
+   without requiring a second scroll to reach tuner/metronome. */
+@media (max-height: 720px) and (max-width: 899px) {
+  .practice-guided.practice-guided-player-view .practice-art-panel > img { height: 128px; }
+  .practice-guided.practice-guided-player-view .practice-art-caption { padding: 9px 12px; }
+  .practice-guided.practice-guided-player-view .practice-no-audio { padding: 4px 8px; }
+  .practice-guided.practice-guided-player-view .practice-step-controls { margin: 2px 0 3px; }
+  .practice-guided.practice-guided-player-view .practice-timer-button {
+    width: 51px; height: 51px; font-size: 22px;
+  }
+  .practice-guided.practice-guided-player-view .practice-control-row { margin: 2px 0 5px; }
+  .practice-guided.practice-guided-player-view .practice-utility-row button {
+    min-height: 53px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .practice-guided.practice-guided-player-view .practice-utility-row .practice-tool-glyph {
+    width: 21px; height: 21px; min-height: 21px;
+  }
+}
