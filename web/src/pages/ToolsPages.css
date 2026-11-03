@@ -54,6 +54,8 @@
 .tool-has-background .tool-cat-scene { background: transparent; }
 /* The taller P05 sitting pose must extend above its decorative floor strip without losing ears or face. */
 .tool-has-background .tool-metronome-scene { overflow: visible; }
+/* Allow the sleeping tuner companion's ears to extend above the floor scene. */
+.tool-has-background .tool-tuner-scene { overflow: visible; }
 .tool-has-background .tool-scene-rug,
 .tool-has-background .tool-scene-plant { display: none; }
 
@@ -286,9 +288,9 @@
 .tool-scene-rug { z-index: 1; }
 .tool-scene-cat { z-index: 2; height: 111px; }
 .tool-tuner-scene .tool-scene-cat {
-  bottom: 12px;
-  width: 244px;
-  height: 165px;
+  bottom: 0;
+  width: 270px;
+  height: 182px;
 }
 .tool-metronome-scene .tool-scene-cat {
   right: 2px;
@@ -559,9 +561,9 @@
 /* On shorter phones keep the sitting companion on the rug at screen-right. */
 @media (max-height: 720px) and (max-width: 899px) {
   .tool-tuner-scene .tool-scene-cat {
-    width: 188px;
-    height: 124px;
-    bottom: 12px;
+    width: 210px;
+    height: 138px;
+    bottom: 2px;
   }
   .tool-metronome-scene .tool-scene-cat {
     right: 1px;
