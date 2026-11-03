@@ -134,6 +134,27 @@ describe('realistic singing input', () => {
     expect(measured).not.toBeNull();
     expect(Math.abs(1200 * Math.log2(measured! / 220))).toBeLessThan(70);
   });
+  it('keeps tracking one sung note across successive vibrato and breathy frames', () => {
+    const sampleRate = 48000;
+    const f0 = 196; // G3
+    let phase = 0;
+    const full = Float32Array.from({ length: 8192 + sampleRate * 2 }, (_, i) => {
+      const t = i / sampleRate;
+      const instantaneous = f0 * 2 ** ((31 * Math.sin(2 * Math.PI * 5.2 * t)) / 1200);
+      phase += 2 * Math.PI * instantaneous / sampleRate;
+      const amplitude = 0.095 * (0.85 + 0.15 * Math.sin(2 * Math.PI * 2.3 * t));
+      return amplitude * (0.45 * Math.sin(phase) + 0.75 * Math.sin(2 * phase)
+        + 0.28 * Math.sin(3 * phase) + 0.045 * Math.sin(i * 2.21));
+    });
+    let good = 0;
+    let evaluated = 0;
+    for (let start = 0; start <= sampleRate * 2; start += 4000) {
+      const frequency = detectPitch(full.subarray(start, start + 8192), sampleRate);
+      if (frequency !== null && Math.abs(1200 * Math.log2(frequency / f0)) < 75) good++;
+      evaluated++;
+    }
+    expect(good / evaluated).toBeGreaterThanOrEqual(0.8);
+  });
   it('does not turn periodicity-free microphone noise into a note', () => {
     let seed = 123456;
     const noise = Float32Array.from({ length: 8192 }, () => {
