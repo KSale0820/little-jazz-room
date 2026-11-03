@@ -99,6 +99,8 @@ try {
     check(before > 0, 'Timer did not start');
     await view('Player').click();
     check(await page.getByRole('tabpanel', { name: 'Chart only player' }).isVisible(), 'Player view missing');
+    const dock = await page.locator('.practice-utility-row').boundingBox();
+    check(dock && dock.y + dock.height <= height + 1, 'Guided Player tool dock is clipped at ' + width + 'x' + height);
     await page.screenshot({ path: join(out, 'P02-guided-player-' + width + 'x' + height + '.png'), animations: 'disabled' });
     await view('Instructions').click();
     check(await page.getByRole('region', { name: 'Guided lesson instructions' }).isVisible(), 'Instructions lost after switching tabs');
