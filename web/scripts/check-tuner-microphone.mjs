@@ -123,17 +123,21 @@ try {
   const fallbackContext = await browser.newContext({
     permissions: ['microphone'], viewport: { width: 390, height: 844 },
   });
-  let blockedWorklet = false;
-  await fallbackContext.route('**/worklets/tuner-capture.js', route => {
-    blockedWorklet = true;
-    return route.abort('failed');
+  // AudioWorklet module loads happen in the browser's audio worker, not
+  // always through Playwright's page network routing. Simulate an older
+  // Safari without AudioWorkletNode before app JS starts.
+  await fallbackContext.addInitScript(() => {
+    Object.defineProperty(window, 'AudioWorkletNode', {
+      value: undefined, configurable: true,
+    });
   });
   const fallbackPage = await fallbackContext.newPage();
   await fallbackPage.goto(origin + '/tuner');
   await fallbackPage.getByRole('button', { name: /Enable microphone/ }).click();
   await fallbackPage.getByText('A4', { exact: true }).first().waitFor({ timeout: 15000 });
   const fallbackPath = await fallbackPage.locator('.tool-tuner').getAttribute('data-capture-path');
-  if (!blockedWorklet) throw new Error('Worklet request was not blocked during fallback test');
+  const workletApi = await fallbackPage.evaluate(() => typeof AudioWorkletNode);
+  if (workletApi !== 'undefined') throw new Error('Fallback test failed to disable AudioWorkletNode');
   if (fallbackPath !== 'analyser') throw new Error('Missing working analyser fallback: ' + fallbackPath);
   await fallbackPage.getByRole('button', { name: /Stop microphone/ }).click();
   await fallbackContext.close();
