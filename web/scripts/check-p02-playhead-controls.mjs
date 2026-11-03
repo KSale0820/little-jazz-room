@@ -46,19 +46,38 @@ try {
     check((await playhead.textContent()).includes('Bar 9 of 12'), 'Next measure control failed');
     await page.getByRole('button', { name: 'Previous measure' }).click();
 
-    await page.locator('#practice-loop').selectOption('5-8');
-    check(await page.locator('.measure.looped').count() === 4, 'Bars 5-8 range was not visually marked');
-    check((await playhead.textContent()).includes('Bar 8 of 12'), 'Changing loop unexpectedly reset an in-range playhead');
+    await page.getByRole('button',{name:/^Off/}).click();
+    const dialog=page.getByRole('dialog',{name:'Set up looping'});
+    await dialog.getByRole('button',{name:/Repeat sections/}).click();
+    const fillBar = async (name, value) => {
+      const field=dialog.getByRole('spinbutton',{name});
+      await field.fill(String(value)); await field.blur();
+    };
+    await fillBar('Section 1 start bar',5);
+    await fillBar('Section 1 end bar',5);
+    await dialog.getByRole('button',{name:'+ Add section'}).click();
+    await fillBar('Section 2 start bar',8);
+    await fillBar('Section 2 end bar',8);
+    await dialog.getByRole('button',{name:'Decrease section 2 play count'}).click();
+    await page.screenshot({ path: join(output, 'P02-loop-plan-' + width + 'x' + height + '.png'), animations: 'disabled' });
+    await dialog.getByRole('button',{name:'Apply plan'}).click();
+    check(await page.locator('.measure.looped').count()===1,'First section highlight missing');
+    check((await playhead.textContent()).includes('Bar 5 of 12'),'Applying repeat plan did not start at first section');
     await page.getByRole('button', { name: 'Resume practice timer' }).click();
     await page.waitForTimeout(2150);
-    check((await playhead.textContent()).includes('Bar 5 of 12'), 'Loop end did not return to bar 5');
+    check((await playhead.textContent()).includes('Bar 5 of 12') &&
+      (await playhead.textContent()).includes('Pass 2 of 2'),'First section did not repeat twice');
+    await page.waitForTimeout(2150);
+    check((await playhead.textContent()).includes('Bar 8 of 12'),'Second section did not follow the first section');
     await page.locator('#practice-bpm').fill('180');
     await page.locator('#practice-bpm').blur();
     check(await page.getByTestId('session-elapsed').innerText() !== '00:00', 'Session timer reset on tempo change');
-    check(await page.locator('.measure.looped').count() === 4, 'Tempo change lost loop range');
-
+    check(await page.locator('.measure.looped').count()===1,'Tempo change lost active section');
     await page.getByRole('button', { name: 'Pause practice timer' }).click();
-    await page.locator('#practice-loop').selectOption('all');
+    await page.getByRole('button',{name:'Configure loop'}).click();
+    await dialog.getByRole('button',{name:/No looping/}).click();
+    await dialog.getByRole('button',{name:'Apply plan'}).click();
+    check(await page.locator('.measure.looped').count()===0,'No looping did not clear highlights');
     await page.getByRole('button', { name: /^Measure 1:/ }).click();
     check((await activeBar().locator('.chord-active').innerText()) === 'F7', 'Concert F chord not visible');
     await page.locator('#practice-key').selectOption('G');
@@ -78,7 +97,7 @@ try {
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
     await page.waitForURL(url => url.pathname === '/player');
     check(await page.getByText('Guided Practice', { exact: true }).first().isVisible(), 'Guided practice missing');
-    check(await page.locator('#practice-key').count() === 1 && await page.locator('#practice-loop').count() === 1, 'Guided controls missing');
+    check(await page.locator('#practice-key').count() === 1 && await page.getByRole('button',{name:/^Off/}).count() === 1, 'Guided controls missing');
     await page.screenshot({ path: join(output, 'P02-guided-chart-' + width + 'x' + height + '.png'), animations: 'disabled' });
     await page.getByRole('tab', { name: 'Player' }).click();
     await page.screenshot({ path: join(output, 'P02-guided-player-' + width + 'x' + height + '.png'), animations: 'disabled' });
