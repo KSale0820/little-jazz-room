@@ -104,7 +104,8 @@ export class StemTransport {
     const offset = resolveOffset(this.heldAt, this.durationSeconds, this.loop);
     if (!this.loop && offset >= this.durationSeconds) this.heldAt = 0;
     const start = ctx.currentTime + 0.075;
-    const from = this.heldAt;
+    const from = offset;
+    this.heldAt = from;
     const scheduled: number[] = [];
     for (const slot of this.slots) {
       const source = ctx.createBufferSource();
