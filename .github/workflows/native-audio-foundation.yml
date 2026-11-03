@@ -40,6 +40,9 @@ jobs:
           if [ ! -f android/app/build.gradle ]; then npx cap add android; fi
           npx cap sync android
           npm run native:privacy
+      - name: Compile Android debug APK (no device installation)
+        working-directory: web/android
+        run: ./gradlew assembleDebug --no-daemon
       - name: Record lockfile and native Android scaffold on feature branch
         if: github.event_name == 'push'
         working-directory: .
