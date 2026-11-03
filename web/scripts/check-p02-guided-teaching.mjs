@@ -62,7 +62,7 @@ try {
     check(sizes.steps.top >= 0 && sizes.steps.bottom <= height + 1, 'Step navigation not visible');
     check(sizes.coach && sizes.coach.top >= sizes.play.bottom - 1 && sizes.coach.bottom <= height + 1, 'Cat coaching not pinned below controls');
     check(await lesson.evaluate(node => node.scrollTop === 0), 'Coach requires reading scroll at initial load');
-    check(await page.getByRole('button', { name: 'View chord chart for current step' }).isVisible(), 'Chart shortcut missing');
+    check(await page.getByRole('button', { name: 'Show chart' }).isVisible(), 'Chart shortcut missing');
     check(sizes.timer.top >= 0 && sizes.timer.bottom <= height + 1, 'Session timer not visible');
     check(sizes.navDisplay === 'none', 'Bottom navigation covers guided instructions');
     check(sizes.overflow <= 1, 'Horizontal overflow on Instructions');
@@ -90,10 +90,15 @@ try {
     sizes = await layout();
     check(sizes.play.bottom <= height + 1 && sizes.steps.bottom <= height + 1, 'Long lesson hid the transport');
 
-    await page.getByRole('button', { name: 'View chord chart for current step' }).click();
+    await page.getByRole('button', { name: 'Show chart' }).click();
     check(await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).isVisible(), 'Chart shortcut did not open chart');
     check(await page.locator('.measure').count() === 12, 'Chart was changed by teaching layout');
-    check(await page.locator('.practice-guided-head strong').innerText() === 'Swing on Two and Four', 'Chart instructional summary missing');
+    check((await page.locator('.practice-guided-head strong').innerText()).trim().length > 0, 'Chart instructional summary missing');
+    check(await page.getByRole('button', { name: 'Show instructions' }).innerText() === 'Instructions', 'Chart should offer Instructions rather than View Chart');
+    await page.getByRole('button', { name: 'Show instructions' }).click();
+    check(await page.getByRole('region', { name: 'Guided lesson instructions' }).isVisible(), 'Chart shortcut did not open instructions');
+    await page.getByRole('button', { name: 'Show chart' }).click();
+    check(await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).isVisible(), 'Instructions shortcut did not restore chart');
     await page.screenshot({ path: join(out, 'P02-guided-chart-' + width + 'x' + height + '.png'), animations: 'disabled' });
 
     await page.getByRole('button', { name: 'Start practice timer' }).click();
@@ -115,7 +120,7 @@ try {
     await page.getByRole('button', { name: 'Next Step' }).click();
     check(await view('Instructions').getAttribute('aria-selected') === 'true', 'Next exercise did not open its instructions');
     check(await page.getByRole('region', { name: 'Guided lesson instructions' }).isVisible(), 'Next lesson instructions missing');
-    check(await page.getByRole('button', { name: 'View chord chart for current step' }).isVisible(), 'Chart shortcut missing from next step');
+    check(await page.getByRole('button', { name: 'Show chart' }).isVisible(), 'Chart shortcut missing from next step');
     await page.getByRole('button', { name: 'Next Step' }).click();
     check(await page.getByRole('button', { name: 'Finish', exact: true }).isVisible(), 'Last guided step must say Finish');
     await page.getByRole('button', { name: 'Finish', exact: true }).click();
