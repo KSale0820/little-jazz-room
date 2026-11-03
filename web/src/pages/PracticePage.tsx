@@ -79,8 +79,12 @@ export function PracticePage() {
     charts, exercises, routines, activeRoutineId, addSession, showToast, catId,
   } = useApp();
   const requestedChart = searchParams.get('chart');
+  const requestedRoutine = searchParams.get('routine');
+  const freeMode = searchParams.get('mode') === 'free';
   // Explicit chart deep links open Free Practice even if the last routine is active.
-  const routine = !requestedChart && activeRoutineId ? routines.find(item => item.id === activeRoutineId) ?? null : null;
+  const routineId = !requestedChart && !freeMode ? (requestedRoutine ?? activeRoutineId) : null;
+  const routine = routineId ? routines.find(item => item.id === routineId) ?? null : null;
+  const missingRoutine = Boolean(requestedRoutine && !routine);
   const [stepIndex, setStepIndex] = useState(0);
   const currentStep = routine?.steps[stepIndex] ?? null;
   const playableStep = useMemo(
@@ -159,7 +163,7 @@ export function PracticePage() {
     setCompletion(null);
     setSaveState('idle');
     savePromiseRef.current = null;
-  }, [activeRoutineId, requestedChart]);
+  }, [activeRoutineId, requestedChart, requestedRoutine, freeMode]);
 
   useEffect(() => {
     if (!requestedChart) return;
@@ -400,6 +404,14 @@ export function PracticePage() {
     setSaveState('idle');
     setPanel(routine ? 'instructions' : 'chart');
     savePromiseRef.current = null;
+  }
+
+  if (missingRoutine) {
+    return <section className="practice-player" role="alert" aria-label="Routine unavailable">
+      <h1>Routine unavailable</h1>
+      <p>The requested routine could not be found for this account. Nothing else was substituted.</p>
+      <button type="button" onClick={() => navigate('/routines')}>Back to Routines</button>
+    </section>;
   }
 
   if (missingChart) {
