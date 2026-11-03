@@ -27,6 +27,7 @@ try {
       await page.goto(base + '/practice', { waitUntil: 'networkidle' });
       await page.getByRole('button', { name: /^Free Practice/ }).click();
       await page.waitForURL(url => url.pathname === '/player');
+      await page.locator('.practice-utility-row').waitFor({ state: 'attached' });
     };
     const noOverflow = async () => {
       const offset = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
