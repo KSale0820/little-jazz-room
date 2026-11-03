@@ -1,6 +1,7 @@
 # Beginner lessons: structured content handoff
 
-Scope: **lesson content only**. Agent 1 owns the teaching interface and practice player.
+Scope: **lesson content only**. PR #33 (`fix/guided-practice-teaching-ui`) owns the Guided Practice teaching interface and Practice Player.
+PR #31 intentionally does not modify `PracticePage.tsx` or `PracticePlayerApproved.css`.
 This work is based on `class-demo-2026-10-31` and does not change the shared player, audio,
 navigation, chart builder, database tables or storage keys.
 
@@ -16,7 +17,7 @@ Builder agent, which is also updating beginner seed JSON. Every consumer of `see
 `exercisesById`, and `seedRoutines` still receives the final beginner-friendly text.
 Raw JSON IDs, Supabase schema, old local drafts and existing chart references do not change.
 
-## Agent 1 rendering contract
+## PR #33 Guided Practice integration contract
 
 ```ts
 import { getStructuredLesson } from '../data/beginnerLessonContent';
@@ -47,6 +48,13 @@ Fields:
 numbered steps, Listen for, Ready to move on, and terminology so the existing Practice
 Player and Supabase snapshots keep working. `lesson` is optional and missing on legacy
 saved/custom/shared exercises. No UI should assume it exists.
+
+**PR #33 compatibility:** `normalizeGuidedLesson(playableStep, chosenExercise, currentStep?.snapshot)`
+already recognizes `exercise.lesson` fields (`goal`, `steps`, `listenFor`, `success`,
+`terminologyHelp`, `catPrompts`). It can consume these lessons without modifying any
+Player UI in PR #31. Once both PRs are integrated, update PR #33's browser QA
+assertions that expect the legacy title “Swing on Two and Four” or hardcode a
+specific second cat-tip line; lesson #1 is now “Feel the Swing Beat”.
 
 **Note naming:** Note names are **concert pitch**; transposing instruments should follow
 their chart's existing instrument/transposition setting. Lessons do not change chart data.
