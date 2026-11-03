@@ -583,3 +583,113 @@
     font-size: 10.2px;
   }
 }
+
+/* P02 timing and independent musical controls: compact on both iPhone targets. */
+.practice-player .practice-playhead-status {
+  color: #406052; font: 600 10px/1.3 system-ui, sans-serif;
+  margin: -5px 0 6px;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.playhead {
+  outline: 2px solid #c29f55;
+  outline-offset: -2px;
+  position: relative;
+  z-index: 1;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.looped.playhead {
+  background: #e5edd9;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords span.chord-active {
+  border-radius: 4px;
+  background: #f1dcaf;
+  color: #193c32;
+  font-weight: 800;
+  box-shadow: inset 0 -2px 0 #b28b44;
+}
+.practice-player .practice-musical-controls {
+  display: grid;
+  gap: 7px;
+  margin: 5px 0 7px;
+  min-width: 0;
+}
+.practice-player .practice-control-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.practice-player .practice-control-field { display: flex; flex-direction: column; min-width: 0; gap: 3px; }
+.practice-player .practice-control-field > label {
+  font: 600 10px/1.2 system-ui, sans-serif;
+  color: #315745;
+  white-space: normal;
+}
+.practice-player .practice-stepper { display: flex; align-items: center; min-width: 0; }
+.practice-player .practice-stepper button {
+  flex: 0 0 39px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid #d0d6c9;
+  background: #f0eee3;
+  color: #1d4f3e;
+  font: 700 19px system-ui, sans-serif;
+}
+.practice-player .practice-stepper button:first-child { border-radius: 9px 0 0 9px; }
+.practice-player .practice-stepper button:last-child { border-radius: 0 9px 9px 0; }
+.practice-player .practice-musical-controls select,
+.practice-player .practice-musical-controls input {
+  min-width: 0;
+  width: 100%;
+  height: 42px;
+  border: 1px solid #d0d6c9;
+  border-radius: 9px;
+  background: #f4f1e8;
+  color: #1c4939;
+  font: 600 12px system-ui,sans-serif;
+  padding: 0 6px;
+}
+.practice-player .practice-stepper select,
+.practice-player .practice-stepper input {
+  flex: 1 1 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  text-align: center;
+  padding: 0 2px;
+}
+.practice-player .practice-stepper input { appearance: textfield; -moz-appearance: textfield; }
+.practice-player .practice-stepper input::-webkit-inner-spin-button,
+.practice-player .practice-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.practice-player .practice-custom-loop {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 8px;
+  padding-top: 2px;
+}
+.practice-player .practice-custom-loop label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: 600 10px system-ui,sans-serif;
+  color: #315745;
+}
+.practice-player .practice-utility-row.practice-utility-tools {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 7px;
+  margin-top: auto;
+}
+.practice-player .practice-utility-row.practice-utility-tools button {
+  min-height: 60px;
+  gap: 3px;
+}
+.practice-player .practice-utility-row.practice-utility-tools .practice-tool-glyph {
+  width: 24px; height: 24px; min-height: 24px;
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  .practice-player .practice-musical-controls { gap: 5px; margin: 3px 0 5px; }
+  .practice-player .practice-control-pair { gap: 5px; }
+  .practice-player .practice-stepper button { flex-basis: 35px; height: 39px; }
+  .practice-player .practice-musical-controls select,
+  .practice-player .practice-musical-controls input { height: 39px; }
+  .practice-player .practice-control-field > label { font-size: 9px; }
+  .practice-player .practice-utility-row.practice-utility-tools button { min-height: 49px; }
+  .practice-player .practice-utility-row.practice-utility-tools .practice-tool-glyph { width: 20px; height: 20px; min-height: 20px; }
+}
