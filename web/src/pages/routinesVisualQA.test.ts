@@ -1,4 +1,5 @@
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { chromium } from 'playwright';
 import { expect, it } from 'vitest';
@@ -15,10 +16,11 @@ async function waitForServer(url: string) {
 }
 
 function recordImage(label: string, data: Buffer) {
-  const base64 = data.toString('base64');
-  const segments = base64.match(/.{1,6000}/g) ?? [];
-  segments.forEach((segment, i) => console.log('LJR_SCREEN ' + label + ' ' + i + '/' + segments.length + ' ' + segment));
+  const folder = join(process.cwd(), 'docs', 'screenshots', 'routine-search-qa', 'after');
+  mkdirSync(folder, { recursive: true });
+  writeFileSync(join(folder, label + '.jpg'), data);
 }
+
 
 // Only capture on the class-demo CI runner. All routine repository unit tests run everywhere.
 it.skipIf(!process.env.CI)('visually captures R01/R03 and completes the class-demo routine journey', async () => {
