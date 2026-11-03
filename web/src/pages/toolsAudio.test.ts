@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   beatIntervalSeconds, beatsPerMeasure, clampBpm, defaultAccents,
   detectPitch, inputRms, midiToFrequency, readingFromFrequency,
+  pitchTrailGeometry, spokenNoteName,
 } from './toolsAudio';
 
 describe('real tuner pitch calculations', () => {
@@ -59,5 +60,29 @@ describe('metronome beat timing', () => {
     expect(beatIntervalSeconds(100, '6/8')).toBeCloseTo(0.2);
     expect(beatsPerMeasure('6/8')).toBe(6);
     expect(defaultAccents('6/8')).toEqual([true, false, false, true, false, false]);
+  });
+});
+
+describe('voice pitch-trail behavior', () => {
+  it('uses chromatic note targets in voice mode', () => {
+    expect(readingFromFrequency(440, 'voice')?.targetLabel).toBe('A4');
+    expect(readingFromFrequency(440, 'voice')?.isOpenString).toBe(false);
+  });
+  it('draws time ordered pitches rising upward, with a gap for silence', () => {
+    const chart = pitchTrailGeometry([
+      { timestamp: 1000, frequency: 220 },
+      { timestamp: 1200, frequency: 330 },
+      { timestamp: 1400, frequency: null },
+      { timestamp: 1600, frequency: 440 },
+    ], 2000, 2000);
+    expect(chart.segments).toHaveLength(2);
+    expect(chart.segments[0][0].x).toBeLessThan(chart.segments[0][1].x);
+    expect(chart.segments[0][0].y).toBeGreaterThan(chart.segments[0][1].y);
+    expect(chart.current?.y).toBeLessThan(chart.segments[0][1].y);
+  });
+  it('does not fabricate a pitch line for silence or empty history', () => {
+    expect(pitchTrailGeometry([], 8000).segments).toEqual([]);
+    expect(pitchTrailGeometry([{ timestamp: 7900, frequency: null }], 8000).current).toBeNull();
+    expect(spokenNoteName('C♯4')).toBe('C sharp 4');
   });
 });

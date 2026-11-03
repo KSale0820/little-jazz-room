@@ -1,5 +1,5 @@
 /** Audio helpers shared by P04 (Tuner) and P05 (Metronome). No synthetic pitch data. */
-export type TuningMode = 'chromatic' | 'guitar' | 'bass';
+export type TuningMode = 'chromatic' | 'guitar' | 'bass' | 'voice';
 export type PitchReading = {
   frequency: number;
   note: string;
@@ -32,7 +32,7 @@ export function readingFromFrequency(frequency: number, mode: TuningMode): Pitch
   const measuredMidi = Math.round(69 + 12 * Math.log2(frequency / 440));
   let targetMidi = measuredMidi;
   let isOpenString = false;
-  if (mode !== 'chromatic') {
+  if (mode === 'guitar' || mode === 'bass') {
     const nearest = OPEN_STRINGS[mode].reduce((a, b) =>
       Math.abs(12 * Math.log2(frequency / midiToFrequency(a))) <
       Math.abs(12 * Math.log2(frequency / midiToFrequency(b))) ? a : b);
@@ -105,6 +105,59 @@ export function detectPitch(samples: Float32Array, sampleRate: number): number |
   const tau = bestTau + Math.max(-1, Math.min(1, correction));
   const frequency = sampleRate / tau;
   return frequency >= 35 && frequency <= 1400 ? frequency : null;
+}
+
+
+/** A pitch trail measures detected fundamental frequency over time, not loudness.
+ * A null pitch is silence/unpitched audio and deliberately breaks the line.
+ */
+export type PitchTrailSample = { timestamp: number; frequency: number | null };
+export type PitchTrailPoint = { x: number; y: number };
+export type PitchTrailGeometry = {
+  segments: PitchTrailPoint[][];
+  lowNote: string;
+  highNote: string;
+  current: PitchTrailPoint | null;
+};
+
+export function pitchTrailGeometry(samples: PitchTrailSample[], now: number, durationMs = 8000): PitchTrailGeometry {
+  const visible = samples.filter(s => s.timestamp >= now - durationMs && s.timestamp <= now);
+  const semitones = visible.filter(s => s.frequency !== null && s.frequency > 0)
+    .map(s => 69 + 12 * Math.log2(s.frequency! / 440));
+  const mid = semitones.length
+    ? (Math.min(...semitones) + Math.max(...semitones)) / 2 : 69;
+  const span = Math.max(8, semitones.length ? Math.max(...semitones) - Math.min(...semitones) + 2 : 8);
+  const low = mid - span / 2;
+  const high = mid + span / 2;
+  const segments: PitchTrailPoint[][] = [];
+  let currentSegment: PitchTrailPoint[] = [];
+  let current: PitchTrailPoint | null = null;
+  for (const sample of visible) {
+    if (sample.frequency === null || sample.frequency <= 0) {
+      if (currentSegment.length) segments.push(currentSegment);
+      currentSegment = [];
+      current = null;
+      continue;
+    }
+    const midi = 69 + 12 * Math.log2(sample.frequency / 440);
+    const point = {
+      x: Math.max(0, Math.min(320, ((sample.timestamp - (now - durationMs)) / durationMs) * 320)),
+      y: Math.max(4, Math.min(90, 94 - ((midi - low) / (high - low)) * 90)),
+    };
+    currentSegment.push(point);
+    current = point;
+  }
+  if (currentSegment.length) segments.push(currentSegment);
+  return {
+    segments, current,
+    lowNote: midiToName(Math.round(low)),
+    highNote: midiToName(Math.round(high)),
+  };
+}
+
+/** Browser speech uses note names rather than Unicode sharp symbols. */
+export function spokenNoteName(note: string): string {
+  return note.replace('♯', ' sharp ');
 }
 
 /** For compound 6/8, BPM means dotted-quarter beats; each click is an eighth note. */
