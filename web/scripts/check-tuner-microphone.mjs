@@ -71,8 +71,18 @@ try {
   if (!Number.isFinite(measured) || Math.abs(measured - 440) > 4) {
     throw new Error('Expected A440 microphone input, got ' + frequency);
   }
+  // The same actual microphone stream must drive the Voice mode graph.
+  await page.getByRole('button', { name: 'Voice' }).click();
+  await page.getByRole('region', { name: 'Live pitch graph' }).waitFor();
+  await page.locator('.tuner-trail-plot polyline[points]:not([points=""])').first()
+    .waitFor({ timeout: 12000 });
+  const plotted = await page.locator('.tuner-trail-plot polyline').first().getAttribute('points');
+  if (!plotted || plotted.split(' ').length < 2) {
+    throw new Error('Voice pitch graph did not receive enough live microphone samples');
+  }
   if (errors.length) throw new Error('Page errors: ' + errors.join('; '));
-  console.log('PASS: live browser microphone capture detected A4 at ' + frequency);
+  console.log('PASS: real browser microphone detected A4 at ' + frequency +
+    ' and drew ' + plotted.split(' ').length + ' live graph points');
   await page.getByRole('button', { name: /Stop microphone/ }).click();
   await context.close();
 } finally {
