@@ -93,3 +93,5 @@ jobs:
       - name: Dump Vite log on failure
         if: failure()
         run: tail -n 80 /tmp/jazz-room-integration-vite.log || true
+
+# QA-only rerun against integrated demo SHA 0f3cd68c3727c8cb35671b4bce3d0f57c6ed0427

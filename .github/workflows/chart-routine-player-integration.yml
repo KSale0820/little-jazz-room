@@ -51,3 +51,5 @@ jobs:
       - name: Print Vite errors
         if: failure()
         run: tail -n 120 /tmp/jazz-chart-routine.log || true
+
+# QA-only rerun against integrated demo SHA 0f3cd68c3727c8cb35671b4bce3d0f57c6ed0427
