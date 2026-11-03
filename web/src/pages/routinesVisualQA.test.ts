@@ -22,8 +22,8 @@ function recordImage(label: string, data: Buffer) {
 }
 
 
-// Only capture on the class-demo CI runner. All routine repository unit tests run everywhere.
-it.skipIf(!process.env.CI)('visually captures R01/R03 and completes the class-demo routine journey', async () => {
+// Opt in to the slower browser journey; the PR screenshot workflow runs separately.
+it.skipIf(process.env.RUN_ROUTINE_BROWSER_QA !== '1')('visually captures R01/R03 and completes the class-demo routine journey', async () => {
   const chrome = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium']
     .find(path => existsSync(path));
   const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', '5187', '--strictPort'], {
