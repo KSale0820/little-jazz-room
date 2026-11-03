@@ -848,3 +848,437 @@
   .practice-guided.practice-instructions .practice-coach-dock .practice-coach-bubble { padding: 5px 8px; }
   .practice-guided.practice-instructions .practice-coach-dock .practice-coach-bubble p { font-size: 10px; }
 }
+
+
+/* PR #27 beat-accurate controls layered after approved Guided UI */
+/* P02 timing and independent musical controls: compact on both iPhone targets. */
+.practice-player .practice-playhead-status {
+  color: #406052; font: 600 10px/1.3 system-ui, sans-serif;
+  margin: -5px 0 6px;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.playhead {
+  outline: 2px solid #c29f55;
+  outline-offset: -2px;
+  position: relative;
+  z-index: 1;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.looped.playhead {
+  background: #e5edd9;
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords span.chord-active {
+  border-radius: 4px;
+  background: #f1dcaf;
+  color: #193c32;
+  font-weight: 800;
+  box-shadow: inset 0 -2px 0 #b28b44;
+}
+.practice-player .practice-musical-controls {
+  display: grid;
+  gap: 7px;
+  margin: 5px 0 7px;
+  min-width: 0;
+}
+.practice-player .practice-control-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.practice-player .practice-control-field { display: flex; flex-direction: column; min-width: 0; gap: 3px; }
+.practice-player .practice-control-field > label {
+  font: 600 10px/1.2 system-ui, sans-serif;
+  color: #315745;
+  white-space: normal;
+}
+.practice-player .practice-stepper { display: flex; align-items: center; min-width: 0; }
+.practice-player .practice-stepper button {
+  flex: 0 0 39px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid #d0d6c9;
+  background: #f0eee3;
+  color: #1d4f3e;
+  font: 700 19px system-ui, sans-serif;
+}
+.practice-player .practice-stepper button:first-child { border-radius: 9px 0 0 9px; }
+.practice-player .practice-stepper button:last-child { border-radius: 0 9px 9px 0; }
+.practice-player .practice-musical-controls select,
+.practice-player .practice-musical-controls input {
+  min-width: 0;
+  width: 100%;
+  height: 42px;
+  border: 1px solid #d0d6c9;
+  border-radius: 9px;
+  background: #f4f1e8;
+  color: #1c4939;
+  font: 600 12px system-ui,sans-serif;
+  padding: 0 6px;
+}
+.practice-player .practice-stepper select,
+.practice-player .practice-stepper input {
+  flex: 1 1 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  text-align: center;
+  padding: 0 2px;
+}
+.practice-player .practice-stepper input { appearance: textfield; -moz-appearance: textfield; }
+.practice-player .practice-stepper input::-webkit-inner-spin-button,
+.practice-player .practice-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.practice-player .practice-custom-loop {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 8px;
+  padding-top: 2px;
+}
+.practice-player .practice-custom-loop label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: 600 10px system-ui,sans-serif;
+  color: #315745;
+}
+.practice-player .practice-utility-row.practice-utility-tools {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 7px;
+  margin-top: auto;
+}
+.practice-player .practice-utility-row.practice-utility-tools button {
+  min-height: 60px;
+  gap: 3px;
+}
+.practice-player .practice-utility-row.practice-utility-tools .practice-tool-glyph {
+  width: 24px; height: 24px; min-height: 24px;
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  .practice-player .practice-musical-controls { gap: 5px; margin: 3px 0 5px; }
+  .practice-player .practice-control-pair { gap: 5px; }
+  .practice-player .practice-stepper button { flex-basis: 35px; height: 39px; }
+  .practice-player .practice-musical-controls select,
+  .practice-player .practice-musical-controls input { height: 39px; }
+  .practice-player .practice-control-field > label { font-size: 9px; }
+  .practice-player .practice-utility-row.practice-utility-tools button { min-height: 49px; }
+  .practice-player .practice-utility-row.practice-utility-tools .practice-tool-glyph { width: 20px; height: 20px; min-height: 20px; }
+}
+
+/* P02 repeat plan: configurable sections with their own bar ranges and pass counts. */
+.practice-player .practice-control-heading {
+  font: 600 10px/1.2 system-ui,sans-serif;
+  color: #315745;
+}
+.practice-player .practice-loop-open {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  padding: 0 11px;
+  text-align: left;
+  background: #eaf0e6;
+  color: #1d503d;
+  border: 1px solid #c5d5c7;
+  border-radius: 9px;
+  font: 700 12px/1.25 system-ui,sans-serif;
+}
+.practice-player .practice-loop-open span:last-child { white-space: nowrap; color: #4f725e; font-size: 11px; }
+.practice-loop-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: #102820b0;
+}
+.practice-loop-sheet {
+  box-sizing: border-box;
+  width: min(100%,480px);
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 22px 22px 0 0;
+  padding: 16px 16px max(16px,env(safe-area-inset-bottom));
+  background: #fff9ed;
+  color: #173e31;
+  box-shadow: 0 -8px 34px #10282044;
+}
+.practice-loop-sheet > header {
+  position: sticky;
+  top: -16px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 4px 0 10px;
+  background: #fff9ed;
+}
+.practice-loop-eyebrow { color: #778d75; font: 700 10px/1.5 system-ui,sans-serif; letter-spacing: .09em; }
+.practice-loop-sheet h2 { font: 700 24px/1.17 Georgia,serif; color: #163e31; }
+.practice-loop-sheet .practice-loop-close {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: #eeeadd;
+  color: #264c3a;
+  font: 500 26px system-ui,sans-serif;
+}
+.practice-loop-intro { color: #536055; font: 12px/1.4 system-ui,sans-serif; margin: 0 0 12px; }
+.practice-loop-mode { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.practice-loop-mode button {
+  min-height: 61px;
+  min-width: 0;
+  border: 1px solid #cbd8c9;
+  background: #f1efe4;
+  color: #224938;
+  border-radius: 12px;
+  padding: 10px 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  text-align: center;
+}
+.practice-loop-mode button.active { border-color: #29533f; background: #29533f; color: #fff; }
+.practice-loop-mode button strong { font: 700 12px system-ui,sans-serif; }
+.practice-loop-mode button span { font: 10px/1.25 system-ui,sans-serif; }
+.practice-loop-section { margin-top: 16px; }
+.practice-loop-section-heading { display: flex; justify-content: space-between; align-items: center; }
+.practice-loop-section h3 { font: 700 16px/1.2 Georgia,serif; color: #1d4d3a; }
+.practice-loop-section-heading span { font: 600 11px system-ui,sans-serif; color: #7b8574; }
+.practice-loop-help { font: 11px/1.4 system-ui,sans-serif; color: #59685d; margin: 5px 0 10px; }
+.practice-loop-cards { display: grid; gap: 10px; }
+.practice-loop-card {
+  background: #fffdf6;
+  border: 1px solid #d9e0d4;
+  border-radius: 14px;
+  padding: 11px 12px 12px;
+}
+.practice-loop-card > header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+.practice-loop-card > header strong { font: 700 14px Georgia,serif; }
+.practice-loop-card > header button {
+  min-height: 31px; border: 0; background: transparent; color: #995548;
+  padding: 3px 5px; font: 700 11px system-ui,sans-serif; text-decoration: underline;
+}
+.practice-loop-custom-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.practice-loop-range-stepper { min-width: 0; }
+.practice-loop-range-stepper > span {
+  display: block;
+  font: 600 10px/1.2 system-ui,sans-serif;
+  color: #315745;
+  margin-bottom: 5px;
+}
+.practice-loop-range-stepper > div {
+  display: grid;
+  grid-template-columns: 36px minmax(0,1fr) 36px;
+  align-items: center;
+  height: 42px;
+  border: 1px solid #cbd9ca;
+  border-radius: 10px;
+  background: #f5f2e9;
+  overflow: hidden;
+}
+.practice-loop-range-stepper button {
+  height: 42px;
+  border: 0;
+  padding: 0;
+  background: #e6ece1;
+  color: #214d3b;
+  font: 700 20px system-ui,sans-serif;
+}
+.practice-loop-range-stepper button:disabled { opacity: .35; cursor: not-allowed; }
+.practice-loop-range-stepper input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: center;
+  color: #244735;
+  font: 700 15px system-ui,sans-serif;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.practice-loop-range-stepper input::-webkit-inner-spin-button,
+.practice-loop-range-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.practice-loop-repeat-row { display: flex; align-items: end; gap: 12px; margin-top: 12px; }
+.practice-loop-repeat-row .practice-loop-range-stepper { width: min(175px,55%); }
+.practice-loop-repeat-row > span { padding-bottom: 13px; font: 600 11px system-ui,sans-serif; color: #4a6756; }
+.practice-loop-add {
+  width: 100%;
+  min-height: 43px;
+  border: 1px dashed #8cae91;
+  border-radius: 12px;
+  background: #f0f4ea;
+  color: #255240;
+  margin-top: 10px;
+  font: 700 13px system-ui,sans-serif;
+}
+.practice-loop-empty,.practice-loop-off-description {
+  font: 12px/1.45 system-ui,sans-serif;
+  color: #637062;
+  margin-top: 12px;
+}
+.practice-loop-repeat-program {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 47px;
+  margin-top: 12px;
+  padding: 9px 11px;
+  border: 1px solid #d8dfd1;
+  border-radius: 12px;
+  background: #f4f1e8;
+  text-align: left;
+  color: #244936;
+}
+.practice-loop-repeat-program > span:first-child { font-size: 20px; }
+.practice-loop-repeat-program > span:last-child { display: flex; flex-direction: column; gap: 2px; }
+.practice-loop-repeat-program strong { font: 700 12px system-ui,sans-serif; }
+.practice-loop-repeat-program small { font: 10px/1.3 system-ui,sans-serif; color: #6a7a6a; }
+.practice-loop-repeat-program[aria-pressed="true"] { background: #e4efe1; border-color: #749b83; }
+.practice-loop-footer {
+  position: sticky;
+  bottom: calc(-1 * max(16px,env(safe-area-inset-bottom)));
+  z-index: 2;
+  padding: 12px 0 max(5px,env(safe-area-inset-bottom));
+  margin-top: 15px;
+  background: #fff9ed;
+  box-shadow: 0 -6px 12px #fff9ed;
+}
+.practice-loop-current {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #e9f0e6;
+  font: 11px/1.4 system-ui,sans-serif;
+  overflow-wrap: anywhere;
+}
+.practice-loop-apply {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 9px;
+  border: 0;
+  border-radius: 12px;
+  background: #23513e;
+  color: #fff;
+  font: 700 13px system-ui,sans-serif;
+}
+.practice-loop-apply:disabled { opacity: .45; cursor: not-allowed; }
+.practice-loop-sheet button:focus-visible { outline: 3px solid #c6a458; outline-offset: 2px; }
+@media (max-height:720px) and (max-width:899px) {
+  .practice-player .practice-control-heading { font-size: 9px; }
+  .practice-player .practice-loop-open { min-height: 39px; font-size: 11px; }
+  .practice-loop-sheet { padding-top: 11px; }
+  .practice-loop-sheet > header { top: -11px; }
+  .practice-loop-mode button { min-height: 52px; }
+  .practice-loop-section { margin-top: 11px; }
+}
+
+/* Musical controls may extend beyond the screen in guided mode. Keep the
+   entire controls and tool dock reachable through the active viewport scroll. */
+.app-shell:has(.practice-guided) .viewport {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+/* Preserve compact guided instruction view while controls remain available on Chart/Player. */
+.practice-guided.practice-instructions .practice-playhead-status { display: none; }
+.app-shell:has(.practice-player) .viewport { overflow-y: auto; overscroll-behavior-y: contain; }
+
+
+/* Preserve the approved five-tool player dock. Full musical settings live in the
+   existing Tempo/Key sheet, available from Chart, Player and Instructions. */
+.practice-settings-dialog {
+  box-sizing: border-box;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.practice-settings-dialog .practice-musical-controls {
+  display: grid;
+  gap: 16px;
+  margin: 14px 0 20px;
+  min-width: 0;
+}
+.practice-settings-dialog .practice-control-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+}
+.practice-settings-dialog .practice-control-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.practice-settings-dialog .practice-control-field > label,
+.practice-settings-dialog .practice-control-heading {
+  color: #315745;
+  font: 600 12px/1.3 system-ui, sans-serif;
+}
+.practice-settings-dialog .practice-stepper {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.practice-settings-dialog .practice-stepper button {
+  flex: 0 0 35px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #cbd6c9;
+  background: #edf0e6;
+  color: #24513e;
+  font: 700 20px system-ui, sans-serif;
+}
+.practice-settings-dialog .practice-stepper button:first-child { border-radius: 9px 0 0 9px; }
+.practice-settings-dialog .practice-stepper button:last-child { border-radius: 0 9px 9px 0; }
+.practice-settings-dialog .practice-musical-controls select,
+.practice-settings-dialog .practice-musical-controls input {
+  box-sizing: border-box;
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
+  height: 44px;
+  border: 1px solid #cbd6c9;
+  border-radius: 9px;
+  background: #f4f1e8;
+  color: #1c4939;
+  font: 600 13px system-ui, sans-serif;
+  padding: 0 5px;
+}
+.practice-settings-dialog .practice-stepper select,
+.practice-settings-dialog .practice-stepper input {
+  text-align: center;
+  padding: 0 2px;
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+}
+.practice-settings-dialog .practice-loop-open {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 0 8px;
+  border: 1px solid #c5d5c7;
+  border-radius: 9px;
+  background: #eaf0e6;
+  color: #1d503d;
+  font: 700 12px system-ui, sans-serif;
+}
+.practice-settings-dialog .practice-loop-open span:last-child { white-space: nowrap; }
+@media(max-width: 380px) {
+  .practice-settings-dialog .practice-control-pair { gap: 6px; }
+  .practice-settings-dialog .practice-stepper button { flex-basis: 30px; }
+}

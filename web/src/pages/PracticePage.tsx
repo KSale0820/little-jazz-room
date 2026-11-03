@@ -2,10 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { ChordGrid } from '../components/ChordGrid';
+import { LoopPlanSettings } from '../components/LoopPlanSettings';
 import { GuidedCatCoach, GuidedLesson } from '../components/GuidedLesson';
 import { normalizeGuidedLesson } from '../lib/guidedLesson';
 import { chartsById, exercisesById } from '../data/seed';
 import { formatChartMeta } from '../lib/chords';
+import { beatsPerMeasure, locateSequencePlayhead, rawChartBeat, sequenceBeatForBar, sequenceDuration } from '../lib/practiceChartClock';
+import type { LoopSection } from '../lib/practiceChartClock';
 import { resolvePlayableStep } from '../lib/routinePlayback';
 import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
@@ -87,13 +90,18 @@ export function PracticePage() {
   const [chartId, setChartId] = useState(initialChart);
   const [chartKey, setChartKey] = useState(chartsById[initialChart]?.concert_key ?? 'F');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
-  const [selectedBar, setSelectedBar] = useState(0);
-  const [loopValue, setLoopValue] = useState('all');
+  const [loopEnabled, setLoopEnabled] = useState(false);
+  const [loopSections, setLoopSections] = useState<LoopSection[]>([{ startBar: 1, endBar: 4, plays: 2 }]);
+  const [repeatWholePlan, setRepeatWholePlan] = useState(false);
+  const [loopOpen, setLoopOpen] = useState(false);
+  const loopTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const [musicalClock, setMusicalClock] = useState({ chartBeat: 0, startedAtMs: null as number | null });
   const [panel, setPanel] = useState<Panel>(activeRoutineId ? 'instructions' : 'chart');
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
   const toolTriggerRef = useRef<HTMLButtonElement | null>(null);
   const toolOverlayRef = useRef<HTMLDivElement | null>(null);
   const [tempo, setTempo] = useState(100);
+  const [tempoInput, setTempoInput] = useState('100');
 
   // Prior steps are committed as milliseconds; the current step retains its
   // fractional second when paused or advanced.
@@ -143,6 +151,7 @@ export function PracticePage() {
     setStepMs(0);
     setStartedAtMs(null);
     setNowMs(performance.now());
+    setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setCompletion(null);
     setSaveState('idle');
     savePromiseRef.current = null;
@@ -153,49 +162,127 @@ export function PracticePage() {
     const chosen = chartsById[playableStep.chart_id];
     setChartId(chosen.id);
     setChartKey(chosen.concert_key);
-    setSelectedBar(0);
-    setLoopValue('all');
+    setMusicalClock({ chartBeat: 0, startedAtMs: null });
+    setLoopEnabled(false);
+    setLoopSections([{ startBar: 1, endBar: Math.min(chosen.bars.length, 4), plays: 2 }]);
+    setRepeatWholePlan(false);
   }, [playableStep?.chart_id, playableStep?.exercise_id]);
 
   useEffect(() => {
-    if (chosenExercise?.suggested_bpm != null) setTempo(chosenExercise.suggested_bpm);
+    if (chosenExercise?.suggested_bpm != null) {
+      const bpm = Math.max(40, Math.min(240, chosenExercise.suggested_bpm));
+      setTempo(bpm);
+      setTempoInput(String(bpm));
+    }
   }, [chosenExercise?.id, chosenExercise?.suggested_bpm]);
+
+
 
   useEffect(() => {
     if (!isRunning || completion) return;
-    const timerId = window.setInterval(() => setNowMs(performance.now()), 200);
+    const timerId = window.setInterval(() => setNowMs(performance.now()), 50);
     return () => window.clearInterval(timerId);
   }, [isRunning, completion]);
 
-  const loopRange = useMemo((): [number, number] | null => {
-    if (loopValue === 'all') return null;
-    const parts = loopValue.split('-').map(Number);
-    return parts.length === 2 && parts[0] > 0 && parts[1] > 0
-      ? [parts[0], parts[1]] : null;
-  }, [loopValue]);
-
-  const loopOptions = useMemo(() => {
-    const groups = Array.from({ length: Math.ceil(chart.bars.length / 4) }, (_, i) => {
-      const first = 1 + i * 4;
-      return { value: first + '-' + Math.min(chart.bars.length, first + 3), label: first + '–' + Math.min(chart.bars.length, first + 3) };
-    });
-    return [{ value: 'all', label: 'All bars' }, ...groups];
-  }, [chart]);
+  const activeSections = loopEnabled && loopSections.length ? loopSections : null;
+  const playhead = locateSequencePlayhead(chart, musicalClock, nowMs, tempo, activeSections, repeatWholePlan);
+  const currentSection = activeSections && playhead.sectionIndex !== null ? activeSections[playhead.sectionIndex] : null;
+  const loopRange: [number, number] | null = currentSection ? [currentSection.startBar, currentSection.endBar] : null;
+  const loopSummary = activeSections ? activeSections.length + ' section' + (activeSections.length === 1 ? '' : 's') : 'Off';
+  const planStatus = playhead.ended ? 'Chart finished' : currentSection
+    ? 'Section ' + ((playhead.sectionIndex ?? 0) + 1) + ' of ' + activeSections!.length + ' · Pass ' + playhead.pass + ' of ' + currentSection.plays
+    : 'Chart once';
 
   function chooseChart(id: string) {
     const next = chartsById[id];
     if (!next) return;
+    const now = performance.now();
     setChartId(id);
     setChartKey(next.concert_key);
-    setLoopValue('all');
-    setSelectedBar(0);
+    setLoopEnabled(false);
+    setLoopSections([{ startBar: 1, endBar: Math.min(next.bars.length, 4), plays: 2 }]);
+    setRepeatWholePlan(false);
+    setMusicalClock({ chartBeat: 0, startedAtMs: isRunning ? now : null });
+    setNowMs(now);
+  }
+
+  function setKeyBySemitone(delta: number) {
+    const index = CHROMA.indexOf(chartKey);
+    setChartKey(CHROMA[((index < 0 ? 0 : index) + delta + 12) % 12]!);
+  }
+
+  function changeTempo(nextBpm: number) {
+    const bpm = Math.max(40, Math.min(240, Math.round(nextBpm)));
+    if (!Number.isFinite(bpm)) return;
+    const now = performance.now();
+    setMusicalClock(current => ({
+      chartBeat: rawChartBeat(current, now, tempo),
+      startedAtMs: current.startedAtMs === null ? null : now,
+    }));
+    setTempo(bpm);
+    setTempoInput(String(bpm));
+    setNowMs(now);
+  }
+
+  function openLoop(trigger: HTMLButtonElement) {
+    loopTriggerRef.current = trigger;
+    setLoopOpen(true);
+  }
+
+  function closeLoop() {
+    setLoopOpen(false);
+    requestAnimationFrame(() => loopTriggerRef.current?.focus());
+  }
+
+  function applyLoop(enabled: boolean, sections: LoopSection[], repeatPlan: boolean) {
+    const now = performance.now();
+    setLoopEnabled(enabled);
+    setLoopSections(sections);
+    setRepeatWholePlan(repeatPlan);
+    // A new sequence begins from its first bar; preserve the session timer.
+    setMusicalClock({ chartBeat: 0, startedAtMs: isRunning ? now : null });
+    setNowMs(now);
+    closeLoop();
+  }
+
+  function moveToBar(index: number) {
+    const now = performance.now();
+    const next = Math.max(0, Math.min(index, chart.bars.length - 1));
+    const sequenceBeat = sequenceBeatForBar(chart, activeSections, next);
+    if (sequenceBeat === null) setLoopEnabled(false);
+    setMusicalClock({
+      chartBeat: sequenceBeat ?? next * beatsPerMeasure(chart),
+      startedAtMs: isRunning ? now : null,
+    });
+    setNowMs(now);
+  }
+
+  function stepMeasure(delta: number) {
+    const now = performance.now();
+    const beats = beatsPerMeasure(chart);
+    const duration = sequenceDuration(chart, activeSections);
+    const raw = rawChartBeat(musicalClock, now, tempo);
+    const offset = activeSections && repeatWholePlan ? raw % duration : raw;
+    const intended = Math.floor(offset / beats) * beats + delta * beats;
+    const next = activeSections && repeatWholePlan
+      ? (intended + duration) % duration : Math.max(0, Math.min(duration - beats, intended));
+    setMusicalClock({ chartBeat: next, startedAtMs: isRunning ? now : null });
+    setNowMs(now);
   }
 
   function toggleTimer() {
     const now = performance.now();
-    if (startedAtMs === null) {
-      setStartedAtMs(now);
-    } else {
+    const playing = startedAtMs === null;
+    setMusicalClock(current => {
+      const beat = rawChartBeat(current, now, tempo);
+      const duration = sequenceDuration(chart, activeSections);
+      return {
+        chartBeat: playing && (!activeSections || !repeatWholePlan) && beat >= duration ? 0 : beat,
+        startedAtMs: playing ? now : null,
+      };
+    });
+    if (playing) setStartedAtMs(now);
+    else {
       setStepMs(value => elapsedMilliseconds(value, startedAtMs, now));
       setStartedAtMs(null);
     }
@@ -213,6 +300,7 @@ export function PracticePage() {
     setNowMs(now);
     setStepIndex(next);
     setPanel('instructions');
+    setMusicalClock({ chartBeat: 0, startedAtMs: null });
   }
 
   function finishSession() {
@@ -223,6 +311,7 @@ export function PracticePage() {
     const durationSeconds = Math.floor((priorMs + finalStepMs) / 1000);
     setStepMs(finalStepMs);
     setStartedAtMs(null);
+    setMusicalClock(current => ({ chartBeat: rawChartBeat(current, now, tempo), startedAtMs: null }));
     setNowMs(now);
     setCompletion({
       id: 'sess-' + finishedStamp + '-' + Math.random().toString(36).slice(2, 9),
@@ -286,7 +375,7 @@ export function PracticePage() {
     setStepMs(0);
     setStartedAtMs(null);
     setNowMs(performance.now());
-    setSelectedBar(0);
+    setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setCompletion(null);
     setNotes('');
     setRating(0);
@@ -373,7 +462,7 @@ export function PracticePage() {
         <button className="practice-more" type="button" aria-label="Finish session" onClick={finishSession}>⋮</button>
       </header>
 
-      <p className="practice-audio-state"><strong>Chart Only</strong> · No recording available</p>
+      <p className="practice-audio-state" data-testid="chart-playhead" title={planStatus}><strong>Chart Only</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · No recording</p>
 
       {routine && (
         <div className="practice-guided-progress" role="progressbar" aria-label="Routine steps completed"
@@ -403,10 +492,11 @@ export function PracticePage() {
           <div className={`practice-chart-scroll practice-chart-all ${chart.bars.length > 16 ? 'chart-dense' : 'chart-standard'}`}
             aria-label={`Complete chord chart, all ${chart.bars.length} measures visible`}>
             <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
-              selectedBar={selectedBar} loopRange={loopRange}
-              onSelectBar={setSelectedBar} showSectionLabels practiceSheet />
+              selectedBar={playhead.barIndex} activeBar={playhead.barIndex}
+              activeEventIndex={playhead.eventIndex} loopRange={loopRange}
+              onSelectBar={moveToBar} showSectionLabels practiceSheet />
           </div>
-          <p className="practice-chart-caption">All {chart.bars.length} measures · Tap a chord to mark your place</p>
+          <p className="practice-chart-caption">All {chart.bars.length} measures · Tap a measure to move the playhead</p>
         </div>
       ) : (
         <div className="practice-art-panel" role="tabpanel" aria-label="Chart only player">
@@ -439,28 +529,26 @@ export function PracticePage() {
         </div>
         <div className="practice-clock"><strong data-testid="session-elapsed">{formatPracticeTime(elapsedSeconds)}</strong><span>{targetSeconds ? formatPracticeTime(targetSeconds) + ' step goal' : (isRunning ? 'Practicing' : elapsedSeconds ? 'Paused' : 'Ready') + ' · No recording'}</span></div>
         <div className="practice-control-row">
-          <button className="practice-secondary-transport" type="button" aria-label="Toggle highlighted loop"
-            aria-pressed={loopValue !== 'all'}
-            onClick={() => setLoopValue(current => current === 'all' ? (loopOptions[1]?.value ?? 'all') : 'all')}>
+          <button className="practice-secondary-transport" type="button" aria-label="Configure loop" onClick={event => openLoop(event.currentTarget)} aria-pressed={loopEnabled}>
             <PracticeToolGlyph name="loop" />
           </button>
-          <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => setSelectedBar((selectedBar + chart.bars.length - 1) % chart.bars.length)}>◀❙</button>
+          <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => stepMeasure(-1)}>◀❙</button>
           <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
             {isRunning ? 'Ⅱ' : '▶'}
             <span className="practice-timer-label">{isRunning ? 'Pause' : (priorMs + stepMs) ? 'Resume' : 'Start'}</span>
           </button>
-          <button className="practice-measure-btn" type="button" aria-label="Next measure" onClick={() => setSelectedBar((selectedBar + 1) % chart.bars.length)}>❙▶</button>
+          <button className="practice-measure-btn" type="button" aria-label="Next measure" onClick={() => stepMeasure(1)}>❙▶</button>
           <button className="practice-secondary-transport" type="button" aria-label="Toggle Chart or Player view"
             onClick={() => setPanel(current => current === 'chart' ? 'player' : 'chart')}>☷</button>
         </div>
         {panel === 'player' && (
           <div className="practice-chart-controls practice-player-pills" id="practice-inline-settings">
             <label>Key<select value={chartKey} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
-            <label>Tempo<select value={tempo} onChange={event => setTempo(Number(event.target.value))} aria-label="Reference tempo in beats per minute">{[60, 70, 80, 90, 100, 110, 120, 140, 160, 180].concat(chosenExercise?.suggested_bpm ?? []).filter((bpm, index, all) => all.indexOf(bpm) === index).sort((a,b) => a-b).map(bpm => <option key={bpm} value={bpm}>{bpm} BPM</option>)}</select></label>
+            <label>Tempo<select value={tempo} onChange={event => changeTempo(Number(event.target.value))} aria-label="Reference tempo in beats per minute">{[60, 70, 80, 90, 100, 110, 120, 140, 160, 180].concat(chosenExercise?.suggested_bpm ?? []).filter((bpm, index, all) => all.indexOf(bpm) === index).sort((a,b) => a-b).map(bpm => <option key={bpm} value={bpm}>{bpm} BPM</option>)}</select></label>
             <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
           </div>
         )}
-        <p className="practice-reference-note">Tempo is a reference setting. No backing track is playing.</p>
+        <p className="practice-reference-note">Play follows the chart visually at the selected BPM; recorded audio is not available.</p>
         <button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button>
       </div>
       {routine && panel === 'instructions' && lesson && (
@@ -469,12 +557,17 @@ export function PracticePage() {
       <div className="practice-utility-row" aria-label="Practice tools">
         <button type="button" disabled title="Mixer is Preview only"><PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small></button>
         <button type="button" onClick={event => openTool('settings', event.currentTarget)}><PracticeToolGlyph name="tempo" /><span>Tempo/Key</span></button>
-        <button type="button" onClick={() => setLoopValue(current => current === 'all' ? (loopOptions[1]?.value ?? 'all') : 'all')}
-          aria-pressed={loopValue !== 'all'}><PracticeToolGlyph name="loop" /><span>Loop</span></button>
+        <button type="button" onClick={event => openLoop(event.currentTarget)}
+          aria-pressed={loopEnabled}><PracticeToolGlyph name="loop" /><span>Loop</span></button>
         <button type="button" onClick={event => openTool('tuner', event.currentTarget)}><PracticeToolGlyph name="tuner" /><span>Tuner</span></button>
         <button type="button" onClick={event => openTool('metronome', event.currentTarget)}><PracticeToolGlyph name="metronome" /><span>Metronome</span></button>
       </div>
     </section>
+    {loopOpen && createPortal(
+      <LoopPlanSettings totalBars={chart.bars.length} enabled={loopEnabled} sections={loopSections}
+        repeatPlan={repeatWholePlan} onApply={applyLoop} onClose={closeLoop} />,
+      document.querySelector('.app-shell') ?? document.body
+    )}
     {activeTool && createPortal(
       <div
         ref={toolOverlayRef}
@@ -500,12 +593,52 @@ export function PracticePage() {
           <div className="practice-settings-dialog">
             <header><h2>Tempo &amp; Key</h2><button type="button" onClick={closeTool} aria-label="Close settings and return to session">×</button></header>
             <p>Set chart transposition and your reference practice tempo. No recording is available.</p>
-            <div className="practice-chart-controls">
-              <label>Key<select value={chartKey} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b','♭')}</option>)}</select></label>
-              <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
-              <label>Tempo<select value={tempo} onChange={event => setTempo(Number(event.target.value))} aria-label="Reference tempo in beats per minute">{[60,70,80,90,100,110,120,140,160,180].map(bpm => <option key={bpm} value={bpm}>{bpm} BPM</option>)}</select></label>
-              <label>Loop<select value={loopValue} onChange={event => setLoopValue(event.target.value)} aria-label="Highlight loop measures">{loopOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+      <section className="practice-musical-controls" aria-label="Musical chart controls">
+        <div className="practice-control-pair">
+          <div className="practice-control-field">
+            <label htmlFor="practice-key">Key: {chartKey.replace('b', '♭')}</label>
+            <div className="practice-stepper">
+              <button type="button" aria-label="Transpose down one semitone" onClick={() => setKeyBySemitone(-1)}>−</button>
+              <select id="practice-key" value={chartKey} onChange={event => setChartKey(event.target.value)} aria-label="Concert chart key">
+                {CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}
+              </select>
+              <button type="button" aria-label="Transpose up one semitone" onClick={() => setKeyBySemitone(1)}>+</button>
             </div>
+          </div>
+          <div className="practice-control-field">
+            <label htmlFor="practice-bpm">Tempo: {tempo} BPM</label>
+            <div className="practice-stepper">
+              <button type="button" aria-label="Decrease tempo" onClick={() => changeTempo(tempo - 1)}>−</button>
+              <input id="practice-bpm" type="number" inputMode="numeric" min={40} max={240} step={1}
+                value={tempoInput} aria-label="Tempo in beats per minute"
+                onChange={event => {
+                  const next = event.target.value;
+                  setTempoInput(next);
+                  if (/^\d+$/.test(next) && Number(next) >= 40 && Number(next) <= 240) changeTempo(Number(next));
+                }}
+                onBlur={() => changeTempo(Number(tempoInput) || tempo)} />
+              <button type="button" aria-label="Increase tempo" onClick={() => changeTempo(tempo + 1)}>+</button>
+            </div>
+          </div>
+        </div>
+        <div className="practice-control-pair">
+          <div className="practice-control-field">
+            <label htmlFor="practice-pitch">Instrument / Written Pitch</label>
+            <select id="practice-pitch" value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)}>
+              <option value="C">Concert</option>
+              <option value="Bb">B♭ instrument</option>
+              <option value="Eb">E♭ instrument</option>
+            </select>
+          </div>
+          <div className="practice-control-field">
+            <span className="practice-control-heading">Loop</span>
+            <button type="button" className="practice-loop-open" onClick={event => openLoop(event.currentTarget)} aria-haspopup="dialog">
+              <span>{loopSummary}</span><span aria-hidden="true">Edit ›</span>
+            </button>
+          </div>
+        </div>
+
+      </section>
           </div>
         )}
       </div>,

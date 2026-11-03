@@ -1,0 +1,48 @@
+name: Loop plan screenshot review
+on:
+  push:
+    branches: [fix/practice-player-timing-controls]
+    paths:
+      - '.github/workflows/loop-plan-screenshots.yml'
+      - 'web/scripts/capture-loop-plan-review.mjs'
+  workflow_dispatch:
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install packages
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start Vite server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/loop-review-vite.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5174/ > /dev/null
+      - name: Capture repeat plans at both phone sizes
+        run: node scripts/capture-loop-plan-review.mjs
+      - name: Upload real screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p02-repeat-plan-review-390x844-and-375x667
+          path: web/docs/screenshots/p02-repeat-plan-review/
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Vite diagnostics on failure
+        if: failure()
+        run: tail -n 80 /tmp/loop-review-vite.log || true
