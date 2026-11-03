@@ -10,7 +10,9 @@ Branch: `feature/interactive-chart-builder` (based on `class-demo-2026-10-31`).
 - `web/src/features/charts/chartModel.ts`: chord parser, time-signature validation, split/merge, beat edits and transposition.
 - `web/src/features/charts/chartRepository.ts`: `createChartRepository(scope)`, `newLocalChartId()`, `getChartById(id, charts)`, `mergeCharts(...)`.
 - `useApp().charts` now contains seeded and current-account local charts. Call `useApp().refreshLocal()` after writes.
-- Stable IDs look like `chart-local-<UUID>`, and saved ChartBar.events use **one-based beats** and `duration_beats`.
+- Stable IDs look like `chart-local-<UUID>`. Chord events use **one-based denominator-note beats** and `duration_beats`, e.g., `6/8` means 6 eighth-note units per bar. BPM is defined in quarter notes; use `chartEventDurationMs(event.duration_beats, { numerator, denominator }, bpm)` to obtain precise clock durations. Compound grouping is not inferred from meter.
+- `parseChartMeter` accepts numerators 1–12 over denominators 2, 4, or 8 (including 5/4, 6/8, 7/8, 9/8, 12/8). The editor saves the full `Chart.time_signature` tuple. Agent 1 must update timing and accent grouping before claiming support in Player.
+- `DraftBar.section` marks a section start; unlabeled bars continue until the next marker. `draftSections` and `duplicateDraftSection` allow A–B–A by appending independent copied measures. Saved `ChartBar.section` remains compatible with seeded data.
 - `ChartBar.annotation?: string` and `Chart.style_instruction?: string` are display-only, not chord events.
 - Local storage namespace is `little-jazz-room:charts:v1:<account scope>`. It uses `localStorageScopeForUser(user?.id)` through `useApp().repo.scope`.
 - Deletion checks linked exercises and routine step snapshots. Other future references should be supplied to `deleteChart` before enabling deletion.

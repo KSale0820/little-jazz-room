@@ -166,8 +166,11 @@ export function draftSections(bars: DraftBar[]): DraftSection[] {
 }
 
 /** Append real, independent events, not repeat pointers, so the existing player stays deterministic. */
-export function duplicateDraftSection(bars: DraftBar[], label: string): { bars: DraftBar[]; newStart: number } | null {
-  const source = draftSections(bars).find(section => section.label === label);
+export function duplicateDraftSection(
+  bars: DraftBar[], label: string, occurrenceStart?: number
+): { bars: DraftBar[]; newStart: number } | null {
+  const source = draftSections(bars).find(section => section.label === label
+    && (occurrenceStart === undefined || section.start === occurrenceStart));
   if (!source) return null;
   const copies = bars.slice(source.start, source.end).map((bar, index) => ({
     ...bar,

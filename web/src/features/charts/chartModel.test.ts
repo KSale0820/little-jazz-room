@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  blankDraftBar, buildChartFromDraft, draftFromChart, formatChordSymbol, freshChartDraft, parseChartMeter,
+  blankDraftBar, buildChartFromDraft, chartEventDurationMs, draftFromChart, draftSections, duplicateDraftSection,
+  formatChordSymbol, freshChartDraft, parseChartMeter,
   mergeDraftChord, normalizeChartKey, parseChordSymbol, renumberDraftBars,
   resizeDraftSplit, retimeDraftBars, splitDraftChord, stepChartKey, transposeDraftChords,
   validateDraftBars,
@@ -34,13 +35,65 @@ describe('chart chord notation', () => {
 });
 
 describe('time signature entry', () => {
-  it('accepts quarter-note fractions and rejects unsupported meters', () => {
-    expect(parseChartMeter('4/4')).toBe(4);
-    expect(parseChartMeter(' 3 / 4 ')).toBe(3);
-    expect(parseChartMeter('2/4')).toBe(2);
-    expect(parseChartMeter('6/8')).toBeNull();
-    expect(parseChartMeter('8/4')).toBeNull();
+  it('accepts simple, irregular and compound signatures', () => {
+    expect(parseChartMeter('4/4')).toEqual({ numerator: 4, denominator: 4 });
+    expect(parseChartMeter(' 3 / 4 ')).toEqual({ numerator: 3, denominator: 4 });
+    expect(parseChartMeter('6/8')).toEqual({ numerator: 6, denominator: 8 });
+    expect(parseChartMeter('7/8')).toEqual({ numerator: 7, denominator: 8 });
+    expect(parseChartMeter('12/8')).toEqual({ numerator: 12, denominator: 8 });
+    expect(parseChartMeter('2/2')).toEqual({ numerator: 2, denominator: 2 });
+    expect(parseChartMeter('5/4')).toEqual({ numerator: 5, denominator: 4 });
+    expect(parseChartMeter('13/8')).toBeNull();
+    expect(parseChartMeter('4/16')).toBeNull();
     expect(parseChartMeter('4')).toBeNull();
+  });
+
+  it('converts denominator note units to quarter-note BPM without flattening compound meter', () => {
+    expect(chartEventDurationMs(3, { numerator: 6, denominator: 8 }, 120)).toBe(750);
+    expect(chartEventDurationMs(6, { numerator: 6, denominator: 8 }, 120)).toBe(1500);
+    expect(chartEventDurationMs(2, { numerator: 2, denominator: 2 }, 120)).toBe(2000);
+  });
+
+  it('retimes and saves charts across meters without corrupting chord boundaries', () => {
+    const draft = freshChartDraft();
+    draft.title = 'Odd Meter';
+    draft.beats = 7;
+    draft.beat_unit = 8;
+    draft.bars = draft.bars.map((bar, index) => ({
+      ...bar,
+      events: [{ ...bar.events[0]!, duration_beats: 7, symbol: index % 2 ? 'G7' : 'Dm7' }],
+    }));
+    const split = splitDraftChord(draft.bars[0]!, draft.bars[0]!.events[0]!.id);
+    draft.bars[0] = split;
+    draft.bars[0]!.events[1]!.symbol = 'G7';
+    const chart = buildChartFromDraft(draft, 'chart-local-odd-meter');
+    expect(chart.time_signature).toEqual([7, 8]);
+    expect(chart.bars[0]!.events.map(e => [e.beat, e.duration_beats])).toEqual([[1, 3], [4, 4]]);
+    const reloaded = draftFromChart(chart);
+    expect(reloaded.beat_unit).toBe(8);
+    expect(reloaded.bars[0]!.events).toHaveLength(2);
+  });
+});
+
+describe('A/B/A sections', () => {
+  it('duplicates a complete A phrase after B and preserves copied chords and annotations', () => {
+    const a1 = blankDraftBar(1, 4);
+    const a2 = blankDraftBar(2, 4);
+    const b = blankDraftBar(3, 4);
+    a1.events[0]!.symbol = 'Dm7';
+    a1.annotation = 'Build';
+    a2.events[0]!.symbol = 'G7';
+    b.section = 'B';
+    b.events[0]!.symbol = 'Cmaj7';
+    const result = duplicateDraftSection([a1, a2, b], 'A');
+    expect(result?.bars.map(x => x.section)).toEqual(['A', null, 'B', 'A', null]);
+    expect(result?.bars.map(x => x.number)).toEqual([1, 2, 3, 4, 5]);
+    expect(result?.bars[3]!.annotation).toBe('Build');
+    expect(result?.bars[4]!.events[0]!.symbol).toBe('G7');
+    expect(result?.bars[3]!.events[0]!.id).not.toBe(a1.events[0]!.id);
+    expect(draftSections(result!.bars).map(x => x.label)).toEqual(['A', 'B', 'A']);
+    const repeated = duplicateDraftSection(result!.bars, 'A', 3);
+    expect(repeated?.bars.length).toBe(7);
   });
 });
 

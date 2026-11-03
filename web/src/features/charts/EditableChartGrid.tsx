@@ -26,6 +26,7 @@ export function EditableChartGrid({
           onClick={() => onSelect(bar.id, bar.events[0]?.id ?? '')}>
           <div className="chart-editor-measure-top">
             <span className="chart-editor-measure-number">Measure {bar.number}</span>
+            {bar.section && <span className="chart-editor-section-label" aria-label={'Section ' + bar.section}>{bar.section}</span>}
             {bar.annotation && <span className="chart-editor-annotation">{bar.annotation}</span>}
           </div>
           <div className="chart-editor-chords">
