@@ -825,7 +825,23 @@
   font: 700 20px system-ui,sans-serif;
 }
 .practice-loop-range-stepper button:disabled { opacity: .35; cursor: not-allowed; }
-.practice-loop-range-stepper output { text-align: center; font: 700 15px system-ui,sans-serif; }
+.practice-loop-range-stepper input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: center;
+  color: #244735;
+  font: 700 15px system-ui,sans-serif;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.practice-loop-range-stepper input::-webkit-inner-spin-button,
+.practice-loop-range-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .practice-loop-repeat-row { display: flex; align-items: end; gap: 12px; margin-top: 12px; }
 .practice-loop-repeat-row .practice-loop-range-stepper { width: min(175px,55%); }
 .practice-loop-repeat-row > span { padding-bottom: 13px; font: 600 11px system-ui,sans-serif; color: #4a6756; }
