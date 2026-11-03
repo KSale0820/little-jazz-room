@@ -202,7 +202,7 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
         sort_order,
         snapshot_title: ex?.title ?? 'Exercise',
         snapshot_instructions: ex?.instructions ?? '',
-        snapshot_duration_minutes: ex?.duration_minutes ?? 5,
+        snapshot_duration_minutes: routine.steps[sort_order]?.duration_minutes ?? ex?.duration_minutes ?? 5,
         snapshot_chart_id: ex?.chart_id ?? null,
         seed_exercise_id: exercisesById[id] ? id : null,
         source_exercise_id: ex && !exercisesById[id] && isUuid ? id : null,
