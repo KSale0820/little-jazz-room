@@ -71,8 +71,18 @@ try {
   await page.waitForFunction(() =>
     document.querySelector('.tool-tuner')?.getAttribute('data-capture-path') === 'worklet',
   null, { timeout: 12000 });
-  await page.waitForTimeout(1350);
-  await page.getByText('A4', { exact: true }).first().waitFor({ timeout: 6000 });
+  // Regression for the specific user report: a note worked initially,
+  // then disappeared after several seconds. Check the live display repeatedly
+  // over more than seven seconds of continuous fake microphone capture.
+  for (let tick = 0; tick < 5; tick++) {
+    await page.waitForTimeout(1500);
+    const note = await page.locator('.tuner-reading strong').textContent();
+    const backend = await page.locator('.tool-tuner').getAttribute('data-capture-path');
+    if (note !== 'A4' || backend !== 'worklet') {
+      throw new Error('Sustained A440 dropped out after ' + ((tick + 1) * 1.5) +
+        ' seconds (note=' + note + ', backend=' + backend + ')');
+    }
+  }
   const frequency = await page.locator('.tuner-reading span').textContent();
   const measured = Number.parseFloat(frequency ?? '');
   if (!Number.isFinite(measured) || Math.abs(measured - 440) > 4) {
