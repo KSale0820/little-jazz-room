@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { ChordGrid } from '../components/ChordGrid';
+import { GuidedLesson } from '../components/GuidedLesson';
+import { normalizeGuidedLesson } from '../lib/guidedLesson';
 import { chartsById, exercisesById } from '../data/seed';
 import { formatChartMeta } from '../lib/chords';
 import { resolvePlayableStep } from '../lib/routinePlayback';
@@ -16,7 +18,7 @@ import './PracticePage.css';
 import './PracticePlayerApproved.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
-type Panel = 'chart' | 'player';
+type Panel = 'instructions' | 'chart' | 'player';
 type PracticeTool = 'tuner' | 'metronome' | 'settings';
 type Completion = {
   id: string;
@@ -87,7 +89,7 @@ export function PracticePage() {
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
   const [selectedBar, setSelectedBar] = useState(0);
   const [loopValue, setLoopValue] = useState('all');
-  const [panel, setPanel] = useState<Panel>('chart');
+  const [panel, setPanel] = useState<Panel>(activeRoutineId ? 'instructions' : 'chart');
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
   const toolTriggerRef = useRef<HTMLButtonElement | null>(null);
   const toolOverlayRef = useRef<HTMLDivElement | null>(null);
@@ -121,7 +123,10 @@ export function PracticePage() {
   }, [activeTool]);
 
   const chart = chartsById[chartId] ?? charts[0]!;
-  const chosenExercise = exercises.find(item => item.id === playableStep?.exercise_id);
+  const chosenExercise = exercisesById[playableStep?.exercise_id ?? ''] ?? exercises.find(item => item.id === playableStep?.exercise_id);
+  const lesson = useMemo(() => playableStep
+    ? normalizeGuidedLesson(playableStep, chosenExercise, currentStep?.snapshot)
+    : null, [playableStep, chosenExercise, currentStep?.snapshot]);
   const stepMinutes = currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0;
   const targetSeconds = stepMinutes * 60;
   const isRunning = startedAtMs !== null;
@@ -133,6 +138,7 @@ export function PracticePage() {
 
   useEffect(() => {
     setStepIndex(0);
+    setPanel(activeRoutineId ? 'instructions' : 'chart');
     setPriorMs(0);
     setStepMs(0);
     setStartedAtMs(null);
@@ -206,6 +212,7 @@ export function PracticePage() {
     setStartedAtMs(null);
     setNowMs(now);
     setStepIndex(next);
+    setPanel('instructions');
   }
 
   function finishSession() {
@@ -284,7 +291,7 @@ export function PracticePage() {
     setNotes('');
     setRating(0);
     setSaveState('idle');
-    setPanel('chart');
+    setPanel(routine ? 'instructions' : 'chart');
     savePromiseRef.current = null;
   }
 
@@ -353,7 +360,7 @@ export function PracticePage() {
 
   return (
     <>
-    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'}`} aria-label="Shared practice player">
+    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${routine && panel === 'instructions' ? 'practice-instructions' : ''}`} aria-label="Shared practice player">
       <header className="practice-player-head">
         <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
         <div className="practice-title-group">
@@ -375,12 +382,17 @@ export function PracticePage() {
         </div>
       )}
 
-      <div className="practice-segments" role="tablist" aria-label="Player view">
+      <div className="practice-segments" role="tablist" aria-label={routine ? 'Guided practice views' : 'Player view'}>
+        {routine && <button type="button" role="tab" aria-controls="practice-instructions-panel" aria-selected={panel === 'instructions'} onClick={() => setPanel('instructions')} className={panel === 'instructions' ? 'selected' : undefined}>Instructions</button>}
         <button type="button" role="tab" aria-selected={panel === 'chart'} onClick={() => setPanel('chart')} className={panel === 'chart' ? 'selected' : undefined}>Chart</button>
         <button type="button" role="tab" aria-selected={panel === 'player'} onClick={() => setPanel('player')} className={panel === 'player' ? 'selected' : undefined}>Player</button>
       </div>
 
-      {panel === 'chart' ? (
+      {routine && lesson && panel === 'instructions' ? (
+        <div id="practice-instructions-panel" className="practice-lesson-panel" role="tabpanel" aria-label="Instructions">
+          <GuidedLesson key={stepIndex} lesson={lesson} catId={catId} stepIndex={stepIndex} totalSteps={routine.steps.length} />
+        </div>
+      ) : panel === 'chart' ? (
         <div className="practice-notation-panel" role="tabpanel" aria-label="Jazz chord chart">
           <div className="practice-chart-toolbar">
             <label htmlFor="player-chart">{routine && !playableStep?.chart_id ? "Reference chart" : "Study chart"}</label>
@@ -406,8 +418,8 @@ export function PracticePage() {
 
       {routine && panel === 'chart' && (
         <aside className="practice-guided-head" aria-label="Current guided exercise">
-          <strong>{playableStep?.title ?? 'Exercise'}</strong>
-          <p>{playableStep?.instructions ?? 'Follow the exercise and practice at your own pace.'}</p>
+          <strong>{lesson?.title ?? playableStep?.title ?? 'Exercise'}</strong>
+          <p>{lesson?.goal ?? 'Follow the exercise and practice at your own pace.'}</p>
         </aside>
       )}
       {routine && (
