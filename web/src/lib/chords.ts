@@ -4,7 +4,7 @@ const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 const BASE: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
 function pitchClass(root: string): number {
-  const m = root.match(/^([A-G])([b#]?)$/);
+  const m = root.replace(/♭/g, 'b').replace(/♯/g, '#').match(/^([A-G])([b#]?)$/);
   if (!m) return 0;
   const alter = m[2] === 'b' ? -1 : m[2] === '#' ? 1 : 0;
   return (BASE[m[1]]! + alter + 12) % 12;
