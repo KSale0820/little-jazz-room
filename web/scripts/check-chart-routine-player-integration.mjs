@@ -69,7 +69,7 @@ try {
     await page.getByRole('button', { name: 'Start practice timer' }).click();
     await page.waitForTimeout(1300);
     await page.getByRole('button', { name: 'Pause practice timer' }).click();
-    await page.getByRole('button', { name: 'Finish Session' }).click();
+    await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
     await page.getByRole('button', { name: 'Save Session', exact: true }).click();
     await page.getByRole('button', { name: /Session Saved/ }).waitFor();
