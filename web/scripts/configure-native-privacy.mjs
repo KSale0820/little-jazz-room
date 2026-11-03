@@ -59,6 +59,35 @@ if (existsSync(iosInfo)) {
 </dict>
 </plist>
 `);
+
+  // Ensure the generated privacy manifest is actually in the iOS app bundle.
+  const projectPath = resolve(root, 'ios/App/App.xcodeproj/project.pbxproj');
+  if (existsSync(projectPath)) {
+    let project = readFileSync(projectPath, 'utf8');
+    if (!project.includes('PrivacyInfo.xcprivacy')) {
+      const fileId = 'BBBBBBBBBBBBBBBBBBBBBBB1';
+      const buildId = 'BBBBBBBBBBBBBBBBBBBBBBB2';
+      const marks = [
+        '/* Begin PBXBuildFile section */',
+        '/* Begin PBXFileReference section */',
+        /\n\s*[A-F0-9]{24} \/\* Info.plist \*\/,/,
+        /\n\s*[A-F0-9]{24} \/\* Assets.xcassets in Resources \*\/,/,
+      ];
+      const adds = [
+        '\n\t\t' + buildId + ' /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = ' + fileId + ' /* PrivacyInfo.xcprivacy */; };',
+        '\n\t\t' + fileId + ' /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };',
+        '\n\t\t\t\t' + fileId + ' /* PrivacyInfo.xcprivacy */,',
+        '\n\t\t\t\t' + buildId + ' /* PrivacyInfo.xcprivacy in Resources */,',
+      ];
+      marks.forEach((mark, index) => {
+        if (!(typeof mark === 'string' ? project.includes(mark) : mark.test(project))) {
+          throw new Error('iOS privacy manifest project anchor not found: ' + index);
+        }
+        project = project.replace(mark, matched => matched + adds[index]);
+      });
+      writeFileSync(projectPath, project);
+    }
+  }
   process.stdout.write('iOS: tuner microphone usage and filesystem privacy manifest applied.\n');
 }
 if (!existsSync(androidManifest) && !existsSync(iosInfo)) {
