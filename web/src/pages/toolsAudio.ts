@@ -75,11 +75,12 @@ export function detectPitch(samples: Float32Array, sampleRate: number): number |
   if (maxTau <= minTau) return null;
   const differences = new Float32Array(maxTau + 2);
   const normalized = new Float32Array(maxTau + 2);
-  const count = Math.min(3072, samples.length - maxTau - 1);
+  // Reduce per-frame correlation work for mobile Safari's main thread.
+  const count = Math.min(2048, samples.length - maxTau - 1);
   let cumulative = 0;
   for (let tau = 1; tau <= maxTau + 1; tau++) {
     let difference = 0;
-    for (let i = 0; i < count; i += 2) {
+    for (let i = 0; i < count; i += 3) {
       const delta = samples[i] - samples[i + tau];
       difference += delta * delta;
     }
@@ -155,9 +156,23 @@ export function pitchTrailGeometry(samples: PitchTrailSample[], now: number, dur
   };
 }
 
-/** Browser speech uses note names rather than Unicode sharp symbols. */
-export function spokenNoteName(note: string): string {
-  return note.replace('♯', ' sharp ');
+/** Keep only the most recent *measured* pitch during a short drop-out.
+ * Neither the reading nor the trail extrapolates a frequency.
+ */
+export const PITCH_DROPOUT_MS = 400;
+export type RecentPitch = { reading: PitchReading; at: number } | null;
+
+export function retainMeasuredPitch(
+  recent: RecentPitch, measurement: PitchReading | null, now: number,
+): { recent: RecentPitch; displayed: PitchReading | null; measured: boolean } {
+  if (measurement) {
+    const updated = { reading: measurement, at: now };
+    return { recent: updated, displayed: measurement, measured: true };
+  }
+  if (recent && now - recent.at <= PITCH_DROPOUT_MS) {
+    return { recent, displayed: recent.reading, measured: false };
+  }
+  return { recent: null, displayed: null, measured: false };
 }
 
 /** For compound 6/8, BPM means dotted-quarter beats; each click is an eighth note. */

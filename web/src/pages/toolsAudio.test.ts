@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   beatIntervalSeconds, beatsPerMeasure, clampBpm, defaultAccents,
   detectPitch, inputRms, midiToFrequency, readingFromFrequency,
-  pitchTrailGeometry, spokenNoteName,
+  pitchTrailGeometry, retainMeasuredPitch, PITCH_DROPOUT_MS,
 } from './toolsAudio';
 
 describe('real tuner pitch calculations', () => {
@@ -83,6 +83,26 @@ describe('voice pitch-trail behavior', () => {
   it('does not fabricate a pitch line for silence or empty history', () => {
     expect(pitchTrailGeometry([], 8000).segments).toEqual([]);
     expect(pitchTrailGeometry([{ timestamp: 7900, frequency: null }], 8000).current).toBeNull();
-    expect(spokenNoteName('C♯4')).toBe('C sharp 4');
+  });
+});
+
+describe('stable live tuner readings', () => {
+  it('retains an actually measured note across a short missed frame', () => {
+    const measured = readingFromFrequency(440, 'voice')!;
+    const good = retainMeasuredPitch(null, measured, 1000);
+    expect(good.displayed?.note).toBe('A4');
+    const dropped = retainMeasuredPitch(good.recent, null, 1000 + PITCH_DROPOUT_MS / 2);
+    expect(dropped.displayed?.frequency).toBe(440);
+    expect(dropped.measured).toBe(false);
+    const silent = retainMeasuredPitch(dropped.recent, null, 1000 + PITCH_DROPOUT_MS + 10);
+    expect(silent.displayed).toBeNull();
+    expect(silent.recent).toBeNull();
+  });
+  it('immediately reflects real note changes without fabricating intermediate pitches', () => {
+    const a = retainMeasuredPitch(null, readingFromFrequency(440, 'voice'), 100);
+    const b = retainMeasuredPitch(a.recent, readingFromFrequency(523.25, 'voice'), 140);
+    expect(b.displayed?.note).toBe('C5');
+    expect(b.measured).toBe(true);
+    expect(retainMeasuredPitch(null, null, 200).displayed).toBeNull();
   });
 });
