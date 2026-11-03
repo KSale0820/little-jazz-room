@@ -3,9 +3,9 @@ import {
   RECORDED_BACKING_TRACKS, chartBeatForRecordingTime, isUsableRecordedTrack,
   recordingById, recordingTimeForChartBeat,
 } from './recordingCatalog';
-import type { RecordedBackingTrack } from './recordingCatalog';
+import type { SyncedRecording } from './recordingCatalog';
 
-const recording: RecordedBackingTrack = {
+const recording: SyncedRecording = {
   id: 'test-recording', title: 'Test Recording', subtitle: 'Original study',
   chartId: 'blues-f-12', src: '/audio/backing-tracks/study.mp3',
   style: 'Swing', key: 'F', difficulty: 'Beginner',
