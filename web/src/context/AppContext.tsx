@@ -14,6 +14,7 @@ import { getSupabaseClient } from '../lib/supabase/client';
 import type { Exercise, PracticeSessionRecord, Routine } from '../types/content';
 import { useCatSelection } from '../features/cats/CatCompanion';
 import { exercisesById } from '../data/seed';
+import { buildRoutineStepSnapshots } from '../lib/routineStepSnapshots';
 import { createChartRepository, mergeCharts } from '../features/charts/chartRepository';
 
 interface AppContextValue {
@@ -28,7 +29,7 @@ interface AppContextValue {
   charts: typeof seedCharts;
   refreshLocal: () => void;
   refreshCloud: () => Promise<void>;
-  saveRoutineToCloud: (routine: Routine, stepExerciseIds: string[]) => Promise<Routine>;
+  saveRoutineToCloud: (routine: Routine) => Promise<Routine>;
   saveExerciseToCloud: (exercise: Exercise) => Promise<Exercise>;
   toast: string | null;
   showToast: (message: string) => void;
@@ -199,24 +200,13 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
     return saved;
   };
 
-  const saveRoutineToCloud = async (routine: Routine, stepExerciseIds: string[]) => {
+  const saveRoutineToCloud = async (routine: Routine) => {
     if (!cloudRepo) {
       throw new Error('Sign in to save routines to the team cloud.');
     }
-    const snapshots = stepExerciseIds.map((id, sort_order) => {
-      const ex = exercises.find(e => e.id === id) ?? exercisesById[id];
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
-      return {
-        sort_order,
-        snapshot_title: ex?.title ?? 'Exercise',
-        snapshot_instructions: ex?.instructions ?? '',
-        snapshot_duration_minutes: ex?.duration_minutes ?? 5,
-        snapshot_chart_id: ex?.chart_id ?? null,
-        seed_exercise_id: exercisesById[id] ? id : null,
-        source_exercise_id: ex && !exercisesById[id] && isUuid ? id : null,
-      };
-    });
-    const saved = await cloudRepo.saveRoutine(routine, snapshots);
+    const saved = await cloudRepo.saveRoutine(
+      routine, buildRoutineStepSnapshots(routine, exercises, exercisesById),
+    );
     await refreshCloud();
     return saved;
   };
