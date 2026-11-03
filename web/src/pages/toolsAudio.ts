@@ -32,7 +32,7 @@ export function readingFromFrequency(frequency: number, mode: TuningMode): Pitch
   const measuredMidi = Math.round(69 + 12 * Math.log2(frequency / 440));
   let targetMidi = measuredMidi;
   let isOpenString = false;
-  if (mode !== 'chromatic') {
+  if (mode === 'guitar' || mode === 'bass') {
     const nearest = OPEN_STRINGS[mode].reduce((a, b) =>
       Math.abs(12 * Math.log2(frequency / midiToFrequency(a))) <
       Math.abs(12 * Math.log2(frequency / midiToFrequency(b))) ? a : b);
@@ -50,44 +50,69 @@ export function readingFromFrequency(frequency: number, mode: TuningMode): Pitch
   };
 }
 
+/** RMS signal level reported from actual microphone samples. */
+export function inputRms(samples: Float32Array): number {
+  if (!samples.length) return 0;
+  let power = 0;
+  for (let i = 0; i < samples.length; i += 4) power += samples[i] * samples[i];
+  return Math.sqrt(power / Math.ceil(samples.length / 4));
+}
+
+// iPhone microphone input can be substantially quieter than desktop input.
+// YIN's periodicity check still rejects silence and broadband noise.
+export const MIN_TUNER_RMS = 0.003;
+
 /** YIN-style difference / cumulative mean normalized difference pitch estimate.
  * Returns null for silence, aperiodic noise, weak matches, or invalid audio.
  * A tuner must never manufacture a reading when a microphone has no signal.
  */
 export function detectPitch(samples: Float32Array, sampleRate: number): number | null {
   if (!Number.isFinite(sampleRate) || sampleRate <= 0 || samples.length < 4096) return null;
-  let power = 0;
-  for (let i = 0; i < samples.length; i += 4) power += samples[i] * samples[i];
-  const rms = Math.sqrt(power / Math.ceil(samples.length / 4));
-  if (rms < 0.012) return null;
+  if (inputRms(samples) < MIN_TUNER_RMS) return null;
 
   const minTau = Math.max(2, Math.floor(sampleRate / 1200));
   const maxTau = Math.min(Math.ceil(sampleRate / 38), Math.floor(samples.length / 2) - 2);
   if (maxTau <= minTau) return null;
-  const differences = new Float32Array(maxTau + 2);
   const normalized = new Float32Array(maxTau + 2);
-  const count = Math.min(3072, samples.length - maxTau - 1);
+  // Analyze the most RECENT 2560 samples. The previous implementation read
+  // the oldest part of the 8192-sample buffer, making live vocal tracking lag.
+  // A wide enough window also captures multiple cycles of a lower voice.
+  const count = Math.min(2560, samples.length - maxTau - 1);
+  const offset = Math.max(0, samples.length - maxTau - count - 1);
   let cumulative = 0;
   for (let tau = 1; tau <= maxTau + 1; tau++) {
     let difference = 0;
-    for (let i = 0; i < count; i += 2) {
-      const delta = samples[i] - samples[i + tau];
+    for (let i = 0; i < count; i += 3) {
+      const delta = samples[offset + i] - samples[offset + i + tau];
       difference += delta * delta;
     }
-    differences[tau] = difference;
     cumulative += difference;
     normalized[tau] = cumulative > 0 ? difference * tau / cumulative : 1;
   }
 
+  // Sustained voices have vibrato, air and strong overtones; their periodic
+  // YIN minima can sit above the strict 0.13 threshold used for pure tones.
+  // Prefer the first good local minimum to reduce octave errors, then allow
+  // a stronger fallback minimum only while the sound is still periodic.
+  const strongThreshold = 0.23;
+  const weakThreshold = 0.31;
   let bestTau = -1;
+  let fallbackTau = -1;
+  let fallbackValue = weakThreshold;
   for (let tau = minTau; tau < maxTau; tau++) {
-    if (normalized[tau] < 0.13) {
-      while (tau + 1 < maxTau && normalized[tau + 1] < normalized[tau]) tau++;
+    const value = normalized[tau];
+    if (value > normalized[tau - 1] || value >= normalized[tau + 1]) continue;
+    if (value < strongThreshold) {
       bestTau = tau;
       break;
     }
+    if (value < fallbackValue) {
+      fallbackValue = value;
+      fallbackTau = tau;
+    }
   }
-  if (bestTau < 0 || normalized[bestTau] > 0.13) return null;
+  if (bestTau < 0) bestTau = fallbackTau;
+  if (bestTau < 1 || normalized[bestTau] >= weakThreshold) return null;
   const a = normalized[bestTau - 1];
   const b = normalized[bestTau];
   const c = normalized[bestTau + 1];
@@ -96,6 +121,73 @@ export function detectPitch(samples: Float32Array, sampleRate: number): number |
   const tau = bestTau + Math.max(-1, Math.min(1, correction));
   const frequency = sampleRate / tau;
   return frequency >= 35 && frequency <= 1400 ? frequency : null;
+}
+
+
+/** A pitch trail measures detected fundamental frequency over time, not loudness.
+ * A null pitch is silence/unpitched audio and deliberately breaks the line.
+ */
+export type PitchTrailSample = { timestamp: number; frequency: number | null };
+export type PitchTrailPoint = { x: number; y: number };
+export type PitchTrailGeometry = {
+  segments: PitchTrailPoint[][];
+  lowNote: string;
+  highNote: string;
+  current: PitchTrailPoint | null;
+};
+
+export function pitchTrailGeometry(samples: PitchTrailSample[], now: number, durationMs = 8000): PitchTrailGeometry {
+  const visible = samples.filter(s => s.timestamp >= now - durationMs && s.timestamp <= now);
+  const semitones = visible.filter(s => s.frequency !== null && s.frequency > 0)
+    .map(s => 69 + 12 * Math.log2(s.frequency! / 440));
+  const mid = semitones.length
+    ? (Math.min(...semitones) + Math.max(...semitones)) / 2 : 69;
+  const span = Math.max(8, semitones.length ? Math.max(...semitones) - Math.min(...semitones) + 2 : 8);
+  const low = mid - span / 2;
+  const high = mid + span / 2;
+  const segments: PitchTrailPoint[][] = [];
+  let currentSegment: PitchTrailPoint[] = [];
+  let current: PitchTrailPoint | null = null;
+  for (const sample of visible) {
+    if (sample.frequency === null || sample.frequency <= 0) {
+      if (currentSegment.length) segments.push(currentSegment);
+      currentSegment = [];
+      current = null;
+      continue;
+    }
+    const midi = 69 + 12 * Math.log2(sample.frequency / 440);
+    const point = {
+      x: Math.max(0, Math.min(320, ((sample.timestamp - (now - durationMs)) / durationMs) * 320)),
+      y: Math.max(4, Math.min(90, 94 - ((midi - low) / (high - low)) * 90)),
+    };
+    currentSegment.push(point);
+    current = point;
+  }
+  if (currentSegment.length) segments.push(currentSegment);
+  return {
+    segments, current,
+    lowNote: midiToName(Math.round(low)),
+    highNote: midiToName(Math.round(high)),
+  };
+}
+
+/** Keep only the most recent *measured* pitch during a short drop-out.
+ * Neither the reading nor the trail extrapolates a frequency.
+ */
+export const PITCH_DROPOUT_MS = 400;
+export type RecentPitch = { reading: PitchReading; at: number } | null;
+
+export function retainMeasuredPitch(
+  recent: RecentPitch, measurement: PitchReading | null, now: number,
+): { recent: RecentPitch; displayed: PitchReading | null; measured: boolean } {
+  if (measurement) {
+    const updated = { reading: measurement, at: now };
+    return { recent: updated, displayed: measurement, measured: true };
+  }
+  if (recent && now - recent.at <= PITCH_DROPOUT_MS) {
+    return { recent, displayed: recent.reading, measured: false };
+  }
+  return { recent: null, displayed: null, measured: false };
 }
 
 /** For compound 6/8, BPM means dotted-quarter beats; each click is an eighth note. */

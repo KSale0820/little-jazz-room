@@ -62,9 +62,11 @@ export function RoutineLibraryPage() {
 
   const shown = useMemo(() => available.filter(routine => {
     const linked = routine.steps.map(step => exerciseMap.get(step.exercise_id));
-    const searchable = [routine.title, routine.description ?? '', ...linked.map(ex => ex?.title ?? '')]
+    const searchable = [routine.title, routine.description ?? '',
+      (routine as Routine & { goal?: string }).goal ?? '',
+      ...linked.flatMap(ex => ex ? [ex.title, ex.category, ex.instructions] : [])]
       .join(' ').toLowerCase();
-    if (!searchable.includes(query.trim().toLowerCase())) return false;
+    if (!query.trim().toLowerCase().split(/\s+/).every(word => searchable.includes(word))) return false;
     if (filters.instrument && !(routine.applicable_instruments ?? ['All']).some(i => i === 'All' || i === filters.instrument)) return false;
     if (filters.level && routine.level !== filters.level) return false;
     if (filters.duration) {
@@ -118,7 +120,7 @@ export function RoutineLibraryPage() {
       <div className="routine-intro">
         <p className="routine-eyebrow">Your practice, your pace</p>
         <h1>Practice routines</h1>
-        <p>A little structure for the music you love.</p>
+        <p>Choose a few guided steps, or make your own routine.</p>
       </div>
 
       <div className="routine-tabs" role="tablist" aria-label="Routine sections">
@@ -143,9 +145,9 @@ export function RoutineLibraryPage() {
               <option key={value}>{value}</option>)}
           </select>
         </label>
-        <label><span className="screen-reader-only">Goal</span>
+        <label><span className="screen-reader-only">Practice goal</span>
           <select value={filters.goal} onChange={e => setFilter('goal', e.target.value)}>
-            <option value="">Goal</option><option>Standards</option><option>Improvisation</option><option>Technique</option><option>Harmony</option><option>Rhythm</option><option>Ear Training</option>
+            <option value="">Practice goal</option><option>Standards</option><option>Improvisation</option><option>Technique</option><option>Harmony</option><option>Rhythm</option><option>Ear Training</option>
           </select>
         </label>
         <label><span className="screen-reader-only">Duration</span>

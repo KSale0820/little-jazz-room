@@ -20,6 +20,8 @@ export interface ChartBar {
   number: number;
   section: string | null;
   events: ChordEvent[];
+  /** Optional visual instruction, never a timed chord event. */
+  annotation?: string;
 }
 
 export interface Chart {
@@ -30,6 +32,10 @@ export interface Chart {
   feel: string;
   form: string;
   bars: ChartBar[];
+  style_instruction?: string;
+  is_custom?: boolean;
+  created_at?: string;
+  updated_at?: string;
   license?: string;
   difficulty?: string;
   practice_focus?: string;
@@ -37,10 +43,7 @@ export interface Chart {
   related_standards?: string[];
 }
 
-/**
- * Optional structured lesson payload. Legacy/cloud exercises still work using
- * Exercise.instructions when lesson is absent.
- */
+/** Optional structured lesson content. Legacy/custom exercises retain string instructions. */
 export interface ExerciseLesson {
   goal: string;
   steps: string[];
@@ -48,16 +51,16 @@ export interface ExerciseLesson {
   success: string;
   terminologyHelp?: string;
   catPrompts: string[];
-  /** Suggested order among Beginner lessons; not a prerequisite or unlock. */
+  /** Suggested beginner learning order, not a prerequisite. */
   learningOrder: number;
 }
 
 export interface Exercise {
   id: string;
   title: string;
-  /** One-sentence plain-language summary, when available. */
+  /** One-sentence beginner-friendly overview, when available. */
   description?: string;
-  /** Structured teaching content, optional for backward compatibility. */
+  /** Structured lesson, optional to support legacy/cloud content. */
   lesson?: ExerciseLesson;
   category: string;
   level: string;

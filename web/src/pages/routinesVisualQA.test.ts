@@ -1,4 +1,5 @@
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { chromium } from 'playwright';
 import { expect, it } from 'vitest';
@@ -15,13 +16,14 @@ async function waitForServer(url: string) {
 }
 
 function recordImage(label: string, data: Buffer) {
-  const base64 = data.toString('base64');
-  const segments = base64.match(/.{1,6000}/g) ?? [];
-  segments.forEach((segment, i) => console.log('LJR_SCREEN ' + label + ' ' + i + '/' + segments.length + ' ' + segment));
+  const folder = join(process.cwd(), 'docs', 'screenshots', 'routine-search-qa', 'after');
+  mkdirSync(folder, { recursive: true });
+  writeFileSync(join(folder, label + '.jpg'), data);
 }
 
-// Only capture on the class-demo CI runner. All routine repository unit tests run everywhere.
-it.skipIf(!process.env.CI)('visually captures R01/R03 and completes the class-demo routine journey', async () => {
+
+// Opt in to the slower browser journey; the PR screenshot workflow runs separately.
+it.skipIf(process.env.RUN_ROUTINE_BROWSER_QA !== '1')('visually captures R01/R03 and completes the class-demo routine journey', async () => {
   const chrome = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium']
     .find(path => existsSync(path));
   const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', '5187', '--strictPort'], {
@@ -58,9 +60,16 @@ it.skipIf(!process.env.CI)('visually captures R01/R03 and completes the class-de
         recordImage('R03-bottom-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
       }
 
+      await page.getByRole('button', { name: '+ Add Existing' }).click();
+      await page.getByRole('dialog', { name: 'Add exercises to your routine' }).waitFor();
+      recordImage('R03-picker-exercises-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
+      await page.getByRole('tab', { name: 'Routines' }).click();
+      await page.getByRole('button', { name: 'View steps' }).first().click();
+      recordImage('R03-picker-routines-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
+      await page.getByRole('button', { name: 'Close exercise library' }).click();
       await page.getByLabel('Routine title').fill('Demo Practice ' + width);
-      await page.locator('.builder-step').first().locator('input[type="number"]').fill('7');
-      await page.locator('.builder-step').nth(1).getByRole('button', { name: /^Move .* up$/ }).click();
+      await page.getByLabel('Duration for Feel the Swing Beat in minutes').fill('7');
+      await page.getByRole('button', { name: 'Move Practice the Important Notes in Each Chord up' }).click();
       await page.getByRole('button', { name: /Save routine/ }).click();
       await page.waitForURL('**/routines?tab=my');
       await expect.poll(async () => page.getByText('Demo Practice ' + width).count()).toBeGreaterThan(0);

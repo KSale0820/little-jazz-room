@@ -1,0 +1,43 @@
+name: Web tuner microphone end-to-end check
+
+on:
+  push:
+    branches:
+      - fix/web-tuner-iphone-safari-input
+      - feature/voice-pitch-trail-tuner
+  pull_request:
+    paths:
+      - 'web/src/pages/TunerPage.tsx'
+      - 'web/src/pages/toolsAudio.ts'
+      - 'web/src/pages/toolsAudio.test.ts'
+      - 'web/scripts/check-tuner-microphone.mjs'
+
+jobs:
+  microphone:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: Build and run unit tests
+        run: |
+          npm run build
+          npm test
+      - name: Verify real Web Audio capture of a fake 440 Hz microphone
+        run: node scripts/check-tuner-microphone.mjs
+      - name: Upload voice tuner phone screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: voice-tuner-mobile-screenshots
+          path: web/tuner-voice-*.png
+          if-no-files-found: ignore
