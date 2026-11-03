@@ -1,0 +1,53 @@
+name: Chart, routine and shared player integration QA
+
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/**'
+      - '.github/workflows/chart-routine-player-integration.yml'
+  workflow_dispatch:
+
+jobs:
+  chart-routine-player:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Unit tests
+        run: npm test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start app
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/jazz-chart-routine.log 2>&1 &
+          for i in $(seq 1 45); do
+            curl -sf http://127.0.0.1:5174/ >/dev/null && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5174/ >/dev/null
+      - name: Exercise both cross-feature iPhone workflows
+        run: node scripts/check-chart-routine-player-integration.mjs
+      - name: Capture screenshots, including on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chart-routine-player-mobile-390x844-375x667
+          path: web/docs/screenshots/chart-routine-player-integration/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Print Vite errors
+        if: failure()
+        run: tail -n 120 /tmp/jazz-chart-routine.log || true

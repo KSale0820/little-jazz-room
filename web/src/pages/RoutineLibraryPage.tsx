@@ -101,7 +101,7 @@ export function RoutineLibraryPage() {
 
   const openRoutine = (id: string) => {
     setActiveRoutineId(id);
-    navigate('/player');
+    navigate('/player?routine=' + encodeURIComponent(id));
   };
 
   const setFilter = (name: keyof Filters, value: string) =>

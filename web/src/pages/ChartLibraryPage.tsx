@@ -48,9 +48,8 @@ export function ChartLibraryPage() {
         {chart.style_instruction && <p className="chart-library-instruction">{chart.style_instruction}</p>}
       </div>
       <div className="chart-library-actions">
-        {chart.is_custom
-          ? <button type="button" onClick={() => navigate('/charts/' + encodeURIComponent(chart.id) + '/edit')}>Edit</button>
-          : <button type="button" onClick={() => { setActiveRoutineId(null); navigate('/player?chart=' + encodeURIComponent(chart.id)); }}>Practice</button>}
+        <button type="button" onClick={() => { setActiveRoutineId(null); navigate('/player?chart=' + encodeURIComponent(chart.id)); }}>Practice</button>
+        {chart.is_custom && <button type="button" onClick={() => navigate('/charts/' + encodeURIComponent(chart.id) + '/edit')}>Edit</button>}
         <button type="button" onClick={() => duplicate(chart)}>{chart.is_custom ? 'Duplicate' : 'Edit a copy'}</button>
         {chart.is_custom && <button type="button" className="chart-library-delete" onClick={() => remove(chart)}>Delete</button>}
       </div>
@@ -75,7 +74,6 @@ export function ChartLibraryPage() {
       <p className="chart-builder-caption">Built-in charts are read-only. Choose Edit a copy to make your own version.</p>
       {builtIns.map(renderChart)}
       {!filtered.length && <p className="chart-library-empty">No charts match that search.</p>}
-      {mine.length > 0 && <p className="chart-builder-caption">Practice playback for custom charts will be enabled when the shared player integration is merged.</p>}
     </section>
   );
 }
