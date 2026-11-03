@@ -243,7 +243,7 @@ export function CreatePage() {
       let saved = routine;
       if (teamSignedIn) {
         try {
-          const cloud = await saveRoutineToCloud(routine, steps.map(step => step.exerciseId));
+          const cloud = await saveRoutineToCloud(routine);
           saved = { ...routine, id: cloud.id, visibility: cloud.visibility };
         } catch {
           showToast('Cloud unavailable. Routine saved on this device.');
