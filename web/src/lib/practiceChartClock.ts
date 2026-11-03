@@ -18,9 +18,11 @@ export function beatsPerMeasure(chart: Chart): number {
   return chart.time_signature[0];
 }
 
-export function rawChartBeat(clock: MusicalClock, nowMs: number, bpm: number): number {
+/** Internal chart beats are denominator-note units; BPM is always quarter notes. */
+export function rawChartBeat(clock: MusicalClock, nowMs: number, bpm: number, chart?: Chart): number {
+  const unitsPerQuarter = (chart?.time_signature[1] ?? 4) / 4;
   return clock.chartBeat + (
-    clock.startedAtMs === null ? 0 : Math.max(0, nowMs - clock.startedAtMs) * bpm / 60000
+    clock.startedAtMs === null ? 0 : Math.max(0, nowMs - clock.startedAtMs) * bpm * unitsPerQuarter / 60000
   );
 }
 
@@ -48,7 +50,7 @@ export function locatePlayhead(
   bpm: number,
   range: [number, number] | null,
 ): Playhead {
-  const chartBeat = wrapChartBeat(rawChartBeat(clock, nowMs, bpm), chart, range);
+  const chartBeat = wrapChartBeat(rawChartBeat(clock, nowMs, bpm, chart), chart, range);
   const perBar = beatsPerMeasure(chart);
   const barIndex = Math.min(chart.bars.length - 1, Math.floor(chartBeat / perBar));
   const beatInBar = chartBeat - barIndex * perBar;
@@ -125,7 +127,7 @@ export function locateSequencePlayhead(
 ): SequencePlayhead {
   const perBar = beatsPerMeasure(chart);
   const duration = sequenceDuration(chart, sections);
-  const raw = Math.max(0, rawChartBeat(clock, nowMs, bpm));
+  const raw = Math.max(0, rawChartBeat(clock, nowMs, bpm, chart));
   const ended = duration <= 0 || (!repeatPlan && raw >= duration);
   // Clamp just inside the final beat so the last bar stays highlighted.
   let position = duration <= 0 ? 0 : repeatPlan && sections?.length
