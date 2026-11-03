@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { ChordGrid } from '../components/ChordGrid';
 import { chartsById, exercisesById } from '../data/seed';
+import { getStructuredLesson } from '../data/beginnerLessonContent';
 import { formatChartMeta } from '../lib/chords';
 import { resolvePlayableStep } from '../lib/routinePlayback';
 import { useApp } from '../context/AppContext';
@@ -16,7 +17,7 @@ import './PracticePage.css';
 import './PracticePlayerApproved.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
-type Panel = 'chart' | 'player';
+type Panel = 'chart' | 'instructions' | 'player';
 type PracticeTool = 'tuner' | 'metronome' | 'settings';
 type Completion = {
   id: string;
@@ -122,6 +123,7 @@ export function PracticePage() {
 
   const chart = chartsById[chartId] ?? charts[0]!;
   const chosenExercise = exercises.find(item => item.id === playableStep?.exercise_id);
+  const lesson = chosenExercise ? getStructuredLesson(chosenExercise) : null;
   const stepMinutes = currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0;
   const targetSeconds = stepMinutes * 60;
   const isRunning = startedAtMs !== null;
@@ -375,8 +377,9 @@ export function PracticePage() {
         </div>
       )}
 
-      <div className="practice-segments" role="tablist" aria-label="Player view">
+      <div className={`practice-segments ${routine ? 'practice-segments-guided' : ''}`} role="tablist" aria-label="Practice views">
         <button type="button" role="tab" aria-selected={panel === 'chart'} onClick={() => setPanel('chart')} className={panel === 'chart' ? 'selected' : undefined}>Chart</button>
+        {routine && <button type="button" role="tab" aria-selected={panel === 'instructions'} onClick={() => setPanel('instructions')} className={panel === 'instructions' ? 'selected' : undefined}>Instructions</button>}
         <button type="button" role="tab" aria-selected={panel === 'player'} onClick={() => setPanel('player')} className={panel === 'player' ? 'selected' : undefined}>Player</button>
       </div>
 
@@ -396,6 +399,48 @@ export function PracticePage() {
           </div>
           <p className="practice-chart-caption">All {chart.bars.length} measures · Tap a chord to mark your place</p>
         </div>
+      ) : panel === 'instructions' && routine ? (
+        <section className="practice-lesson-panel" role="tabpanel" aria-label="Guided practice instructions">
+          <div className="practice-lesson-scroll" tabIndex={0} aria-label="Scrollable lesson instructions">
+            <header className="practice-lesson-heading">
+              <span className="practice-lesson-eyebrow">Step {stepIndex + 1} of {routine.steps.length}</span>
+              <h2>{playableStep?.title ?? 'Practice instructions'}</h2>
+              {chosenExercise?.description && <p>{chosenExercise.description}</p>}
+            </header>
+            {lesson ? (
+              <>
+                <div className="practice-lesson-goal">
+                  <strong>Today's goal</strong>
+                  <p>{lesson.goal}</p>
+                </div>
+                <h3>What to play</h3>
+                <ol className="practice-lesson-steps">
+                  {lesson.steps.map((instruction, index) => (
+                    <li key={index}><span className="practice-lesson-step-number" aria-hidden="true">{index + 1}</span><span>{instruction}</span></li>
+                  ))}
+                </ol>
+                <div className="practice-lesson-tips">
+                  <p><strong>Listen for</strong>{lesson.listenFor}</p>
+                  <p><strong>You're ready when</strong>{lesson.success}</p>
+                </div>
+                {lesson.terminologyHelp && (
+                  <details className="practice-lesson-terms">
+                    <summary>Jazz terms explained</summary>
+                    <p>{lesson.terminologyHelp}</p>
+                  </details>
+                )}
+                {lesson.catPrompts?.length > 0 && <p className="practice-lesson-coach">{lesson.catPrompts[0]}</p>}
+              </>
+            ) : (
+              <div className="practice-lesson-legacy">
+                {(playableStep?.instructions ?? 'Follow the exercise and practice at your own pace.').split(/\n+/).filter(Boolean).map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+              </div>
+            )}
+          </div>
+          <button type="button" className="practice-lesson-back" onClick={() => setPanel('chart')}>← Return to chart</button>
+        </section>
       ) : (
         <div className="practice-art-panel" role="tabpanel" aria-label="Chart only player">
           <img src={VISUAL_ASSETS.sharedMvp.covers.rainy} alt="Cozy rainy-night jazz practice room" />
@@ -404,12 +449,6 @@ export function PracticePage() {
         </div>
       )}
 
-      {routine && panel === 'chart' && (
-        <aside className="practice-guided-head" aria-label="Current guided exercise">
-          <strong>{playableStep?.title ?? 'Exercise'}</strong>
-          <p>{playableStep?.instructions ?? 'Follow the exercise and practice at your own pace.'}</p>
-        </aside>
-      )}
       {routine && (
         <div className="practice-step-controls">
           <button type="button" onClick={() => goStep(-1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
