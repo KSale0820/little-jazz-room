@@ -39,8 +39,9 @@ type Completion = {
 
 /**
  * The timer measures real wall-clock elapsed time, including time spent on a
- * background tab, rather than counting setInterval callbacks. It never starts
- * an audio transport: this demo has no licensed/recorded audio available.
+ * background tab, rather than counting setInterval callbacks. When a
+ * rights-cleared recording is configured, the native media element controls
+ * audio time, while session time remains a separate elapsed-time record.
  */
 type PracticeToolIcon = 'mixer' | 'tempo' | 'loop' | 'tuner' | 'metronome';
 function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
@@ -613,6 +614,7 @@ export function PracticePage() {
         onError={() => setRecordingError('Recording could not be loaded. Check the audio file and format.')}
         aria-label={activeRecording.title + ' backing track'} />}
       <p className="practice-audio-state" data-testid="chart-playhead" title={planStatus}><strong>{activeRecording ? 'Recorded Track' : 'Chart Only'}</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · {activeRecording ? activeRecording.recordedBpm + ' BPM audio' : 'No recording'}</p>
+      {activeRecording && recordingError && <p role="alert" className="practice-recording-error">{recordingError}</p>}
 
       {routine && (
         <div className="practice-guided-progress" role="progressbar" aria-label="Routine steps completed"
@@ -654,7 +656,7 @@ export function PracticePage() {
           <div className="practice-art-caption"><strong>{chart.title}</strong><span>{formatChartMeta(chart)}</span></div>
           {activeRecording ? <div className="practice-no-audio practice-recorded-controls">
             <strong>Recorded Backing Track</strong>
-            <p>{activeRecording.title} · Original recording at {activeRecording.recordedBpm} BPM</p>
+            <p>{activeRecording.title} · Original recording at {activeRecording.recordedBpm} BPM · {recordingPlaying ? 'Playing' : 'Paused'}</p>
             <label htmlFor="recording-scrubber">Recording position</label>
             <input id="recording-scrubber" type="range" min={0}
               max={recordingDuration > 0 ? recordingDuration : 1}
@@ -664,7 +666,6 @@ export function PracticePage() {
               onChange={event => seekRecording(Number(event.target.value))} />
             <button type="button" onClick={() => seekRecording(0)}>Restart recording</button>
             <small>Recorded tempo and key are fixed. Chart controls do not modify the sound.</small>
-            {recordingError && <p role="alert">{recordingError}</p>}
           </div> : <div className="practice-no-audio"><strong>Chart Only · No Recording</strong><p>Backing-track playback and stem mixing are unavailable. Your practice timer works independently.</p></div>}
         </div>
       )}
@@ -696,7 +697,7 @@ export function PracticePage() {
             <PracticeToolGlyph name="loop" />
           </button>
           <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => stepMeasure(-1)}>◀❙</button>
-          <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
+          <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={activeRecording ? (recordingPlaying ? 'Pause recording and practice timer' : 'Play recording and start practice timer') : isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
             {isRunning ? 'Ⅱ' : '▶'}
             <span className="practice-timer-label">{isRunning ? 'Pause' : (priorMs + stepMs) ? 'Resume' : 'Start'}</span>
           </button>
@@ -755,7 +756,7 @@ export function PracticePage() {
         {activeTool === 'tuner' ? <TunerPage onClose={closeTool} /> : activeTool === 'metronome' ? <MetronomePage onClose={closeTool} /> : (
           <div className="practice-settings-dialog">
             <header><h2>Tempo &amp; Key</h2><button type="button" onClick={closeTool} aria-label="Close settings and return to session">×</button></header>
-            <p>Set chart transposition and your reference practice tempo. No recording is available.</p>
+            <p>{activeRecording ? 'Set visual chart transposition and reference tempo. The recording remains at its original pitch and speed.' : 'Set chart transposition and your reference practice tempo. No recording is available.'}</p>
       <section className="practice-musical-controls" aria-label="Musical chart controls">
         <div className="practice-control-pair">
           <div className="practice-control-field">
