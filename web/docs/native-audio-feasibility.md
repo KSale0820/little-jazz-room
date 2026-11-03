@@ -17,7 +17,7 @@ Pinned dependencies: @capacitor/core/cli/ios/android 8.6.0 and
 
 ## Reproduce and run
 
-From `web/` (Node 22+, macOS with Xcode 26+ for iOS, or Android Studio/SDK):
+From `web/` (Node 22+, macOS with Xcode 26+ for iOS, or Android Studio/SDK and JDK 21):
 
 ```bash
 npm ci
@@ -52,7 +52,7 @@ cannot be played. The max prototype file size is 250 MiB.
 **Actual native import and persistence have NOT been tested on a phone yet.**
 Files App / Android provider URIs, codec support, memory headroom, interruption
 and restart recovery still need instrumented device validation. GitHub Actions successfully ran the Vite/TypeScript build and unit tests,
-generated and synced the Android scaffold, generated an iOS project via SPM,
+generated and synced the Android scaffold (JDK 21 required to compile it), generated an iOS project via SPM,
 and built the unsigned iOS Simulator target with Xcode. These steps did **not**
 launch a native app, test actual file imports, or run device audio.
 

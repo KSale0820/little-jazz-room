@@ -27,6 +27,10 @@ jobs:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: web/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
       - name: Resolve pinned Capacitor dependencies
         run: npm install --package-lock-only --ignore-scripts
       - name: Clean install
