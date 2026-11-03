@@ -73,9 +73,12 @@ export function CreatePage() {
     setSteps(loadBuilderSteps(repo, exercises));
   }, [repo.scope]);
 
+  const loadedEditId = useRef<string | null>(null);
   useEffect(() => {
-    if (editId && exercisesById[editId]) {
-      const exercise = exercises.find(ex => ex.id === editId) ?? exercisesById[editId];
+    if (!editId) { loadedEditId.current = null; return; }
+    const exercise = exercises.find(ex => ex.id === editId) ?? exercisesById[editId];
+    if (exercise && loadedEditId.current !== editId) {
+      loadedEditId.current = editId;
       setShowExerciseForm(true);
       setExTitle(exercise.title);
       setExCategory(exercise.category);
@@ -179,6 +182,7 @@ export function CreatePage() {
   };
 
   const saveExercise = async () => {
+    if (saving) return;
     if (!exTitle.trim() || !exInstructions.trim() || !Number.isInteger(exMinutes) || exMinutes < 1) {
       showToast('Enter an exercise title, instructions, and a positive duration.');
       return;
@@ -189,9 +193,12 @@ export function CreatePage() {
     const exercise: LocalExercise = {
       id, title: exTitle.trim(), category: exCategory, level: exLevel,
       duration_minutes: exMinutes, instructions: exInstructions.trim(),
-      suggested_material: 'Custom exercise', suggested_bpm: null, audio_asset_id: null,
-      visibility: 'private', is_seed: false, chart_id: exChartId || null,
-      applicable_instruments: ['All'],
+      suggested_material: existing?.suggested_material ?? 'Custom exercise',
+      suggested_bpm: existing?.suggested_bpm ?? null,
+      audio_asset_id: existing?.audio_asset_id ?? null,
+      visibility: existing?.is_seed === false ? existing.visibility : 'private',
+      is_seed: false, chart_id: exChartId || null,
+      applicable_instruments: existing?.applicable_instruments ?? ['All'],
     };
     setSaving(true);
     try {
