@@ -107,10 +107,18 @@ try {
     await loopDialog.getByRole('button',{name:/Repeat sections/}).click();
     check(await loopDialog.getByRole('region',{name:'Section 1'}).count()===1,'First editable section missing');
     await loopDialog.getByRole('button',{name:'Increase section 1 play count'}).click();
-    check(await loopDialog.getByRole('group',{name:'Section 1 play count'}).locator('output').innerText()==='3',
+    check(await loopDialog.getByRole('spinbutton',{name:'Section 1 play count'}).inputValue()==='3',
       'First section repeat count did not update');
     await loopDialog.getByRole('button',{name:'+ Add section'}).click();
     check(await loopDialog.getByRole('region',{name:'Section 2'}).count()===1,'Second section missing');
+    await loopDialog.getByRole('spinbutton',{name:'Section 2 start bar'}).fill('17');
+    await loopDialog.getByRole('spinbutton',{name:'Section 2 start bar'}).blur();
+    await loopDialog.getByRole('spinbutton',{name:'Section 2 end bar'}).fill('24');
+    await loopDialog.getByRole('spinbutton',{name:'Section 2 end bar'}).blur();
+    check(await loopDialog.getByRole('spinbutton',{name:'Section 2 start bar'}).inputValue()==='17',
+      'Direct bar entry failed');
+    check(await loopDialog.getByRole('spinbutton',{name:'Section 2 end bar'}).inputValue()==='24',
+      'Custom section end not saved');
     await loopDialog.getByRole('button',{name:'+ Add section'}).click();
     check(await loopDialog.getByRole('region',{name:'Section 3'}).count()===1,'Third section missing');
     await loopDialog.getByRole('button',{name:'Remove section 3'}).click();
