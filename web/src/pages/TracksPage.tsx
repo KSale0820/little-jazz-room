@@ -23,6 +23,7 @@ type TrackPreview = {
   difficulty: string;
   instruments: string[];
   blues: boolean;
+  standard?: boolean;
 };
 
 // UI-only original-track previews. The linked seed charts remain authoritative
@@ -42,6 +43,7 @@ const TRACK_CATALOG: Array<TrackPreview & { recordingId: string | null }> = [
     id: item.id, chartId: item.chartId, title: item.title, subtitle: item.subtitle,
     style: item.style, key: item.key, bpm: item.recordedBpm,
     difficulty: item.difficulty, instruments: item.instruments, blues: item.blues,
+    standard: item.id === 'autumn-leaves',
     recordingId: item.id,
   })),
 ];
@@ -126,7 +128,7 @@ export function TracksPage() {
     const term = query.trim().toLowerCase();
     if (term && ![track.title, track.subtitle, track.style, track.key, track.chart?.title ?? ''].some(value => value.toLowerCase().includes(term))) return false;
     if (category === 'Favorites' && !favorites.includes(track.id)) return false;
-    if (category === 'Standards') return false; // All four approved previews are original studies.
+    if (category === 'Standards' && !track.standard) return false;
     if (category === 'Blues' && !track.blues) return false;
     if (applied.chartOnly && !track.chart) return false;
     if (applied.instrument !== 'All' && !track.instruments.includes(applied.instrument)) return false;
@@ -233,7 +235,7 @@ export function TracksPage() {
         <>
           <div className="t01-section-header">
             <h2>Pick up a tune</h2>
-            <span>{filtered.length} original {filtered.length === 1 ? 'study' : 'studies'}</span>
+            <span>{filtered.length} {filtered.length === 1 ? 'track' : 'tracks'}</span>
           </div>
           <div className="t01-track-list">
             {filtered.map(track => {
