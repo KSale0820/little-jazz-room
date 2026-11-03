@@ -66,6 +66,13 @@ try {
   await page.getByRole('button', { name: /Enable microphone/ }).click();
   await page.getByRole('button', { name: /Stop microphone/ }).waitFor({ timeout: 12000 });
   await page.getByText('A4', { exact: true }).first().waitFor({ timeout: 15000 });
+  // Chrome uses the Web Audio rendering clock even if page animation
+  // frames are busy. Confirm it actually switched from analyser fallback.
+  await page.waitForFunction(() =>
+    document.querySelector('.tool-tuner')?.getAttribute('data-capture-path') === 'worklet',
+  null, { timeout: 12000 });
+  await page.waitForTimeout(1350);
+  await page.getByText('A4', { exact: true }).first().waitFor({ timeout: 6000 });
   const frequency = await page.locator('.tuner-reading span').textContent();
   const measured = Number.parseFloat(frequency ?? '');
   if (!Number.isFinite(measured) || Math.abs(measured - 440) > 4) {
@@ -111,6 +118,18 @@ try {
   console.log('PASS: real browser microphone detected A4 at ' + frequency +
     ' and drew ' + plotted.split(' ').length + ' live graph points');
   await page.getByRole('button', { name: /Stop microphone/ }).click();
+
+  // Fallback is important for older Safari and offline Worklet loading.
+  const fallbackPage = await context.newPage();
+  await fallbackPage.route('**/worklets/tuner-capture.js', route => route.abort('failed'));
+  await fallbackPage.goto(origin + '/tuner');
+  await fallbackPage.getByRole('button', { name: /Enable microphone/ }).click();
+  await fallbackPage.getByText('A4', { exact: true }).first().waitFor({ timeout: 15000 });
+  const fallbackPath = await fallbackPage.locator('.tool-tuner').getAttribute('data-capture-path');
+  if (fallbackPath !== 'analyser') throw new Error('Missing working analyser fallback');
+  await fallbackPage.getByRole('button', { name: /Stop microphone/ }).click();
+  await fallbackPage.close();
+  console.log('PASS: audio-clock worklet stays active; analyser fallback detects A440 when worklet fails');
   await context.close();
 } finally {
   await browser?.close();
