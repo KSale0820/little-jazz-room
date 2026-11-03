@@ -34,11 +34,22 @@ if (existsSync(androidManifest)) {
 const iosInfo = resolve(root, 'ios/App/App/Info.plist');
 if (existsSync(iosInfo)) {
   let source = readFileSync(iosInfo, 'utf8');
-  if (!source.includes('NSMicrophoneUsageDescription')) {
-    source = source.replace('</dict>', `  <key>NSMicrophoneUsageDescription</key>
-  <string>Use the microphone only when you open the instrument tuner.</string>
-</dict>`);
+  // A usage description must be a top-level Info.plist key. It previously
+  // ended up inside UISceneConfigurations because replace('</dict>') edits
+  // the *first*, nested dictionary. Repair that mistake on every native sync.
+  source = source.replace(
+    /\s*<key>NSMicrophoneUsageDescription<\/key>\s*<string>[^<]*<\/string>/g,
+    '',
+  );
+  const rootClose = /(\s*<\/dict>\s*<\/plist>\s*)$/;
+  if (!rootClose.test(source)) {
+    throw new Error('Could not find the root Info.plist dictionary');
   }
+  source = source.replace(
+    rootClose,
+    '\n\t<key>NSMicrophoneUsageDescription</key>\n' +
+    '\t<string>Use the microphone to detect musical notes while tuning. Audio stays on your device.</string>$1',
+  );
   writeFileSync(iosInfo, source);
   const privacyPath = resolve(root, 'ios/App/App/PrivacyInfo.xcprivacy');
   mkdirSync(dirname(privacyPath), { recursive: true });
