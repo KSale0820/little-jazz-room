@@ -549,6 +549,84 @@
   .tuner-reference strong { font-size: 15px; }
 }
 
+/* Opt-in vocal tuning: a real-time pitch trail, not a pre-rendered illustration. */
+.tool-tuner .tuner-modes {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: min(100%, 330px);
+}
+.tuner-modes button { font-size: 14px; }
+.tuner-voice-hint {
+  margin: 6px auto 0;
+  text-align: center;
+  color: #597066;
+  font: 12px/1.35 system-ui, sans-serif;
+}
+.tuner-trail-controls {
+  display: flex;
+  justify-content: center;
+}
+.tuner-trail-controls:empty { display: none; }
+.tuner-trail-toggle, .tuner-voice-toggle {
+  border: 1px solid #c4d5c5;
+  background: #f1f3e8;
+  color: #234a3a;
+  border-radius: 12px;
+  padding: 6px 11px;
+  font: 650 12px/1.25 system-ui, sans-serif;
+  min-height: 36px;
+}
+.tuner-voice-toggle[aria-pressed="true"] { background: #d5e8d7; }
+.tuner-voice-toggle:disabled { opacity: .5; }
+.tuner-trail-panel {
+  margin: 8px auto 0;
+  width: min(100%, 350px);
+  border: 1px solid #e3dfcf;
+  border-radius: 14px;
+  background: rgba(255, 252, 244, .93);
+  padding: 8px 11px 7px;
+}
+.tuner-trail-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tuner-trail-heading strong {
+  font: 700 15px/1.2 Georgia, serif;
+  color: #173d33;
+}
+.tuner-trail-plot {
+  position: relative;
+  height: 91px;
+  padding: 2px 38px 0;
+}
+.tuner-trail-plot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.tuner-trail-high, .tuner-trail-low {
+  position: absolute;
+  right: 0;
+  color: #607268;
+  font: 600 11px/1 system-ui, sans-serif;
+}
+.tuner-trail-high { top: 5px; }
+.tuner-trail-low { bottom: 5px; }
+.tuner-trail-panel > small {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0;
+  color: #777d73;
+  font: 11px/1.2 system-ui, sans-serif;
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  .tuner-trail-panel { margin-top: 5px; padding: 6px 9px 5px; }
+  .tuner-trail-plot { height: 70px; }
+  .tuner-voice-hint { margin-top: 3px; }
+}
+
 /* Keep the floor and rug beneath the tools, not behind their controls, on compact screens. */
 @media (max-height: 720px) and (max-width: 899px) {
   .tool-tuner > .tool-bottom-art { bottom: -35px; }
