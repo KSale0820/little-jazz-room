@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { ChordGrid } from '../components/ChordGrid';
 import { chartsById, exercisesById } from '../data/seed';
 import { formatChartMeta } from '../lib/chords';
+import { anchorAt, locatePlayhead, loopBounds, seekMeasure } from '../lib/practiceChartClock';
 import { resolvePlayableStep } from '../lib/routinePlayback';
 import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
@@ -17,7 +18,7 @@ import './PracticePlayerApproved.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'chart' | 'player';
-type PracticeTool = 'tuner' | 'metronome' | 'settings';
+type PracticeTool = 'tuner' | 'metronome';
 type Completion = {
   id: string;
   finishedAt: string;
@@ -85,13 +86,16 @@ export function PracticePage() {
   const [chartId, setChartId] = useState(initialChart);
   const [chartKey, setChartKey] = useState(chartsById[initialChart]?.concert_key ?? 'F');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
-  const [selectedBar, setSelectedBar] = useState(0);
   const [loopValue, setLoopValue] = useState('all');
+  const [loopStart, setLoopStart] = useState(1);
+  const [loopEnd, setLoopEnd] = useState(4);
+  const [musicalClock, setMusicalClock] = useState({ chartBeat: 0, startedAtMs: null as number | null });
   const [panel, setPanel] = useState<Panel>('chart');
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
   const toolTriggerRef = useRef<HTMLButtonElement | null>(null);
   const toolOverlayRef = useRef<HTMLDivElement | null>(null);
   const [tempo, setTempo] = useState(100);
+  const [tempoInput, setTempoInput] = useState('100');
 
   // Prior steps are committed as milliseconds; the current step retains its
   // fractional second when paused or advanced.
@@ -116,7 +120,7 @@ export function PracticePage() {
 
   useEffect(() => {
     if (!activeTool) return;
-    const focusId = requestAnimationFrame(() => toolOverlayRef.current?.querySelector<HTMLElement>('.tool-back, .practice-settings-dialog header button')?.focus());
+    const focusId = requestAnimationFrame(() => toolOverlayRef.current?.querySelector<HTMLElement>('.tool-back')?.focus());
     return () => cancelAnimationFrame(focusId);
   }, [activeTool]);
 
@@ -137,6 +141,7 @@ export function PracticePage() {
     setStepMs(0);
     setStartedAtMs(null);
     setNowMs(performance.now());
+    setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setCompletion(null);
     setSaveState('idle');
     savePromiseRef.current = null;
@@ -147,49 +152,111 @@ export function PracticePage() {
     const chosen = chartsById[playableStep.chart_id];
     setChartId(chosen.id);
     setChartKey(chosen.concert_key);
-    setSelectedBar(0);
+    setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setLoopValue('all');
+    setLoopStart(1);
+    setLoopEnd(Math.min(chosen.bars.length, 4));
   }, [playableStep?.chart_id, playableStep?.exercise_id]);
 
   useEffect(() => {
-    if (chosenExercise?.suggested_bpm != null) setTempo(chosenExercise.suggested_bpm);
+    if (chosenExercise?.suggested_bpm != null) {
+      const bpm = Math.max(40, Math.min(240, chosenExercise.suggested_bpm));
+      setTempo(bpm);
+      setTempoInput(String(bpm));
+    }
   }, [chosenExercise?.id, chosenExercise?.suggested_bpm]);
 
   useEffect(() => {
     if (!isRunning || completion) return;
-    const timerId = window.setInterval(() => setNowMs(performance.now()), 200);
+    const timerId = window.setInterval(() => setNowMs(performance.now()), 50);
     return () => window.clearInterval(timerId);
   }, [isRunning, completion]);
 
   const loopRange = useMemo((): [number, number] | null => {
     if (loopValue === 'all') return null;
+    if (loopValue === 'custom') return [loopStart, loopEnd];
     const parts = loopValue.split('-').map(Number);
     return parts.length === 2 && parts[0] > 0 && parts[1] > 0
       ? [parts[0], parts[1]] : null;
-  }, [loopValue]);
+  }, [loopValue, loopStart, loopEnd]);
+
+  const playhead = locatePlayhead(chart, musicalClock, nowMs, tempo, loopRange);
 
   const loopOptions = useMemo(() => {
     const groups = Array.from({ length: Math.ceil(chart.bars.length / 4) }, (_, i) => {
       const first = 1 + i * 4;
-      return { value: first + '-' + Math.min(chart.bars.length, first + 3), label: first + '–' + Math.min(chart.bars.length, first + 3) };
+      const last = Math.min(chart.bars.length, first + 3);
+      return { value: first + '-' + last, label: 'Bars ' + first + '–' + last };
     });
-    return [{ value: 'all', label: 'All bars' }, ...groups];
+    return [{ value: 'all', label: 'Full Chart' }, ...groups, { value: 'custom', label: 'Custom Range' }];
   }, [chart]);
 
   function chooseChart(id: string) {
     const next = chartsById[id];
     if (!next) return;
+    const now = performance.now();
     setChartId(id);
     setChartKey(next.concert_key);
     setLoopValue('all');
-    setSelectedBar(0);
+    setLoopStart(1);
+    setLoopEnd(Math.min(next.bars.length, 4));
+    setMusicalClock({ chartBeat: 0, startedAtMs: isRunning ? now : null });
+    setNowMs(now);
+  }
+
+  function setKeyBySemitone(delta: number) {
+    const index = CHROMA.indexOf(chartKey);
+    setChartKey(CHROMA[((index < 0 ? 0 : index) + delta + 12) % 12]);
+  }
+
+  function changeTempo(nextBpm: number) {
+    const bpm = Math.max(40, Math.min(240, Math.round(nextBpm)));
+    if (!Number.isFinite(bpm)) return;
+    const now = performance.now();
+    setMusicalClock(current => anchorAt(chart, current, now, tempo, loopRange, current.startedAtMs !== null));
+    setTempo(bpm);
+    setTempoInput(String(bpm));
+    setNowMs(now);
+  }
+
+  function changeLoop(value: string, startBar = loopStart, endBar = loopEnd) {
+    const start = Math.max(1, Math.min(startBar, chart.bars.length));
+    const end = Math.max(start, Math.min(endBar, chart.bars.length));
+    const nextRange: [number, number] | null = value === 'all' ? null : value === 'custom'
+      ? [start, end] : (value.split('-').map(Number) as [number, number]);
+    const now = performance.now();
+    setMusicalClock(current => {
+      const beat = locatePlayhead(chart, current, now, tempo, loopRange).chartBeat;
+      const [begin, finish] = loopBounds(chart, nextRange);
+      return { chartBeat: beat >= begin && beat < finish ? beat : begin, startedAtMs: current.startedAtMs === null ? null : now };
+    });
+    setLoopValue(value);
+    setLoopStart(start);
+    setLoopEnd(end);
+    setNowMs(now);
+  }
+
+  function moveToBar(index: number) {
+    const now = performance.now();
+    const next = (index + chart.bars.length) % chart.bars.length;
+    if (loopRange && (next < loopRange[0] - 1 || next > loopRange[1] - 1)) setLoopValue('all');
+    setMusicalClock(seekMeasure(next, chart, isRunning, now));
+    setNowMs(now);
+  }
+
+  function stepMeasure(delta: number) {
+    const from = loopRange ? loopRange[0] - 1 : 0;
+    const to = loopRange ? loopRange[1] - 1 : chart.bars.length - 1;
+    const next = playhead.barIndex + delta;
+    moveToBar(next < from ? to : next > to ? from : next);
   }
 
   function toggleTimer() {
     const now = performance.now();
-    if (startedAtMs === null) {
-      setStartedAtMs(now);
-    } else {
+    const playing = startedAtMs === null;
+    setMusicalClock(current => anchorAt(chart, current, now, tempo, loopRange, playing));
+    if (playing) setStartedAtMs(now);
+    else {
       setStepMs(value => elapsedMilliseconds(value, startedAtMs, now));
       setStartedAtMs(null);
     }
@@ -206,6 +273,7 @@ export function PracticePage() {
     setStartedAtMs(null);
     setNowMs(now);
     setStepIndex(next);
+    setMusicalClock({ chartBeat: 0, startedAtMs: null });
   }
 
   function finishSession() {
@@ -216,6 +284,7 @@ export function PracticePage() {
     const durationSeconds = Math.floor((priorMs + finalStepMs) / 1000);
     setStepMs(finalStepMs);
     setStartedAtMs(null);
+    setMusicalClock(current => anchorAt(chart, current, now, tempo, loopRange, false));
     setNowMs(now);
     setCompletion({
       id: 'sess-' + finishedStamp + '-' + Math.random().toString(36).slice(2, 9),
@@ -279,7 +348,7 @@ export function PracticePage() {
     setStepMs(0);
     setStartedAtMs(null);
     setNowMs(performance.now());
-    setSelectedBar(0);
+    setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setCompletion(null);
     setNotes('');
     setRating(0);
