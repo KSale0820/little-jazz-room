@@ -18,7 +18,7 @@ try {
     await page.getByRole('button',{name:/^Free Practice/}).click();
     await page.waitForURL(u=>u.pathname==='/player');
     await page.getByRole('combobox',{name:'Choose practice chart'}).selectOption('rhythm-bb-32');
-    await page.getByRole('button',{name:/^Off/}).click();
+    await page.locator('.practice-utility-row').getByRole('button',{name:'Loop'}).click();
     const sheet=page.getByRole('dialog',{name:'Set up looping'});
     await sheet.waitFor();
     check(await sheet.getByRole('button',{name:/No looping/}).getAttribute('aria-pressed')==='true','Default no-looping unavailable');
@@ -39,22 +39,22 @@ try {
     check(await sheet.getByRole('spinbutton',{name:'Section 2 start bar'}).inputValue()==='9','Second start missing');
     check(await sheet.getByRole('spinbutton',{name:'Section 2 end bar'}).inputValue()==='12','Second end missing');
     check(await sheet.getByRole('spinbutton',{name:'Section 2 play count'}).inputValue()==='2','Second pass count missing');
-    await sheet.locator('.practice-loop-sheet').evaluate(el=>{el.scrollTop=0});
+    await sheet.evaluate(el=>{el.scrollTop=0});
     await page.screenshot({path:name('two-sections-top'),animations:'disabled'});
-    await sheet.locator('.practice-loop-sheet').evaluate(el=>{el.scrollTop=el.scrollHeight});
+    await sheet.evaluate(el=>{el.scrollTop=el.scrollHeight});
     await page.screenshot({path:name('two-sections-bottom'),animations:'disabled'});
 
     await sheet.getByRole('button',{name:'+ Add section'}).click();
     await bar('Section 3 start bar',17);
     await bar('Section 3 end bar',20);
     await bar('Section 3 play count',4);
-    await sheet.locator('.practice-loop-sheet').evaluate(el=>{el.scrollTop=el.scrollHeight});
+    await sheet.evaluate(el=>{el.scrollTop=el.scrollHeight});
     await page.screenshot({path:name('three-sections-bottom'),animations:'disabled'});
 
     await sheet.getByRole('button',{name:'Remove section 3'}).click();
     await sheet.getByRole('button',{name:'Apply plan'}).click();
     check(await sheet.count()===0,'Apply did not close panel');
-    check(await page.getByRole('button',{name:/2 sections/}).count()===1,'Applied plan summary missing');
+    check(await page.locator('.practice-utility-row').getByRole('button',{name:'Loop'}).getAttribute('aria-pressed')==='true','Applied plan was not enabled');
     await page.screenshot({path:name('two-sections-applied'),animations:'disabled'});
     console.log('PASS loop plan review screenshots '+width+'x'+height);
     await ctx.close();
