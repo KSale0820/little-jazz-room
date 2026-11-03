@@ -78,7 +78,7 @@ try {
   // Wait for two *real* measured points before asserting a live trajectory.
   await page.waitForFunction(() => {
     const svgLine = document.querySelector('.tuner-trail-plot polyline');
-    return (svgLine?.getAttribute('points')?.trim().split(/\\s+/).length ?? 0) >= 2;
+    return (svgLine?.getAttribute('points')?.trim().split(' ').length ?? 0) >= 2;
   }, null, { timeout: 12000 });
   const plotted = await page.locator('.tuner-trail-plot polyline').first().getAttribute('points');
   if (!plotted || plotted.split(' ').length < 2) {
