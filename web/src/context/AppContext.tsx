@@ -92,6 +92,8 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
   const [cloudRoutines, setCloudRoutines] = useState<Routine[]>([]);
   const [publicRoutines, setPublicRoutines] = useState<Routine[]>([]);
   const [cloudSessions, setCloudSessions] = useState<PracticeSessionRecord[]>([]);
+  // Preserve successfully saved sessions immediately even while cloud refresh is pending.
+  const [confirmedSessions, setConfirmedSessions] = useState<PracticeSessionRecord[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [focusMode, setFocusModeState] = useState(() => readBool(FOCUS_KEY, false));
   const [catMotion, setCatMotionState] = useState(() => readBool(MOTION_KEY, true));
@@ -140,11 +142,17 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
 
   const charts = useMemo(() => mergeCharts(seedCharts, createChartRepository(repo.scope).listCharts()), [repo, tick]);
   const localSessions = useMemo(() => repo.listSessions(), [repo, sessionTick]);
-  const sessions = user ? cloudSessions : localSessions;
+  const sessions = useMemo(() => {
+    if (!user) return localSessions;
+    const byId = new Map(cloudSessions.map(row => [row.id, row]));
+    for (const row of confirmedSessions) byId.set(row.id, row);
+    return [...byId.values()].sort((a, b) => b.finishedAt.localeCompare(a.finishedAt)).slice(0, 200);
+  }, [user, localSessions, cloudSessions, confirmedSessions]);
 
   const addSession = async (session: PracticeSessionRecord) => {
     if (cloudRepo) {
       await cloudRepo.addSession(session);
+      setConfirmedSessions(previous => [session, ...previous.filter(row => row.id !== session.id)].slice(0, 200));
       setCloudTick(t => t + 1);
       return;
     }
