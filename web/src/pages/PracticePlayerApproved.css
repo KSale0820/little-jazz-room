@@ -1308,3 +1308,26 @@
   font: 600 11px system-ui, sans-serif;
 }
 .practice-recording-error { color: #a04439; font-size: 11px; }
+
+
+/* Recording-only mode: no unmatched chord chart, no video, no new navigation. */
+.practice-audio-only .practice-audio-only-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: unset;
+  margin: 5px 0 10px;
+}
+.practice-audio-only .practice-art-panel {
+  min-width: 0;
+}
+.practice-audio-only .practice-recorded-controls {
+  padding: 12px 14px;
+}
+.practice-audio-only .practice-recorded-controls input[type="range"] {
+  width: 100%;
+  max-width: 100%;
+}
+.practice-audio-only .practice-recorded-controls button {
+  min-height: 44px;
+}
