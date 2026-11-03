@@ -74,7 +74,7 @@ export function normalizeGuidedLesson(base: LessonBase, exercise?: unknown, snap
   // Snapshot is authoritative when it contains structured teaching data. For
   // older snapshots, use live exercise lesson fields but retain snapshot text.
   const source = structuredCarrier(hasStructure(snapshot) ? snapshot : exercise ?? snapshot);
-  const title = stringField(source, 'title') || text(base.title) || 'Practice exercise';
+  const title = text(base.title) || stringField(source, 'title') || 'Practice exercise';
   const instructions = text(base.instructions) || stringField(source, 'instructions');
   const fallbackSteps = plainTextSteps(instructions);
   const steps = readSteps(source.steps);
