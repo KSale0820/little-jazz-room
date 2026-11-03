@@ -125,6 +125,7 @@ try {
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
     await page.waitForURL(url => url.pathname === '/player');
     await page.getByText('Guided Practice', { exact: true }).waitFor();
+    await page.getByRole('tab', { name: 'Chart' }).click();
     check(await page.locator('.practice-utility-row').count() === 1, 'Guided mode missing approved tools');
     check(await page.locator('.practice-utility-row button').count() === 5, 'Guided must display five approved tools');
     await page.locator('.practice-utility-row').getByRole('button', { name: 'Tempo/Key' }).click();
