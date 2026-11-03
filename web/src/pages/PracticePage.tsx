@@ -360,7 +360,7 @@ export function PracticePage() {
 
   return (
     <>
-    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${routine && panel === 'instructions' ? 'practice-instructions' : ''}`} aria-label="Shared practice player">
+    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${routine && panel === 'instructions' ? 'practice-instructions' : ''} ${routine && panel === 'player' ? 'practice-guided-player-view' : ''}`} aria-label="Shared practice player">
       <header className="practice-player-head">
         <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
         <div className="practice-title-group">
