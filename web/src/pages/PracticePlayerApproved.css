@@ -693,3 +693,155 @@
   .practice-player .practice-utility-row.practice-utility-tools button { min-height: 49px; }
   .practice-player .practice-utility-row.practice-utility-tools .practice-tool-glyph { width: 20px; height: 20px; min-height: 20px; }
 }
+
+/* Loop configuration: one focused mobile sheet, no dropdowns for bar ranges. */
+.practice-player .practice-control-heading {
+  font: 600 10px/1.2 system-ui,sans-serif;
+  color: #315745;
+}
+.practice-player .practice-loop-open {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 11px;
+  text-align: left;
+  background: #eaf0e6;
+  color: #1d503d;
+  border: 1px solid #c5d5c7;
+  border-radius: 9px;
+  font: 700 12px system-ui,sans-serif;
+}
+.practice-player .practice-loop-open span:last-child {
+  white-space: nowrap;
+  font-size: 11px;
+  color: #4f725e;
+}
+.practice-loop-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  background: #102820a6;
+}
+.practice-loop-sheet {
+  box-sizing: border-box;
+  width: min(100%, 480px);
+  max-height: calc(100dvh - 18px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 18px 18px max(24px, env(safe-area-inset-bottom));
+  border-radius: 22px 22px 0 0;
+  background: #fff9ed;
+  color: #173e31;
+  box-shadow: 0 -8px 34px #10282044;
+}
+.practice-loop-sheet > header {
+  position: sticky;
+  top: -18px;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 4px 0 10px;
+  background: #fff9ed;
+}
+.practice-loop-eyebrow {
+  display: block;
+  font: 700 10px/1.5 system-ui,sans-serif;
+  letter-spacing: .09em;
+  color: #778d75;
+}
+.practice-loop-sheet h2 { font: 700 24px/1.17 Georgia,serif; color: #163e31; }
+.practice-loop-sheet .practice-loop-close {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  background: #eeeadd;
+  border-radius: 50%;
+  color: #264c3a;
+  font: 500 28px system-ui,sans-serif;
+}
+.practice-loop-intro { color: #4a5a50; font: 12px/1.5 system-ui,sans-serif; margin: 0 0 12px; }
+.practice-loop-current {
+  border-radius: 11px;
+  padding: 10px 12px;
+  background: #e9f0e6;
+  font: 12px/1.35 system-ui,sans-serif;
+}
+.practice-loop-section { margin-top: 18px; }
+.practice-loop-section h3 {
+  margin-bottom: 9px;
+  color: #1d4d3a;
+  font: 700 14px Georgia,serif;
+}
+.practice-loop-choice-grid,
+.practice-loop-phrase-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.practice-loop-choice-grid button,
+.practice-loop-phrase-grid button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 7px 5px;
+  border-radius: 11px;
+  border: 1px solid #d4dacd;
+  background: #f1efe4;
+  font: 600 12px/1.24 system-ui,sans-serif;
+  color: #234c3b;
+}
+.practice-loop-choice-grid button.active,
+.practice-loop-phrase-grid button[aria-pressed="true"] { background: #245440; color: #fff; border-color: #245440; }
+.practice-loop-custom-fields {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+}
+.practice-loop-range-stepper { min-width: 0; }
+.practice-loop-range-stepper > span {
+  display: block;
+  font: 600 11px system-ui,sans-serif;
+  margin-bottom: 6px;
+}
+.practice-loop-range-stepper > div {
+  display: grid;
+  grid-template-columns: 39px minmax(0,1fr) 39px;
+  align-items: center;
+  min-height: 43px;
+  border: 1px solid #cbd9ca;
+  border-radius: 12px;
+  background: #f5f2e9;
+  overflow: hidden;
+}
+.practice-loop-range-stepper button {
+  height: 43px;
+  border: 0;
+  background: #e6ece1;
+  color: #214d3b;
+  font: 700 19px system-ui,sans-serif;
+}
+.practice-loop-range-stepper button:disabled { opacity: .35; }
+.practice-loop-range-stepper output { text-align: center; font: 700 17px system-ui,sans-serif; }
+.practice-loop-apply {
+  margin-top: 12px;
+  width: 100%;
+  min-height: 45px;
+  border: 0;
+  border-radius: 12px;
+  background: #23513e;
+  color: #fff;
+  font: 700 13px system-ui,sans-serif;
+}
+.practice-loop-sheet button:focus-visible { outline: 3px solid #c6a458; outline-offset: 2px; }
+@media (max-height: 720px) and (max-width: 899px) {
+  .practice-player .practice-control-heading { font-size: 9px; }
+  .practice-player .practice-loop-open { min-height: 39px; font-size: 11px; }
+  .practice-loop-sheet { padding-top: 12px; }
+  .practice-loop-sheet > header { top: -12px; }
+  .practice-loop-section { margin-top: 14px; }
+}
