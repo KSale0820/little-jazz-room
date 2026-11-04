@@ -1428,3 +1428,37 @@
   .practice-recording-p02 .practice-utility-row { margin-top: 7px; }
   .practice-recording-p02 .practice-recording-tools button { min-height: 61px; }
 }
+
+/* Unified P02: one recording timeline, independent practice duration. */
+.practice-unified .practice-control-row { grid-template-columns: 1fr 1.4fr 1fr 44px; max-width: 300px; margin: 5px auto; }
+.practice-unified .practice-skip-icon { width: 32px; height: 32px; }
+.practice-unified .practice-secondary-transport[aria-pressed="true"] { background: #dce8d8; color: #194c3b; border-radius: 50%; box-shadow: inset 0 0 0 1px #63856b; }
+.practice-unified .practice-utility-row { grid-template-columns: repeat(3,minmax(0,1fr)); margin-top: 8px; }
+.practice-unified .practice-utility-row button { min-height: 62px; }
+.practice-unified .practice-player-pills label { font: 500 10px/1.4 system-ui,sans-serif; color: #4b6454; }
+.practice-unified .practice-player-pills select,
+.practice-unified .practice-player-pills input { box-sizing: border-box; width: 100%; min-width: 0; min-height: 44px; border: 0; border-radius: 16px; background: #ece9df; color: #12382f; padding: 6px; font: 600 12px system-ui,sans-serif; text-align: center; }
+.practice-unified .practice-player-pills input[readonly] { background: #f0eee5; color: #586958; }
+.practice-unified .practice-transport > .practice-reference-note { display: block; font-size: 10px; line-height: 1.3; margin: 4px 0; }
+.practice-unified .practice-recording-times { justify-content: flex-end; font-variant-numeric: tabular-nums; }
+.practice-unified .practice-time-badge { display: flex; align-items: center; gap: 5px; margin: 4px 0 0 auto; min-height: 44px; border: 1px solid #dae2cf; border-radius: 22px 8px 22px 22px; padding: 5px 10px; background: #eef1e4; color: #31503b; font: 11px system-ui,sans-serif; }
+.practice-unified .practice-time-badge strong { font-weight: 600; font-variant-numeric: tabular-nums; }
+.practice-unified .practice-finish-action { min-height: 44px; margin: 0; }
+.practice-unified .practice-measure-btn, .practice-unified .practice-secondary-transport { min-height: 44px; }
+.practice-unified .practice-session-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.practice-has-recording .practice-chart-toolbar { display: none; }
+@media (max-height:720px) and (max-width:899px) {
+  .practice-unified .practice-audio-state { margin-bottom: 3px; }
+  .practice-unified .practice-chart-caption { font-size: 9px; }
+  .practice-unified .practice-utility-row { margin-top: 4px; }
+  .practice-unified .practice-utility-row button { min-height: 56px; }
+  .practice-unified .practice-time-badge { font-size: 10px; padding-inline: 7px; }
+  .practice-unified .practice-control-row { margin: 2px auto; }
+}
+.practice-unified .practice-session-row .practice-finish-action { flex: 0 0 auto; width: auto; }
+.practice-unified .practice-time-badge { white-space: nowrap; }
+@media (max-height:720px) and (max-width:899px) {
+  .practice-unified { padding-top: 10px; padding-bottom: 8px; }
+  .practice-unified .practice-timer-button { width: 52px; height: 52px; }
+  .practice-unified .practice-transport > .practice-reference-note { margin: 2px 0; }
+}
