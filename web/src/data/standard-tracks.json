@@ -1,0 +1,162 @@
+[
+  {
+    "id": "autumn-leaves",
+    "chartId": "autumn-leaves",
+    "title": "Autumn Leaves",
+    "subtitle": "Swing \u00b7 32-bar AABC",
+    "style": "Swing",
+    "key": "G minor",
+    "bpm": null,
+    "difficulty": "Beginner",
+    "instruments": [
+      "Piano",
+      "Guitar",
+      "Bass",
+      "Drums",
+      "Trumpet",
+      "Alto Saxophone",
+      "Tenor Saxophone"
+    ],
+    "blues": false
+  },
+  {
+    "id": "blue-bossa",
+    "chartId": "blue-bossa",
+    "title": "Blue Bossa",
+    "subtitle": "Bossa \u00b7 16-bar AB",
+    "style": "Bossa",
+    "key": "C minor",
+    "bpm": null,
+    "difficulty": "Beginner",
+    "instruments": [
+      "Piano",
+      "Guitar",
+      "Bass",
+      "Drums",
+      "Trumpet",
+      "Alto Saxophone",
+      "Tenor Saxophone"
+    ],
+    "blues": false
+  },
+  {
+    "id": "song-for-my-father",
+    "chartId": "song-for-my-father",
+    "title": "Song for My Father",
+    "subtitle": "Bossa \u00b7 24-bar AAB",
+    "style": "Bossa",
+    "key": "F minor",
+    "bpm": null,
+    "difficulty": "Beginner",
+    "instruments": [
+      "Piano",
+      "Guitar",
+      "Bass",
+      "Drums",
+      "Trumpet",
+      "Alto Saxophone",
+      "Tenor Saxophone"
+    ],
+    "blues": false
+  },
+  {
+    "id": "sandu",
+    "chartId": "sandu",
+    "title": "Sandu",
+    "subtitle": "Swing \u00b7 12-bar blues",
+    "style": "Swing",
+    "key": "E\u266d",
+    "bpm": null,
+    "difficulty": "Beginner",
+    "instruments": [
+      "Piano",
+      "Guitar",
+      "Bass",
+      "Drums",
+      "Trumpet",
+      "Alto Saxophone",
+      "Tenor Saxophone"
+    ],
+    "blues": true
+  },
+  {
+    "id": "all-the-things-you-are",
+    "chartId": "all-the-things-you-are",
+    "title": "All the Things You Are",
+    "subtitle": "Swing \u00b7 36-bar ABCD",
+    "style": "Swing",
+    "key": "A\u266d",
+    "bpm": null,
+    "difficulty": "Intermediate",
+    "instruments": [
+      "Piano",
+      "Guitar",
+      "Bass",
+      "Drums",
+      "Trumpet",
+      "Alto Saxophone",
+      "Tenor Saxophone"
+    ],
+    "blues": false
+  },
+  {
+    "id": "how-high-the-moon",
+    "chartId": "how-high-the-moon",
+    "title": "How High the Moon",
+    "subtitle": "Swing \u00b7 32-bar ABAC",
+    "style": "Swing",
+    "key": "G",
+    "bpm": null,
+    "difficulty": "Intermediate",
+    "instruments": [
+      "Piano",
+      "Guitar",
+      "Bass",
+      "Drums",
+      "Trumpet",
+      "Alto Saxophone",
+      "Tenor Saxophone"
+    ],
+    "blues": false
+  },
+  {
+    "id": "ornithology",
+    "chartId": "ornithology",
+    "title": "Ornithology",
+    "subtitle": "Bebop \u00b7 32-bar ABAC",
+    "style": "Bebop",
+    "key": "G",
+    "bpm": null,
+    "difficulty": "Intermediate",
+    "instruments": [
+      "Piano",
+      "Guitar",
+      "Bass",
+      "Drums",
+      "Trumpet",
+      "Alto Saxophone",
+      "Tenor Saxophone"
+    ],
+    "blues": false
+  },
+  {
+    "id": "oleo",
+    "chartId": "oleo",
+    "title": "Oleo",
+    "subtitle": "Bebop \u00b7 32-bar AABA",
+    "style": "Bebop",
+    "key": "B\u266d",
+    "bpm": null,
+    "difficulty": "Intermediate",
+    "instruments": [
+      "Piano",
+      "Guitar",
+      "Bass",
+      "Drums",
+      "Trumpet",
+      "Alto Saxophone",
+      "Tenor Saxophone"
+    ],
+    "blues": false
+  }
+]

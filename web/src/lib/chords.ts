@@ -15,7 +15,7 @@ export function spellChord(event: ChordEvent, semitones: number): string {
   if (semitones % 12) {
     root = CHROMA[(pitchClass(root) + semitones + 120) % 12]!;
   }
-  const quality = event.quality.replace('m7b5', 'm7♭5');
+  const quality = event.quality.replace('sus7', '7sus4').replace('mMaj7', 'm(maj7)').replaceAll('b', '♭');
   return root.replace('b', '♭') + quality;
 }
 
