@@ -3691,7 +3691,7 @@
     },
     {
       "id": "autumn-leaves-gm-video-35",
-      "title": "Autumn Leaves (Video Chart)",
+      "title": "Autumn Leaves",
       "concert_key": "G",
       "time_signature": [
         4,
@@ -4094,7 +4094,7 @@
           "events": []
         }
       ],
-      "style_instruction": "Video chart · 170 BPM · final tag",
+      "style_instruction": "G minor · 32-bar form ×5 · final tag · 170 BPM",
       "license": "Chord symbols and bar structure transcribed from the user-supplied backing-track video; no melody or lyrics.",
       "representation": "video_on_screen_chord_transcription"
     }

@@ -15,14 +15,14 @@ try {
     const size = width + 'x' + height;
 
     await page.goto(base + '/player?recording=autumn-leaves', { waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Autumn Leaves (Video Chart)' }).waitFor();
+    await page.getByRole('heading', { name: 'Autumn Leaves' }).waitFor();
     assert.equal(await page.getByRole('tab', { name: 'Chart' }).getAttribute('aria-selected'), 'true');
     assert.equal(await page.locator('.chord-grid .measure').count(), 35, 'video chart has 32 form bars and 3 tag bars');
     assert.equal(await page.locator('#player-chart').inputValue(), 'autumn-leaves-gm-video-35');
     const bar27 = await page.locator('.chord-grid .measure').nth(26).getAttribute('aria-label');
     assert(bar27?.includes('Gm7 then C7'), 'bar 27 must display both video chords');
     const bar29 = await page.locator('.chord-grid .measure').nth(28).getAttribute('aria-label');
-    assert(bar29?.includes('Eb7'), 'video uses E-flat dominant 7, not major 7');
+    assert(bar29?.includes('E♭7'), 'video uses E-flat dominant 7, not major 7');
     assert(!bar29?.includes('maj7'), 'video bar 29 has no major 7');
     await page.screenshot({ path: directory + '/' + size + '-autumn-video-chart.png', fullPage: true });
     await page.getByRole('tab', { name: 'Player' }).click();

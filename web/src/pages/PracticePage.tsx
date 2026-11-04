@@ -191,6 +191,11 @@ export function PracticePage() {
     setRecordingPlaying(false);
     setRecordingError(null);
     suppressAudioPauseRef.current = false;
+    const recordedBpm = recordingById(requestedRecording)?.recordedBpm;
+    if (recordedBpm) {
+      setTempo(recordedBpm);
+      setTempoInput(String(recordedBpm));
+    }
   }, [requestedRecording]);
 
   useEffect(() => {
