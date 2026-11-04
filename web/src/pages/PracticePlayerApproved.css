@@ -1331,3 +1331,21 @@
 .practice-audio-only .practice-recorded-controls button {
   min-height: 44px;
 }
+
+/* Audio-only recording: reuse the approved P02 chart panel, never show a guessed grid. */
+.practice-unlinked-chart {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 24px 18px;
+  border: 1px solid #dedfce;
+  border-radius: 12px;
+  color: #31503b;
+  background: #fffaf1;
+  text-align: center;
+}
+.practice-unlinked-chart strong { font: 700 19px/1.2 Georgia, serif; }
+.practice-unlinked-chart p { max-width: 290px; font-size: 12px; line-height: 1.5; color: #657067; }
