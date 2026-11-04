@@ -5,6 +5,20 @@ import { useApp } from '../../context/AppContext';
 import { formatPracticeTime } from '../../pages/practicePlayerLogic';
 import type { RecordedBackingTrack } from './recordingCatalog';
 
+
+type RecordingToolIconName = 'mixer' | 'tempo' | 'loop' | 'tuner' | 'metronome';
+function RecordingToolIcon({ kind }: { kind: RecordingToolIconName }) {
+  const icons: Record<RecordingToolIconName, React.ReactNode> = {
+    mixer: <><path d="M8 3v26M16 3v26M24 3v26"/><rect x="5.3" y="11" width="5.4" height="7" rx="2.6"/><rect x="13.3" y="17" width="5.4" height="7" rx="2.6"/><rect x="21.3" y="8" width="5.4" height="7" rx="2.6"/></>,
+    tempo: <><circle cx="16" cy="18" r="11"/><path d="M16 7V3M12 3h8M16 18V10M16 18l4.6 5.4M23.8 8.8l2.3-2.3"/></>,
+    loop: <><path d="M23.8 9.6A10.6 10.6 0 0 0 7 9L5 12.5"/><path d="M5.2 6.5 5 12.6l6-.3M8.2 22.4A10.6 10.6 0 0 0 25 23l2-3.5"/><path d="M26.8 25.5 27 19.4l-6 .3"/></>,
+    tuner: <path d="M10 5v12a6 6 0 0 0 12 0V5M16 23v6M12.5 29h7"/>,
+    metronome: <><path d="M7 27 12.7 7h6L25 27Z M5 27h22"/><path d="m16.4 21 7.2-15"/><circle cx="16.4" cy="21" r="1.3" fill="currentColor" stroke="none"/></>,
+  };
+  return <svg className="practice-tool-glyph" viewBox="0 0 32 32" aria-hidden="true" fill="none"
+    stroke="currentColor" strokeWidth="2.05" strokeLinecap="round" strokeLinejoin="round">{icons[kind]}</svg>;
+}
+
 /** A recording without a verified chart. Never substitute an unrelated seed chart. */
 export function RecordingOnlyPractice({ recording }: { recording: RecordedBackingTrack }) {
   const navigate = useNavigate();
@@ -196,11 +210,11 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
       <button type="button" className="practice-finish-action" onClick={finish}>Finish Session</button>
     </div>
     <div className="practice-utility-row practice-recording-tools" aria-label="Practice tools">
-      <button type="button" disabled title="Stem mixer requires separate stem recordings"><span className="practice-recording-tool-icon">☷</span><span>Mixer</span><small>Preview</small></button>
-      <button type="button" disabled title="Tempo and key changes are unavailable for this recorded audio"><span className="practice-recording-tool-icon">◴</span><span>Tempo/Key</span><small>Original</small></button>
-      <button type="button" aria-pressed={repeatRecording} onClick={() => setRepeatRecording(value => !value)}><span className="practice-recording-tool-icon">↻</span><span>Loop</span></button>
-      <button type="button" onClick={() => navigate('/tuner')}><span className="practice-recording-tool-icon">♩</span><span>Tuner</span></button>
-      <button type="button" onClick={() => navigate('/metronome')}><span className="practice-recording-tool-icon">♧</span><span>Metronome</span></button>
+      <button type="button" disabled title="Stem mixer requires separate stem recordings"><RecordingToolIcon kind="mixer" /><span>Mixer</span><small>Preview</small></button>
+      <button type="button" disabled title="Tempo and key changes are unavailable for this recorded audio"><RecordingToolIcon kind="tempo" /><span>Tempo/Key</span><small>Original</small></button>
+      <button type="button" aria-pressed={repeatRecording} onClick={() => setRepeatRecording(value => !value)}><RecordingToolIcon kind="loop" /><span>Loop</span></button>
+      <button type="button" onClick={() => navigate('/tuner')}><RecordingToolIcon kind="tuner" /><span>Tuner</span></button>
+      <button type="button" onClick={() => navigate('/metronome')}><RecordingToolIcon kind="metronome" /><span>Metronome</span></button>
     </div>
     {ended && <p role="status" className="practice-recording-ended">Recording finished · Restart by moving the playhead to the beginning.</p>}
   </section>;
