@@ -11,7 +11,7 @@ import {
 } from '../repository/localRepository';
 import type { Exercise, LocalExercise, LocalRoutine, Visibility } from '../types/content';
 import {
-  appendBuilderExercise, previewRoutineImport, searchCatalogExercises, searchCatalogRoutines
+  appendBuilderExercise, exerciseSummary, previewRoutineImport, searchCatalogExercises, searchCatalogRoutines
 } from './routinePickerLogic';
 import './CreatePage.css';
 
@@ -385,7 +385,7 @@ export function CreatePage() {
               <div className="builder-step-content">
                 <strong>{index + 1}. {label}</strong>
                 <span>{exercise?.level ?? 'Exercise'}{chart ? ' · ' + chart.title : ''}</span>
-                 {exercise?.instructions && <p className="builder-step-instructions">{exercise.instructions}</p>}
+                {exercise && <p className="builder-step-instructions">{exerciseSummary(exercise)}</p>}
                 <label className="builder-step-time">How long?
                   <input type="number" min="1" step="1" value={step.minutes}
                     aria-label={'Duration for ' + label + ' in minutes'}
@@ -453,7 +453,7 @@ export function CreatePage() {
                 return <article className="builder-picker-result" key={exercise.id}>
                   <div>
                     <h4>{exercise.title}</h4>
-                    <p>{exercise.instructions}</p>
+                    <p>{exerciseSummary(exercise)}</p>
                     <span>{exercise.level} · {exercise.duration_minutes} min · {exercise.category}</span>
                   </div>
                   <button type="button" onClick={() => addExistingExercise(exercise)}>
