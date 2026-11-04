@@ -15,7 +15,7 @@ The project owner supplied an MP4 and confirmed that it is their video. Only the
 
 The owner-supplied M4A was transferred byte-for-byte into `web/public/audio/backing-tracks/autumn-leaves.m4a`. No re-encoding occurred. The original MP4 video was not committed. Temporary base64 staging parts and the one-time assembly workflow have already been removed from the branch.
 
-The source video shows an Autumn Leaves chord sequence with a G-minor tonal center, but its recorded BPM and precise first-beat offset are not verified. Therefore `chartId`, `recordedBpm`, and `chartStartSeconds` are intentionally null. The Player opens in **audio-only mode** and never substitutes an unrelated seed chart.
+The user supplied the original 720p MP4 with the on-screen chart. The chart was transcribed measure-for-measure from that video, not replaced by a generic Autumn Leaves lead sheet. The stable chart ID is `autumn-leaves-gm-video-35` (35 displayed boxes, including a 3-bar ending tag). The 32-bar form plays 4 complete passes, then bars 1–30 of the fifth pass, followed by tag bars 33–35. Blank measures in the video remain empty chord boxes. Video-highlight timing is 170 quarter notes per minute, with the first highlighted bar at approximately 5.767s; the player uses a 5.75s alignment offset. The last 12 seconds after the visual chart fades are outro, so the chart holds at its final bar. Playback's actual media time is the master clock.
 
 ## Adding additional owner recordings
 
