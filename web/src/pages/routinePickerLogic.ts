@@ -2,6 +2,13 @@ import type { Exercise, Routine, RoutineStep } from '../types/content';
 
 export interface BuilderStep { exerciseId: string; minutes: number }
 
+/** Compact preview only; keep the original instructions for editing and practice. */
+export function exerciseSummary(exercise: Exercise): string {
+  const text = (exercise.description?.trim() || exercise.lesson?.goal?.trim() || exercise.instructions.trim())
+    .replace(/^(?:Goal:\s*|\d+[.)]\s*)/i, '').replace(/\s+/g, ' ');
+  return text.match(/^.*?[.!?](?=\s|$)/)?.[0] || text || `Practice ${exercise.title}.`;
+}
+
 export interface RoutineImportEntry {
   exerciseId: string;
   minutes: number;
