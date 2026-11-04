@@ -96,7 +96,7 @@ export function PracticePage() {
     () => currentStep ? resolvePlayableStep(currentStep, exercises, exercisesById) : null,
     [currentStep, exercises],
   );
-  const initialChart = requestedChart ?? playableStep?.chart_id ?? charts[0]?.id ?? 'blues-f-12';
+  const initialChart = requestedChart ?? recordingById(requestedRecording)?.chartId ?? playableStep?.chart_id ?? charts[0]?.id ?? 'blues-f-12';
   const [chartId, setChartId] = useState(initialChart);
   const [chartKey, setChartKey] = useState(getChartById(initialChart, charts)?.concert_key ?? 'F');
   const [writtenPitch, setWrittenPitch] = useState<WrittenPitch>('C');
@@ -153,8 +153,7 @@ export function PracticePage() {
   const recordingFromUrl = recordingById(requestedRecording);
   const invalidRecordingLink = Boolean(requestedRecording &&
     (!recordingFromUrl || !isUsableRecordedTrack(recordingFromUrl) ||
-      (requestedChart !== null && recordingFromUrl.chartId !== requestedChart) ||
-      (requestedChart === null && recordingFromUrl.chartId !== null)));
+      (requestedChart !== null && recordingFromUrl.chartId !== requestedChart)));
   const standaloneRecording = recordingFromUrl && recordingFromUrl.chartId === null &&
     isUsableRecordedTrack(recordingFromUrl) ? recordingFromUrl : null;
   const activeRecording = recordingFromUrl && hasChartSync(recordingFromUrl) &&
@@ -184,7 +183,7 @@ export function PracticePage() {
     setCompletion(null);
     setSaveState('idle');
     savePromiseRef.current = null;
-  }, [activeRoutineId, requestedChart, requestedRoutine, freeMode]);
+  }, [activeRoutineId, requestedChart, requestedRoutine, requestedRecording, freeMode]);
 
   useEffect(() => {
     setRecordingPosition(0);
@@ -201,15 +200,16 @@ export function PracticePage() {
   }, [activeRecording?.id, isRunning]);
 
   useEffect(() => {
-    if (!requestedChart) return;
-    setChartId(requestedChart);
-    setChartKey(getChartById(requestedChart, charts)?.concert_key ?? 'F');
+    const incomingChart = requestedChart ?? recordingById(requestedRecording)?.chartId;
+    if (!incomingChart) return;
+    setChartId(incomingChart);
+    setChartKey(getChartById(incomingChart, charts)?.concert_key ?? 'F');
     setLoopEnabled(false);
     setMusicalClock({ chartBeat: 0, startedAtMs: null });
-  }, [requestedChart]);
+  }, [requestedChart, requestedRecording, charts]);
 
   useEffect(() => {
-    if (!playableStep?.chart_id || requestedChart) return;
+    if (!playableStep?.chart_id || requestedChart || requestedRecording) return;
     const chosen = getChartById(playableStep.chart_id, charts);
     if (!chosen) {
       setChartId(playableStep.chart_id);
@@ -221,7 +221,7 @@ export function PracticePage() {
     setLoopEnabled(false);
     setLoopSections([{ startBar: 1, endBar: Math.min(chosen.bars.length, 4), plays: 2 }]);
     setRepeatWholePlan(false);
-  }, [playableStep?.chart_id, playableStep?.exercise_id, charts, requestedChart]);
+  }, [playableStep?.chart_id, playableStep?.exercise_id, charts, requestedChart, requestedRecording]);
 
   useEffect(() => {
     if (chosenExercise?.suggested_bpm != null) {
@@ -240,7 +240,7 @@ export function PracticePage() {
   }, [isRunning, completion]);
 
   const activeSections = loopEnabled && loopSections.length ? loopSections : null;
-  // With a recording, its media time (not setInterval or chart reference BPM) is the
+  // With a recording, the HTMLAudioElement media time is the sole playhead authority, not intervals or reference BPM.
   // playhead authority. A chart may be repeated for subsequent recorded choruses.
   const recordedBeat = activeRecording
     ? chartBeatForRecordingTime(recordingPosition, activeRecording, chart.time_signature)
@@ -646,7 +646,7 @@ export function PracticePage() {
         <div className="practice-notation-panel" role="tabpanel" aria-label="Jazz chord chart">
           <div className="practice-chart-toolbar">
             <label htmlFor="player-chart">{routine && !playableStep?.chart_id ? "Reference chart" : "Study chart"}</label>
-            <select id="player-chart" value={chartId} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
+            <select id="player-chart" value={chartId} disabled={Boolean(activeRecording)} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
               {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
             </select>
           </div>
@@ -660,7 +660,7 @@ export function PracticePage() {
           <p className="practice-chart-caption">All {chart.bars.length} measures · Tap a measure to move the playhead</p>
         </div>
       ) : (
-        <div className="practice-art-panel" role="tabpanel" aria-label="Chart only player">
+        <div className="practice-art-panel" role="tabpanel" aria-label={activeRecording ? 'Recorded backing track player' : 'Chart only player'}>
           <img src={VISUAL_ASSETS.sharedMvp.covers.rainy} alt="Cozy rainy-night jazz practice room" />
           <div className="practice-art-caption"><strong>{chart.title}</strong><span>{formatChartMeta(chart)}</span></div>
           {activeRecording ? <div className="practice-no-audio practice-recorded-controls">
