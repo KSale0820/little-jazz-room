@@ -3688,6 +3688,415 @@
       "practice_focus": "Practice space, smooth voice leading, and slow dominant resolution.",
       "representation": "original_common_form_study_not_song_transcription",
       "license": "Original educational chord-only practice arrangement; not an official or exact lead sheet; no melody, lyrics, or recording"
+    },
+    {
+      "id": "autumn-leaves-gm-video-35",
+      "title": "Autumn Leaves",
+      "concert_key": "G",
+      "time_signature": [
+        4,
+        4
+      ],
+      "feel": "Swing",
+      "form": "32-bar form × 5 with final tag",
+      "bars": [
+        {
+          "number": 1,
+          "section": "A1",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "m7b5"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "section": null,
+          "events": []
+        },
+        {
+          "number": 9,
+          "section": "A2",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 13,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "m7b5"
+            }
+          ]
+        },
+        {
+          "number": 14,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "section": null,
+          "events": []
+        },
+        {
+          "number": 17,
+          "section": "B",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "m7b5"
+            }
+          ]
+        },
+        {
+          "number": 18,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 19,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 20,
+          "section": null,
+          "events": []
+        },
+        {
+          "number": 21,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "C",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 22,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "F",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 23,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Bb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 24,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "maj7"
+            }
+          ]
+        },
+        {
+          "number": 25,
+          "section": "C",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "A",
+              "quality": "m7b5"
+            }
+          ]
+        },
+        {
+          "number": 26,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 27,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "G",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "C",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 28,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 2,
+              "root": "F",
+              "quality": "m7"
+            },
+            {
+              "beat": 3,
+              "duration_beats": 2,
+              "root": "Bb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 29,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "Eb",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 30,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "D",
+              "quality": "7"
+            }
+          ]
+        },
+        {
+          "number": 31,
+          "section": null,
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "m7"
+            }
+          ]
+        },
+        {
+          "number": 32,
+          "section": null,
+          "events": [],
+          "annotation": "5×"
+        },
+        {
+          "number": 33,
+          "section": "Tag",
+          "events": [
+            {
+              "beat": 1,
+              "duration_beats": 4,
+              "root": "G",
+              "quality": "m7"
+            }
+          ],
+          "annotation": "Tag"
+        },
+        {
+          "number": 34,
+          "section": null,
+          "events": [],
+          "annotation": "End"
+        },
+        {
+          "number": 35,
+          "section": null,
+          "events": []
+        }
+      ],
+      "style_instruction": "G minor · 32-bar form ×5 · final tag · 170 BPM",
+      "license": "Chord symbols and bar structure transcribed from the user-supplied backing-track video; no melody or lyrics.",
+      "representation": "video_on_screen_chord_transcription"
     }
   ],
   "repertoire_guides": [

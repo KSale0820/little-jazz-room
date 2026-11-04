@@ -1284,3 +1284,147 @@
   .practice-settings-dialog .practice-control-pair { gap: 6px; }
   .practice-settings-dialog .practice-stepper button { flex-basis: 30px; }
 }
+
+
+/* Optional owned stereo recording, shown only after a real file is registered.
+   Chart-only P02 and the approved illustration remain unchanged. */
+.practice-recorded-controls {
+  display: grid;
+  gap: 5px;
+  color: #304c3c;
+  background: #fff9ed;
+  font: 11px/1.3 system-ui, sans-serif;
+}
+.practice-recorded-controls p,
+.practice-recorded-controls small { font-size: 10px; line-height: 1.35; }
+.practice-recorded-controls label { font-weight: 600; }
+.practice-recorded-controls input[type="range"] {
+  width: 100%; min-width: 0; height: 28px; accent-color: #31503b;
+}
+.practice-recorded-controls button {
+  min-height: 38px; width: fit-content;
+  border: 1px solid #bfd0be; border-radius: 10px;
+  background: #eef3e9; color: #28513f; padding: 7px 12px;
+  font: 600 11px system-ui, sans-serif;
+}
+.practice-recording-error { color: #a04439; font-size: 11px; }
+
+
+/* Audio-only recording: reuse the approved P02 chart panel, never show a guessed grid. */
+.practice-unlinked-chart {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 24px 18px;
+  border: 1px solid #dedfce;
+  border-radius: 12px;
+  color: #31503b;
+  background: #fffaf1;
+  text-align: center;
+}
+.practice-unlinked-chart strong { font: 700 19px/1.2 Georgia, serif; }
+.practice-unlinked-chart p { max-width: 290px; font-size: 12px; line-height: 1.5; color: #657067; }
+
+/* Recording playback follows the locked P02 structure: art, timeline, transport, five tools.
+   No nested player-control card or second transport. Scoped to recorded audio only. */
+.practice-recording-p02 {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: max(16px,env(safe-area-inset-bottom));
+}
+.practice-recording-p02 .practice-player-head { margin-bottom: 19px; }
+.practice-recording-p02 .practice-segments { flex: none; }
+.practice-recording-p02 .practice-recording-art {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #e0e4da;
+  flex: none;
+}
+.practice-recording-p02 .practice-recording-art > img {
+  grid-area: 1 / 1;
+  display: block;
+  width: 100%;
+  height: clamp(190px, 28dvh, 275px);
+  object-fit: cover;
+}
+.practice-recording-p02 .practice-recording-art > .practice-art-caption {
+  grid-area: 1 / 1;
+  position: relative;
+  align-self: end;
+  z-index: 1;
+  padding: 20px 18px 16px;
+  pointer-events: none;
+  background: linear-gradient(transparent,#17251fe6);
+}
+.practice-recording-p02 .practice-recording-art .practice-art-caption strong {
+  font: 700 clamp(19px,5.1vw,25px)/1.16 Georgia,serif;
+}
+.practice-recording-p02 .practice-recording-art .practice-art-caption span {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+}
+.practice-recording-p02 .practice-recording-chart-panel { min-height: clamp(190px,28dvh,275px); }
+.practice-recording-p02 .practice-unlinked-chart {
+  min-height: clamp(190px,28dvh,275px);
+  border: 0;
+  background: transparent;
+}
+.practice-recording-p02 .practice-transport { margin-top: clamp(10px,2.5dvh,21px); }
+.practice-recording-seek input {
+  display: block;
+  width: 100%;
+  height: 21px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  accent-color: #285e4c;
+  background: transparent;
+}
+.practice-recording-seek input:disabled { cursor: not-allowed; opacity: .5; }
+.practice-recording-times {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #344f43;
+  font: 500 12px/1.3 system-ui,sans-serif;
+  padding: 1px 1px 0;
+}
+.practice-recording-p02 .practice-control-row { margin: 8px 0 9px; }
+.practice-recording-p02 .practice-secondary-transport svg {
+  width: 25px;
+  height: 25px;
+}
+.practice-recording-p02 .practice-utility-row { margin-top: clamp(12px,3.5dvh,30px); }
+.practice-recording-p02 .practice-recording-tools button {
+  min-height: 71px;
+  justify-content: center;
+  gap: 5px;
+}
+.practice-recording-p02 .practice-recording-tool-icon {
+  display: block;
+  color: #215440;
+  height: 27px;
+  font: 500 27px/1 system-ui,sans-serif;
+}
+.practice-recording-p02 .practice-recording-tools button:disabled { opacity: .58; }
+.practice-recording-ended {
+  margin-top: 8px; color: #5c7668; font-size: 11px; text-align: center;
+}
+@media (max-height:720px) {
+  .practice-recording-p02 .practice-player-head { margin-bottom: 9px; }
+  .practice-recording-p02 .practice-recording-art > img,
+  .practice-recording-p02 .practice-recording-chart-panel,
+  .practice-recording-p02 .practice-unlinked-chart { height: 167px; min-height: 167px; }
+  .practice-recording-p02 .practice-transport { margin-top: 5px; }
+  .practice-recording-p02 .practice-control-row { margin: 3px 0 5px; }
+  .practice-recording-p02 .practice-utility-row { margin-top: 7px; }
+  .practice-recording-p02 .practice-recording-tools button { min-height: 61px; }
+}
