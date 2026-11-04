@@ -241,7 +241,7 @@ export function PracticePage() {
 
   const activeSections = loopEnabled && loopSections.length ? loopSections : null;
   // With a recording, the HTMLAudioElement media time is the sole playhead authority, not intervals or reference BPM.
-  // playhead authority. A chart may be repeated for subsequent recorded choruses.
+  // The chart may be repeated for subsequent recorded choruses.
   const recordedBeat = activeRecording
     ? chartBeatForRecordingTime(recordingPosition, activeRecording, chart.time_signature)
     : 0;
