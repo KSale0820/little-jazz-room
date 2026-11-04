@@ -16,7 +16,9 @@ try {
 
     await page.goto(base + '/player?recording=autumn-leaves', { waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'Autumn Leaves' }).waitFor();
-    assert.equal(await page.getByRole('tab', { name: 'Chart' }).getAttribute('aria-selected'), 'true');
+    assert.equal(await page.getByRole('tab', { name: 'Player' }).getAttribute('aria-selected'), 'true');
+    await page.screenshot({ path: directory + '/' + size + '-audio-player-opening.png', fullPage: true });
+    await page.getByRole('tab', { name: 'Chart' }).click();
     await page.getByText('No chart linked', { exact: true }).waitFor();
     assert.equal(await page.locator('.chord-grid').count(), 0, 'unlinked audio cannot show a seeded chart');
     await page.screenshot({ path: directory + '/' + size + '-audio-no-linked-chart.png', fullPage: true });
