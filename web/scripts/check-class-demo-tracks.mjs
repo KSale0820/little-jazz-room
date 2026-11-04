@@ -22,7 +22,7 @@ try {
     if (await page.locator('nav.bottom-nav a').count() !== 4) throw new Error('T01 should have four nav tabs');
     let overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     if (overflow > 1) throw new Error('T01 page overflow ' + overflow + 'px');
-    if (await page.locator('.t01-track-card').count() !== 4) throw new Error('Four approved T01 previews missing');
+    if (await page.locator('.t01-track-card').count() !== 5) throw new Error('Four approved T01 previews and recorded track missing');
     for (const title of ['After-Hours Blues', 'Moonlit Changes', 'Blue Staircase', 'Sunday Walk']) {
       if (await page.locator('.t01-card-title').filter({ hasText: title }).count() !== 1) throw new Error('Missing ' + title);
     }
@@ -52,7 +52,7 @@ try {
     await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
     await page.screenshot({ path: join(outDir, 't01-empty-' + width + 'x' + height + '.png'), fullPage: false });
     await page.getByRole('button', { name: 'Clear search', exact: true }).first().click();
-    if (await page.locator('.t01-track-card').count() !== 4) throw new Error('Clear search failed');
+    if (await page.locator('.t01-track-card').count() !== 5) throw new Error('Clear search failed');
 
     await page.getByRole('button', { name: 'Instrument', exact: false }).click();
     if (!await page.getByRole('dialog', { name: 'Filter tracks' }).isVisible()) throw new Error('Filter sheet did not open');
@@ -62,12 +62,12 @@ try {
     await page.getByRole('button', { name: 'Filters', exact: false }).click();
     await page.getByRole('button', { name: 'Reset', exact: true }).click();
     await page.getByRole('button', { name: 'Apply filters' }).click();
-    if (await page.locator('.t01-track-card').count() !== 4) throw new Error('Filter reset failed');
+    if (await page.locator('.t01-track-card').count() !== 5) throw new Error('Filter reset failed');
 
     await page.getByRole('button', { name: 'Practice After-Hours Blues with its linked chart' }).click();
     if (!new URL(page.url()).pathname.endsWith('/player')) throw new Error('Shared player navigation failed');
     if (errors.length) throw new Error('Browser errors: ' + errors.join(' | '));
-    console.log('PASS T01 ' + width + 'x' + height + ': 4 track cards, favorites persisted, search, filters, shared player, no overflow');
+    console.log('PASS T01 ' + width + 'x' + height + ': 5 track cards, favorites persisted, search, filters, shared player, no overflow');
     await context.close();
   }
 } finally {
