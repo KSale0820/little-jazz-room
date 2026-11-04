@@ -56,7 +56,7 @@ try {
       console.warn('AAC codec unsupported in bundled Chromium: audio bytes/UI verified; physical iPhone Safari playback remains required');
       assert(!Number.isFinite(mediaSupport.duration) || mediaSupport.duration >= 0);
     }
-    await page.getByRole('button', { name: 'Finish Session' }).click();
+    await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
 
     await page.goto(base + '/player?chart=blues-f-12', { waitUntil: 'networkidle' });
