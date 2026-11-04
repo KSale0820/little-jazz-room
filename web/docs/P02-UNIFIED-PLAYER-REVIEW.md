@@ -44,3 +44,7 @@ Available supplied reference: `Approved UI/P/P02 - free.png` from the attached a
 - Product-owner visual acceptance remains pending.
 
 No merge or deployment requested or performed. `web/vercel.json` disables automatic Git deployments specifically for this fix branch, leaving other branch settings unchanged (Vercel `git.deploymentEnabled`).
+
+## CI follow-up
+
+Updated legacy P02 checks for three utility buttons, inline settings and the removed Player tab. Guided lessons retain scrollable pages with reachable tools. Initial GitHub P02 recording regression, chart/routine integration, build and native foundation jobs passed. The unrelated interactive chart-builder job timed out waiting for “Measure 1 chord 2” at `check-interactive-chart-builder.mjs:78`; chart-builder implementation is unchanged by this PR. This remains an outstanding CI limitation, separate from the passing custom-chart integration suite.

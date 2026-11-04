@@ -37,13 +37,11 @@ try {
     await openFree();
     check(await page.getByText('Free Practice', { exact: true }).isVisible(), 'P02 Free mode not selected');
     check(await page.locator('.practice-utility-row').count() === 1, 'Free mode must display tool shortcuts');
-    check(await page.locator('.practice-utility-row button').count() === 5, 'Approved layout requires five tool buttons');
+    check(await page.locator('.practice-utility-row button').count() === 3, 'Unified layout requires three tool buttons');
     check(await page.getByRole('button', { name: /Mixer Preview/ }).isDisabled(), 'Mixer must remain Preview');
-    await page.locator('.practice-utility-row').getByRole('button', { name: 'Tempo/Key' }).click();
-    await page.getByRole('dialog', { name: 'Tempo and key settings' }).waitFor();
-    await page.getByRole('dialog').getByRole('combobox', { name: 'Concert chart key' }).selectOption('G');
-    await page.getByRole('dialog').getByRole('button', { name: 'Close settings and return to session' }).click();
-    const loop = page.locator('.practice-utility-row').getByRole('button', { name: 'Loop' });
+    await page.getByRole('combobox', { name: 'Transpose concert chart key' }).waitFor();
+    await page.getByRole('combobox', { name: 'Transpose concert chart key' }).selectOption('G');
+    const loop = page.getByRole('button', { name: 'Configure loop' });
     await loop.click();
     const loopDialog = page.getByRole('dialog', { name: 'Set up looping' });
     await loopDialog.getByRole('button', { name: /Repeat sections/ }).click();
@@ -56,9 +54,9 @@ try {
       .getByRole('button', { name: 'Apply plan' }).click();
     check(await loop.getAttribute('aria-pressed') === 'false', 'Loop plan did not return to chart once');
     await page.screenshot({ path: join(out, 'P02-free-chart-' + width + 'x' + height + '.png') });
-    await page.getByRole('tab', { name: 'Player' }).click();
+    check(await page.getByRole('tab', { name: 'Player' }).count() === 0, 'No separate Player view');
     await page.screenshot({ path: join(out, 'P02-free-player-' + width + 'x' + height + '.png') });
-    await page.getByRole('tab', { name: 'Chart' }).click();
+    await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).waitFor();
 
     // The practice timer runs while the tuner is mounted as an in-session modal.
     await page.getByRole('button', { name: 'Start practice timer' }).click();
@@ -135,16 +133,14 @@ try {
     await page.getByText('Guided Practice', { exact: true }).waitFor();
     await page.getByRole('tab', { name: 'Chart' }).click();
     check(await page.locator('.practice-utility-row').count() === 1, 'Guided mode missing approved tools');
-    check(await page.locator('.practice-utility-row button').count() === 5, 'Guided must display five approved tools');
-    await page.locator('.practice-utility-row').getByRole('button', { name: 'Tempo/Key' }).click();
-    await page.getByRole('dialog', { name: 'Tempo and key settings' }).waitFor();
-    await page.getByRole('dialog').getByRole('button', { name: 'Close settings and return to session' }).click();
+    check(await page.locator('.practice-utility-row button').count() === 3, 'Guided must display three tools');
+    await page.getByRole('combobox', { name: 'Transpose concert chart key' }).waitFor();
     await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).click();
     await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
     check(new URL(page.url()).pathname === '/player', 'Guided Tuner changed route');
     await page.getByRole('dialog').getByRole('button', { name: 'Close tool and return to session' }).click();
     await page.screenshot({ path: join(out, 'P02-guided-chart-' + width + 'x' + height + '.png') });
-    await page.getByRole('tab', { name: 'Player' }).click();
+    check(await page.getByRole('tab', { name: 'Player' }).count() === 0, 'No separate Player view');
     check(await page.locator('.practice-utility-row').count() === 1, 'Guided Player panel missing tools');
     await page.locator('.practice-utility-row').getByRole('button', { name: /Metronome/ }).click();
     await page.getByRole('dialog', { name: 'Metronome within practice' }).waitFor();

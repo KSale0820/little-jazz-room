@@ -63,7 +63,11 @@ try {
       check(g.cols===4,label+' not four measures per row');
       check(g.grid.height<=g.chart.height+2,label+' chart clipped');
       check(g.chart.bottom<=height+1,label+' chart extends below screen');
-      check(g.tools.bottom<=height+1,label+' tool dock below screen');
+      // Guided lessons retain page scrolling; controls must remain fully reachable.
+      await page.locator('.practice-utility-row').scrollIntoViewIfNeeded();
+      const dock = await page.locator('.practice-utility-row').boundingBox();
+      check(dock && dock.y >= 0 && dock.y + dock.height <= height + 1, label+' tool dock clipped');
+      await page.locator('.practice-player-head').scrollIntoViewIfNeeded();
       check(g.docWidth<=width+1,label+' horizontal overflow');
       check(!g.chordOverflow,label+' chord text overflows cells');
       check(g.chordPairs.every(p=>p.twoColumns && p.leftBeforeRight && p.sameRow && p.noOverlap),
@@ -83,7 +87,7 @@ try {
     await page.goto(url+'/practice',{waitUntil:'networkidle'});
     await page.getByRole('button',{name:/^Free Practice/}).click();
     await page.waitForURL(u=>u.pathname==='/player');
-    await page.getByRole('tab',{name:'Chart'}).click();
+    await page.getByRole('tabpanel',{name:'Jazz chord chart'}).waitFor();
     const blues=await assess(12,'Free blues '+width+'x'+height);
     await page.screenshot({path:join(dir,'P02-free-complete-blues-'+width+'x'+height+'.png'),animations:'disabled'});
     await page.getByRole('combobox',{name:'Choose practice chart'}).selectOption('rhythm-bb-32');

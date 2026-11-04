@@ -1462,3 +1462,6 @@
   .practice-unified .practice-timer-button { width: 52px; height: 52px; }
   .practice-unified .practice-transport > .practice-reference-note { margin: 2px 0; }
 }
+.practice-unified.practice-instructions .practice-control-row { grid-template-columns: 1fr; }
+.practice-unified.practice-instructions .practice-transport > .practice-reference-note { display: none; }
+.practice-unified.practice-guided .practice-segments { grid-template-columns: repeat(2,minmax(0,1fr)); }
