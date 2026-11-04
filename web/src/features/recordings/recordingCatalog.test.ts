@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { seedCharts } from '../../data/seed';
 import {
   RECORDED_BACKING_TRACKS, chartBeatForRecordingTime, isUsableRecordedTrack,
   recordingById, recordingTimeForChartBeat, hasChartSync, recordingBarSequence,
@@ -44,6 +45,24 @@ describe('recorded backing-track catalog', () => {
     expect(recordingTimeForChartBeat(4, recording, [6, 8])).toBe(3);
     expect(chartBeatForRecordingTime(3, recording, [3, 4])).toBe(2);
   });
+  it('uses exact 35-box chord chart transcribed from the original video', () => {
+    const chart = seedCharts.find(item => item.id === 'autumn-leaves-gm-video-35');
+    expect(chart).toBeTruthy();
+    if (!chart) return;
+    expect(chart.time_signature).toEqual([4, 4]);
+    expect(chart.bars).toHaveLength(35);
+    expect(chart.bars.map(bar => bar.events.map(event => event.root + event.quality))).toEqual([
+      ['Cm7'], ['F7'], ['Bbmaj7'], ['Ebmaj7'], ['Am7b5'], ['D7'], ['Gm7'], [],
+      ['Cm7'], ['F7'], ['Bbmaj7'], ['Ebmaj7'], ['Am7b5'], ['D7'], ['Gm7'], [],
+      ['Am7b5'], ['D7'], ['Gm7'], [],
+      ['Cm7'], ['F7'], ['Bbmaj7'], ['Ebmaj7'], ['Am7b5'], ['D7'],
+      ['Gm7','C7'], ['Fm7','Bb7'], ['Eb7'], ['D7'], ['Gm7'], [],
+      ['Gm7'], [], [],
+    ]);
+    expect(chart.bars[26]?.events.map(event => [event.beat, event.duration_beats])).toEqual([[1, 2], [3, 2]]);
+    expect(chart.bars[27]?.events.map(event => [event.beat, event.duration_beats])).toEqual([[1, 2], [3, 2]]);
+  });
+
   it('transcribes the precise 5x form and final tag from the original video', () => {
     const autumn = recordingById('autumn-leaves');
     expect(autumn && hasChartSync(autumn)).toBe(true);

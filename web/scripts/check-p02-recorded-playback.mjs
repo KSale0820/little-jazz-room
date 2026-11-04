@@ -15,17 +15,19 @@ try {
     const size = width + 'x' + height;
 
     await page.goto(base + '/player?recording=autumn-leaves', { waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Autumn Leaves' }).waitFor();
-    assert.equal(await page.getByRole('tab', { name: 'Player' }).getAttribute('aria-selected'), 'true');
-    await page.screenshot({ path: directory + '/' + size + '-audio-player-opening.png', fullPage: true });
-    await page.getByRole('tab', { name: 'Chart' }).click();
-    await page.getByText('No chart linked', { exact: true }).waitFor();
-    assert.equal(await page.locator('.chord-grid').count(), 0, 'unlinked audio cannot show a seeded chart');
-    await page.screenshot({ path: directory + '/' + size + '-audio-no-linked-chart.png', fullPage: true });
-
+    await page.getByRole('heading', { name: 'Autumn Leaves (Video Chart)' }).waitFor();
+    assert.equal(await page.getByRole('tab', { name: 'Chart' }).getAttribute('aria-selected'), 'true');
+    assert.equal(await page.locator('.chord-grid .measure').count(), 35, 'video chart has 32 form bars and 3 tag bars');
+    assert.equal(await page.locator('#player-chart').inputValue(), 'autumn-leaves-gm-video-35');
+    const bar27 = await page.locator('.chord-grid .measure').nth(26).getAttribute('aria-label');
+    assert(bar27?.includes('Gm7 then C7'), 'bar 27 must display both video chords');
+    const bar29 = await page.locator('.chord-grid .measure').nth(28).getAttribute('aria-label');
+    assert(bar29?.includes('Eb7'), 'video uses E-flat dominant 7, not major 7');
+    assert(!bar29?.includes('maj7'), 'video bar 29 has no major 7');
+    await page.screenshot({ path: directory + '/' + size + '-autumn-video-chart.png', fullPage: true });
     await page.getByRole('tab', { name: 'Player' }).click();
     await page.getByRole('slider', { name: 'Seek recording' }).waitFor();
-    await page.screenshot({ path: directory + '/' + size + '-audio-player.png', fullPage: true });
+    await page.screenshot({ path: directory + '/' + size + '-autumn-recorded-player.png', fullPage: true });
     const audioAsset = await page.request.get(base + '/audio/backing-tracks/autumn-leaves.m4a');
     assert(audioAsset.ok(), 'real uploaded M4A must be served');
     assert.equal((await audioAsset.body()).byteLength, 3971609, 'recording bytes must be complete');
@@ -56,6 +58,20 @@ try {
       console.warn('AAC codec unsupported in bundled Chromium: audio bytes/UI verified; physical iPhone Safari playback remains required');
       assert(!Number.isFinite(mediaSupport.duration) || mediaSupport.duration >= 0);
     }
+    // Chromium images can be checked without AAC decoding by notifying React
+    // of the current media clock time, which remains the sole chart authority.
+    await page.getByRole('tab', { name: 'Chart' }).click();
+    const simulateAudioAt = async seconds => {
+      await page.locator('audio').evaluate((el, t) => {
+        Object.defineProperty(el, 'currentTime', { configurable: true, value: t, writable: true });
+        el.dispatchEvent(new Event('timeupdate'));
+      }, seconds);
+    };
+    await simulateAudioAt(5.75 + 32 * 240 / 170);
+    await page.waitForFunction(() => document.querySelector('.measure[aria-current="true"]')?.getAttribute('aria-label')?.startsWith('Measure 1:'));
+    await simulateAudioAt(5.75 + 158 * 240 / 170);
+    await page.waitForFunction(() => document.querySelector('.measure[aria-current="true"]')?.getAttribute('aria-label')?.startsWith('Measure 33:'));
+    await page.screenshot({ path: directory + '/' + size + '-autumn-tag-highlight.png', fullPage: true });
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
 

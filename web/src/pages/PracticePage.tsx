@@ -7,7 +7,7 @@ import { GuidedCatCoach, GuidedLesson } from '../components/GuidedLesson';
 import { normalizeGuidedLesson } from '../lib/guidedLesson';
 import { exercisesById } from '../data/seed';
 import { getChartById } from '../features/charts/chartRepository';
-import { chartBeatForRecordingTime, hasChartSync, isUsableRecordedTrack, recordingById, recordingTimeForChartBeat } from '../features/recordings/recordingCatalog';
+import { chartBeatAtRecordingTime, hasChartSync, isUsableRecordedTrack, recordingById, recordingTimeForSelectedBar, recordingTimeForAdjacentBar } from '../features/recordings/recordingCatalog';
 import { RecordingOnlyPractice } from '../features/recordings/RecordingOnlyPractice';
 import { pitchClass } from '../features/charts/chartModel';
 import { formatChartMeta } from '../lib/chords';
@@ -87,7 +87,7 @@ export function PracticePage() {
   const requestedRoutine = searchParams.get('routine');
   const freeMode = searchParams.get('mode') === 'free';
   // Explicit chart deep links open Free Practice even if the last routine is active.
-  const routineId = !requestedChart && !freeMode ? (requestedRoutine ?? activeRoutineId) : null;
+  const routineId = !requestedChart && !requestedRecording && !freeMode ? (requestedRoutine ?? activeRoutineId) : null;
   const routine = routineId ? routines.find(item => item.id === routineId) ?? null : null;
   const missingRoutine = Boolean(requestedRoutine && !routine);
   const [stepIndex, setStepIndex] = useState(0);
@@ -240,15 +240,14 @@ export function PracticePage() {
   }, [isRunning, completion]);
 
   const activeSections = loopEnabled && loopSections.length ? loopSections : null;
-  // With a recording, the HTMLAudioElement media time is the sole playhead authority, not intervals or reference BPM.
-  // The chart may be repeated for subsequent recorded choruses.
+  // The media element is the master clock. Honor the original video's exact
+  // four complete choruses, shortened final chorus and three-bar ending tag.
   const recordedBeat = activeRecording
-    ? chartBeatForRecordingTime(recordingPosition, activeRecording, chart.time_signature)
+    ? chartBeatAtRecordingTime(recordingPosition, activeRecording, chart.time_signature, chart.bars.length)
     : 0;
-  const chartLength = Math.max(1, sequenceDuration(chart, null));
   const playhead = locateSequencePlayhead(
     chart,
-    activeRecording ? { chartBeat: recordedBeat % chartLength, startedAtMs: null } : musicalClock,
+    activeRecording ? { chartBeat: recordedBeat, startedAtMs: null } : musicalClock,
     nowMs,
     activeRecording?.recordedBpm ?? tempo,
     activeRecording ? null : activeSections,
@@ -331,7 +330,7 @@ export function PracticePage() {
     const now = performance.now();
     const next = Math.max(0, Math.min(index, chart.bars.length - 1));
     if (activeRecording) {
-      seekRecording(recordingTimeForChartBeat(next * beatsPerMeasure(chart), activeRecording, chart.time_signature));
+      seekRecording(recordingTimeForSelectedBar(next, recordingPosition, activeRecording, chart.time_signature, chart.bars.length));
       return;
     }
     const sequenceBeat = sequenceBeatForBar(chart, activeSections, next);
@@ -345,8 +344,7 @@ export function PracticePage() {
 
   function stepMeasure(delta: number) {
     if (activeRecording) {
-      const next = Math.max(0, Math.min(chart.bars.length - 1, playhead.barIndex + delta));
-      seekRecording(recordingTimeForChartBeat(next * beatsPerMeasure(chart), activeRecording, chart.time_signature));
+      seekRecording(recordingTimeForAdjacentBar(delta, recordingPosition, activeRecording, chart.time_signature, chart.bars.length));
       return;
     }
     const now = performance.now();
