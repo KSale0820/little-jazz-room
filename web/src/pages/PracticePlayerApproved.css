@@ -1284,3 +1284,50 @@
   .practice-settings-dialog .practice-control-pair { gap: 6px; }
   .practice-settings-dialog .practice-stepper button { flex-basis: 30px; }
 }
+
+
+/* Optional owned stereo recording, shown only after a real file is registered.
+   Chart-only P02 and the approved illustration remain unchanged. */
+.practice-recorded-controls {
+  display: grid;
+  gap: 5px;
+  color: #304c3c;
+  background: #fff9ed;
+  font: 11px/1.3 system-ui, sans-serif;
+}
+.practice-recorded-controls p,
+.practice-recorded-controls small { font-size: 10px; line-height: 1.35; }
+.practice-recorded-controls label { font-weight: 600; }
+.practice-recorded-controls input[type="range"] {
+  width: 100%; min-width: 0; height: 28px; accent-color: #31503b;
+}
+.practice-recorded-controls button {
+  min-height: 38px; width: fit-content;
+  border: 1px solid #bfd0be; border-radius: 10px;
+  background: #eef3e9; color: #28513f; padding: 7px 12px;
+  font: 600 11px system-ui, sans-serif;
+}
+.practice-recording-error { color: #a04439; font-size: 11px; }
+
+
+/* Recording-only mode: no unmatched chord chart, no video, no new navigation. */
+.practice-audio-only .practice-audio-only-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: unset;
+  margin: 5px 0 10px;
+}
+.practice-audio-only .practice-art-panel {
+  min-width: 0;
+}
+.practice-audio-only .practice-recorded-controls {
+  padding: 12px 14px;
+}
+.practice-audio-only .practice-recorded-controls input[type="range"] {
+  width: 100%;
+  max-width: 100%;
+}
+.practice-audio-only .practice-recorded-controls button {
+  min-height: 44px;
+}

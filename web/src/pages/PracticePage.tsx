@@ -7,6 +7,8 @@ import { GuidedCatCoach, GuidedLesson } from '../components/GuidedLesson';
 import { normalizeGuidedLesson } from '../lib/guidedLesson';
 import { exercisesById } from '../data/seed';
 import { getChartById } from '../features/charts/chartRepository';
+import { chartBeatForRecordingTime, hasChartSync, isUsableRecordedTrack, recordingById, recordingTimeForChartBeat } from '../features/recordings/recordingCatalog';
+import { RecordingOnlyPractice } from '../features/recordings/RecordingOnlyPractice';
 import { pitchClass } from '../features/charts/chartModel';
 import { formatChartMeta } from '../lib/chords';
 import { beatsPerMeasure, locateSequencePlayhead, rawChartBeat, sequenceBeatForBar, sequenceDuration } from '../lib/practiceChartClock';
@@ -33,12 +35,14 @@ type Completion = {
   exerciseId?: string;
   title: string;
   chartTitle: string;
+  recordingTitle?: string;
 };
 
 /**
  * The timer measures real wall-clock elapsed time, including time spent on a
- * background tab, rather than counting setInterval callbacks. It never starts
- * an audio transport: this demo has no licensed/recorded audio available.
+ * background tab, rather than counting setInterval callbacks. When a
+ * rights-cleared recording is configured, the native media element controls
+ * audio time, while session time remains a separate elapsed-time record.
  */
 type PracticeToolIcon = 'mixer' | 'tempo' | 'loop' | 'tuner' | 'metronome';
 function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
@@ -79,6 +83,7 @@ export function PracticePage() {
     charts, exercises, routines, activeRoutineId, addSession, showToast, catId,
   } = useApp();
   const requestedChart = searchParams.get('chart');
+  const requestedRecording = searchParams.get('recording');
   const requestedRoutine = searchParams.get('routine');
   const freeMode = searchParams.get('mode') === 'free';
   // Explicit chart deep links open Free Practice even if the last routine is active.
@@ -119,6 +124,12 @@ export function PracticePage() {
   const [rating, setRating] = useState(0);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
   const savePromiseRef = useRef<Promise<boolean> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const suppressAudioPauseRef = useRef(false);
+  const [recordingPosition, setRecordingPosition] = useState(0);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [recordingPlaying, setRecordingPlaying] = useState(false);
+  const [recordingError, setRecordingError] = useState<string | null>(null);
 
   const openTool = (tool: PracticeTool, trigger: HTMLButtonElement) => {
     toolTriggerRef.current = trigger;
@@ -139,6 +150,16 @@ export function PracticePage() {
   const missingChart = !resolvedChart;
   // Hooks remain unconditional, but a missing chart renders an explicit error below.
   const chart = resolvedChart ?? charts[0]!;
+  const recordingFromUrl = recordingById(requestedRecording);
+  const invalidRecordingLink = Boolean(requestedRecording &&
+    (!recordingFromUrl || !isUsableRecordedTrack(recordingFromUrl) ||
+      (requestedChart !== null && recordingFromUrl.chartId !== requestedChart) ||
+      (requestedChart === null && recordingFromUrl.chartId !== null)));
+  const standaloneRecording = recordingFromUrl && recordingFromUrl.chartId === null &&
+    isUsableRecordedTrack(recordingFromUrl) ? recordingFromUrl : null;
+  const activeRecording = recordingFromUrl && hasChartSync(recordingFromUrl) &&
+    recordingFromUrl.chartId === chartId && isUsableRecordedTrack(recordingFromUrl)
+    ? recordingFromUrl : null;
   const chosenExercise = exercisesById[playableStep?.exercise_id ?? ''] ?? exercises.find(item => item.id === playableStep?.exercise_id);
   const lesson = useMemo(() => playableStep
     ? normalizeGuidedLesson(playableStep, chosenExercise, currentStep?.snapshot)
@@ -164,6 +185,20 @@ export function PracticePage() {
     setSaveState('idle');
     savePromiseRef.current = null;
   }, [activeRoutineId, requestedChart, requestedRoutine, freeMode]);
+
+  useEffect(() => {
+    setRecordingPosition(0);
+    setRecordingDuration(0);
+    setRecordingPlaying(false);
+    setRecordingError(null);
+    suppressAudioPauseRef.current = false;
+  }, [requestedRecording]);
+
+  useEffect(() => {
+    if (!activeRecording || !isRunning) return;
+    const timer = window.setInterval(() => setRecordingPosition(audioRef.current?.currentTime ?? 0), 50);
+    return () => window.clearInterval(timer);
+  }, [activeRecording?.id, isRunning]);
 
   useEffect(() => {
     if (!requestedChart) return;
@@ -205,17 +240,31 @@ export function PracticePage() {
   }, [isRunning, completion]);
 
   const activeSections = loopEnabled && loopSections.length ? loopSections : null;
-  const playhead = locateSequencePlayhead(chart, musicalClock, nowMs, tempo, activeSections, repeatWholePlan);
+  // With a recording, its media time (not setInterval or chart reference BPM) is the
+  // playhead authority. A chart may be repeated for subsequent recorded choruses.
+  const recordedBeat = activeRecording
+    ? chartBeatForRecordingTime(recordingPosition, activeRecording, chart.time_signature)
+    : 0;
+  const chartLength = Math.max(1, sequenceDuration(chart, null));
+  const playhead = locateSequencePlayhead(
+    chart,
+    activeRecording ? { chartBeat: recordedBeat % chartLength, startedAtMs: null } : musicalClock,
+    nowMs,
+    activeRecording?.recordedBpm ?? tempo,
+    activeRecording ? null : activeSections,
+    activeRecording ? false : repeatWholePlan,
+  );
   const currentSection = activeSections && playhead.sectionIndex !== null ? activeSections[playhead.sectionIndex] : null;
   const loopRange: [number, number] | null = currentSection ? [currentSection.startBar, currentSection.endBar] : null;
   const loopSummary = activeSections ? activeSections.length + ' section' + (activeSections.length === 1 ? '' : 's') : 'Off';
-  const planStatus = playhead.ended ? 'Chart finished' : currentSection
+  const planStatus = activeRecording ? 'Recording plays at its original key and tempo' : playhead.ended ? 'Chart finished' : currentSection
     ? 'Section ' + ((playhead.sectionIndex ?? 0) + 1) + ' of ' + activeSections!.length + ' · Pass ' + playhead.pass + ' of ' + currentSection.plays
     : 'Chart once';
 
   function chooseChart(id: string) {
     const next = getChartById(id, charts);
     if (!next) return;
+    audioRef.current?.pause();
     const now = performance.now();
     setChartId(id);
     setChartKey(next.concert_key);
@@ -245,6 +294,10 @@ export function PracticePage() {
   }
 
   function openLoop(trigger: HTMLButtonElement) {
+    if (activeRecording) {
+      showToast('Recording loops are not available yet. The audio plays as recorded.');
+      return;
+    }
     loopTriggerRef.current = trigger;
     setLoopOpen(true);
   }
@@ -265,9 +318,22 @@ export function PracticePage() {
     closeLoop();
   }
 
+  function seekRecording(seconds: number) {
+    const audio = audioRef.current;
+    if (!audio || !Number.isFinite(seconds)) return;
+    const duration = Number.isFinite(audio.duration) ? audio.duration : recordingDuration;
+    const next = Math.max(0, Math.min(seconds, duration > 0 ? duration : seconds));
+    audio.currentTime = next;
+    setRecordingPosition(next);
+  }
+
   function moveToBar(index: number) {
     const now = performance.now();
     const next = Math.max(0, Math.min(index, chart.bars.length - 1));
+    if (activeRecording) {
+      seekRecording(recordingTimeForChartBeat(next * beatsPerMeasure(chart), activeRecording, chart.time_signature));
+      return;
+    }
     const sequenceBeat = sequenceBeatForBar(chart, activeSections, next);
     if (sequenceBeat === null) setLoopEnabled(false);
     setMusicalClock({
@@ -278,6 +344,11 @@ export function PracticePage() {
   }
 
   function stepMeasure(delta: number) {
+    if (activeRecording) {
+      const next = Math.max(0, Math.min(chart.bars.length - 1, playhead.barIndex + delta));
+      seekRecording(recordingTimeForChartBeat(next * beatsPerMeasure(chart), activeRecording, chart.time_signature));
+      return;
+    }
     const now = performance.now();
     const beats = beatsPerMeasure(chart);
     const duration = sequenceDuration(chart, activeSections);
@@ -291,6 +362,21 @@ export function PracticePage() {
   }
 
   function toggleTimer() {
+    if (activeRecording) {
+      const audio = audioRef.current;
+      if (!audio) return;
+      if (audio.paused) {
+        void audio.play().catch(() =>
+          setRecordingError('Unable to play this file. Check the recording format and file location.'));
+      } else {
+        audio.pause();
+      }
+      return;
+    }
+    togglePracticeClock();
+  }
+
+  function togglePracticeClock() {
     const now = performance.now();
     const playing = startedAtMs === null;
     setMusicalClock(current => {
@@ -325,6 +411,8 @@ export function PracticePage() {
 
   function finishSession() {
     if (completion) return;
+    suppressAudioPauseRef.current = true;
+    audioRef.current?.pause();
     const now = performance.now();
     const finishedStamp = Date.now();
     const finalStepMs = elapsedMilliseconds(stepMs, startedAtMs, now);
@@ -342,6 +430,7 @@ export function PracticePage() {
       exerciseId: playableStep?.exercise_id,
       title: routine?.title ?? chart.title,
       chartTitle: chart.title,
+      recordingTitle: activeRecording?.title,
     });
     setSaveState('idle');
     savePromiseRef.current = null;
@@ -392,6 +481,9 @@ export function PracticePage() {
 
   async function practiceAgain() {
     if (!(await saveSession())) return;
+    suppressAudioPauseRef.current = false;
+    if (audioRef.current) audioRef.current.currentTime = 0;
+    setRecordingPosition(0);
     setStepIndex(0);
     setPriorMs(0);
     setStepMs(0);
@@ -406,11 +498,23 @@ export function PracticePage() {
     savePromiseRef.current = null;
   }
 
+  if (standaloneRecording) {
+    return <RecordingOnlyPractice recording={standaloneRecording} />;
+  }
+
   if (missingRoutine) {
     return <section className="practice-player" role="alert" aria-label="Routine unavailable">
       <h1>Routine unavailable</h1>
       <p>The requested routine could not be found for this account. Nothing else was substituted.</p>
       <button type="button" onClick={() => navigate('/routines')}>Back to Routines</button>
+    </section>;
+  }
+
+  if (invalidRecordingLink) {
+    return <section className="practice-player" role="alert" aria-label="Recording unavailable">
+      <h1>Recording unavailable</h1>
+      <p>This recording is not configured for the requested chart. Nothing else was substituted.</p>
+      <button type="button" onClick={() => navigate('/tracks')}>Back to Tracks</button>
     </section>;
   }
 
@@ -451,7 +555,7 @@ export function PracticePage() {
           <div>
             <strong>{completion.title}</strong>
             <span>{completion.routineId ? 'Guided Practice' : 'Free Practice'}</span>
-            <small>{completion.chartTitle} · Chart only</small>
+            <small>{completion.chartTitle} · {completion.recordingTitle ? 'Recorded backing track' : 'Chart only'}</small>
           </div>
         </div>
         <div className="practice-complete-notes">
@@ -501,7 +605,25 @@ export function PracticePage() {
         <button className="practice-more" type="button" aria-label="Finish session" onClick={finishSession}>⋮</button>
       </header>
 
-      <p className="practice-audio-state" data-testid="chart-playhead" title={planStatus}><strong>Chart Only</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · No recording</p>
+      {activeRecording && <audio
+        key={activeRecording.id} ref={audioRef} src={activeRecording.src} preload="metadata"
+        onTimeUpdate={event => setRecordingPosition(event.currentTarget.currentTime)}
+        onSeeked={event => setRecordingPosition(event.currentTarget.currentTime)}
+        onLoadedMetadata={event => setRecordingDuration(event.currentTarget.duration)}
+        onPlay={() => {
+          setRecordingPlaying(true);
+          setRecordingError(null);
+          if (!isRunning && !suppressAudioPauseRef.current) togglePracticeClock();
+        }}
+        onPause={() => {
+          setRecordingPlaying(false);
+          if (isRunning && !suppressAudioPauseRef.current) togglePracticeClock();
+        }}
+        onEnded={() => setRecordingPlaying(false)}
+        onError={() => setRecordingError('Recording could not be loaded. Check the audio file and format.')}
+        aria-label={activeRecording.title + ' backing track'} />}
+      <p className="practice-audio-state" data-testid="chart-playhead" title={planStatus}><strong>{activeRecording ? 'Recorded Track' : 'Chart Only'}</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · {activeRecording ? activeRecording.recordedBpm + ' BPM audio' : 'No recording'}</p>
+      {activeRecording && recordingError && <p role="alert" className="practice-recording-error">{recordingError}</p>}
 
       {routine && (
         <div className="practice-guided-progress" role="progressbar" aria-label="Routine steps completed"
@@ -541,7 +663,19 @@ export function PracticePage() {
         <div className="practice-art-panel" role="tabpanel" aria-label="Chart only player">
           <img src={VISUAL_ASSETS.sharedMvp.covers.rainy} alt="Cozy rainy-night jazz practice room" />
           <div className="practice-art-caption"><strong>{chart.title}</strong><span>{formatChartMeta(chart)}</span></div>
-          <div className="practice-no-audio"><strong>Chart Only · No Recording</strong><p>Backing-track playback and stem mixing are unavailable. Your practice timer works independently.</p></div>
+          {activeRecording ? <div className="practice-no-audio practice-recorded-controls">
+            <strong>Recorded Backing Track</strong>
+            <p>{activeRecording.title} · Original recording at {activeRecording.recordedBpm} BPM · {recordingPlaying ? 'Playing' : 'Paused'}</p>
+            <label htmlFor="recording-scrubber">Recording position</label>
+            <input id="recording-scrubber" type="range" min={0}
+              max={recordingDuration > 0 ? recordingDuration : 1}
+              step={0.05} value={Math.min(recordingPosition, recordingDuration > 0 ? recordingDuration : 1)}
+              disabled={!recordingDuration}
+              aria-label="Seek recording"
+              onChange={event => seekRecording(Number(event.target.value))} />
+            <button type="button" onClick={() => seekRecording(0)}>Restart recording</button>
+            <small>Recorded tempo and key are fixed. Chart controls do not modify the sound.</small>
+          </div> : <div className="practice-no-audio"><strong>Chart Only · No Recording</strong><p>Backing-track playback and stem mixing are unavailable. Your practice timer works independently.</p></div>}
         </div>
       )}
 
@@ -566,13 +700,13 @@ export function PracticePage() {
           <span style={{ width: stepProgress + '%' }} />
           <i style={{ left: stepProgress + '%' }} />
         </div>
-        <div className="practice-clock"><strong data-testid="session-elapsed">{formatPracticeTime(elapsedSeconds)}</strong><span>{targetSeconds ? formatPracticeTime(targetSeconds) + ' step goal' : (isRunning ? 'Practicing' : elapsedSeconds ? 'Paused' : 'Ready') + ' · No recording'}</span></div>
+        <div className="practice-clock"><strong data-testid="session-elapsed">{formatPracticeTime(elapsedSeconds)}</strong><span>{targetSeconds ? formatPracticeTime(targetSeconds) + ' step goal' : (isRunning ? 'Practicing' : elapsedSeconds ? 'Paused' : 'Ready') + (activeRecording ? ' · Recorded track' : ' · No recording')}</span></div>
         <div className="practice-control-row">
           <button className="practice-secondary-transport" type="button" aria-label="Configure loop" onClick={event => openLoop(event.currentTarget)} aria-pressed={loopEnabled}>
             <PracticeToolGlyph name="loop" />
           </button>
           <button className="practice-measure-btn" type="button" aria-label="Previous measure" onClick={() => stepMeasure(-1)}>◀❙</button>
-          <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
+          <button className="practice-timer-button" type="button" onClick={toggleTimer} aria-label={activeRecording ? (recordingPlaying ? 'Pause recording and practice timer' : 'Play recording and start practice timer') : isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
             {isRunning ? 'Ⅱ' : '▶'}
             <span className="practice-timer-label">{isRunning ? 'Pause' : (priorMs + stepMs) ? 'Resume' : 'Start'}</span>
           </button>
@@ -587,7 +721,7 @@ export function PracticePage() {
             <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
           </div>
         )}
-        <p className="practice-reference-note">Play follows the chart visually at the selected BPM; recorded audio is not available.</p>
+        <p className="practice-reference-note">{activeRecording ? 'Chart follows the recording. Tempo/key settings do not change the recorded sound.' : 'Play follows the chart visually at the selected BPM; recorded audio is not available.'}</p>
         <button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button>
       </div>
       {routine && panel === 'instructions' && lesson && (
@@ -631,7 +765,7 @@ export function PracticePage() {
         {activeTool === 'tuner' ? <TunerPage onClose={closeTool} /> : activeTool === 'metronome' ? <MetronomePage onClose={closeTool} /> : (
           <div className="practice-settings-dialog">
             <header><h2>Tempo &amp; Key</h2><button type="button" onClick={closeTool} aria-label="Close settings and return to session">×</button></header>
-            <p>Set chart transposition and your reference practice tempo. No recording is available.</p>
+            <p>{activeRecording ? 'Set visual chart transposition and reference tempo. The recording remains at its original pitch and speed.' : 'Set chart transposition and your reference practice tempo. No recording is available.'}</p>
       <section className="practice-musical-controls" aria-label="Musical chart controls">
         <div className="practice-control-pair">
           <div className="practice-control-field">
