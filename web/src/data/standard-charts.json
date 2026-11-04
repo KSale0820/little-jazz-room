@@ -1,0 +1,3024 @@
+[
+  {
+    "id": "autumn-leaves",
+    "title": "Autumn Leaves",
+    "concert_key": "G",
+    "time_signature": [
+      4,
+      4
+    ],
+    "feel": "swing",
+    "form": "AABC",
+    "bars": [
+      {
+        "number": 1,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "A",
+            "quality": "m7b5"
+          }
+        ]
+      },
+      {
+        "number": 6,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "7b13"
+          }
+        ]
+      },
+      {
+        "number": 7,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m6"
+          }
+        ]
+      },
+      {
+        "number": 8,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m6"
+          }
+        ]
+      },
+      {
+        "number": 9,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 11,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 12,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 13,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "A",
+            "quality": "m7b5"
+          }
+        ]
+      },
+      {
+        "number": 14,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "7b13"
+          }
+        ]
+      },
+      {
+        "number": 15,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m6"
+          }
+        ]
+      },
+      {
+        "number": 16,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m6"
+          }
+        ]
+      },
+      {
+        "number": 17,
+        "section": "B",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "A",
+            "quality": "m7b5"
+          }
+        ]
+      },
+      {
+        "number": 18,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "7b13"
+          }
+        ]
+      },
+      {
+        "number": 19,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m6"
+          }
+        ]
+      },
+      {
+        "number": 20,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m6"
+          }
+        ]
+      },
+      {
+        "number": 21,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 22,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 23,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 24,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 25,
+        "section": "C",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "A",
+            "quality": "m7b5"
+          }
+        ]
+      },
+      {
+        "number": 26,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "7b13"
+          }
+        ]
+      },
+      {
+        "number": 27,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "Gb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 28,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "E",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 29,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "A",
+            "quality": "m7b5"
+          }
+        ]
+      },
+      {
+        "number": 30,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "7b13"
+          }
+        ]
+      },
+      {
+        "number": 31,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m6"
+          }
+        ]
+      },
+      {
+        "number": 32,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m6"
+          }
+        ]
+      }
+    ],
+    "difficulty": "Beginner",
+    "representation": "standard_chord_changes",
+    "source_url": "https://jazzchanges.app/autumn-leaves/",
+    "license": "Chord symbols only; no melody, lyrics, or recording. Common changes vary by arrangement."
+  },
+  {
+    "id": "blue-bossa",
+    "title": "Blue Bossa",
+    "concert_key": "C",
+    "time_signature": [
+      4,
+      4
+    ],
+    "feel": "bossa",
+    "form": "AB",
+    "bars": [
+      {
+        "number": 1,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "m7b5"
+          }
+        ]
+      },
+      {
+        "number": 6,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 7,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 8,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 9,
+        "section": "B",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Ab",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 11,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Db",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 12,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Db",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 13,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "m7b5"
+          }
+        ]
+      },
+      {
+        "number": 14,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 15,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 16,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "m7b5"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      }
+    ],
+    "difficulty": "Beginner",
+    "representation": "standard_chord_changes",
+    "source_url": "https://jazzchanges.app/blue-bossa/",
+    "license": "Chord symbols only; no melody, lyrics, or recording. Common changes vary by arrangement."
+  },
+  {
+    "id": "song-for-my-father",
+    "title": "Song for My Father",
+    "concert_key": "F",
+    "time_signature": [
+      4,
+      4
+    ],
+    "feel": "bossa",
+    "form": "AAB",
+    "bars": [
+      {
+        "number": 1,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Db",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 6,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "sus7"
+          }
+        ]
+      },
+      {
+        "number": 7,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 8,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 9,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 11,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 12,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 13,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Db",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 14,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "sus7"
+          }
+        ]
+      },
+      {
+        "number": 15,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 16,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 17,
+        "section": "B",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 18,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 19,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 20,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 21,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "Eb",
+            "quality": "7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "Db",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 22,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 23,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 24,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      }
+    ],
+    "difficulty": "Beginner",
+    "representation": "standard_chord_changes",
+    "source_url": "https://jazzchanges.app/song-for-my-father/",
+    "license": "Chord symbols only; no melody, lyrics, or recording. Common changes vary by arrangement."
+  },
+  {
+    "id": "sandu",
+    "title": "Sandu",
+    "concert_key": "Eb",
+    "time_signature": [
+      4,
+      4
+    ],
+    "feel": "swing",
+    "form": "blues-12",
+    "bars": [
+      {
+        "number": 1,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Ab",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Ab",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 6,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Ab",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 7,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 8,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 9,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 11,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "Eb",
+            "quality": "7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 12,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      }
+    ],
+    "difficulty": "Beginner",
+    "representation": "standard_chord_changes",
+    "source_url": "https://squartet.com/en/standards/sandu",
+    "license": "Chord symbols only; no melody, lyrics, or recording. Common changes vary by arrangement."
+  },
+  {
+    "id": "all-the-things-you-are",
+    "title": "All the Things You Are",
+    "concert_key": "Ab",
+    "time_signature": [
+      4,
+      4
+    ],
+    "feel": "swing",
+    "form": "ABCD",
+    "bars": [
+      {
+        "number": 1,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Ab",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Db",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 6,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 7,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 8,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 9,
+        "section": "B",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 11,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 12,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 13,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Ab",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 14,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 15,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 16,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 17,
+        "section": "C",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "A",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 18,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 19,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 20,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 21,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F#",
+            "quality": "m7b5"
+          }
+        ]
+      },
+      {
+        "number": 22,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "B",
+            "quality": "7b9"
+          }
+        ]
+      },
+      {
+        "number": 23,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "E",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 24,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "7b13"
+          }
+        ]
+      },
+      {
+        "number": 25,
+        "section": "D",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 26,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 27,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 28,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Ab",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 29,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Db",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 30,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Db",
+            "quality": "mMaj7"
+          }
+        ]
+      },
+      {
+        "number": 31,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 32,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "B",
+            "quality": "dim7"
+          }
+        ]
+      },
+      {
+        "number": 33,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 34,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 35,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Ab",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 36,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "m7b5"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "7b9"
+          }
+        ]
+      }
+    ],
+    "difficulty": "Intermediate",
+    "representation": "standard_chord_changes",
+    "source_url": "https://jazzchanges.app/all-the-things-you-are/",
+    "license": "Chord symbols only; no melody, lyrics, or recording. Common changes vary by arrangement."
+  },
+  {
+    "id": "how-high-the-moon",
+    "title": "How High the Moon",
+    "concert_key": "G",
+    "time_signature": [
+      4,
+      4
+    ],
+    "feel": "swing",
+    "form": "ABAC",
+    "bars": [
+      {
+        "number": 1,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 6,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 7,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 8,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 9,
+        "section": "B",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7b5"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7b9"
+          }
+        ]
+      },
+      {
+        "number": 11,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 12,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7b5"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7b9"
+          }
+        ]
+      },
+      {
+        "number": 13,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 14,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 15,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "B",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "E",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 16,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 17,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 18,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 19,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 20,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 21,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 22,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 23,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 24,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 25,
+        "section": "C",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 26,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7b5"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7b9"
+          }
+        ]
+      },
+      {
+        "number": 27,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 28,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 29,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "B",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "E",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 30,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 31,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "6"
+          }
+        ]
+      },
+      {
+        "number": 32,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      }
+    ],
+    "difficulty": "Intermediate",
+    "representation": "standard_chord_changes",
+    "source_url": "https://jazzchanges.app/how-high-the-moon/",
+    "license": "Chord symbols only; no melody, lyrics, or recording. Common changes vary by arrangement."
+  },
+  {
+    "id": "ornithology",
+    "title": "Ornithology",
+    "concert_key": "G",
+    "time_signature": [
+      4,
+      4
+    ],
+    "feel": "bebop",
+    "form": "ABAC",
+    "bars": [
+      {
+        "number": 1,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 6,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 7,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 8,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 9,
+        "section": "B",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7b5"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7b9"
+          }
+        ]
+      },
+      {
+        "number": 11,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 12,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7b5"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7b9"
+          }
+        ]
+      },
+      {
+        "number": 13,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "B",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 14,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "E",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 15,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "A",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 16,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 17,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 18,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 19,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 20,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 21,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 22,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 23,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "m7"
+          }
+        ]
+      },
+      {
+        "number": 24,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 25,
+        "section": "C",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Eb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 26,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7b5"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7b9"
+          }
+        ]
+      },
+      {
+        "number": 27,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "maj7"
+          }
+        ]
+      },
+      {
+        "number": 28,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 29,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "B",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "E",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 30,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 31,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "6"
+          }
+        ]
+      },
+      {
+        "number": 32,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "A",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      }
+    ],
+    "difficulty": "Intermediate",
+    "representation": "standard_chord_changes",
+    "source_url": "https://jazzchanges.app/ornithology/",
+    "license": "Chord symbols only; no melody, lyrics, or recording. Common changes vary by arrangement."
+  },
+  {
+    "id": "oleo",
+    "title": "Oleo",
+    "concert_key": "Bb",
+    "time_signature": [
+      4,
+      4
+    ],
+    "feel": "bebop",
+    "form": "AABA",
+    "bars": [
+      {
+        "number": 1,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "Bb",
+            "quality": "maj7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 6,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "Eb",
+            "quality": "7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "Ab",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 7,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 8,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 9,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "Bb",
+            "quality": "maj7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 11,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 12,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 13,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 14,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "Eb",
+            "quality": "7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "Ab",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 15,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 16,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "6"
+          }
+        ]
+      },
+      {
+        "number": 17,
+        "section": "B",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 18,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "D",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 19,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 20,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 21,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 22,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "C",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 23,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 24,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 25,
+        "section": "A",
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "Bb",
+            "quality": "maj7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 26,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 27,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "D",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "G",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 28,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 29,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "Bb",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 30,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "Eb",
+            "quality": "7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "Ab",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 31,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 2.0,
+            "root": "C",
+            "quality": "m7"
+          },
+          {
+            "beat": 3.0,
+            "duration_beats": 2.0,
+            "root": "F",
+            "quality": "7"
+          }
+        ]
+      },
+      {
+        "number": 32,
+        "section": null,
+        "events": [
+          {
+            "beat": 1.0,
+            "duration_beats": 4.0,
+            "root": "Bb",
+            "quality": "6"
+          }
+        ]
+      }
+    ],
+    "difficulty": "Intermediate",
+    "representation": "standard_chord_changes",
+    "source_url": "https://jazzchanges.app/oleo/",
+    "license": "Chord symbols only; no melody, lyrics, or recording. Common changes vary by arrangement."
+  }
+]

@@ -1,3 +1,4 @@
+import standardTracks from '../data/standard-tracks.json';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
@@ -5,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import './DemoPages.css';
 import './TracksPage.css';
 
-type Category = 'Recent' | 'Favorites' | 'Standards' | 'Blues' | 'Original studies';
+type Category = 'Recent' | 'Favorites' | 'Standards' | 'Blues';
 type FilterField = 'instrument' | 'style' | 'key' | 'difficulty';
 type TrackFilter = { instrument: string; style: string; key: string; difficulty: string; chartOnly: boolean };
 const EMPTY_FILTER: TrackFilter = { instrument: 'All', style: 'All', key: 'All', difficulty: 'All', chartOnly: false };
@@ -24,20 +25,13 @@ type TrackPreview = {
   blues: boolean;
 };
 
-// UI-only original-track previews. The linked seed charts remain authoritative
-// for notation, and no recorded audio is claimed or played.
-const TRACK_PREVIEWS: TrackPreview[] = [
-  { id: 'after-hours', chartId: 'blues-f-12', title: 'After-Hours Blues', subtitle: 'Medium swing · 12-bar blues', style: 'Swing', key: 'F', bpm: 92, difficulty: 'Beginner', instruments: ['Piano', 'Guitar', 'Bass', 'Drums', 'Trumpet', 'Tenor Saxophone'], blues: true },
-  { id: 'moonlit', chartId: 'rhythm-bb-32', title: 'Moonlit Changes', subtitle: 'Ballad · ii–V–I study', style: 'Ballad', key: 'B♭', bpm: 72, difficulty: 'Intermediate', instruments: ['Piano', 'Guitar', 'Bass', 'Trumpet', 'Tenor Saxophone'], blues: false },
-  { id: 'staircase', chartId: 'ballad-eb-16', title: 'Blue Staircase', subtitle: 'Bebop · original study', style: 'Bebop', key: 'E♭', bpm: 124, difficulty: 'Intermediate', instruments: ['Piano', 'Guitar', 'Bass', 'Alto Saxophone', 'Tenor Saxophone'], blues: false },
-  { id: 'sunday', chartId: 'minor-bossa-cm-16', title: 'Sunday Walk', subtitle: 'Easy bossa · original study', style: 'Bossa', key: 'C minor', bpm: null, difficulty: 'Beginner', instruments: ['Piano', 'Guitar', 'Bass', 'Drums'], blues: false },
-];
+const TRACK_PREVIEWS: TrackPreview[] = standardTracks;
 
-const CATEGORIES: Category[] = ['Recent', 'Favorites', 'Standards', 'Blues', 'Original studies'];
+const CATEGORIES: Category[] = ['Recent', 'Favorites', 'Standards', 'Blues'];
 const FIELDS: { key: FilterField; title: string; options: string[] }[] = [
   { key: 'instrument', title: 'Instrument', options: ['All', 'Piano', 'Guitar', 'Bass', 'Drums', 'Trumpet', 'Alto Saxophone', 'Tenor Saxophone'] },
   { key: 'style', title: 'Style', options: ['All', 'Swing', 'Ballad', 'Bebop', 'Bossa'] },
-  { key: 'key', title: 'Key', options: ['All', 'F', 'B♭', 'E♭', 'C minor'] },
+  { key: 'key', title: 'Key', options: ['All', 'G minor', 'C minor', 'F minor', 'E♭', 'A♭', 'G', 'B♭'] },
   { key: 'difficulty', title: 'Difficulty', options: ['All', 'Beginner', 'Intermediate'] },
 ];
 
@@ -55,7 +49,7 @@ function TrackIcon({ name, filled = false }: { name: 'book' | 'chevron' | 'star'
 
 function readFavorites(key: string): string[] {
   try {
-    const value: unknown = JSON.parse(localStorage.getItem(key) ?? '["after-hours"]');
+    const value: unknown = JSON.parse(localStorage.getItem(key) ?? '[]');
     return Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string') : [];
   } catch { return []; }
 }
@@ -66,7 +60,7 @@ export function TracksPage() {
   const navigate = useNavigate();
   const isCharts = useLocation().pathname === '/charts';
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState<Category>('Recent');
+  const [category, setCategory] = useState<Category>('Standards');
   const [chartFilter, setChartFilter] = useState<'All' | 'Blues' | 'Other'>('All');
   const [applied, setApplied] = useState<TrackFilter>({ ...EMPTY_FILTER });
   const [draft, setDraft] = useState<TrackFilter>({ ...EMPTY_FILTER });
@@ -84,8 +78,9 @@ export function TracksPage() {
   }, [filterOpen]);
 
   const chartResults = useMemo(() => charts.filter(chart => {
+    if (!standardTracks.some(track => track.chartId === chart.id)) return false;
     const match = chart.title.toLowerCase().includes(query.trim().toLowerCase());
-    const isBlues = chart.title.toLowerCase().includes('blues');
+    const isBlues = chart.form === 'blues-12';
     return match && (chartFilter === 'All' || (chartFilter === 'Blues' ? isBlues : !isBlues));
   }), [charts, query, chartFilter]);
 
@@ -97,13 +92,12 @@ export function TracksPage() {
     const term = query.trim().toLowerCase();
     if (term && ![track.title, track.subtitle, track.style, track.key, track.chart.title].some(value => value.toLowerCase().includes(term))) return false;
     if (category === 'Favorites' && !favorites.includes(track.id)) return false;
-    if (category === 'Standards') return false; // All four approved previews are original studies.
     if (category === 'Blues' && !track.blues) return false;
     if (applied.instrument !== 'All' && !track.instruments.includes(applied.instrument)) return false;
     if (applied.style !== 'All' && track.style !== applied.style) return false;
     if (applied.key !== 'All' && track.key !== applied.key) return false;
     if (applied.difficulty !== 'All' && track.difficulty !== applied.difficulty) return false;
-    return true; // All four entries have a real linked seed chart.
+    return true; // Every catalog entry has a linked chart.
   }), [catalog, query, category, favorites, applied]);
   const activeFilterCount = Object.entries(applied).filter(([key, value]) => key !== 'chartOnly' && value !== 'All').length + (applied.chartOnly ? 1 : 0);
 
@@ -138,10 +132,10 @@ export function TracksPage() {
         <input className="demo-search" aria-label="Search tracks and charts" placeholder="Search tracks, styles, keys..." value={query} onChange={event => setQuery(event.target.value)} />
         <div className="demo-filter-group" aria-label="Chart categories">
           {(['All', 'Blues', 'Other'] as const).map(value => (
-            <button type="button" key={value} className="demo-filter" aria-pressed={chartFilter === value} onClick={() => setChartFilter(value)}>{value === 'All' ? 'Recent' : value === 'Other' ? 'Original studies' : value}</button>
+            <button type="button" key={value} className="demo-filter" aria-pressed={chartFilter === value} onClick={() => setChartFilter(value)}>{value === 'All' ? 'Recent' : value === 'Other' ? 'Other standards' : value}</button>
           ))}
         </div>
-        <h2 className="demo-section-title">Jazz harmony studies</h2>
+        <h2 className="demo-section-title">Jazz standards</h2>
         <p className="demo-subtitle" style={{ marginBottom: 12 }}>Choose a chart to open a readable measure grid.</p>
         {chartResults.map(chart => (
           <button type="button" key={chart.id} className="demo-row" onClick={() => openChart(chart.id)}>
@@ -149,7 +143,7 @@ export function TracksPage() {
             <span aria-hidden="true">›</span>
           </button>
         ))}
-        {!chartResults.length && <p className="demo-subtitle">No matching studies. Try a different search.</p>}
+        {!chartResults.length && <p className="demo-subtitle">No matching charts. Try a different search.</p>}
       </section>
     );
   }
@@ -197,7 +191,7 @@ export function TracksPage() {
         <>
           <div className="t01-section-header">
             <h2>Pick up a tune</h2>
-            <span>{filtered.length} original {filtered.length === 1 ? 'study' : 'studies'}</span>
+            <span>{filtered.length} {filtered.length === 1 ? 'chart' : 'charts'}</span>
           </div>
           <div className="t01-track-list">
             {filtered.map(track => {
@@ -208,8 +202,8 @@ export function TracksPage() {
                     <span className="t01-card-title">{track.title}</span>
                     <span className="t01-card-subtitle">{track.subtitle}</span>
                     <span className="t01-card-footer">
-                      <span className="t01-status t01-audio"><TrackIcon name="unavailable" /> Audio pending</span>
-                      <span className="t01-status t01-chart"><TrackIcon name="book" /> Chart</span>
+
+                      <span className="t01-status t01-chart"><TrackIcon name="book" /> Chart only</span>
                       <span className="t01-card-spacer" />
                       <span className="t01-card-tempo">{track.bpm === null ? '' : track.bpm + ' BPM · '}{track.key}</span>
                       <TrackIcon name="chevron" />

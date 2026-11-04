@@ -1,4 +1,9 @@
 export type ChordQuality =
+  | '6'
+  | 'm6'
+  | 'mMaj7'
+  | '7b9'
+  | '7b13'
   | 'maj7'
   | 'm7'
   | '7'
@@ -31,6 +36,7 @@ export interface Chart {
   form: string;
   bars: ChartBar[];
   license?: string;
+  source_url?: string;
   difficulty?: string;
   practice_focus?: string;
   representation?: string;

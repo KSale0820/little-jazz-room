@@ -366,7 +366,7 @@ export function PracticePage() {
         <button className="practice-more" type="button" aria-label="Finish session" onClick={finishSession}>⋮</button>
       </header>
 
-      <p className="practice-audio-state"><strong>Chart Only</strong> · No recording available</p>
+      <p className="practice-audio-state"><strong>Chart Only</strong> · No recording available{chart.source_url && <> · <a href={chart.source_url} target="_blank" rel="noreferrer">Chart source</a></>}</p>
 
       {routine && (
         <div className="practice-guided-progress" role="progressbar" aria-label="Routine steps completed"

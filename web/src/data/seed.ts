@@ -1,10 +1,12 @@
 import raw from './jazz-seed-content.json';
+import standards from './standard-charts.json';
+import type { Chart } from '../types/content';
 import type { SeedContent } from '../types/content';
 
 const seedContent = raw as unknown as SeedContent;
 
 export const seedExercises = seedContent.exercises;
-export const seedCharts = seedContent.charts;
+export const seedCharts: Chart[] = [...standards as Chart[], ...seedContent.charts];
 export const seedRoutines = seedContent.routines.map(r => {
   const raw = r as (typeof seedContent.routines)[number] & { difficulty?: string; level?: string };
   return {
