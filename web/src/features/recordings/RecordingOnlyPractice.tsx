@@ -178,7 +178,7 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
       </div>
     )}
     {error && <p role="alert" className="practice-recording-error">{error}</p>}
-    <div className="practice-transport">
+    <div className="practice-transport" aria-label={"Practice elapsed " + formatPracticeTime(elapsedSeconds)}>
       <div className="practice-recording-seek">
         <input id="audio-only-scrubber" type="range" min="0" max={duration > 0 ? duration : 1}
           step="0.05" value={Math.min(position, duration > 0 ? duration : 1)}
