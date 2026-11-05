@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
+import { DecorativeCat } from '../features/cats/DecorativeCat';
 import {
   audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, pitchTrailGeometry,
   readingFromFrequency, retainMeasuredPitch,
@@ -411,7 +412,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <img className="tool-scene-plant tool-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-plant tool-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-rug" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.rug} alt="" />
-        <img className="tool-scene-cat" src={VISUAL_ASSETS.cat.sleepingFile(catId)} alt="" />
+        <DecorativeCat catId={catId} variant="sleeping" size={182} className="tool-scene-cat" />
       </div>
     </section>
   );
