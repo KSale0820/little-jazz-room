@@ -112,3 +112,14 @@
 @media (prefers-reduced-motion: reduce) {
   .g01-goal-fill { transition: none; }
 }
+
+
+/* Stronger than the original G01 painting rule regardless of CSS import order.
+   The stage keeps its exact height while the large room illustration is removed. */
+html[data-theme] .g01-page .g01-companion {
+  background: var(--color-surface-raised);
+  background-image: none;
+}
+html[data-theme] .g01-page .g01-goal-plant,
+html[data-theme] .g01-page .g01-plant,
+html[data-theme] .g01-page .g01-cat-cushion { visibility: hidden; }
