@@ -33,7 +33,8 @@ export function DecorativeCat({ catId, variant = 'sleeping', size = 96, classNam
       data-cat-mode={catMode ? 'on' : 'off'}
       style={{
         visibility: catMode ? 'visible' : 'hidden',
-        imageRendering: pixelUrl && src === pixelUrl ? 'pixelated' : 'auto',
+        // The approved 128×128 sleeping PNGs are already pixel sprites.
+        imageRendering: variant === 'sleeping' || (pixelUrl && src === pixelUrl) ? 'pixelated' : 'auto',
       }}
     />
   );
