@@ -107,6 +107,9 @@ try {
               })(),
               chartCells: document.querySelectorAll('.chord-grid .measure').length,
               progressCatSrc: document.querySelector('.g01-cat')?.getAttribute('src') ?? null,
+              profileAvatarSrc: document.querySelector('.profile-companion-art .jazz-cat-sprite')?.getAttribute('src') ?? null,
+              profileChooserIds: [...document.querySelectorAll('.board-cat-card')].map(button =>
+                button.getAttribute('aria-label')?.split(',')[0] ?? ''),
               screenBackground: (() => {
                 const root = document.querySelector('.p01-page, .g01-page');
                 return root ? getComputedStyle(root).backgroundColor : null;
@@ -135,14 +138,14 @@ try {
               assert.ok(state.progressCatSrc, 'Progress companion must load in both modes');
               const spriteKey = [width, height, theme].join('-');
               if (!catMode) {
-                assert.ok(state.progressCatSrc.includes('/visuals/cats/sleeping/'),
-                  'Cat Mode OFF should use approved standard sleeping art');
+                assert.ok(state.progressCatSrc.endsWith('/visuals/cats/clean-pixel/luna-sleeping.png'),
+                  'Cat Mode OFF must use the new Luna pixel sleeping design, not retired art');
                 progressSpriteSources.set(spriteKey, state.progressCatSrc);
               } else {
                 assert.notEqual(state.progressCatSrc, progressSpriteSources.get(spriteKey),
                   'Cat Mode ON must switch the default Luna companion to its verified pixel sprite');
-                assert.ok(state.progressCatSrc.includes('/visuals/cats/clean-pixel/luna-sleeping.png'),
-                  'Cat Mode ON must use Luna pixel sleeping variant in the known default fixture');
+                assert.ok(state.progressCatSrc.endsWith('/visuals/cats/clean-pixel/luna-sitting.png'),
+                  'Cat Mode ON must use the new Luna sitting pixel variant');
               }
             }
             assert.ok(state.catFootprint && state.catFootprint[2] > 0 && state.catFootprint[3] > 0,
@@ -155,6 +158,10 @@ try {
           if (screen === 'Profile') {
             assert.equal(state.profileAvatarVisibility, 'visible',
               'Profile companion avatar must remain visible independently of Cat Mode');
+            assert.ok(state.profileAvatarSrc.endsWith('/visuals/cats/clean-pixel/luna-sitting.png'),
+              'Profile avatar must use the owner-approved new pixel art, regardless of Cat Mode');
+            assert.deepEqual(state.profileChooserIds, ['Luna', 'Milo', 'Maple'],
+              'Profile must offer only the three currently approved pixel companions');
           }
           const expectedBackground = theme === 'dark' ? 'rgb(27, 23, 39)' : 'rgb(255, 248, 236)';
           if (['Practice', 'Progress'].includes(screen)) {
