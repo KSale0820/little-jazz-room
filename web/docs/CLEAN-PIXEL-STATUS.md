@@ -1,3 +1,29 @@
+# V2 live status: Cozy Pixel refinement (2026-11-05)
+
+This section **supersedes the original V1 implementation report below**, which is retained for provenance. See `CLEAN-PIXEL-THEMES.md` for current palette and Cat Mode API. All changes are on `integration/clean-pixel-themes`, review PR [#59](https://github.com/KSale0820/little-jazz-room/pull/59) remains **draft; no visual refresh changes merged to demo/master or deployed**.
+
+**Implemented on integration**
+- Midnight Jazz dark palette (deep plum, lavender, muted pink), Sunny Studio light palette (warm ivory, sage), semantic notation and pixel accent tokens; system-first preference and explicit Light/Dark persistence unchanged.
+- Progress shows selected companion in both Cat Modes, **OFF original approved sleeping** and **ON verified pixel sprite** where available. Change-companion button, speech bubble, avatars and rewards remain visible. Tuner/Metronome optional cats are hidden OFF but retain their footprint.
+- Shared Player free-grid/full-sheet selected, looped and active-playhead contrast safeguards; real-browser AA chord contrast checks.
+- [#62](https://github.com/KSale0820/little-jazz-room/pull/62): clean semantic cascade for remaining Charts/Routines/legacy views.
+- [#63](https://github.com/KSale0820/little-jazz-room/pull/63): screen-only Practice/Player cozy pixel and notation highlights.
+- [#64](https://github.com/KSale0820/little-jazz-room/pull/64): screen-only Chart/Tracks/Routine accents; stale controller duplicate #66 closed unmerged.
+- [#65](https://github.com/KSale0820/little-jazz-room/pull/65): Tuner/Metronome/Progress stage accents; stale controller duplicate #67 closed unmerged.
+- [#68](https://github.com/KSale0820/little-jazz-room/pull/68): strict-validated 160×160 transparent pixel **sleeping and sitting variants for Luna, Milo and Maple**, and small botanical/music SVG motifs. Approved original images remain untouched.
+
+**Automated validation**
+- Build/unit, class-demo saved session paths, routine/chart builder, recorded audio regression, native scaffold and tuner browser checks ran on each batch. The [combined mobile appearance matrix](https://github.com/KSale0820/little-jazz-room/actions/runs/41979058900) passed after #63; [pixel sprite batch CI](https://github.com/KSale0820/little-jazz-room/pull/68) passed build, full matrix and native scaffold prior to merge.
+- Matrix explicitly checks Light/Dark × Cat Mode ON/OFF at 390×844 and 375×667, Progress cat visibility and footprint, scene-cat OFF/ON behavior, chart chord contrast ≥4.5:1 including selected state, distinct loop/playhead cues, palette-appropriate Tuner reference contrast and no horizontal overflow.
+- Final post-#68 sprite-source assertion and combined-code CI run at current head remain to be confirmed; do not claim final user signoff until their results are green and screenshots reviewed.
+
+**Known remaining scope**
+- Pixel sleeping/sitting variants for **Mochi, Pepper, Patches, Chai, Biscuit** have not been provided or verified. ON falls back to the approved original for those identities. This is safe but **not complete eight-cat visual parity**.
+- Mood boards are color/pixel-art direction references, not permission to recreate full illustrated rooms, alter chart grid or move buttons.
+- No physical-device/iPhone microphone-latency validation and not every dialog/focus state manually inspected. Do not merge PR #59 or deploy without explicit final approval.
+
+---
+
 # Clean Pixel Themes: final integration ledger
 
 Integration branch: `integration/clean-pixel-themes`, based on `class-demo-2026-10-31` at `35beaad`. **The controller has not merged theme changes into demo or master and has not deployed.** Demo independently advanced to `dc9ec97` when PR #49 was merged by a separate workflow during this update. The final integration-to-demo PR requires explicit owner approval before merge.

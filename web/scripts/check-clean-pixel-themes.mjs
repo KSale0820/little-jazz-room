@@ -42,6 +42,7 @@ function contrastRatio(a, b) {
 
 const report = [];
 const catLayoutFootprints = new Map();
+const progressSpriteSources = new Map();
 const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
 
 function assertWithinViewport(state, label, height) {
@@ -132,8 +133,17 @@ try {
               screen + ' selected companion visibility violates Cat Mode rules');
             if (screen === 'Progress') {
               assert.ok(state.progressCatSrc, 'Progress companion must load in both modes');
-              if (!catMode) assert.ok(state.progressCatSrc.includes('/visuals/cats/sleeping/'),
-                'Cat Mode OFF should use the standard approved Progress sleeping cat');
+              const spriteKey = [width, height, theme].join('-');
+              if (!catMode) {
+                assert.ok(state.progressCatSrc.includes('/visuals/cats/sleeping/'),
+                  'Cat Mode OFF should use approved standard sleeping art');
+                progressSpriteSources.set(spriteKey, state.progressCatSrc);
+              } else {
+                assert.notEqual(state.progressCatSrc, progressSpriteSources.get(spriteKey),
+                  'Cat Mode ON must switch the default Luna companion to its verified pixel sprite');
+                assert.ok(state.progressCatSrc.includes('/visuals/cats/clean-pixel/luna-sleeping.png'),
+                  'Cat Mode ON must use Luna pixel sleeping variant in the known default fixture');
+              }
             }
             assert.ok(state.catFootprint && state.catFootprint[2] > 0 && state.catFootprint[3] > 0,
               screen + ' cat footprint is missing');
