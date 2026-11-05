@@ -1,3 +1,23 @@
+# V3 controller status: approved three-cat Pixel Studio (2026-11-05)
+
+**This V3 section supersedes the older V2 and V1 cat-roster/fallback instructions preserved below as history.** The owner acceptance source is [issue #75](https://github.com/KSale0820/little-jazz-room/issues/75). PR [#59](https://github.com/KSale0820/little-jazz-room/pull/59) remains **DRAFT, not merged to class-demo/master, not deployed**.
+
+## Integrated behavior and visual changes
+
+- **Only Luna, Milo and Maple are visible selectable companions**, with new 160px pixel sitting/sleeping artwork across Profile avatar/chooser, legacy Home, Tuner, Metronome and Progress. The original eight IDs/asset binaries remain archived for backwards compatibility; five retired identities are no longer selectable and do **not** render their October illustrations.
+- Retired saved IDs are **non-destructively resolved to Luna**, with the previous ID saved in the account-scoped `little-jazz-room:selected-cat:v1[:account]:retired-cat-id:v1` backup. New explicit supported choices persist normally. Existing sessions, achievements, unlocks, audio, charts, routines and cloud history are not cleared; a retired remote ID is resolved locally without altering its remote record or overriding a newer supported local choice.
+- Progress companion **always visible**: Cat Mode OFF uses a new **sleeping** PNG and ON uses a new **sitting** PNG for the same selected cat. Existing footprint and Change button remain. Optional Tuner/Metronome/legacy Home cats are ON-only and preserve their hidden footprints. New pixel artwork is used for Profile/chooser/rewards regardless of mode. Historical art is preserved in files but not used in active rendering.
+- The original Practice/Player layout, charts, navigation, control positions, recorded backing track architecture and audio behavior are locked. Midnight Jazz/Sunny Studio themes, AA chord contrast, loop/playhead distinctions and active-tab pixels remain. [PR #74](https://github.com/KSale0820/little-jazz-room/pull/74) delivered the 19 owner-approved color PNG motifs; [#76](https://github.com/KSale0820/little-jazz-room/pull/76) placed small full-color motifs on Tracks/Charts/Routines; [#77](https://github.com/KSale0820/little-jazz-room/pull/77) rebased Agent 2's stage motifs on the new roster with no geometry changes. The stale source PR #73 was closed after its one CSS file was verified byte-identical to the merged #77.
+- Live tests now assert the **three-choice roster**, no old cat asset URLs on active screens, both modes for each current companion, unchanged positioning, and offline legacy ID migration for Mochi/Pepper/Patches/Chai/Biscuit with saved-session retention. A new unit test checks account-scoped backup and unrelated stored achievements/sessions preservation.
+
+## QA and final gate
+
+PRs #76 and #77 each passed build/unit, Clean Pixel Light/Dark × Cat Mode 390×844 and 375×667 mobile appearance matrix, and native scaffold workflows **before** integration. Latest all-screens integrated CI is monitored separately at the exact integration head. [PR #77 full screenshot artifact](https://github.com/KSale0820/little-jazz-room/actions/runs/41986811339/artifacts/13396292275) visually confirms no Practice/Player chart control displacement and new subtle full-color motifs.
+
+**Owner approval still blocked by Luna art**: the new Luna pixel sitting/sleeping files need revised black/orange/white calico patch fidelity and individual dark/light sprite review. Agent 3 owns only this new raster correction. Superseded all-eight expansion issues #70/#71/#72 were closed not-planned per owner decision; no additional five-cat art is authorized. Physical-device/iPhone microphone-latency validation and exhaustive manual modal review remain unclaimed. No demo/master merge or deployment without owner approval.
+
+---
+
 ## V2 QA checkpoint: November 5, 2026
 
 - **Current validated integration SHA:** `a99e1c3691d84911ea5eddd23e462391159f5e09`; [all 11 GitHub workflows passed](https://github.com/KSale0820/little-jazz-room/actions/runs/41982272750) (appearance matrix) and [cross-screen integration passed](https://github.com/KSale0820/little-jazz-room/actions/runs/41982281041). Build, unit tests, recording/audio, mobile chart/routine workflows, tuner, metronome and Android/native scaffold checks passed.
