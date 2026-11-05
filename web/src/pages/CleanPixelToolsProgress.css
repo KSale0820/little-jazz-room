@@ -1,5 +1,5 @@
 /* Agent 2: tool and progress presentation. Original dimensions and logic remain. */
-.tool-page {
+html[data-theme] .tool-page {
   --tool-ink: var(--color-text);
   --tool-evergreen: var(--color-action);
   --tool-muted: var(--color-muted);
@@ -7,108 +7,146 @@
   background: var(--color-bg);
   color: var(--color-text);
 }
-.tool-page > .tool-bottom-art, .tool-vine,
-.tool-scene-plant, .tool-scene-rug { visibility: hidden; }
-.tool-cat-scene, .tool-has-background .tool-cat-scene { background: transparent; }
-.tool-heading h1, .tool-back, .tool-settings,
-.tuner-reading strong, .tuner-reading > span,
-.tuner-measurements strong, .metronome-bpm strong,
-.metronome-bpm > span, .metronome-field h2,
-.metronome-step { color: var(--color-text); }
-.tool-help, .tuner-trail-panel {
+html[data-theme] .tool-page > .tool-bottom-art,
+html[data-theme] .tool-vine,
+html[data-theme] .tool-scene-plant,
+html[data-theme] .tool-scene-rug { visibility: hidden; }
+html[data-theme] .tool-cat-scene,
+html[data-theme] .tool-has-background .tool-cat-scene { background: transparent; }
+html[data-theme] .tool-heading h1,
+html[data-theme] .tool-back,
+html[data-theme] .tool-settings,
+html[data-theme] .tuner-reading strong,
+html[data-theme] .tuner-reading > span,
+html[data-theme] .tuner-measurements strong,
+html[data-theme] .metronome-bpm strong,
+html[data-theme] .metronome-bpm > span,
+html[data-theme] .metronome-field h2,
+html[data-theme] .metronome-step { color: var(--color-text); }
+html[data-theme] .tool-help,
+html[data-theme] .tuner-trail-panel {
   background: var(--color-surface);
   border-color: var(--color-border);
   color: var(--color-text);
 }
-.tool-page button:focus-visible,
-.tool-page input:focus-visible,
-.metronome-countin input:focus-visible + .metronome-switch { outline-color: var(--color-focus); }
-.tool-tuner .tuner-modes, .metronome-step,
-.metronome-signatures button, .metronome-count-select {
+html[data-theme] .tool-page button:focus-visible,
+html[data-theme] .tool-page input:focus-visible,
+html[data-theme] .metronome-countin input:focus-visible + .metronome-switch { outline-color: var(--color-focus); }
+html[data-theme] .tool-tuner .tuner-modes,
+html[data-theme] .metronome-step,
+html[data-theme] .metronome-signatures button,
+html[data-theme] .metronome-count-select {
   background: var(--color-surface-raised);
   border-color: var(--color-border);
   color: var(--color-text);
 }
-.tuner-modes button { color: var(--color-muted); }
-.tuner-modes button[aria-pressed="true"], .metronome-signatures button[aria-pressed="true"] {
+html[data-theme] .tuner-modes button { color: var(--color-muted); }
+html[data-theme] .tuner-modes button[aria-pressed="true"],
+html[data-theme] .metronome-signatures button[aria-pressed="true"] {
   background: var(--color-action);
   color: var(--color-action-text);
 }
-.tuner-reading small, .tuner-measurements span,
-.tuner-reference small, .metronome-tap-row > span,
-.metronome-playing-status, .tuner-trail-high,
-.tuner-trail-low, .tuner-trail-panel > small { color: var(--color-muted); }
-.tuner-status, .tuner-mic, .tuner-mic[aria-pressed="true"],
-.tuner-trail-toggle {
+html[data-theme] .tuner-reading small,
+html[data-theme] .tuner-measurements span,
+html[data-theme] .tuner-reference small,
+html[data-theme] .metronome-tap-row > span,
+html[data-theme] .metronome-playing-status,
+html[data-theme] .tuner-trail-high,
+html[data-theme] .tuner-trail-low,
+html[data-theme] .tuner-trail-panel > small { color: var(--color-muted); }
+html[data-theme] .tuner-status,
+html[data-theme] .tuner-mic,
+html[data-theme] .tuner-mic[aria-pressed="true"],
+html[data-theme] .tuner-trail-toggle {
   background: var(--color-surface-raised);
   border-color: var(--color-border);
   color: var(--color-action);
 }
-.tuner-measurements div + div { border-color: var(--color-border); }
-.tuner-reference, .tuner-reference > span:nth-child(2),
-.tuner-speaker { color: var(--color-text); }
-.tuner-reference strong { color: var(--color-text); }
-.tuner-reference-play, .metronome-play,
-.metronome-beats button.is-accent {
+html[data-theme] .tuner-measurements div + div { border-color: var(--color-border); }
+html[data-theme] .tuner-reference,
+html[data-theme] .tuner-reference > span:nth-child(2),
+html[data-theme] .tuner-speaker { color: var(--color-text); }
+html[data-theme] .tuner-reference strong { color: var(--color-text); }
+html[data-theme] .tuner-reference-play,
+html[data-theme] .metronome-play,
+html[data-theme] .metronome-beats button.is-accent {
   background: var(--color-action);
   color: var(--color-action-text);
   border-color: var(--color-action);
 }
-.tool-error { background: var(--color-surface-raised); border-color: var(--color-danger); color: var(--color-danger); }
-.metronome-slider { accent-color: var(--color-action); }
-.metronome-slider::-webkit-slider-thumb,
-.metronome-slider::-moz-range-thumb { background: var(--color-action); }
-.metronome-tap { background: var(--color-surface); border-color: var(--color-border); color: var(--color-action); }
-.metronome-beats button { color: var(--color-muted); }
-.metronome-beats button.is-current { outline-color: var(--color-focus); }
-.metronome-switch { background: var(--color-border); }
-.metronome-switch::after { background: var(--color-surface); }
-.metronome-countin input:checked + .metronome-switch { background: var(--color-action); }
-.tuner-trail-heading strong { color: var(--color-text); }
-.tuner-trail-panel svg { color: var(--color-chart-repeat); }
+html[data-theme] .tool-error { background: var(--color-surface-raised); border-color: var(--color-danger); color: var(--color-danger); }
+html[data-theme] .metronome-slider { accent-color: var(--color-action); }
+html[data-theme] .metronome-slider::-webkit-slider-thumb,
+html[data-theme] .metronome-slider::-moz-range-thumb { background: var(--color-action); }
+html[data-theme] .metronome-tap { background: var(--color-surface); border-color: var(--color-border); color: var(--color-action); }
+html[data-theme] .metronome-beats button { color: var(--color-muted); }
+html[data-theme] .metronome-beats button.is-current { outline-color: var(--color-focus); }
+html[data-theme] .metronome-switch { background: var(--color-border); }
+html[data-theme] .metronome-switch::after { background: var(--color-surface); }
+html[data-theme] .metronome-countin input:checked + .metronome-switch { background: var(--color-action); }
+html[data-theme] .tuner-trail-heading strong { color: var(--color-text); }
+html[data-theme] .tuner-trail-panel svg { color: var(--color-chart-repeat); }
 
 /* G01 Progress: deliberately preserve the same card dimensions and cat stage. */
-.g01-page { background: var(--color-bg); color: var(--color-text); }
-.g01-header h1, .g01-settings,
-.g01-stat strong, .g01-stat span:not(.g01-stat-icon),
-.g01-daily-card h2, .g01-daily-card p,
-.g01-history-heading h2, .g01-session-copy strong { color: var(--color-text); }
-.g01-companion { background: var(--color-surface-raised); }
-.g01-cat-cushion, .g01-plant, .g01-goal-plant { visibility: hidden; }
-.g01-cat-bubble {
+html[data-theme] .g01-page { background: var(--color-bg); color: var(--color-text); }
+html[data-theme] .g01-header h1,
+html[data-theme] .g01-settings,
+html[data-theme] .g01-stat strong,
+html[data-theme] .g01-stat span:not(.g01-stat-icon),
+html[data-theme] .g01-daily-card h2,
+html[data-theme] .g01-daily-card p,
+html[data-theme] .g01-history-heading h2,
+html[data-theme] .g01-session-copy strong { color: var(--color-text); }
+html[data-theme] .g01-companion { background: var(--color-surface-raised); }
+html[data-theme] .g01-cat-cushion,
+html[data-theme] .g01-plant,
+html[data-theme] .g01-goal-plant { visibility: hidden; }
+html[data-theme] .g01-cat-bubble {
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: none;
 }
-.g01-change, .g01-practice-again {
+html[data-theme] .g01-change,
+html[data-theme] .g01-practice-again {
   background: var(--color-action);
   color: var(--color-action-text);
   border-color: var(--color-action);
 }
-.g01-change:hover, .g01-practice-again:hover {
+html[data-theme] .g01-change:hover,
+html[data-theme] .g01-practice-again:hover {
   background: var(--color-action);
 }
-.g01-stats, .g01-daily-card, .g01-week-chart,
-.g01-session, .g01-empty-history {
+html[data-theme] .g01-stats,
+html[data-theme] .g01-daily-card,
+html[data-theme] .g01-week-chart,
+html[data-theme] .g01-session,
+html[data-theme] .g01-empty-history {
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: none;
 }
-.g01-stat + .g01-stat { border-color: var(--color-border); }
-.g01-bars-icon i, .g01-goal-fill,
-.g01-chart-bar-today { background: var(--color-action); }
-.g01-goal-track { background: var(--color-border); }
-.g01-chart-axis, .g01-chart-labels, .g01-session-copy span,
-.g01-session time, .g01-empty-history { color: var(--color-muted); }
-.g01-chart-columns {
+html[data-theme] .g01-stat + .g01-stat { border-color: var(--color-border); }
+html[data-theme] .g01-bars-icon i,
+html[data-theme] .g01-goal-fill,
+html[data-theme] .g01-chart-bar-today { background: var(--color-action); }
+html[data-theme] .g01-goal-track { background: var(--color-border); }
+html[data-theme] .g01-chart-axis,
+html[data-theme] .g01-chart-labels,
+html[data-theme] .g01-session-copy span,
+html[data-theme] .g01-session time,
+html[data-theme] .g01-empty-history { color: var(--color-muted); }
+html[data-theme] .g01-chart-columns {
   border-color: var(--color-border);
   background: repeating-linear-gradient(to bottom, var(--color-border) 0 1px, transparent 1px 47px);
 }
-.g01-chart-bar { background: var(--color-success); }
-.g01-chart-bar-today { background: var(--color-action); }
-.g01-history-heading button { color: var(--color-action); }
-.g01-session img { background: var(--color-surface-raised); }
-.g01-page button:focus-visible { outline-color: var(--color-focus); }
+html[data-theme] .g01-chart-bar { background: var(--color-success); }
+html[data-theme] .g01-chart-bar-today { background: var(--color-action); }
+html[data-theme] .g01-history-heading button { color: var(--color-action); }
+html[data-theme] .g01-session img { background: var(--color-surface-raised); }
+html[data-theme] .g01-page button:focus-visible { outline-color: var(--color-focus); }
 @media (prefers-reduced-motion: reduce) {
-  .g01-goal-fill { transition: none; }
+  html[data-theme] .g01-goal-fill { transition: none; }
 }
+
+/* The reference-pitch panel must follow the selected appearance. */
+html[data-theme] .tuner-reference { background: var(--color-surface-raised); color: var(--color-text); border-color: var(--color-border); }
