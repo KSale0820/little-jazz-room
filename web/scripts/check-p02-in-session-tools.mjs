@@ -37,7 +37,7 @@ try {
     await openFree();
     check(await page.getByText('Free Practice', { exact: true }).isVisible(), 'P02 Free mode not selected');
     check(await page.locator('.practice-utility-row').count() === 1, 'Free mode must display tool shortcuts');
-    check(await page.locator('.practice-utility-row button').count() === 3, 'Unified layout requires three tool buttons');
+    check(await page.locator('.practice-utility-row button').count() === 4, 'Unified layout requires three tool buttons');
     check(await page.getByRole('button', { name: /Mixer Preview/ }).isDisabled(), 'Mixer must remain Preview');
     await page.getByRole('combobox', { name: 'Transpose concert chart key' }).waitFor();
     await page.getByRole('combobox', { name: 'Transpose concert chart key' }).selectOption('G');
@@ -133,7 +133,7 @@ try {
     await page.getByText('Guided Practice', { exact: true }).waitFor();
     await page.getByRole('tab', { name: 'Chart' }).click();
     check(await page.locator('.practice-utility-row').count() === 1, 'Guided mode missing approved tools');
-    check(await page.locator('.practice-utility-row button').count() === 3, 'Guided must display three tools');
+    check(await page.locator('.practice-utility-row button').count() === 4, 'Guided must display three tools');
     await page.getByRole('combobox', { name: 'Transpose concert chart key' }).waitFor();
     await page.locator('.practice-utility-row').getByRole('button', { name: /Tuner/ }).click();
     await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();

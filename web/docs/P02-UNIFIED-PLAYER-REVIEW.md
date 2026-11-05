@@ -48,3 +48,7 @@ No merge or deployment requested or performed. `web/vercel.json` disables automa
 ## CI follow-up
 
 Updated legacy P02 checks for three utility buttons, inline settings and the removed Player tab. Guided lessons retain scrollable pages with reachable tools. Initial GitHub P02 recording regression, chart/routine integration, build and native foundation jobs passed. The unrelated interactive chart-builder job timed out waiting for “Measure 1 chord 2” at `check-interactive-chart-builder.mjs:78`; chart-builder implementation is unchanged by this PR. This remains an outstanding CI limitation, separate from the passing custom-chart integration suite.
+
+## Product review corrections
+
+Restored a separate section Loop control alongside full-recording Repeat. Recorded section plans seek the actual media element and preserve practice time. Corrected the circular skip arrows, changed the timer icon to a plain clock, widened the section-label gutter and closed the final chart cell. Removed the measure-count caption and three-dot finish action. Finish Session is now a filled evergreen button. Reference BPM has up/down controls and an underlined original reset; audio remains at its original speed and pitch. These BPM and Loop decisions supersede the initial read-only BPM/three-tool description above. Updated mobile captures accompany these corrections.

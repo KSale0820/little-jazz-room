@@ -113,6 +113,9 @@ export function PracticePage() {
   const toolOverlayRef = useRef<HTMLDivElement | null>(null);
   const [tempo, setTempo] = useState(100);
   const [tempoInput, setTempoInput] = useState('100');
+  const recordingLoopRef = useRef<{ start: number; end: number; plays: number; remaining: number }[]>([]);
+  const recordingLoopRepeat = useRef(false);
+  const recordingLoopIndex = useRef(0);
   const [repeatRecording, setRepeatRecording] = useState(false);
 
   // Prior steps are committed as milliseconds; the current step retains its
@@ -200,7 +203,23 @@ export function PracticePage() {
 
   useEffect(() => {
     if (!activeRecording || !isRunning) return;
-    const timer = window.setInterval(() => setRecordingPosition(audioRef.current?.currentTime ?? 0), 50);
+    const timer = window.setInterval(() => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      const plan = recordingLoopRef.current;
+      const section = plan[recordingLoopIndex.current];
+      if (section && audio.currentTime >= section.end) {
+        if (--section.remaining <= 0) recordingLoopIndex.current++;
+        if (recordingLoopIndex.current >= plan.length && recordingLoopRepeat.current) {
+          recordingLoopIndex.current = 0;
+          plan.forEach(item => { item.remaining = item.plays; });
+        }
+        const next = plan[recordingLoopIndex.current];
+        if (next) audio.currentTime = next.start;
+        else { recordingLoopRef.current = []; setLoopEnabled(false); }
+      }
+      setRecordingPosition(audio.currentTime);
+    }, 50);
     return () => window.clearInterval(timer);
   }, [activeRecording?.id, isRunning]);
 
@@ -290,10 +309,6 @@ export function PracticePage() {
   }
 
   function openLoop(trigger: HTMLButtonElement) {
-    if (activeRecording) {
-      showToast('Recording loops are not available yet. The audio plays as recorded.');
-      return;
-    }
     loopTriggerRef.current = trigger;
     setLoopOpen(true);
   }
@@ -305,6 +320,16 @@ export function PracticePage() {
 
   function applyLoop(enabled: boolean, sections: LoopSection[], repeatPlan: boolean) {
     const now = performance.now();
+    if (activeRecording) {
+      recordingLoopIndex.current = 0;
+      recordingLoopRepeat.current = repeatPlan;
+      recordingLoopRef.current = enabled ? sections.map(section => {
+        const start = recordingTimeForSelectedBar(section.startBar - 1, audioRef.current?.currentTime ?? 0, activeRecording, chart.time_signature, chart.bars.length);
+        const end = start + (section.endBar - section.startBar + 1) * chart.time_signature[0] * 240 / (activeRecording.recordedBpm * chart.time_signature[1]);
+        return { start, end: Math.min(end, recordingDuration), plays: section.plays, remaining: section.plays };
+      }) : [];
+      if (enabled && recordingLoopRef.current[0]) seekRecording(recordingLoopRef.current[0].start);
+    }
     setLoopEnabled(enabled);
     setLoopSections(sections);
     setRepeatWholePlan(repeatPlan);
@@ -593,7 +618,6 @@ export function PracticePage() {
             : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
           {chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
         </div>
-        <button className="practice-more" type="button" aria-label="Finish session" onClick={finishSession}>⋮</button>
       </header>
 
       {activeRecording && <audio
@@ -647,7 +671,7 @@ export function PracticePage() {
               activeEventIndex={playhead.eventIndex} loopRange={loopRange}
               onSelectBar={moveToBar} showSectionLabels practiceSheet />
           </div>
-          <p className="practice-chart-caption">All {chart.bars.length} measures · Tap a measure to move the playhead</p>
+
         </div>
       )}
 
@@ -697,20 +721,20 @@ export function PracticePage() {
         </div>
         <div className="practice-chart-controls practice-player-pills" id="practice-inline-settings">
           <label>{activeRecording ? 'Key · chart only' : 'Key'}<select value={CHROMA[pitchClass(chartKey) ?? 0]} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
-          <label>{activeRecording ? 'BPM · original' : 'Reference BPM'}<input type="number" min={40} max={240} value={activeRecording?.recordedBpm ?? tempoInput} readOnly={Boolean(activeRecording)} onChange={event => {
-            const value = event.target.value;
-            setTempoInput(value);
-            if (Number(value) >= 40 && Number(value) <= 240) changeTempo(Number(value));
-          }} onBlur={() => changeTempo(Number(tempoInput) || tempo)} aria-label={activeRecording ? 'Original recording BPM' : 'Reference tempo in beats per minute'} /></label>
+          <div className="practice-bpm-field"><span>BPM · <button type="button" className="bpm-reset" onClick={() => changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100)}>original</button></span>
+            <div className="bpm-stepper"><input aria-label="Reference tempo in beats per minute" type="number" min={40} max={240} value={tempoInput} onChange={event => { setTempoInput(event.target.value); if (+event.target.value >= 40 && +event.target.value <= 240) changeTempo(+event.target.value); }} onBlur={() => changeTempo(+tempoInput || tempo)} />
+            <div><button type="button" aria-label="Increase reference BPM" onClick={() => changeTempo(tempo + 1)}>⌃</button><button type="button" aria-label="Decrease reference BPM" onClick={() => changeTempo(tempo - 1)}>⌄</button></div></div>
+          </div>
           <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
         </div>
-        <p className="practice-reference-note">{activeRecording ? 'Chart follows the recording. Tempo/key settings do not change the recorded sound.' : 'Play follows the chart visually at the selected BPM; recorded audio is not available.'}</p>
+        <p className="practice-reference-note">{activeRecording ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.' : 'Play follows the chart visually at the selected BPM; recorded audio is not available.'}</p>
         <div className="practice-session-row"><button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button><PracticeTimeBadge seconds={elapsedSeconds} running={isRunning} /></div>
       </div>
       {routine && panel === 'instructions' && lesson && (
         <div className="practice-coach-dock"><GuidedCatCoach key={stepIndex} lesson={lesson} catId={catId} /></div>
       )}
       <div className="practice-utility-row" aria-label="Practice tools">
+        <button type="button" onClick={event => openLoop(event.currentTarget)} aria-pressed={loopEnabled}><PracticeToolGlyph name="loop" /><span>Loop</span></button>
         <button type="button" disabled title="Mixer is Preview only"><PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small></button>
         <button type="button" onClick={event => openTool('tuner', event.currentTarget)}><PracticeToolGlyph name="tuner" /><span>Tuner</span></button>
         <button type="button" onClick={event => openTool('metronome', event.currentTarget)}><PracticeToolGlyph name="metronome" /><span>Metronome</span></button>

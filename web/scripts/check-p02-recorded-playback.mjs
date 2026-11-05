@@ -85,8 +85,25 @@ try {
     }
     await page.evaluate(t => window.mediaAt(t), 5.75 + 158 * 240 / 170 + .01);
     await page.clock.runFor(60); assert((await bar()).startsWith('Measure 33:'));
-    assert.equal(await page.getByLabel('Original recording BPM').inputValue(), '170');
-    assert(await page.getByLabel('Original recording BPM').getAttribute('readonly') !== null);
+    assert.equal(await page.getByLabel('Reference tempo in beats per minute').inputValue(), '170');
+    await page.getByLabel('Increase reference BPM').click();
+    assert.equal(await page.getByLabel('Reference tempo in beats per minute').inputValue(), '171');
+    await page.getByRole('button', {name: 'original', exact: true}).click();
+    assert.equal(await page.getByLabel('Reference tempo in beats per minute').inputValue(), '170');
+
+    await page.getByRole('button', { name: 'Loop', exact: true }).click();
+    const loopDialog = page.getByRole('dialog', { name: 'Set up looping' });
+    await loopDialog.getByRole('button', { name: /Repeat sections/ }).click();
+    await loopDialog.getByRole('button', { name: 'Apply plan' }).click();
+    const loopStart = await pos();
+    await page.evaluate(t => window.mediaAt(t), loopStart + 4 * 240 / 170);
+    await page.clock.runFor(60);
+    assert(Math.abs(await pos() - loopStart) < .01, 'Section loop seeks actual audio');
+    await page.getByRole('button', { name: 'Loop', exact: true }).click();
+    await loopDialog.getByRole('button', { name: /No looping/ }).click();
+    await loopDialog.getByRole('button', { name: 'Apply plan' }).click();
+    assert.equal(await page.locator('.practice-more').count(), 0);
+    assert.equal(await page.locator('.practice-chart-caption').count(), 0);
     const original = await page.locator('.measure').first().innerText();
     await page.getByLabel('Transpose concert chart key').selectOption('A');
     assert.notEqual(await page.locator('.measure').first().innerText(), original);

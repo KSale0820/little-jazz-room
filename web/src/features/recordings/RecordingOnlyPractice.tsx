@@ -143,7 +143,6 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
         <h1>{recording.title}</h1>
         <p>Backing Track · {recording.style || 'Jazz'}</p>
       </div>
-      <button className="practice-more" type="button" onClick={finish} aria-label="Finish session">⋮</button>
     </header>
     <audio ref={audioRef} src={recording.src} preload="metadata" loop={repeatRecording}
       aria-label={recording.title + ' backing track'}

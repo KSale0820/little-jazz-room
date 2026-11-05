@@ -1465,3 +1465,21 @@
 .practice-unified.practice-instructions .practice-control-row { grid-template-columns: 1fr; }
 .practice-unified.practice-instructions .practice-transport > .practice-reference-note { display: none; }
 .practice-unified.practice-guided .practice-segments { grid-template-columns: repeat(2,minmax(0,1fr)); }
+/* Review corrections: separate section loop, closed cells, and reference BPM. */
+.practice-unified .practice-utility-row { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet { padding-left: 36px; }
+.practice-unified .practice-chart-scroll.practice-chart-all .practice-sheet .measure-section-label { left: -36px; width: 32px; font-size: 12px; }
+.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure:last-child { border-right: 1px solid #607a71; }
+.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure { border-top: 1px solid #607a71; }
+.practice-bpm-field { min-width: 0; font: 500 10px/1.4 system-ui,sans-serif; color: #4b6454; }
+.practice-bpm-field .bpm-reset { padding: 0; border: 0; background: none; color: inherit; text-decoration: underline; font: inherit; }
+.bpm-stepper { display: flex; background: #ece9df; border-radius: 16px; overflow: hidden; }
+.bpm-stepper > div { display: flex; flex-direction: column; }
+.bpm-stepper button { width: 28px; height: 22px; border: 0; padding: 0; background: transparent; color: #194c3b; font-size: 20px; line-height: 20px; }
+.practice-unified .bpm-stepper input { appearance: textfield; }
+.bpm-stepper input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.practice-unified .practice-session-row .practice-finish-action {
+  min-height: 44px; border: 1px solid #31503b; border-radius: 12px;
+  padding: 8px 12px; background: #31503b; color: #fff9ed;
+  text-decoration: none; font: 600 12px system-ui,sans-serif;
+}
