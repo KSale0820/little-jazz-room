@@ -903,12 +903,10 @@ html[data-theme] .botanical-frame::before,
 html[data-theme] .botanical-frame::after { background-image: none; }
 html[data-theme="dark"] { scrollbar-color: var(--color-border) var(--color-bg); }
 
-/* Cat Mode changes only existing decorative scene cats, never avatars or rewards.
-   visibility (not display:none) preserves every occupied layout footprint. */
+/* Cat Mode hides optional scene decoration only.
+   Progress has a required companion in both modes; its OFF sprite is CatSprite.
+   visibility (not display:none) retains the existing optional-cat footprints. */
 html[data-cat-mode="off"] .h01-companion,
-html[data-cat-mode="off"] .g01-cat,
-html[data-cat-mode="off"] .g01-cat-cushion,
-html[data-cat-mode="off"] .g01-cat-bubble,
 html[data-cat-mode="off"] .tool-scene-cat,
 html[data-cat-mode="off"] [data-decorative-cat] { visibility: hidden !important; }
 
