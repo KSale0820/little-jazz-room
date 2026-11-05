@@ -89,3 +89,102 @@ html[data-theme] .explore-page .page-atmosphere {
 html[data-theme] .explore-page .page-atmosphere-deco { visibility: hidden; }
 html[data-theme] .explore-page .page-atmosphere-text h1 { color: var(--color-text); }
 html[data-theme] .explore-page .page-atmosphere-sub { color: var(--color-muted); }
+
+/* Pixel Studio V3: use only Agent 3's verified botanical/music masks.
+   These are surface decoration, not new art assets or interactive widgets.
+   All pixel stickers use existing empty page regions. */
+html[data-theme] .p01-page .p01-daily,
+html[data-theme] .p01-page .p01-tools,
+html[data-theme] .g01-page .g01-daily-card,
+html[data-theme] .g01-page .g01-week-chart,
+html[data-theme] .explore-page .page-atmosphere {
+  position: relative;
+}
+html[data-theme] .p01-page .p01-daily::after,
+html[data-theme] .p01-page .p01-tools::after,
+html[data-theme] .g01-page .g01-daily-card::after,
+html[data-theme] .g01-page .g01-week-chart::after,
+html[data-theme] .explore-page .page-atmosphere::after {
+  content: '';
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  background-color: var(--color-pixel-plant);
+  opacity: .65;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+/* P01's extra botanical vignette sits below the daily goal, in existing
+   breathing room, not over a slider, a button, or chart notation. */
+html[data-theme] .p01-page .p01-daily::after {
+  right: 9px;
+  bottom: -57px;
+  width: 49px;
+  height: 49px;
+  opacity: .52;
+  -webkit-mask-image: url('/visuals/pixel-motifs/plant.svg');
+  mask-image: url('/visuals/pixel-motifs/plant.svg');
+}
+html[data-theme] .p01-page .p01-tools::after {
+  right: 7px;
+  top: -3px;
+  width: 25px;
+  height: 25px;
+  opacity: .43;
+  -webkit-mask-image: url('/visuals/pixel-motifs/leaves.svg');
+  mask-image: url('/visuals/pixel-motifs/leaves.svg');
+}
+html[data-theme] .g01-page .g01-daily-card::after {
+  top: 9px;
+  right: 11px;
+  width: 23px;
+  height: 23px;
+  opacity: .38;
+  -webkit-mask-image: url('/visuals/pixel-motifs/leaves.svg');
+  mask-image: url('/visuals/pixel-motifs/leaves.svg');
+}
+html[data-theme] .g01-page .g01-week-chart::after {
+  right: 8px;
+  top: 5px;
+  width: 25px;
+  height: 25px;
+  opacity: .35;
+  background-color: var(--color-pixel-note);
+  -webkit-mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+  mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+}
+/* Refine currently occupied illustration strips rather than inserting cat
+   stages anywhere new. Cats remain governed by Cat Mode, never by masks. */
+html[data-theme] .tool-page .tool-cat-scene::before {
+  opacity: .78;
+  background-color: var(--color-pixel-plant);
+}
+html[data-theme] .tool-page .tool-cat-scene::after {
+  opacity: .62;
+  background-color: var(--color-pixel-note);
+}
+html[data-theme] .g01-page .g01-companion::after {
+  opacity: .72;
+  background-color: var(--color-pixel-plant);
+}
+html[data-theme] .explore-page .page-atmosphere::after {
+  top: 9px;
+  right: 12px;
+  width: 35px;
+  height: 35px;
+  background-color: var(--color-pixel-note);
+  opacity: .48;
+  -webkit-mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+  mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+}
+@media (max-height: 700px) and (max-width: 599px) {
+  html[data-theme] .p01-page .p01-daily::after {
+    width: 37px;
+    height: 37px;
+    bottom: -40px;
+  }
+}
