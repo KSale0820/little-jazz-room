@@ -774,45 +774,56 @@ body.no-cat-motion .jazz-cat-animated {
 
 /* CLEAN PIXEL THEMES: semantic foundation; page-specific rules remain with Agent 2. */
 html[data-theme="light"] {
-  --color-bg: #F5F7F3;
-  --color-surface: #FFFFFF;
-  --color-surface-raised: #EBF2EC;
-  --color-text: #203028;
-  --color-muted: #55685F;
-  --color-border: #C9D6CD;
-  --color-action: #23654D;
-  --color-action-text: #F8FFF9;
-  --color-focus: #8C46D1;
-  --color-success: #227250;
-  --color-warning: #9B660F;
-  --color-danger: #B13A49;
-  --color-violet: #7058AB;
-  --color-chart-paper: #FFFFFF;
-  --color-chart-chord: #1C563E;
-  --color-chart-section: #9B273F;
-  --color-chart-repeat: #225BAA;
-  --color-chart-selected: #F5E6B5;
+  /* Sunny Studio: warm ivory, botanical sage and gentle peach/purple accents. */
+  --color-bg: #FFF8EC;
+  --color-surface: #FFFDF8;
+  --color-surface-raised: #F3EBD9;
+  --color-text: #312C34;
+  --color-muted: #605866;
+  --color-border: #D9C7CE;
+  --color-action: #2C624A;
+  --color-action-text: #FFFFFF;
+  --color-focus: #7953B4;
+  --color-success: #2D7655;
+  --color-warning: #976023;
+  --color-danger: #AC3A55;
+  --color-violet: #7753A6;
+  --color-pixel-plant: #679C72;
+  --color-pixel-note: #A26F9D;
+  --color-chart-paper: #FFFEFA;
+  --color-chart-chord: #2D3531;
+  --color-chart-section: #9E3156;
+  --color-chart-repeat: #2C588D;
+  --color-chart-selected: #EDE2F6;
+  --color-chart-selected-outline: #7753A6;
+  --color-chart-loop: #E0F0E7;
+  --color-chart-playhead: #67419B;
 }
-
 html[data-theme="dark"] {
-  --color-bg: #111A17;
-  --color-surface: #1B2621;
-  --color-surface-raised: #25332B;
-  --color-text: #F3F5ED;
-  --color-muted: #B1C7BC;
-  --color-border: #42574B;
-  --color-action: #72E6B4;
-  --color-action-text: #0E2017;
-  --color-focus: #C7A7FF;
-  --color-success: #79E6AA;
-  --color-warning: #F0C573;
-  --color-danger: #FF8FA1;
-  --color-violet: #BF9AF2;
-  --color-chart-paper: #1C2822;
-  --color-chart-chord: #A0EFCA;
-  --color-chart-section: #FF809B;
-  --color-chart-repeat: #8CACFF;
-  --color-chart-selected: #4F4930;
+  /* Midnight Jazz: soft-plum panels, lavender accents and pastel music motifs. */
+  --color-bg: #1B1727;
+  --color-surface: #292139;
+  --color-surface-raised: #382C4D;
+  --color-text: #F9F3F9;
+  --color-muted: #C7BAD5;
+  --color-border: #6B587F;
+  --color-action: #BCA3F4;
+  --color-action-text: #24182F;
+  --color-focus: #E5B9FF;
+  --color-success: #93DBB7;
+  --color-warning: #F6CA8C;
+  --color-danger: #FF9CAF;
+  --color-violet: #C8A5FF;
+  --color-pixel-plant: #A7CF94;
+  --color-pixel-note: #ECAAD5;
+  --color-chart-paper: #211A2F;
+  --color-chart-chord: #F8F0F9;
+  --color-chart-section: #F6AEC9;
+  --color-chart-repeat: #99D7FF;
+  --color-chart-selected: #38294E;
+  --color-chart-selected-outline: #D8AEFC;
+  --color-chart-loop: #292D4F;
+  --color-chart-playhead: #D5B5FF;
 }
 
 html[data-theme] {
