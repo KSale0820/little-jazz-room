@@ -1,4 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges" aria-hidden="true">
-  <!-- Sparse hanging leaf cluster with a stepped trailing vine. -->
-  <path fill="#000" d="M11 1h3v4h-3zM14 4h3v5h-3zM17 8h2v6h-2zM19 13h2v6h-2zM21 18h2v5h-2zM23 22h2v6h-2zM9 4h4v2H9zM5 6h8v3H5zM6 9h6v3H6zM10 12h4v3h-4zM17 4h6v2h-6zM17 6h9v3h-9zM19 9h6v3h-6zM13 15h6v2h-6zM11 17h8v3h-8zM13 20h5v3h-5zM22 13h6v2h-6zM21 15h9v3h-9zM23 18h6v3h-6zM17 24h6v2h-6zM16 26h8v3h-8zM19 29h5v2h-5z"/>
+  <!-- Spare ivy-like branch with distinct stepped leaves. -->
+  <path fill="#000" d="M5 28h3v3H5z M8 25h3v3H8z M11 22h3v3h-3z M14 19h3v3h-3z M17 16h3v3h-3z M20 13h3v3h-3z M23 10h3v3h-3z
+    M3 15h5v3H3z M1 18h9v4H1z M4 22h7v3H4z M9 24h3v2H9z
+    M9 8h6v3H9z M7 11h10v4H7z M11 15h6v3h-6z
+    M19 22h6v3h-6z M17 25h11v4H17z M21 29h5v2h-5z
+    M22 4h5v3h-5z M20 7h10v4H20z M23 11h6v3h-6z"/>
 </svg>
