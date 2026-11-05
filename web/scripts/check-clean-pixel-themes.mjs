@@ -84,6 +84,18 @@ try {
                 return avatar ? getComputedStyle(avatar).visibility : null;
               })(),
               chartCells: document.querySelectorAll('.chord-grid .measure').length,
+              screenBackground: (() => {
+                const root = document.querySelector('.p01-page, .g01-page');
+                return root ? getComputedStyle(root).backgroundColor : null;
+              })(),
+              chartPaperBackground: (() => {
+                const measure = document.querySelector('.practice-chart-scroll .measure:not(.chosen):not(.looped)');
+                return measure ? getComputedStyle(measure).backgroundColor : null;
+              })(),
+              tunerReferenceBackground: (() => {
+                const reference = document.querySelector('.tuner-reference');
+                return reference ? getComputedStyle(reference).backgroundColor : null;
+              })(),
             };
           });
           assert.equal(state.theme, theme, screen + ' wrong palette');
@@ -103,8 +115,21 @@ try {
             assert.equal(state.profileAvatarVisibility, 'visible',
               'Profile companion avatar must remain visible independently of Cat Mode');
           }
+          const expectedBackground = theme === 'dark' ? 'rgb(17, 26, 23)' : 'rgb(245, 247, 243)';
+          if (['Practice', 'Progress'].includes(screen)) {
+            assert.equal(state.screenBackground, expectedBackground,
+              screen + ' retains the old room/ivory background instead of the active theme');
+          }
           if (screen === 'Player') {
             assert.ok(state.chartCells >= 12, 'Free Practice chart missing complete 12-bar grid');
+            assert.equal(state.chartPaperBackground,
+              theme === 'dark' ? 'rgb(28, 40, 34)' : 'rgb(255, 255, 255)',
+              'Player notation surface must match the active chart-paper palette');
+          }
+          if (screen === 'Tuner') {
+            assert.equal(state.tunerReferenceBackground,
+              theme === 'dark' ? 'rgb(27, 38, 33)' : 'rgb(255, 255, 255)',
+              'Tuner reference card must not retain the old cream surface in Dark Mode');
           }
           if (['Practice', 'Player', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
             await page.screenshot({
