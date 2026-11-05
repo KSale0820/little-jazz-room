@@ -1,0 +1,8 @@
+/* Layout sizing remains the responsibility of the existing screen slot.
+   visibility:hidden retains the image's layout box when Cat Mode is off. */
+.pixel-decorative-cat {
+  display: block;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+}
