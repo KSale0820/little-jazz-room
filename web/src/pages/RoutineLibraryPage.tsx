@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Routine } from '../types/content';
 import './RoutineLibraryPage.css';
+import './CleanPixelRoutines.css';
 
 type RoutineTab = 'Presets' | 'My Routines' | 'Shared';
 type Filters = { instrument: string; goal: string; duration: string; level: string };
