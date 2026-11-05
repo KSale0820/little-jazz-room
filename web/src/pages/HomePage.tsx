@@ -13,6 +13,7 @@ import {
 } from '../lib/roomLighting';
 import './HomePage.css';
 import './CleanPixelHomeLegacy.css';
+import './CleanPixelMotifPlacements.css';
 
 const GOAL_MINUTES = 30;
 type Hotspot = 'practice' | 'routines' | 'charts' | 'tracks';
