@@ -1,0 +1,114 @@
+/* Agent 2: tool and progress presentation. Original dimensions and logic remain. */
+.tool-page {
+  --tool-ink: var(--color-text);
+  --tool-evergreen: var(--color-action);
+  --tool-muted: var(--color-muted);
+  --tool-sage: var(--color-surface-raised);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.tool-page > .tool-bottom-art, .tool-vine,
+.tool-scene-plant, .tool-scene-rug { visibility: hidden; }
+.tool-cat-scene, .tool-has-background .tool-cat-scene { background: transparent; }
+.tool-heading h1, .tool-back, .tool-settings,
+.tuner-reading strong, .tuner-reading > span,
+.tuner-measurements strong, .metronome-bpm strong,
+.metronome-bpm > span, .metronome-field h2,
+.metronome-step { color: var(--color-text); }
+.tool-help, .tuner-trail-panel {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.tool-page button:focus-visible,
+.tool-page input:focus-visible,
+.metronome-countin input:focus-visible + .metronome-switch { outline-color: var(--color-focus); }
+.tool-tuner .tuner-modes, .metronome-step,
+.metronome-signatures button, .metronome-count-select {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.tuner-modes button { color: var(--color-muted); }
+.tuner-modes button[aria-pressed="true"], .metronome-signatures button[aria-pressed="true"] {
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+.tuner-reading small, .tuner-measurements span,
+.tuner-reference small, .metronome-tap-row > span,
+.metronome-playing-status, .tuner-trail-high,
+.tuner-trail-low, .tuner-trail-panel > small { color: var(--color-muted); }
+.tuner-status, .tuner-mic, .tuner-mic[aria-pressed="true"],
+.tuner-trail-toggle {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+  color: var(--color-action);
+}
+.tuner-measurements div + div { border-color: var(--color-border); }
+.tuner-reference, .tuner-reference > span:nth-child(2),
+.tuner-speaker { color: var(--color-text); }
+.tuner-reference strong { color: var(--color-text); }
+.tuner-reference-play, .metronome-play,
+.metronome-beats button.is-accent {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+.tool-error { background: var(--color-surface-raised); border-color: var(--color-danger); color: var(--color-danger); }
+.metronome-slider { accent-color: var(--color-action); }
+.metronome-slider::-webkit-slider-thumb,
+.metronome-slider::-moz-range-thumb { background: var(--color-action); }
+.metronome-tap { background: var(--color-surface); border-color: var(--color-border); color: var(--color-action); }
+.metronome-beats button { color: var(--color-muted); }
+.metronome-beats button.is-current { outline-color: var(--color-focus); }
+.metronome-switch { background: var(--color-border); }
+.metronome-switch::after { background: var(--color-surface); }
+.metronome-countin input:checked + .metronome-switch { background: var(--color-action); }
+.tuner-trail-heading strong { color: var(--color-text); }
+.tuner-trail-panel svg { color: var(--color-chart-repeat); }
+
+/* G01 Progress: deliberately preserve the same card dimensions and cat stage. */
+.g01-page { background: var(--color-bg); color: var(--color-text); }
+.g01-header h1, .g01-settings,
+.g01-stat strong, .g01-stat span:not(.g01-stat-icon),
+.g01-daily-card h2, .g01-daily-card p,
+.g01-history-heading h2, .g01-session-copy strong { color: var(--color-text); }
+.g01-companion { background: var(--color-surface-raised); }
+.g01-cat-cushion, .g01-plant, .g01-goal-plant { visibility: hidden; }
+.g01-cat-bubble {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: none;
+}
+.g01-change, .g01-practice-again {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+.g01-change:hover, .g01-practice-again:hover {
+  background: var(--color-action);
+}
+.g01-stats, .g01-daily-card, .g01-week-chart,
+.g01-session, .g01-empty-history {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: none;
+}
+.g01-stat + .g01-stat { border-color: var(--color-border); }
+.g01-bars-icon i, .g01-goal-fill,
+.g01-chart-bar-today { background: var(--color-action); }
+.g01-goal-track { background: var(--color-border); }
+.g01-chart-axis, .g01-chart-labels, .g01-session-copy span,
+.g01-session time, .g01-empty-history { color: var(--color-muted); }
+.g01-chart-columns {
+  border-color: var(--color-border);
+  background: repeating-linear-gradient(to bottom, var(--color-border) 0 1px, transparent 1px 47px);
+}
+.g01-chart-bar { background: var(--color-success); }
+.g01-chart-bar-today { background: var(--color-action); }
+.g01-history-heading button { color: var(--color-action); }
+.g01-session img { background: var(--color-surface-raised); }
+.g01-page button:focus-visible { outline-color: var(--color-focus); }
+@media (prefers-reduced-motion: reduce) {
+  .g01-goal-fill { transition: none; }
+}
