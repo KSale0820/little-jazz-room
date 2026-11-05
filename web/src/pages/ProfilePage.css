@@ -184,3 +184,76 @@
     font-size: 1.6rem;
   }
 }
+
+
+/* Appearance settings preserve the existing Profile navigation and content order. */
+html[data-theme] .profile-page { background: var(--color-bg); color: var(--color-text); }
+html[data-theme] .profile-companion-card,
+html[data-theme] .profile-stat {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+html[data-theme] .profile-companion-badge {
+  background: var(--color-surface-raised);
+  color: var(--color-action);
+}
+html[data-theme] .profile-companion-change {
+  background: var(--color-surface-raised);
+  color: var(--color-action);
+  border-color: var(--color-border);
+}
+.profile-appearance-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+html[data-theme] .profile-appearance-settings h3 {
+  color: var(--color-text);
+  font-family: inherit;
+}
+.profile-appearance-help,
+.profile-appearance-note {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+.profile-theme-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.profile-theme-choice {
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-weight: 700;
+}
+.profile-theme-choice[aria-pressed="true"] {
+  border-color: var(--color-action);
+  color: var(--color-action-text);
+  background: var(--color-action);
+}
+.profile-cat-mode-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+  cursor: pointer;
+}
+.profile-cat-mode-label input {
+  flex: 0 0 auto;
+  margin-top: 3px;
+  width: 19px;
+  height: 19px;
+  accent-color: var(--color-action);
+}
+.profile-cat-mode-label span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.profile-cat-mode-label strong { color: var(--color-text); font-size: 0.8rem; }
+.profile-cat-mode-label small { color: var(--color-muted); font-size: 0.72rem; line-height: 1.4; }
