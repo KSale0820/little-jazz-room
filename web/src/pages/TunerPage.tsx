@@ -10,6 +10,7 @@ import {
 } from './toolsAudio';
 import './ToolsPages.css';
 import './CleanPixelToolsProgress.css';
+import './CleanPixelMotifPlacements.css';
 
 type MicStatus = 'idle' | 'requesting' | 'listening' | 'denied' | 'unsupported' | 'error';
 type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
