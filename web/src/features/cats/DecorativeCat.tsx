@@ -1,8 +1,8 @@
 import type { SyntheticEvent } from 'react';
 import { useAppearance } from '../../context/AppearanceContext';
-import { decorativeCatUrls, VERIFIED_PIXEL_CATS, type DecorativeCatPose } from '../../assets/cleanPixelAssets';
+import { VERIFIED_PIXEL_CATS, type DecorativeCatPose } from '../../assets/cleanPixelAssets';
 import { useImageFallback } from '../../lib/useImageFallback';
-import type { CatId } from './CatCompanion';
+import { isVisibleCatId, type CatId, type VisibleCatId } from './CatCompanion';
 import './decorative-cat.css';
 
 /**
@@ -20,8 +20,17 @@ export function DecorativeCat({ catId, variant = 'sleeping', size = 96, classNam
   onError?: (event: SyntheticEvent<HTMLImageElement>) => void;
 }) {
   const { catMode } = useAppearance();
-  const pixelUrl = VERIFIED_PIXEL_CATS[variant][catId];
-  const { src, onError: advanceFallback } = useImageFallback(decorativeCatUrls(catId, variant), `pixel-decor:${variant}:${catId}`);
+  const visibleId: VisibleCatId = isVisibleCatId(catId) ? catId : 'luna';
+  // Only the three newly verified pixel designs are eligible for display.
+  // When one pose fails to decode, the other new pose is the safe fallback,
+  // never an outdated portrait/sleeping cat from the October asset archive.
+  const pose = variant === 'sitting' ? 'sitting' : 'sleeping';
+  const alternate = pose === 'sitting' ? 'sleeping' : 'sitting';
+  const pixelUrl = VERIFIED_PIXEL_CATS[pose][visibleId]!;
+  const { src, onError: advanceFallback } = useImageFallback(
+    [pixelUrl, VERIFIED_PIXEL_CATS[alternate][visibleId]!],
+    `pixel-decor:${variant}:${visibleId}`,
+  );
 
   return (
     <img
@@ -38,8 +47,7 @@ export function DecorativeCat({ catId, variant = 'sleeping', size = 96, classNam
       data-cat-mode={catMode ? 'on' : 'off'}
       style={{
         visibility: catMode ? 'visible' : 'hidden',
-        // The approved 128×128 sleeping PNGs are already pixel sprites.
-        imageRendering: variant === 'sleeping' || (pixelUrl && src === pixelUrl) ? 'pixelated' : 'auto',
+        imageRendering: 'pixelated',
       }}
     />
   );
