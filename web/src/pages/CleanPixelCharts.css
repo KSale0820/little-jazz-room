@@ -211,3 +211,41 @@ html[data-theme] .chart-editor-measure.is-selected .chart-editor-section-label {
   color: var(--color-text);
   color: color-mix(in srgb, var(--color-chart-section) 65%, var(--color-text));
 }
+
+/* Cozy Pixel secondary screens. Use the controller's shared theme tokens;
+   no dimensions, editor behavior, or measure markup are changed. */
+html[data-theme="dark"] .t01-page .t01-track-card,
+html[data-theme="dark"] .chart-builder-page .chart-library-card {
+  background: color-mix(in srgb, var(--color-surface) 94%, var(--color-violet));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-violet) 16%, transparent);
+}
+html[data-theme="light"] .t01-page .t01-track-card,
+html[data-theme="light"] .chart-builder-page .chart-library-card {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-action) 14%, transparent);
+}
+html[data-theme] .chart-builder-page .chart-editor-measure.is-selected,
+html[data-theme] .chart-builder-page .chart-editor-row .chart-editor-measure.is-selected {
+  background: color-mix(in srgb, var(--color-chart-paper) 86%, var(--color-violet));
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+  color: var(--color-chart-chord);
+}
+html[data-theme="light"] .chart-builder-page .chart-editor-measure.is-selected,
+html[data-theme="light"] .chart-builder-page .chart-editor-row .chart-editor-measure.is-selected {
+  background: color-mix(in srgb, var(--color-chart-paper) 92%, var(--color-violet));
+}
+html[data-theme] .chart-builder-page .chart-editor-chord input:is(:focus, .is-selected) {
+  background: color-mix(in srgb, var(--color-chart-paper) 83%, var(--color-violet));
+  border-color: var(--color-focus);
+  color: var(--color-chart-chord);
+}
+html[data-theme] .chart-builder-page .chart-editor-measure.is-selected :is(.chart-editor-annotation, .chart-editor-section-label) {
+  color: color-mix(in srgb, var(--color-chart-section) 64%, var(--color-text));
+}
+html[data-theme] .chart-builder-page .chart-editor-measure.is-selected .chart-editor-chord input {
+  color: var(--color-chart-chord);
+}
+html[data-theme] .t01-page .t01-track-card:focus-within,
+html[data-theme] .chart-builder-page .chart-library-card:focus-within {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
