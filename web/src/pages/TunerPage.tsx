@@ -8,6 +8,7 @@ import {
   type PitchReading, type PitchTrailSample, type TuningMode, type RecentPitch,
 } from './toolsAudio';
 import './ToolsPages.css';
+import './CleanPixelToolsProgress.css';
 
 type MicStatus = 'idle' | 'requesting' | 'listening' | 'denied' | 'unsupported' | 'error';
 type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
