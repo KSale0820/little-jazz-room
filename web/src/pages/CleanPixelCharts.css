@@ -292,7 +292,7 @@ html[data-theme] .chart-builder-page .chart-builder-chart-heading::after {
   width: 24px;
   height: 24px;
   opacity: .67;
-  background-image: url('/visuals/pixel-motifs/approved/divider-note.png');
+  background-image: url('/visuals/pixel-motifs/approved/eighth-note.png');
 }
 @media (max-width: 380px) {
   html[data-theme] .t01-page .t01-header::before {
