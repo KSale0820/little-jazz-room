@@ -286,3 +286,102 @@
   color: var(--color-text);
   color: color-mix(in srgb, var(--color-chart-section) 65%, var(--color-text));
 }
+
+
+/* Screenshot QA correction: the original approved layout CSS is loaded after
+   several paint rules by Vite. Scope the clean palette more specifically
+   without changing control dimensions, chart topology, or navigation. */
+html[data-theme] .p01-page {
+  --p01-ink: var(--color-text);
+  --p01-green: var(--color-action);
+  --p01-brass: var(--color-warning);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+html[data-theme] .p01-page .p01-header h1,
+html[data-theme] .p01-page .p01-tools h2,
+html[data-theme] .p01-page .p01-continue-copy strong,
+html[data-theme] .p01-page .p01-daily-header,
+html[data-theme] .p01-page .p01-action-secondary .p01-action-copy strong {
+  color: var(--color-text);
+}
+html[data-theme] .p01-page .p01-greeting { color: var(--color-action); }
+html[data-theme] .p01-page .p01-intro,
+html[data-theme] .p01-page .p01-action-copy small,
+html[data-theme] .p01-page .p01-continue-copy small { color: var(--color-muted); }
+html[data-theme] .p01-page .p01-action {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .p01-page .p01-action-primary {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+html[data-theme] .p01-page .p01-action-primary .p01-action-copy strong,
+html[data-theme] .p01-page .p01-action-primary .p01-action-copy small {
+  color: var(--color-action-text);
+}
+html[data-theme] .p01-page .p01-action-secondary:nth-child(3),
+html[data-theme] .p01-page .p01-continue-button,
+html[data-theme] .p01-page .p01-tool {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .p01-page .p01-action-icon {
+  background: var(--color-surface-raised);
+  color: var(--color-action);
+}
+html[data-theme] .p01-page .p01-action-secondary:nth-child(3) .p01-action-icon {
+  background: var(--color-surface);
+}
+html[data-theme] .p01-page .p01-tool { color: var(--color-action); }
+html[data-theme] .p01-page .p01-continue-icon {
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+html[data-theme] .p01-page .p01-daily-track { background: var(--color-border); }
+html[data-theme] .p01-page .p01-daily-fill { background: var(--color-warning); }
+
+/* Contrast-safe chord paper: mint/dark-green notation must be on the
+   corresponding chart-paper surface, not on a leftover ivory fill. */
+html[data-theme] .practice-player {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+html[data-theme] .practice-player .practice-chart-scroll,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet {
+  background: var(--color-chart-paper);
+  border-color: var(--color-border);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure {
+  background: var(--color-chart-paper);
+  border-color: var(--color-border);
+  color: var(--color-chart-chord);
+}
+html[data-theme] .practice-player .practice-chart-scroll .chords,
+html[data-theme] .practice-player .practice-chart-scroll .chords span,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .chords span {
+  color: var(--color-chart-chord);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen,
+html[data-theme] .practice-player .practice-chart-scroll .practice-sheet .measure.chosen {
+  background: var(--color-chart-selected);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.looped:not(.chosen),
+html[data-theme] .practice-player .practice-chart-scroll .practice-sheet .measure.looped:not(.chosen) {
+  background: var(--color-surface-raised);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure-num { color: var(--color-muted); }
+html[data-theme] .practice-player .practice-chart-scroll .measure-annotation,
+html[data-theme] .practice-player .practice-chart-scroll .measure-section-label {
+  color: var(--color-chart-section);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen .measure-annotation,
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen .measure-section-label {
+  color: color-mix(in srgb, var(--color-chart-section) 65%, var(--color-text));
+}
