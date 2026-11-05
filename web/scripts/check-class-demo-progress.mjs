@@ -14,6 +14,8 @@ try {
       page.on('pageerror', e => errors.push(e.message));
       await page.addInitScript(state => {
         localStorage.setItem('little-jazz-room:selected-cat:v1', 'luna');
+        // This legacy illustration QA deliberately enables the new optional Cat Mode.
+        localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
         if (state === 'completed') {
           const now = new Date();
           const sessions = [0, 1, 2].map((offset, i) => {
@@ -30,7 +32,7 @@ try {
         await Promise.all([...document.images].map(img => img.decode().catch(() => {})));
         await document.fonts?.ready;
       });
-      // Assert the two approved illustration binaries were installed and rendered.
+      // Legacy illustration files remain packaged for compatibility, but clean themes must not render them.
       const artwork = await page.evaluate(async () => {
         const response = await fetch('/visuals/progress/g01-room-background.png');
         const background = response.ok ? await createImageBitmap(await response.blob()) : null;
@@ -44,21 +46,21 @@ try {
           cssBackground: panel ? getComputedStyle(panel).backgroundImage : '',
           leafWidth: leaf?.naturalWidth ?? 0,
           leafHeight: leaf?.naturalHeight ?? 0,
-          leafVisible: leaf ? getComputedStyle(leaf).display !== 'none' : false,
+          leafVisible: leaf ? getComputedStyle(leaf).display !== 'none' && getComputedStyle(leaf).visibility !== 'hidden' : false,
           cushionSrc: cushion?.getAttribute('src') ?? '',
           cushionWidth: cushion?.naturalWidth ?? 0,
           cushionHeight: cushion?.naturalHeight ?? 0,
-          cushionVisible: cushion ? getComputedStyle(cushion).display !== 'none' : false,
+          cushionVisible: cushion ? getComputedStyle(cushion).display !== 'none' && getComputedStyle(cushion).visibility !== 'hidden' : false,
         };
       });
       if (artwork.backgroundWidth !== 1200 || artwork.backgroundHeight !== 690 ||
-          !artwork.cssBackground.includes('g01-room-background.png') ||
-          artwork.leafWidth !== 300 || artwork.leafHeight !== 300 || !artwork.leafVisible ||
+          artwork.cssBackground.includes('g01-room-background.png') ||
+          artwork.leafWidth !== 300 || artwork.leafHeight !== 300 || artwork.leafVisible ||
           !artwork.cushionSrc.endsWith('/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png') ||
-          artwork.cushionWidth !== 1024 || artwork.cushionHeight !== 512 || !artwork.cushionVisible) {
-        throw new Error('Approved G01 illustration assets failed browser verification: ' + JSON.stringify(artwork));
+          artwork.cushionWidth !== 1024 || artwork.cushionHeight !== 512 || artwork.cushionVisible) {
+        throw new Error('G01 clean backdrop or original asset packaging mismatch: ' + JSON.stringify(artwork));
       }
-      console.log('PASS approved G01 room and goal leaves at ' + width + 'x' + height + ': ' + JSON.stringify(artwork));
+      console.log('PASS G01 clean backdrop, hidden large illustrations and original asset packaging at ' + width + 'x' + height);
       // G01 must use the approved sleeping pose of the currently selected companion.
       await page.waitForFunction(() => {
         const img = document.querySelector('.g01-cat');
@@ -107,7 +109,10 @@ try {
   // Every approved companion must resolve to its own sleeping sprite on Progress.
   for (const catId of ['luna', 'milo', 'maple', 'mochi', 'pepper', 'patches', 'chai', 'biscuit']) {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, deviceScaleFactor: 2 });
-    await context.addInitScript(id => localStorage.setItem('little-jazz-room:selected-cat:v1', id), catId);
+    await context.addInitScript(id => {
+      localStorage.setItem('little-jazz-room:selected-cat:v1', id);
+      localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
+    }, catId);
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
