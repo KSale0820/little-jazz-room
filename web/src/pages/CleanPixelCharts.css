@@ -1,0 +1,159 @@
+/* Agent 2: theme-only paint for the existing Tracks and chart editor layouts.
+   Geometry, measure counts, time signatures, content and interactions are unchanged. */
+.t01-page, .chart-builder-page {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.t01-title, .t01-section-header h2,
+.t01-card-title, .t01-empty h2, .t01-sheet-top h2,
+.t01-filter-field legend { color: var(--color-text); }
+.t01-eyebrow, .t01-card-subtitle, .t01-card-tempo,
+.t01-section-header span, .t01-empty p,
+.t01-search-wrap input::placeholder { color: var(--color-muted); }
+.t01-charts-link, .t01-search-wrap, .t01-category,
+.t01-filter-actions button, .t01-track-card,
+.t01-filter-sheet, .t01-option, .t01-sheet-reset {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.t01-charts-link, .t01-filter-actions .t01-filter-primary,
+.t01-sheet-reset { color: var(--color-action) !important; }
+.t01-search-wrap > svg, .t01-search-wrap input,
+.t01-card-footer > svg { color: var(--color-text); }
+.t01-search-wrap:focus-within, .t01-page button:focus-visible {
+  outline-color: var(--color-focus);
+}
+.t01-category { color: var(--color-text) !important; }
+.t01-category[aria-pressed="true"],
+.t01-option[aria-pressed="true"], .t01-filter-count,
+.t01-sheet-apply, .t01-empty-clear {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--color-action-text) !important;
+}
+.t01-filter-actions .t01-filter-primary,
+.t01-empty-symbol { background: var(--color-surface-raised); border-color: var(--color-border); }
+.t01-status.t01-audio {
+  color: var(--color-warning);
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+}
+.t01-status.t01-chart {
+  color: var(--color-success);
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+}
+.t01-favorite { color: var(--color-muted) !important; }
+.t01-favorite.is-favorite { color: var(--color-warning) !important; }
+.t01-track-card:has(.t01-card-open:hover) { border-color: var(--color-action); }
+.t01-empty-symbol { color: var(--color-action); }
+.t01-empty-reset { color: var(--color-action) !important; }
+.t01-overlay-backdrop { background: color-mix(in srgb, var(--color-bg) 80%, transparent); }
+.t01-filter-sheet { color: var(--color-text); }
+.t01-sheet-top button, .t01-option, .t01-chart-only { color: var(--color-text) !important; }
+.t01-chart-only input { accent-color: var(--color-action); }
+.t01-sheet-footer { border-top-color: var(--color-border); }
+.t01-filter-actions button[aria-pressed="true"],
+.t01-option[aria-pressed="true"] { color: var(--color-action-text) !important; }
+
+/* My Charts, create/edit, 3/4–6/8, and the fully editable measure grid. */
+.chart-builder-header h1, .chart-builder-chart-heading h2,
+.chart-builder-section-title, .chart-builder-selection h3,
+.chart-builder-current-key, .chart-library-card h3 {
+  color: var(--color-text);
+}
+.chart-builder-eyebrow, .chart-builder-chart-heading p,
+.chart-builder-chart-heading > span, .chart-builder-caption,
+.chart-library-card p, .chart-library-empty,
+.chart-builder-selection h3 span { color: var(--color-muted); }
+.chart-builder-page button:focus-visible,
+.chart-builder-page input:focus-visible,
+.chart-builder-page select:focus-visible { outline-color: var(--color-focus); }
+.chart-builder-primary, .chart-builder-key-scroll button[aria-pressed="true"],
+.chart-builder-meter button[aria-pressed="true"],
+.chart-builder-tools button:first-child {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+.chart-builder-secondary, .chart-builder-key-arrows button,
+.chart-builder-key-scroll button, .chart-builder-key-type button,
+.chart-builder-meter button, .chart-builder-inline-input button,
+.chart-builder-tools button, .chart-builder-measure-actions button,
+.chart-builder-add-row button, .chart-builder-toolbar button,
+.chart-builder-section-tools > button, .chart-library-actions button {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.chart-builder-key-scroll button[aria-pressed="true"],
+.chart-builder-meter button[aria-pressed="true"] { color: var(--color-action-text); }
+.chart-builder-error, .chart-builder-annotation-edit,
+.chart-editor-chord-error {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+.chart-builder-error, .chart-builder-annotation-edit { background: var(--color-surface-raised); }
+.chart-builder-notice {
+  color: var(--color-success);
+  background: var(--color-surface-raised);
+}
+.chart-builder-field span, .chart-builder-field-label, .chart-builder-meter legend,
+.chart-builder-section-tools label, .chart-builder-selection h3,
+.chart-builder-annotation-edit label { color: var(--color-text); }
+.chart-builder-page input, .chart-builder-page select,
+.chart-builder-annotation-edit input, .chart-builder-key-type input,
+.chart-builder-section-tools select {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.chart-builder-page input::placeholder { color: var(--color-muted); }
+.chart-builder-key-type input { accent-color: var(--color-action); }
+.chart-builder-selection, .chart-library-card,
+.chart-builder-section-title span {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.chart-editor-grid, .chart-editor-row,
+.chart-editor-row + .chart-editor-row {
+  background: var(--color-chart-paper);
+  border-color: var(--color-border);
+}
+.chart-editor-measure, .chart-editor-row .chart-editor-measure {
+  background: var(--color-chart-paper);
+  color: var(--color-chart-chord);
+  border-color: var(--color-border);
+}
+.chart-editor-measure.is-selected {
+  background: var(--color-chart-selected);
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+.chart-editor-measure.is-selected .chart-editor-chord input { color: var(--color-chart-chord); }
+.chart-editor-measure-number, .chart-editor-chord small { color: var(--color-muted); }
+.chart-editor-annotation, .chart-editor-section-label,
+.chart-library-card .chart-library-instruction { color: var(--color-chart-section); }
+.chart-editor-chord input {
+  background: transparent;
+  color: var(--color-chart-chord);
+  border-color: transparent;
+}
+.chart-editor-chord input:focus, .chart-editor-chord input.is-selected {
+  background: var(--color-chart-selected);
+  color: var(--color-chart-chord);
+  border-color: var(--color-focus);
+}
+.chart-editor-chord input[aria-invalid="true"] { border-color: var(--color-danger); }
+.chart-editor-chord-error { color: var(--color-danger); }
+.chart-builder-annotation-edit button,
+.chart-builder-measure-actions button:last-child,
+.chart-library-actions .chart-library-delete,
+.chart-builder-toolbar button.is-red {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+.chart-library-actions .chart-library-delete { background: var(--color-surface-raised); }
+.chart-builder-split-adjust input { accent-color: var(--color-action); }
+.chart-builder-page button:disabled { color: var(--color-muted); }

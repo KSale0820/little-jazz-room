@@ -1,0 +1,117 @@
+/* Agent 2: routine library, detail and builder. Paint only. */
+.routine-library, .routine-builder {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.routine-topbar, .builder-topbar { border-color: var(--color-border); }
+.routine-topbar > span:not(.routine-topbar-space),
+.routine-eyebrow, .routine-intro > p:last-child,
+.routine-list-header > span, .routine-card-desc,
+.routine-tip, .builder-topbar > span, .builder-eyebrow,
+.builder-step-header span, .builder-step-content > span,
+.builder-step-time, .builder-tip { color: var(--color-muted); }
+.routine-back, .builder-back, .routine-intro h1,
+.routine-list-header h2, .routine-card-title,
+.builder-heading h1, .builder-step-header h2,
+.builder-panel h3 { color: var(--color-text); }
+.routine-tabs, .routine-card-tags > span {
+  background: var(--color-surface-raised);
+  color: var(--color-muted);
+}
+.routine-tabs button { color: var(--color-text); }
+.routine-tabs button.is-selected {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  box-shadow: none;
+}
+.routine-search-wrap, .routine-card,
+.routine-filters select, .routine-create-button,
+.routine-empty, .routine-tip, .builder-draft,
+.builder-close, .builder-field, .builder-step,
+.builder-panel, .builder-tip, .builder-preview,
+.builder-picker-dialog, .builder-picker-result,
+.builder-picker-confirm {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.routine-search-wrap input, .routine-filters select,
+.builder-field, .builder-step-time input,
+.builder-picker-dialog input, .builder-picker-dialog select {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.routine-search-wrap:focus-within, .routine-library button:focus-visible,
+.routine-builder button:focus-visible,
+.routine-builder input:focus-visible, .routine-builder select:focus-visible,
+.routine-builder textarea:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+.routine-filters label::after { color: var(--color-muted); }
+.routine-card-art, .routine-card-art.art-1, .routine-card-art.art-2 {
+  background: var(--color-surface-raised);
+  color: var(--color-violet);
+}
+.routine-card-tags .routine-tag-goal {
+  color: var(--color-success);
+  background: var(--color-surface-raised);
+}
+.routine-bookmark { color: var(--color-muted); }
+.routine-bookmark.is-saved { color: var(--color-warning); }
+.routine-create-button, .routine-empty button, .routine-show-all {
+  color: var(--color-action);
+}
+.routine-empty strong { color: var(--color-text); }
+.routine-empty p { color: var(--color-muted); }
+
+/* Builder labels, panels and locally edited step order/times. */
+.builder-form > label, .builder-two-fields label, .builder-custom-form > label,
+.builder-panel > label, .builder-visibility legend,
+.builder-step-content strong { color: var(--color-text); }
+.builder-form > label span { color: var(--color-danger); }
+.builder-visibility-options label, .builder-step-time input,
+.builder-step-move button, .builder-step-delete, .builder-add-actions button,
+.builder-panel-actions button, .builder-secondary-actions button,
+.builder-picker-tabs button, .builder-picker-result button,
+.builder-picker-confirm-actions button {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.builder-visibility-options label.selected,
+.builder-picker-tabs button.is-selected {
+  background: var(--color-chart-selected);
+  border-color: var(--color-focus);
+  color: var(--color-text);
+}
+.builder-visibility-options input { accent-color: var(--color-action); }
+.builder-visibility > p, .builder-step-grip, .builder-step-instructions,
+.builder-picker-result p, .builder-picker-result span,
+.builder-picker-count, .builder-picker-empty,
+.builder-picker-confirm p { color: var(--color-muted); }
+.builder-step-time input:focus { outline-color: var(--color-focus); }
+.builder-step-delete { color: var(--color-danger); }
+.builder-panel-primary, .builder-panel-actions button:first-child,
+.builder-save, .builder-primary-actions .builder-save,
+.builder-picker-confirm-actions button:last-child,
+.builder-picker-result button:not(:disabled) {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+.builder-preview, .builder-secondary-actions button {
+  background: var(--color-surface-raised);
+  color: var(--color-action);
+  border-color: var(--color-border);
+}
+.builder-save:disabled, .builder-picker-result button:disabled,
+.builder-picker-confirm-actions button:disabled { opacity: .55; }
+.builder-picker-backdrop {
+  background: color-mix(in srgb, var(--color-bg) 75%, transparent);
+}
+.builder-picker-dialog { color: var(--color-text); }
+.builder-picker-top h3, .builder-picker-confirm h4,
+.builder-picker-result h4 { color: var(--color-text); }
+.builder-picker-label, .builder-picker-filters label,
+.builder-picker-confirm li { color: var(--color-text); }
+.builder-picker-confirm li span { color: var(--color-muted); }
+.builder-picker-close { color: var(--color-action); }

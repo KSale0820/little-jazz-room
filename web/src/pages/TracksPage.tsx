@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { RECORDED_BACKING_TRACKS, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
 import './DemoPages.css';
 import './TracksPage.css';
+import './CleanPixelCharts.css';
 
 type Category = 'Recent' | 'Favorites' | 'Standards' | 'Blues' | 'Original studies';
 type FilterField = 'instrument' | 'style' | 'key' | 'difficulty';

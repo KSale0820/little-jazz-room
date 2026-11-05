@@ -6,6 +6,7 @@ import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
 import type { PracticeSessionRecord, Routine } from '../types/content';
 import './ProgressPage.css';
+import './CleanPixelToolsProgress.css';
 
 // The same daily target as H01 Home. This is a goal, not seeded progress.
 const DAILY_GOAL_MINUTES = 30;

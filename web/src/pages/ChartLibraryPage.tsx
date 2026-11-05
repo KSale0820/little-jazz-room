@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { createChartRepository, newLocalChartId } from '../features/charts/chartRepository';
 import type { Chart } from '../types/content';
 import './ChartBuilderPage.css';
+import './CleanPixelCharts.css';
 
 export function ChartLibraryPage() {
   const { repo, charts, exercises, routines, refreshLocal, setActiveRoutineId } = useApp();
