@@ -5,5 +5,10 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "fix/practice-player-audio-controls-redesign": false
+    }
+  }
 }

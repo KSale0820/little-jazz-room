@@ -24,7 +24,7 @@ try {
     await page.waitForURL(url => url.pathname === '/player');
     const view = name => page.getByRole('tab', { name, exact: true });
     check(await view('Instructions').getAttribute('aria-selected') === 'true', 'Guided did not default to Instructions');
-    check(await view('Chart').count() === 1 && await view('Player').count() === 1, 'Missing guided views');
+    check(await view('Chart').count() === 1 && await view('Player').count() === 0, 'Missing guided views');
     const lesson = page.getByRole('region', { name: 'Guided lesson instructions' });
     check(await lesson.isVisible(), 'Instructions card missing');
     for (const heading of ['Your goal', 'Try it step by step', 'What to listen for', 'You’re ready to move on when…']) {
@@ -47,7 +47,7 @@ try {
       return {
         lesson: box('.practice-lesson-scroll'),
         steps: box('.practice-step-controls'),
-        timer: box('.practice-clock'),
+        timer: box('.practice-time-badge'),
         play: box('.practice-timer-button'),
         coach: box('.practice-coach-dock'),
         navDisplay: getComputedStyle(document.querySelector('.bottom-nav')).display,
@@ -107,8 +107,8 @@ try {
     await page.waitForTimeout(1150);
     const before = seconds(await page.getByTestId('session-elapsed').innerText());
     check(before > 0, 'Timer did not start');
-    await view('Player').click();
-    check(await page.getByRole('tabpanel', { name: 'Chart only player' }).isVisible(), 'Player view missing');
+    check(await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).isVisible(), 'Unified chart missing');
+    await page.locator('.practice-utility-row').scrollIntoViewIfNeeded();
     const dock = await page.locator('.practice-utility-row').boundingBox();
     check(dock && dock.y + dock.height <= height + 1, 'Guided Player tool dock is clipped at ' + width + 'x' + height);
     await page.screenshot({ path: join(out, 'P02-guided-player-' + width + 'x' + height + '.png'), animations: 'disabled' });

@@ -1,3 +1,6 @@
+import { PracticeTimeBadge, SkipTenIcon, RepeatIcon } from '../../components/PracticeMediaControls';
+import { TunerPage } from '../../pages/TunerPage';
+import { MetronomePage } from '../../pages/MetronomePage';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { VISUAL_ASSETS } from '../../assets/visualManifest';
@@ -30,7 +33,7 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [panel, setPanel] = useState<'chart' | 'player'>('player');
+  const [tool, setTool] = useState<'tuner' | 'metronome' | null>(null);
   const [repeatRecording, setRepeatRecording] = useState(false);
   const [ended, setEnded] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -132,7 +135,7 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
     </section>;
   }
 
-  return <section className="practice-player practice-free practice-recording-p02" aria-label="Shared practice player">
+  return <section className="practice-player practice-free practice-recording-p02 practice-unified" aria-label="Shared practice player">
     <header className="practice-player-head">
       <button type="button" className="practice-back" onClick={() => navigate('/tracks')} aria-label="Back to Tracks">‹</button>
       <div className="practice-title-group">
@@ -140,7 +143,6 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
         <h1>{recording.title}</h1>
         <p>Backing Track · {recording.style || 'Jazz'}</p>
       </div>
-      <button className="practice-more" type="button" onClick={finish} aria-label="Finish session">⋮</button>
     </header>
     <audio ref={audioRef} src={recording.src} preload="metadata" loop={repeatRecording}
       aria-label={recording.title + ' backing track'}
@@ -156,27 +158,8 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
       onPause={() => { pauseClock(); setPlaying(false); }}
       onEnded={() => { pauseClock(); setPlaying(false); setEnded(true); }}
       onError={() => setError('Audio unavailable. Check that the recording is installed and playable.')} />
-    <div className="practice-segments" role="tablist" aria-label="Player view">
-      <button type="button" role="tab" aria-selected={panel === 'chart'} onClick={() => setPanel('chart')}
-        className={panel === 'chart' ? 'selected' : undefined}>Chart</button>
-      <button type="button" role="tab" aria-selected={panel === 'player'} onClick={() => setPanel('player')}
-        className={panel === 'player' ? 'selected' : undefined}>Player</button>
-    </div>
-    {panel === 'chart' ? (
-      <div className="practice-notation-panel practice-recording-chart-panel" role="tabpanel" aria-label="Jazz chord chart">
-        <div className="practice-unlinked-chart" role="status">
-          <strong>No chart linked</strong>
-          <p>There isn't a verified chord chart for this recording yet. The recording remains available in Player.</p>
-        </div>
-      </div>
-    ) : (
-      <div className="practice-art-panel practice-recording-art" role="tabpanel" aria-label="Recorded backing track player">
-        <img src={VISUAL_ASSETS.sharedMvp.covers.rainy} alt="Cozy rainy-night jazz practice room" />
-        <div className="practice-art-caption">
-          <strong>{recording.title}</strong><span>Backing Track · {recording.style || 'Jazz'}</span>
-        </div>
-      </div>
-    )}
+    <div className="practice-unlinked-chart" role="status"><strong>No chart linked</strong>
+      <p>There isn't a verified chord chart for this recording yet. Practice with the recording below.</p></div>
     {error && <p role="alert" className="practice-recording-error">{error}</p>}
     <div className="practice-transport" aria-label={"Practice elapsed " + formatPracticeTime(elapsedSeconds)}>
       <div className="practice-recording-seek">
@@ -186,36 +169,42 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
           onChange={event => seek(Number(event.target.value))}
           style={{ '--recording-progress': (duration > 0 ? Math.min(100, 100 * position / duration) : 0) + '%' } as React.CSSProperties} />
         <div className="practice-recording-times">
-          <span>{formatPracticeTime(position, true)}</span>
-          <span>{formatPracticeTime(duration, true)}</span>
+          <span>{formatPracticeTime(Math.floor(position))} / {formatPracticeTime(Math.floor(duration))}</span>
         </div>
       </div>
       <div className="practice-control-row">
+
+        <button type="button" className="practice-measure-btn" onClick={() => seek((audioRef.current?.currentTime ?? 0) - 10)}
+          aria-label="Back 10 seconds"><SkipTenIcon /></button>
+        <button type="button" className="practice-timer-button" onClick={toggleAudio}
+          aria-label={playing ? 'Pause recording' : 'Play recording'}>
+          {playing ? 'Ⅱ' : '▶'}<span className="practice-timer-label">{playing ? 'Pause' : 'Play'}</span>
+        </button>
+        <button type="button" className="practice-measure-btn" onClick={() => seek((audioRef.current?.currentTime ?? 0) + 10)}
+          aria-label="Forward 10 seconds"><SkipTenIcon forward /></button>
+
         <button className="practice-secondary-transport" type="button"
           onClick={() => setRepeatRecording(value => !value)}
           aria-label="Repeat recording" aria-pressed={repeatRecording}>
-          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 11h16l-4-4m4 4-4 4M24 21H8l4 4m-4-4 4-4" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
+          <RepeatIcon />
         </button>
-        <button type="button" className="practice-measure-btn" onClick={() => seek(Math.max(0, position - 10))}
-          aria-label="Back ten seconds">◀❙</button>
-        <button type="button" className="practice-timer-button" onClick={toggleAudio}
-          aria-label={playing ? 'Pause recording and practice timer' : 'Play recording and start practice timer'}>
-          {playing ? 'Ⅱ' : '▶'}<span className="practice-timer-label">{playing ? 'Pause' : 'Play'}</span>
-        </button>
-        <button type="button" className="practice-measure-btn" onClick={() => seek(Math.min(duration || Infinity, position + 10))}
-          aria-label="Forward ten seconds">❙▶</button>
-        <button type="button" className="practice-secondary-transport" onClick={() => setPanel(current => current === 'chart' ? 'player' : 'chart')}
-          aria-label="Toggle Chart or Player view">☷</button>
       </div>
-      <button type="button" className="practice-finish-action" onClick={finish}>Finish Session</button>
+      <div className="practice-chart-controls practice-player-pills">
+        <label>Key · original<input value={recording.key || 'Unspecified'} readOnly aria-label="Original recording key" /></label>
+        <label>BPM · original<input value={recording.recordedBpm ?? 'Unspecified'} readOnly aria-label="Original recording BPM" /></label>
+        <label>Instrument<input value="No chart" disabled aria-label="Written pitch unavailable without a chart" /></label>
+      </div>
+      <p className="practice-reference-note">Original recording · {recording.key} · {recording.recordedBpm ? recording.recordedBpm + ' BPM' : 'Tempo unspecified'}. Pitch and speed are fixed.</p>
+      <div className="practice-session-row"><button type="button" className="practice-finish-action" onClick={finish}>Finish Session</button><PracticeTimeBadge seconds={elapsedSeconds} running={playing} /></div>
     </div>
     <div className="practice-utility-row practice-recording-tools" aria-label="Practice tools">
       <button type="button" disabled title="Stem mixer requires separate stem recordings"><RecordingToolIcon kind="mixer" /><span>Mixer</span><small>Preview</small></button>
-      <button type="button" disabled title="Tempo and key changes are unavailable for this recorded audio"><RecordingToolIcon kind="tempo" /><span>Tempo/Key</span><small>Original</small></button>
-      <button type="button" aria-pressed={repeatRecording} onClick={() => setRepeatRecording(value => !value)}><RecordingToolIcon kind="loop" /><span>Loop</span></button>
-      <button type="button" onClick={() => navigate('/tuner')}><RecordingToolIcon kind="tuner" /><span>Tuner</span></button>
-      <button type="button" onClick={() => navigate('/metronome')}><RecordingToolIcon kind="metronome" /><span>Metronome</span></button>
+      <button type="button" onClick={() => setTool('tuner')}><RecordingToolIcon kind="tuner" /><span>Tuner</span></button>
+      <button type="button" onClick={() => setTool('metronome')}><RecordingToolIcon kind="metronome" /><span>Metronome</span></button>
     </div>
+    {tool && <div className="practice-tool-overlay" role="dialog" aria-modal="true" aria-label={tool === 'tuner' ? 'Tuner within practice' : 'Metronome within practice'} onKeyDown={event => { if (event.key === 'Escape') setTool(null); }}>
+      {tool === 'tuner' ? <TunerPage onClose={() => setTool(null)} /> : <MetronomePage onClose={() => setTool(null)} />}
+    </div>}
     {ended && <p role="status" className="practice-recording-ended">Recording finished · Restart by moving the playhead to the beginning.</p>}
   </section>;
 }

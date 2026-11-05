@@ -1,0 +1,2 @@
+PASS 390x844: mocked media clock, seeking, skips, repeat, five choruses/tag, separate timer, hide/resume, settings, save/reload, no overflow
+PASS 375x667: mocked media clock, seeking, skips, repeat, five choruses/tag, separate timer, hide/resume, settings, save/reload, no overflow

@@ -68,8 +68,8 @@ try {
     const chordsFit = await page.locator('.practice-chart-scroll .chords').evaluateAll(elements =>
       elements.every(element => element.scrollWidth <= element.clientWidth + 1));
     check(chordsFit, 'At least one chord label overflows its measure');
-    await page.getByRole('tab', { name: 'Player' }).click();
-    check(await page.getByText(/Chart Only · No Recording/).isVisible(), 'Missing honest no-recording state');
+    // Unified player keeps the chart and transport together.
+    check(await page.locator('audio').count() === 0, 'Chart-only practice must not show audio');
     check(await page.getByRole('button', { name: /Mixer Preview/ }).isDisabled(), 'Unavailable mixer appears functional');
     await capture(page, folder, 'P02-free-player-no-recording');
 
@@ -108,7 +108,7 @@ try {
     await page.getByRole('button', { name: /Next Step/ }).click();
     check(await page.getByText(/Step 2 of 3/).first().isVisible(), 'Guided step did not advance');
     await capture(page, folder, 'P02-guided-step-two');
-    await page.getByRole('tab', { name: 'Player' }).click();
+    // Unified player keeps the chart and transport together.
     await capture(page, folder, 'P02-guided-player');
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await capture(page, folder, 'P06-guided-completion');

@@ -87,12 +87,11 @@ try {
     await page.goto(base + '/practice', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: /^Free Practice/ }).click();
     await page.waitForURL(url => url.pathname === '/player');
-    await page.getByRole('tab', { name: 'Chart' }).click();
+    await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).waitFor();
     check(await page.locator('.chord-grid .measure').count() === 12,
       'P02 Free: full 12-bar chart not present');
     await verify('P02-free-chart', '.practice-player');
-    await page.getByRole('tab', { name: 'Player' }).click();
-    await page.locator('.practice-no-audio strong').getByText('Chart Only · No Recording').waitFor();
+    check(await page.locator('audio').count() === 0, 'Chart-only practice must not show audio');
     await verify('P02-free-player', '.practice-player');
 
     await page.goto(base + '/routines', { waitUntil: 'networkidle' });
