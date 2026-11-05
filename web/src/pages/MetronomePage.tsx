@@ -229,7 +229,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
       <input id="metronome-tempo-range" className="metronome-slider" type="range"
         min="40" max="240" step="1" value={bpm}
         onChange={event => setTempo(Number(event.target.value))}
-        style={{ background: 'linear-gradient(to right, #1c5942 ' + (bpm - 40) / 2 + '%, #e4e4d8 ' + (bpm - 40) / 2 + '%)' }} />
+        style={{ background: 'linear-gradient(to right, var(--color-action) ' + (bpm - 40) / 2 + '%, var(--color-surface-raised) ' + (bpm - 40) / 2 + '%)' }} />
       <div className="metronome-tap-row">
         <button type="button" className="metronome-tap" onClick={tapTempo}>Tap Tempo</button>
         <span>{taps >= 2 ? 'Tempo set from your taps' : 'Tap twice or more to set BPM'}</span>
