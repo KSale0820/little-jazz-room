@@ -140,6 +140,12 @@ export const VISUAL_ASSETS = {
     share: '/visuals/icons/icon-share.svg',
     skip: '/visuals/icons/icon-skip.svg',
   },
+  /** Minimal geometric motifs for both clean themes, tinted via CSS mask and semantic tokens. */
+  pixelMotifs: {
+    plant: '/visuals/pixel-motifs/plant.svg',
+    leaves: '/visuals/pixel-motifs/leaves.svg',
+    musicNotes: '/visuals/pixel-motifs/music-notes.svg',
+  },
   achievements: {
     firstPractice: '/visuals/achievements/achievement-first-practice.png',
     firstRoutine: '/visuals/achievements/achievement-first-routine.png',
