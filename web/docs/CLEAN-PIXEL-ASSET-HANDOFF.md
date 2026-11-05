@@ -4,7 +4,7 @@
 
 - **Not ready to merge until Agent 1 supplies** `web/src/context/AppearanceContext.tsx` with persisted `catMode` on `useAppearance()`, as specified in `web/docs/CLEAN-PIXEL-THEMES.md`.
 - `DecorativeCat` API: `<DecorativeCat catId={catId} variant="sleeping" size={204} className="g01-cat" />` (also `sitting` and `floor`; no new poses).
-- Agent 2 owns screen placements. The image retains `jazz-cat-sprite` and provided class names so `.g01-cat.jazz-cat-sprite` CSS continues to work. `visibility:hidden` preserves size. Home's decorative-cat wrapper must also avoid invisible pointer interception when Cat Mode is off, without deleting its layout slot.
+- Agent 2 owns screen placements. Optional `onLoad`/`onError` callbacks are available to retain Home's existing `sleepingReady` image-readiness gate. The image retains `jazz-cat-sprite` and provided class names so `.g01-cat.jazz-cat-sprite` CSS continues to work. `visibility:hidden` preserves size. Home's decorative-cat wrapper must also avoid invisible pointer interception when Cat Mode is off, without deleting its layout slot.
 - No Settings changes, layout edits, theme changes, animation changes, or avatar/reward wiring in this patch.
 
 ## Assets
