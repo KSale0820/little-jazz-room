@@ -244,3 +244,33 @@ html[data-theme="light"] .g01-page :is(.g01-stats, .g01-daily-card, .g01-week-ch
 html[data-theme] .g01-page .g01-cat-bubble {
   border: 1px solid color-mix(in srgb, var(--color-violet) 24%, var(--color-border));
 }
+
+/* Midnight Jazz Tuner: legacy SVG strokes are literal paint attributes.
+   Override only those colors; tuning logic, geometry and hit targets stay intact. */
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg > line {
+  stroke: var(--color-muted);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg > line:nth-child(n+6):nth-child(-n+20) {
+  stroke: var(--color-success);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg > line:is(:nth-child(-n+3), :nth-child(n+23)) {
+  stroke: var(--color-danger);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg > line:nth-child(13) {
+  stroke: var(--color-chart-playhead);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg path {
+  fill: var(--color-chart-playhead);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg circle {
+  fill: var(--color-muted);
+}
+html[data-theme="dark"] .tool-tuner .tuner-trail-plot svg > line {
+  stroke: var(--color-border);
+}
+html[data-theme="dark"] .tool-tuner .tuner-trail-plot svg polyline {
+  stroke: var(--color-success);
+}
+html[data-theme="dark"] .tool-tuner .tuner-trail-plot svg circle {
+  fill: var(--color-warning);
+}
