@@ -64,13 +64,13 @@ try {
       }
       console.log('PASS G01 clean backdrop, hidden large illustrations and original asset packaging at ' + width + 'x' + height);
       // This fixture explicitly sets Cat Mode OFF. Progress must keep Luna visible
-      // using her approved standard 128px sleeping sprite. The separate
-      // eight-companion matrix below validates Cat Mode ON pixel replacements.
+      // in the new pixel sleeping pose. The later matrix validates all three
+      // supported companions and non-destructive migration of five legacy IDs.
       await page.waitForFunction(() => {
         const img = document.querySelector('.g01-cat');
         return img instanceof HTMLImageElement &&
-          img.getAttribute('src') === '/visuals/cats/sleeping/luna.png' &&
-          img.complete && img.naturalWidth === 128 && img.naturalHeight === 128 &&
+          img.getAttribute('src') === '/visuals/cats/clean-pixel/luna-sleeping.png' &&
+          img.complete && img.naturalWidth === 160 && img.naturalHeight === 160 &&
           getComputedStyle(img).visibility === 'visible';
       });
       if (!(await page.locator('.g01-cat').isVisible())) throw new Error('Selected sleeping cat not visible on G01');
@@ -111,13 +111,14 @@ try {
       await context.close();
     }
   }
-  // Every approved companion must resolve to its own sleeping sprite on Progress.
-  for (const catId of ['luna', 'milo', 'maple', 'mochi', 'pepper', 'patches', 'chai', 'biscuit']) {
+  // The live roster is restricted to the three newly approved pixel designs.
+  // Progress stays visible in both modes, but switches current sleeping OFF
+  // versus current sitting ON artwork without changing the selected companion.
+  for (const catId of ['luna', 'milo', 'maple']) {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, deviceScaleFactor: 2 });
     await context.addInitScript(id => {
-      localStorage.setItem('little-jazz-room:selected-cat:v1', id);
-      // Initialize Cat Mode only on first navigation. Never overwrite a user's
-      // later OFF selection during reload; that is what this test verifies.
+      const key = 'little-jazz-room:selected-cat:v1';
+      if (localStorage.getItem(key) === null) localStorage.setItem(key, id);
       if (localStorage.getItem('little-jazz-room:decorative-cats:v1') === null)
         localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
     }, catId);
@@ -127,39 +128,88 @@ try {
     await page.goto('http://127.0.0.1:5174/progress', { waitUntil: 'networkidle' });
     await page.waitForFunction(id => {
       const sprite = document.querySelector('.g01-cat');
-      const pixelVerified = ['luna', 'milo', 'maple'].includes(id);
-      const expected = pixelVerified ? '/visuals/cats/clean-pixel/' + id + '-sleeping.png'
-        : '/visuals/cats/sleeping/' + id + '.png';
-      const dimension = pixelVerified ? 160 : 128;
       return sprite instanceof HTMLImageElement &&
-        sprite.getAttribute('src') === expected &&
-        sprite.complete && sprite.naturalWidth === dimension && sprite.naturalHeight === dimension;
+        sprite.getAttribute('src') === '/visuals/cats/clean-pixel/' + id + '-sitting.png' &&
+        sprite.complete && sprite.naturalWidth === 160 && sprite.naturalHeight === 160 &&
+        getComputedStyle(sprite).visibility === 'visible';
     }, catId);
-    await page.evaluate(async () => document.fonts?.ready);
-    if (errors.length) throw new Error('G01 cat ' + catId + ': ' + errors.join(' | '));
-    await page.screenshot({ path: join(out, 'g01-cat-' + catId + '-390x844.png'), fullPage: false });
-    console.log('PASS G01 selected sleeping companion, Cat Mode ON: ' + catId);
-    // In OFF mode Progress must STILL display this exact selected identity,
-    // switching to its original approved sleeping asset without moving layout.
-    await page.evaluate(() => localStorage.setItem('little-jazz-room:decorative-cats:v1', 'false'));
     const onRect = await page.locator('.g01-cat').boundingBox();
+    await page.screenshot({ path: join(out, 'g01-pixel-on-' + catId + '-390x844.png'), fullPage: false });
+    console.log('PASS G01 new sitting companion, Cat Mode ON: ' + catId);
+    // Reload must retain the saved preference, not reset Cat Mode to ON.
+    await page.evaluate(() => localStorage.setItem('little-jazz-room:decorative-cats:v1', 'false'));
     await page.reload({ waitUntil: 'networkidle' });
     await page.waitForFunction(id => {
       const sprite = document.querySelector('.g01-cat');
       return sprite instanceof HTMLImageElement &&
-        sprite.getAttribute('src') === '/visuals/cats/sleeping/' + id + '.png' &&
-        sprite.complete && sprite.naturalWidth === 128 && sprite.naturalHeight === 128 &&
+        sprite.getAttribute('src') === '/visuals/cats/clean-pixel/' + id + '-sleeping.png' &&
+        sprite.complete && sprite.naturalWidth === 160 && sprite.naturalHeight === 160 &&
         getComputedStyle(sprite).visibility === 'visible';
     }, catId);
     const offRect = await page.locator('.g01-cat').boundingBox();
     if (!onRect || !offRect ||
         Math.abs(onRect.x - offRect.x) > 1 || Math.abs(onRect.y - offRect.y) > 1 ||
         Math.abs(onRect.width - offRect.width) > 1 || Math.abs(onRect.height - offRect.height) > 1) {
-      throw new Error('Progress companion placement shifted when changing Cat Mode for ' + catId);
+      throw new Error('Progress pixel companion placement shifted across Cat Mode for ' + catId);
     }
-    console.log('PASS G01 selected sleeping companion, Cat Mode OFF: ' + catId);
+    if (errors.length) throw new Error('G01 ' + catId + ' runtime errors: ' + errors.join(' | '));
+    await page.screenshot({ path: join(out, 'g01-pixel-off-' + catId + '-390x844.png'), fullPage: false });
+    await page.goto('http://127.0.0.1:5174/profile', { waitUntil: 'networkidle' });
+    const cards = await page.locator('.board-cat-card').count();
+    if (cards !== 3 || (await page.locator('.profile-companion-art img').getAttribute('src')) !==
+        '/visuals/cats/clean-pixel/' + catId + '-sitting.png') {
+      throw new Error('Profile did not preserve three-choice pixel roster for ' + catId);
+    }
+    console.log('PASS G01 new sleeping companion OFF, pixel profile and chooser: ' + catId);
     await context.close();
   }
+
+  // Old saved companion IDs are archived, never removed from user records.
+  // They deterministically display Luna until the user explicitly picks a
+  // supported pixel companion. Simulate five existing offline accounts.
+  for (const legacyId of ['mochi', 'pepper', 'patches', 'chai', 'biscuit']) {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, deviceScaleFactor: 2 });
+    await context.addInitScript(id => {
+      const key = 'little-jazz-room:selected-cat:v1';
+      if (localStorage.getItem(key) === null) localStorage.setItem(key, id);
+      if (localStorage.getItem('little-jazz-room:decorative-cats:v1') === null)
+        localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
+      const recordKey = 'little-jazz-room:practice-sessions:v1:anonymous';
+      if (localStorage.getItem(recordKey) === null)
+        localStorage.setItem(recordKey, '[{"id":"retained-' + id + '","durationSeconds":500,"finishedAt":"2026-11-04T12:00:00.000Z"}]');
+    }, legacyId);
+    const page = await context.newPage();
+    await page.goto('http://127.0.0.1:5174/progress', { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => {
+      const cat = document.querySelector('.g01-cat');
+      return cat instanceof HTMLImageElement &&
+        cat.getAttribute('src') === '/visuals/cats/clean-pixel/luna-sitting.png' &&
+        cat.complete && cat.naturalWidth === 160;
+    });
+    const check = async () => page.evaluate(() => ({
+      selected: localStorage.getItem('little-jazz-room:selected-cat:v1'),
+      archive: localStorage.getItem('little-jazz-room:selected-cat:v1:retired-cat-id:v1'),
+      sessions: JSON.parse(localStorage.getItem('little-jazz-room:practice-sessions:v1:anonymous') || '[]'),
+      companion: document.querySelector('.g01-companion')?.getAttribute('aria-label'),
+    }));
+    const first = await check();
+    if (first.selected !== 'luna' || first.archive !== legacyId ||
+        first.sessions[0]?.id !== 'retained-' + legacyId || !first.companion?.includes('Luna'))
+      throw new Error('Legacy companion migrated destructively: ' + JSON.stringify({ legacyId, first }));
+    await page.reload({ waitUntil: 'networkidle' });
+    const second = await check();
+    if (second.selected !== 'luna' || second.archive !== legacyId || second.sessions[0]?.id !== 'retained-' + legacyId)
+      throw new Error('Legacy companion migration not persistent: ' + JSON.stringify({ legacyId, second }));
+    await page.goto('http://127.0.0.1:5174/profile', { waitUntil: 'networkidle' });
+    if (await page.locator('.board-cat-card').count() !== 3)
+      throw new Error('Retired companions still selectable for ' + legacyId);
+    const names = await page.locator('.board-cat-card').allTextContents();
+    if (!names[0]?.includes('Luna') || !names[1]?.includes('Milo') || !names[2]?.includes('Maple'))
+      throw new Error('Profile roster mismatch after migration: ' + JSON.stringify(names));
+    console.log('PASS nondestructive retired companion migration: ' + legacyId);
+    await context.close();
+  }
+
 } finally {
   await browser.close();
 }
