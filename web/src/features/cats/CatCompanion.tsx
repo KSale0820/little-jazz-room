@@ -31,12 +31,16 @@ export const isVisibleCatId = (value: unknown): value is VisibleCatId =>
 
 /** Preserve old IDs non-destructively, but never render retired character artwork.
  * The scoped backup lets a future roster change recover the previous preference. */
-function resolveVisibleSelection(value: unknown, cacheKey: string): VisibleCatId | null {
+export function resolveVisibleSelection(
+  value: unknown,
+  cacheKey: string,
+  storage: Pick<Storage, 'getItem' | 'setItem'> = window.localStorage,
+): VisibleCatId | null {
   if (!isCatId(value)) return null;
   if (isVisibleCatId(value)) return value;
   try {
     const archiveKey = cacheKey + ':retired-cat-id:v1';
-    if (!window.localStorage.getItem(archiveKey)) window.localStorage.setItem(archiveKey, value);
+    if (!storage.getItem(archiveKey)) storage.setItem(archiveKey, value);
   } catch { /* storage optional */ }
   return 'luna';
 }
