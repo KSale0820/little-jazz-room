@@ -222,8 +222,15 @@ html[data-theme] .tool-page .metronome-beats button.is-current {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
-html[data-theme="dark"] .tool-page :is(.tuner-reference, .tuner-trail-panel, .tool-help) {
+html[data-theme="dark"] .tool-page :is(.tuner-trail-panel, .tool-help) {
   background: color-mix(in srgb, var(--color-surface) 94%, var(--color-violet));
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+/* The Tuner reference readout stays on the exact shared surface token
+   required by the existing Light/Dark visual regression contract. */
+html[data-theme="dark"] .tool-page .tuner-reference {
+  background: var(--color-surface);
   border-color: var(--color-border);
   color: var(--color-text);
 }
