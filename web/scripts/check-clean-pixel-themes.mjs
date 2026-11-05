@@ -19,6 +19,24 @@ const routes = [
   ['Tuner', '/tuner', '.tool-tuner'],
   ['Metronome', '/metronome', '.tool-metronome'],
 ];
+function contrastRatio(a, b) {
+  const parse = value => {
+    const values = value.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number);
+    assert.equal(values?.length, 3, 'Unparseable RGB color: ' + value);
+    return values.map(channel => {
+      const normalized = channel / 255;
+      return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+    });
+  };
+  const luminance = value => {
+    const c = parse(value);
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const aa = luminance(a);
+  const bb = luminance(b);
+  return (Math.max(aa, bb) + 0.05) / (Math.min(aa, bb) + 0.05);
+}
+
 const report = [];
 const catLayoutFootprints = new Map();
 const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
@@ -137,6 +155,47 @@ try {
               theme === 'dark' ? 'rgb(41, 33, 57)' : 'rgb(255, 253, 248)',
               'Tuner reference card must not retain the old cream surface in Dark Mode');
           }
+          if (screen === 'Player') {
+            // Read actual rendered chords under synthetic selection states, not just root variables.
+            // Preserve the original classes immediately; no app data or playback changes.
+            const notation = await page.evaluate(() => {
+              const measure = document.querySelector('.practice-chart-scroll .measure');
+              if (!measure) return null;
+              const original = measure.className;
+              const read = className => {
+                measure.classList.remove('chosen', 'looped', 'playhead');
+                if (className) measure.classList.add(...className.split(' '));
+                const chord = measure.querySelector('.chords span, .chords') ?? measure;
+                const measureStyle = getComputedStyle(measure);
+                return {
+                  fill: measureStyle.backgroundColor,
+                  ink: getComputedStyle(chord).color,
+                  outline: measureStyle.outline,
+                  shadow: measureStyle.boxShadow,
+                };
+              };
+              const states = {
+                normal: read(''),
+                selected: read('chosen'),
+                loop: read('looped'),
+                playhead: read('playhead'),
+                both: read('chosen playhead'),
+              };
+              measure.className = original;
+              return states;
+            });
+            assert.ok(notation, 'Player chart measure missing');
+            assert.ok(contrastRatio(notation.normal.ink, notation.normal.fill) >= 4.5,
+              'Normal chord notation below 4.5:1 in ' + label);
+            assert.ok(contrastRatio(notation.selected.ink, notation.selected.fill) >= 4.5,
+              'Selected chord below 4.5:1 in ' + label + ': ' + JSON.stringify(notation.selected));
+            assert.notEqual(notation.selected.fill, notation.loop.fill,
+              'Selected measure and loop range must have different fills in ' + label);
+            assert.notEqual(notation.selected.shadow + notation.selected.outline,
+              notation.both.shadow + notation.both.outline,
+              'Active selected measure needs a separate visible playhead indicator in ' + label);
+          }
+
           if (['Practice', 'Player', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
             await page.screenshot({
               path: path.join(output, screen.toLowerCase() + '-' + label + '.png'),
