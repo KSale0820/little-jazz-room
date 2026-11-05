@@ -257,3 +257,39 @@ html[data-theme] .profile-appearance-settings h3 {
 }
 .profile-cat-mode-label strong { color: var(--color-text); font-size: 0.8rem; }
 .profile-cat-mode-label small { color: var(--color-muted); font-size: 0.72rem; line-height: 1.4; }
+
+
+/* Controller-owned finishing layer: keep the existing companion and account data,
+   but use the same surface/contrast system as all clean-pixel screens. */
+html[data-theme] .profile-title,
+html[data-theme] .profile-companion-name,
+html[data-theme] .profile-stat strong,
+html[data-theme] .profile-page h2,
+html[data-theme] .profile-page h3 {
+  color: var(--color-text);
+}
+html[data-theme] .profile-subtitle,
+html[data-theme] .profile-companion-muted,
+html[data-theme] .profile-stat span,
+html[data-theme] .profile-motion-label {
+  color: var(--color-muted);
+}
+html[data-theme] .profile-companion-card {
+  border-left-color: var(--color-violet);
+  box-shadow: none;
+}
+html[data-theme] .profile-stat { box-shadow: none; }
+html[data-theme] .profile-companion-art .jazz-cat-sprite {
+  filter: none;
+}
+html[data-theme] .profile-motion-label input {
+  accent-color: var(--color-action);
+}
+html[data-theme] .profile-save-error { color: var(--color-danger); }
+html[data-theme] .profile-page .days .marked {
+  background: var(--color-chart-selected);
+  color: var(--color-text);
+}
+html[data-theme] .profile-page .calendar-dow { color: var(--color-muted); }
+html[data-theme] .profile-page .mutelink { color: var(--color-action); }
+html[data-theme] .profile-page .minirow { border-color: var(--color-border); }
