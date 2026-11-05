@@ -15,6 +15,23 @@
 
 All are simple single-ink geometric SVG masks designed at a 24px pixel grid. Use a CSS mask with `background-color: var(--color-action)` or another semantic color. Do not rely on `<img>` inheritance of CSS color.
 
+## Actual placement audit (integration branch, November 4)
+
+| Screen/component | Existing art | Cat Mode handling |
+| --- | --- | --- |
+| Home `h01-companion` | `sleepingFile(catId)` | Decorative: use `DecorativeCat` and disable invisible button hit target when off |
+| Progress `g01-cat` | `CatSprite sleeping` | Decorative: use `DecorativeCat`; retain change-companion control |
+| Tuner `tool-scene-cat` | `sleepingFile(catId)` | Decorative: use `DecorativeCat` |
+| Metronome `tool-scene-cat` | `sittingFile(catId)` | Decorative: use `DecorativeCat`; sitting originals are already pixel-styled |
+| Practice completion footer | `CatSprite floor` | **Reward/celebration**: keep available regardless of Cat Mode |
+| GuidedCatCoach | `CatSprite closeup` + instructional tips | **Instructional component**: preserve tips and associated selection; do not hide functional content |
+| Profile / CatChooser | profile/floor/cropped portraits | **Identity/selection**: never gate by Cat Mode |
+| Achievements / saved unlocks | achievement art and data | **Reward/data**: never gate by Cat Mode |
+
+Static browser comparison for all three current poses and all eight companions:
+`web/public/qa/clean-pixel-cat-contact-sheet.html`, served as `/qa/clean-pixel-cat-contact-sheet.html`.
+It uses original files, no copied or regenerated art, with each cat on both token surfaces.
+
 ## Exact decorative-cat mapping (existing pixel sleeping sprites reused)
 
 For each `id` = `luna`, `milo`, `maple`, `mochi`, `pepper`, `patches`, `chai`, `biscuit`:
