@@ -63,6 +63,21 @@ export const VISUAL_ASSETS = {
     profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
     closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
   },
+  /** Three opt-in low-resolution decorative characters; the eight approved identity assets remain untouched. */
+  decorativePixelCats: {
+    luna: {
+      sleeping: '/visuals/cats/clean-pixel/luna-sleeping.png',
+      sitting: '/visuals/cats/clean-pixel/luna-sitting.png',
+    },
+    milo: {
+      sleeping: '/visuals/cats/clean-pixel/milo-sleeping.png',
+      sitting: '/visuals/cats/clean-pixel/milo-sitting.png',
+    },
+    maple: {
+      sleeping: '/visuals/cats/clean-pixel/maple-sleeping.png',
+      sitting: '/visuals/cats/clean-pixel/maple-sitting.png',
+    },
+  },
   progress: {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',

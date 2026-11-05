@@ -14,8 +14,16 @@ export type DecorativeCatPose = 'sleeping' | 'sitting' | 'floor';
  * Portraits, chooser images, achievements, and saved unlocks never use this mapping.
  */
 export const VERIFIED_PIXEL_CATS: Record<DecorativeCatPose, Partial<Record<CatId, string>>> = {
-  sleeping: {},
-  sitting: {},
+  sleeping: {
+    luna: VISUAL_ASSETS.decorativePixelCats.luna.sleeping,
+    milo: VISUAL_ASSETS.decorativePixelCats.milo.sleeping,
+    maple: VISUAL_ASSETS.decorativePixelCats.maple.sleeping,
+  },
+  sitting: {
+    luna: VISUAL_ASSETS.decorativePixelCats.luna.sitting,
+    milo: VISUAL_ASSETS.decorativePixelCats.milo.sitting,
+    maple: VISUAL_ASSETS.decorativePixelCats.maple.sitting,
+  },
   floor: {},
 };
 
