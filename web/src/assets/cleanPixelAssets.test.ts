@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import { JAZZ_CATS } from '../features/cats/CatCompanion';
+import { ALL_JAZZ_CATS, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { approvedDecorativeCatUrl, decorativeCatUrls, PIXEL_MOTIFS, VERIFIED_PIXEL_CATS } from './cleanPixelAssets';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -20,8 +20,9 @@ describe('additive clean pixel artwork', () => {
     }
   });
 
-  it('ships the three simplified decorative characters without restricting eight companion identities', () => {
-    expect(JAZZ_CATS).toHaveLength(8);
+  it('ships three current pixel characters while archiving eight original identities', () => {
+    expect(JAZZ_CATS).toHaveLength(3);
+    expect(ALL_JAZZ_CATS).toHaveLength(8);
     for (const pose of ['sleeping', 'sitting'] as const) {
       expect(Object.keys(VERIFIED_PIXEL_CATS[pose]).sort()).toEqual([...pixelIds].sort());
       for (const id of pixelIds) {
@@ -58,8 +59,8 @@ describe('additive clean pixel artwork', () => {
     }
   });
 
-  it('always retains the approved original as fallback for all eight cats', () => {
-    for (const cat of JAZZ_CATS) for (const pose of poses) {
+  it('retains original legacy paths in archival asset helpers without rendering them', () => {
+    for (const cat of ALL_JAZZ_CATS) for (const pose of poses) {
       const urls = decorativeCatUrls(cat.id, pose);
       expect(urls.at(-1)).toBe(approvedDecorativeCatUrl(cat.id, pose));
       const pixel = VERIFIED_PIXEL_CATS[pose][cat.id];
