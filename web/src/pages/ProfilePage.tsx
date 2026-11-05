@@ -109,7 +109,7 @@ export function ProfilePage() {
         </div>
       </div>
 
-      {/* ── Eight-cat chooser ── */}
+      {/* ── Current pixel companion trio chooser; retired IDs preserved separately ── */}
       <div ref={chooserRef} className="profile-section">
         <CatChooser
           catId={catId}
