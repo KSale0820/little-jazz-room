@@ -63,13 +63,15 @@ try {
         throw new Error('G01 clean backdrop or original asset packaging mismatch: ' + JSON.stringify(artwork));
       }
       console.log('PASS G01 clean backdrop, hidden large illustrations and original asset packaging at ' + width + 'x' + height);
-      // Progress always displays the selected companion. Luna has a verified
-      // low-resolution replacement when Cat Mode is ON (160px, not 128px).
+      // This fixture explicitly sets Cat Mode OFF. Progress must keep Luna visible
+      // using her approved standard 128px sleeping sprite. The separate
+      // eight-companion matrix below validates Cat Mode ON pixel replacements.
       await page.waitForFunction(() => {
         const img = document.querySelector('.g01-cat');
         return img instanceof HTMLImageElement &&
-          img.getAttribute('src') === '/visuals/cats/clean-pixel/luna-sleeping.png' &&
-          img.complete && img.naturalWidth === 160 && img.naturalHeight === 160;
+          img.getAttribute('src') === '/visuals/cats/sleeping/luna.png' &&
+          img.complete && img.naturalWidth === 128 && img.naturalHeight === 128 &&
+          getComputedStyle(img).visibility === 'visible';
       });
       if (!(await page.locator('.g01-cat').isVisible())) throw new Error('Selected sleeping cat not visible on G01');
       const heading = await page.locator('.g01-header h1').innerText();
