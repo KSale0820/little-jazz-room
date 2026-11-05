@@ -110,6 +110,9 @@ try {
               profileAvatarSrc: document.querySelector('.profile-companion-art .jazz-cat-sprite')?.getAttribute('src') ?? null,
               profileChooserIds: [...document.querySelectorAll('.board-cat-card')].map(button =>
                 button.getAttribute('aria-label')?.split(',')[0] ?? ''),
+              visibleCompanionAssetSources: [...document.querySelectorAll('img.jazz-cat-sprite, img.board-cat-art')].map(
+                img => img.getAttribute('src') ?? ''),
+
               screenBackground: (() => {
                 const root = document.querySelector('.p01-page, .g01-page');
                 return root ? getComputedStyle(root).backgroundColor : null;
@@ -131,6 +134,10 @@ try {
           assert.equal(state.theme, theme, screen + ' wrong palette');
           assert.equal(state.catMode, catMode ? 'on' : 'off', screen + ' wrong Cat Mode');
           assertWithinViewport(state, label + '-' + screen, height);
+          assert.ok(state.visibleCompanionAssetSources.every(src =>
+            src.startsWith('/visuals/cats/clean-pixel/')),
+            screen + ' revived outdated October companion art: ' +
+            JSON.stringify(state.visibleCompanionAssetSources));
           if (['Progress', 'Tuner', 'Metronome'].includes(screen)) {
             assert.equal(state.catVisibility, screen === 'Progress' || catMode ? 'visible' : 'hidden',
               screen + ' selected companion visibility violates Cat Mode rules');
