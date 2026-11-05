@@ -6,6 +6,7 @@ import { timeGreeting } from '../lib/greeting';
 import { minutesToday } from '../lib/practiceStats';
 import './PracticeHubPage.css';
 import './CleanPixelPractice.css';
+import './CleanPixelMotifPlacements.css';
 
 const DAILY_GOAL_MINUTES = 30;
 
