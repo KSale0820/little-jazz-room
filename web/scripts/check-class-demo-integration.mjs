@@ -48,7 +48,7 @@ try {
     assert(elapsed !== '00:00' && elapsed !== '0:00', 'Practice timer failed to accumulate real time: ' + elapsed);
     await page.getByRole('button', { name: 'Resume practice timer' }).click();
     await page.waitForTimeout(350);
-    await page.locator('.practice-more').click();
+    await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
     await page.getByRole('button', { name: '4 stars' }).click();
     await page.getByRole('button', { name: 'Save Session', exact: true }).click();
