@@ -1,6 +1,6 @@
 # Clean Pixel Themes: final integration ledger
 
-Integration branch: `integration/clean-pixel-themes`, based on `class-demo-2026-10-31` at `35beaad`. **No changes merged into the demo branch or master; no deployment initiated.** The final integration-to-demo PR requires explicit owner approval before merge.
+Integration branch: `integration/clean-pixel-themes`, based on `class-demo-2026-10-31` at `35beaad`. **The controller has not merged theme changes into demo or master and has not deployed.** Demo independently advanced to `dc9ec97` when PR #49 was merged by a separate workflow during this update. The final integration-to-demo PR requires explicit owner approval before merge.
 
 ## Implemented
 
@@ -30,7 +30,7 @@ Script `web/scripts/check-clean-pixel-themes.mjs` captures Practice, Player, Pro
 - [Home/legacy CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41972862635): `8d04bba4`.
 - [Strict Cat Mode footprint/persistence CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41973187348): `975ed3c2`.
 - [Merged asset component CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41973107873): `342197d8`.
-- [Final decorative placements PR #58 CI PASS](https://github.com/KSale0820/little-jazz-room/pull/58): web build, full browser theme matrix and tuner microphone E2E on PR head `800a0fd7`; native-audio validation was pending when this report was written.
+- [Final decorative placements PR #58 CI PASS](https://github.com/KSale0820/little-jazz-room/pull/58): web build, full browser theme matrix and tuner microphone E2E on PR head `800a0fd7`; web build, theme matrix, tuner microphone and native-audio checks all passed on final PR #58 head `800a0fd7`.
 - [Final merged integration CI](https://github.com/KSale0820/little-jazz-room/actions/runs/41973927172): `d619cbe3` full run launched after merging the final placement batch; check run conclusion for last combined result. Representative PNG screenshot and JSON result artifact is attached under **Artifacts → clean-pixel-mobile-qa**.
 
 ## Remaining risks and nonclaims
@@ -39,4 +39,4 @@ Script `web/scripts/check-clean-pixel-themes.mjs` captures Practice, Player, Pro
 - All reachable layouts were given semantic paint and browser structural checks, but not every dialog/disabled/focus combination was manually reviewed from screenshots. Physical-device QA and aesthetic signoff remain recommended before merging to demo.
 - Legacy Home lighting preference remains stored; illustrated lighting background is intentionally suppressed in clean themes, so that legacy visual effect is not visible.
 - No new cat poses/animations or new raster replacements; original verified pixel sleeping sprites were judged usable as-is. Art-style review may request future refinements.
-- PR #49 (player control redesign) and unrelated PRs are **not merged**.
+- PR #49 (player control redesign) was merged **independently by another workflow** into the demo branch at `dc9ec97`. Theme integration incorporates the updated demo contents; no unrelated PR was merged by the visual-update controller. The theme final PR compares only the theme changes against this new demo baseline.
