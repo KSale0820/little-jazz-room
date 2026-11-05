@@ -278,3 +278,11 @@
 @media (prefers-reduced-motion: reduce) {
   .p01-daily-fill, .practice-guided-progress span, .practice-progress-track span { transition: none; }
 }
+
+
+/* The current-measure highlight must not wash out an annotation/section. */
+.practice-player .practice-chart-scroll .measure.chosen .measure-annotation,
+.practice-player .practice-chart-scroll .practice-sheet .measure.chosen .measure-section-label {
+  color: var(--color-text);
+  color: color-mix(in srgb, var(--color-chart-section) 65%, var(--color-text));
+}

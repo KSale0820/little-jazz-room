@@ -2,12 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
+import { DecorativeCat } from '../features/cats/DecorativeCat';
 import {
   audioContextConstructor, beatIntervalSeconds, beatsPerMeasure,
   clampBpm, defaultAccents,
 } from './toolsAudio';
 import './ToolsPages.css';
 import './CleanPixelToolsProgress.css';
+import './CleanPixelMotifPlacements.css';
 
 type Signature = '2/4' | '3/4' | '4/4' | '6/8';
 type ScheduledBeat = { time: number; index: number; countIn: boolean };
@@ -275,7 +277,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
         <img className="tool-scene-plant tool-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-plant tool-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-rug" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.rug} alt="" />
-        <img className="tool-scene-cat" src={VISUAL_ASSETS.cat.sittingFile(catId)} alt="" />
+        <DecorativeCat catId={catId} variant="sitting" size={168} className="tool-scene-cat" />
       </div>
     </section>
   );

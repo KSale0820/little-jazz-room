@@ -2,11 +2,13 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { useApp } from '../context/AppContext';
-import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
+import { JAZZ_CATS } from '../features/cats/CatCompanion';
+import { DecorativeCat } from '../features/cats/DecorativeCat';
 import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
 import type { PracticeSessionRecord, Routine } from '../types/content';
 import './ProgressPage.css';
 import './CleanPixelToolsProgress.css';
+import './CleanPixelMotifPlacements.css';
 
 // The same daily target as H01 Home. This is a goal, not seeded progress.
 const DAILY_GOAL_MINUTES = 30;
@@ -89,7 +91,7 @@ export function ProgressPage() {
         <img className="g01-plant g01-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" aria-hidden="true" />
         <img className="g01-plant g01-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" aria-hidden="true" />
         <img className="g01-cat-cushion" src={VISUAL_ASSETS.progress.sleepCushion} alt="" aria-hidden="true" draggable={false} />
-        <CatSprite catId={catId} variant="sleeping" size={204} className="g01-cat" />
+        <DecorativeCat catId={catId} variant="sleeping" size={204} className="g01-cat" />
         <p className="g01-cat-bubble">{orderedSessions.length ? 'Keep the rhythm going!' : 'Every practice starts somewhere!'}</p>
         <button type="button" className="g01-change" onClick={() => navigate('/profile', { state: { scrollToCat: true } })} aria-label={'Change companion, currently ' + (cat?.name ?? 'Luna')}>
           Change

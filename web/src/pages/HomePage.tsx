@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { JAZZ_CATS } from '../features/cats/CatCompanion';
+import { DecorativeCat } from '../features/cats/DecorativeCat';
+import { useAppearance } from '../context/AppearanceContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +13,7 @@ import {
 } from '../lib/roomLighting';
 import './HomePage.css';
 import './CleanPixelHomeLegacy.css';
+import './CleanPixelMotifPlacements.css';
 
 const GOAL_MINUTES = 30;
 type Hotspot = 'practice' | 'routines' | 'charts' | 'tracks';
@@ -25,6 +28,7 @@ const HOTSPOTS: { id: Hotspot; text: string; description: string; to: string }[]
 export function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { catMode } = useAppearance();
   const { catId, sessions, routines, activeRoutineId, setActiveRoutineId } = useApp();
   const [sleepingReady, setSleepingReady] = useState(false);
   const [roomSource, setRoomSource] = useState<string>(VISUAL_ASSETS.room.h01);
@@ -75,20 +79,13 @@ export function HomePage() {
           <button
             type="button"
             className="h01-companion"
-            style={{ visibility: sleepingReady ? 'visible' : 'hidden' }}
-            disabled={!sleepingReady}
+            style={{ visibility: sleepingReady && catMode ? 'visible' : 'hidden', pointerEvents: catMode ? 'auto' : 'none' }}
+            disabled={!sleepingReady || !catMode}
             onClick={() => navigate('/profile', { state: { scrollToCat: true } })}
             aria-label={`Change companion: ${companion?.name ?? 'jazz cat'}`}
           >
-            <img
-              className="jazz-cat-sprite h01-sleeping-sprite"
-              src={VISUAL_ASSETS.cat.sleepingFile(catId)}
-              alt=""
-              aria-hidden="true"
-              draggable={false}
-              onLoad={() => setSleepingReady(true)}
-              onError={() => setSleepingReady(false)}
-            />
+            <DecorativeCat catId={catId} variant="sleeping" size={128} className="h01-sleeping-sprite"
+              onLoad={() => setSleepingReady(true)} onError={() => setSleepingReady(false)} />
           </button>
         </div>
         <div className="h01-scene-fade" aria-hidden="true" />
