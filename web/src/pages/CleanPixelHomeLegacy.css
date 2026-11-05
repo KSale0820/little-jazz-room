@@ -1,0 +1,92 @@
+/* Agent 2: Home and legacy reachable pages. Preserve hotspots, cards and
+   navigation exactly in the coordinates of the current running app. */
+.h01-page { background: var(--color-bg); color: var(--color-text); }
+.h01-scene-window { background: var(--color-surface-raised); }
+.h01-room-image { visibility: hidden; }
+.h01-scene-fade { background: none; }
+.h01-hotspot-label {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.h01-hotspot-dot { background: var(--color-violet); }
+.h01-hotspot:focus-visible, .h01-companion:focus-visible,
+.h01-settings-button:focus-visible,
+.h01-primary-button:focus-visible, .h01-secondary-button:focus-visible,
+.h01-change-button:focus-visible, .h01-play-button:focus-visible,
+.h01-routine-link:focus-visible, .h01-stats-card:focus-visible { outline-color: var(--color-focus); }
+.h01-hotspot:active .h01-hotspot-label { background: var(--color-chart-selected); }
+.h01-greeting h1, .h01-card-title h2, .h01-daily-copy strong,
+.h01-stats-card, .h01-routine-link { color: var(--color-text); }
+.h01-greeting p, .h01-daily-copy small, .h01-stats-streak small,
+.h01-lighting-toggle { color: var(--color-muted); }
+.h01-settings-button, .h01-sprig, .h01-change-button,
+.h01-routine-empty { color: var(--color-action); }
+.h01-content { background: var(--color-bg); }
+.h01-primary-button, .h01-play-button {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--color-action-text);
+}
+.h01-secondary-button, .h01-daily-card, .h01-stats-card,
+.h01-lighting-options, .h01-lighting-options button {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.h01-daily-art { visibility: hidden; background: var(--color-surface-raised); }
+.h01-stats-icon i, .h01-progress-track i { background: var(--color-action); }
+.h01-progress-track, .h01-stats-divider { background: var(--color-border); }
+.h01-flame { color: var(--color-warning); }
+.h01-lighting-options button[aria-pressed='true'] {
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+/* Prior room light options remain accessible but do not repaint clean theme. */
+
+/* Reachable legacy browse and chart/detail screens. */
+.demo-page, .explore-page { background: var(--color-bg); color: var(--color-text); }
+.demo-heading, .demo-card-title, .demo-section-title,
+.demo-stat strong, .demo-row-title { color: var(--color-text); }
+.demo-eyebrow, .demo-subtitle, .demo-card-desc,
+.demo-row-meta, .demo-stat span, .demo-history small { color: var(--color-muted); }
+.demo-link, .demo-card, .demo-row, .demo-stat,
+.demo-search, .demo-filter, .demo-cat-art {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+.demo-card-tint, .demo-card-peach, .demo-preview {
+  background: var(--color-surface-raised);
+  color: var(--color-muted);
+}
+.demo-card-image { visibility: hidden; }
+.demo-primary, .demo-filter[aria-pressed="true"] {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+.demo-primary:hover { background: var(--color-action); }
+.demo-chevron { color: var(--color-action); }
+.demo-history li { border-color: var(--color-border); }
+.demo-link:focus-visible, .demo-card:focus-visible,
+.demo-row:focus-visible, .demo-primary:focus-visible { outline-color: var(--color-focus); }
+.explore-page .search, .explore-page .chip,
+.explore-page .minirow, .explore-page .box,
+.explore-page .pill, .explore-page .tabs {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.explore-page .chip.selected, .explore-page .tabs .active {
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+.sign-in-page { background: var(--color-bg); color: var(--color-text); }
+.team-beta-note { color: var(--color-muted); }
+.sign-in-error { color: var(--color-danger); }
+.sign-in-form input { background: var(--color-surface); border-color: var(--color-border); color: var(--color-text); }
+.sign-in-form input:focus-visible { outline-color: var(--color-focus); }

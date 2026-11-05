@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { exerciseMatchesInstrument, routineMatchesInstrument } from '../lib/instrumentFilter';
 import { PageAtmosphere } from '../components/PageAtmosphere';
+import './CleanPixelHomeLegacy.css';
 import { useApp } from '../context/AppContext';
 
 type ExploreTab = 'routines' | 'exercises' | 'challenges';

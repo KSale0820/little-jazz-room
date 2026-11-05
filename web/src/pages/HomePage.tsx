@@ -10,6 +10,7 @@ import {
   readLightingPreference, resolveLighting,
 } from '../lib/roomLighting';
 import './HomePage.css';
+import './CleanPixelHomeLegacy.css';
 
 const GOAL_MINUTES = 30;
 type Hotspot = 'practice' | 'routines' | 'charts' | 'tracks';
