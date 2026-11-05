@@ -2,11 +2,8 @@
 import { VISUAL_ASSETS } from './visualManifest';
 import type { CatId } from '../features/cats/CatCompanion';
 
-export const PIXEL_MOTIFS = {
-  plant: '/visuals/pixel-motifs/plant.svg',
-  leaves: '/visuals/pixel-motifs/leaves.svg',
-  musicNotes: '/visuals/pixel-motifs/music-notes.svg',
-} as const;
+/** Mirror the central manifest so strict asset packaging tests cover these files. */
+export const PIXEL_MOTIFS = VISUAL_ASSETS.pixelMotifs;
 
 /** Decorative poses already in use. This does not authorize adding new placements. */
 export type DecorativeCatPose = 'sleeping' | 'sitting' | 'floor';
