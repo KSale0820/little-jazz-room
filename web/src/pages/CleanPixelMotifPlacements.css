@@ -188,3 +188,64 @@ html[data-theme] .explore-page .page-atmosphere::after {
     bottom: -40px;
   }
 }
+
+/* V3 illustrated pixel accents: use Agent 3's 19 owner-approved color PNGs,
+   now integrated via PR #74. The original monochrome masks remain available
+   in the asset catalog but these stage decorations no longer use them.
+   Each image works in Midnight Jazz and Sunny Studio without palette variants. */
+html[data-theme] .h01-scene-window::before,
+html[data-theme] .h01-scene-window::after,
+html[data-theme] .g01-companion::after,
+html[data-theme] .tool-page .tool-cat-scene::before,
+html[data-theme] .tool-page .tool-cat-scene::after,
+html[data-theme] .p01-page::before,
+html[data-theme] .p01-page .p01-daily::after,
+html[data-theme] .p01-page .p01-tools::after,
+html[data-theme] .g01-page .g01-daily-card::after,
+html[data-theme] .g01-page .g01-week-chart::after,
+html[data-theme] .explore-page .page-atmosphere::after {
+  -webkit-mask-image: none;
+  mask-image: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  image-rendering: pixelated;
+  opacity: .82;
+}
+html[data-theme] .h01-scene-window::before {
+  background-image: url('/visuals/pixel-motifs/approved/plant-pot.png');
+}
+html[data-theme] .h01-scene-window::after {
+  background-image: url('/visuals/pixel-motifs/approved/beamed-notes.png');
+}
+html[data-theme] .g01-companion::after {
+  background-image: url('/visuals/pixel-motifs/approved/leaf-cluster.png');
+}
+html[data-theme] .tool-page .tool-cat-scene::before {
+  background-image: url('/visuals/pixel-motifs/approved/planter-box.png');
+}
+html[data-theme] .tool-page .tool-cat-scene::after {
+  background-image: url('/visuals/pixel-motifs/approved/beamed-notes.png');
+}
+html[data-theme] .p01-page::before {
+  background-image: url('/visuals/pixel-motifs/approved/eighth-note.png');
+  opacity: .48;
+}
+html[data-theme] .p01-page .p01-daily::after {
+  background-image: url('/visuals/pixel-motifs/approved/small-plant.png');
+}
+html[data-theme] .p01-page .p01-tools::after {
+  background-image: url('/visuals/pixel-motifs/approved/center-leaf.png');
+}
+html[data-theme] .g01-page .g01-daily-card::after {
+  background-image: url('/visuals/pixel-motifs/approved/center-leaf.png');
+  opacity: .56;
+}
+html[data-theme] .g01-page .g01-week-chart::after {
+  background-image: url('/visuals/pixel-motifs/approved/sparkle.png');
+  opacity: .56;
+}
+html[data-theme] .explore-page .page-atmosphere::after {
+  background-image: url('/visuals/pixel-motifs/approved/treble-clef.png');
+}
