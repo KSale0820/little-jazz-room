@@ -157,3 +157,12 @@
 .chart-library-actions .chart-library-delete { background: var(--color-surface-raised); }
 .chart-builder-split-adjust input { accent-color: var(--color-action); }
 .chart-builder-page button:disabled { color: var(--color-muted); }
+
+
+/* Selection keeps red section / annotation text AA-readable on the dark
+   gold-tinted chart cell. No changes to chord spelling or measure geometry. */
+.chart-editor-measure.is-selected .chart-editor-annotation,
+.chart-editor-measure.is-selected .chart-editor-section-label {
+  color: var(--color-text);
+  color: color-mix(in srgb, var(--color-chart-section) 65%, var(--color-text));
+}
