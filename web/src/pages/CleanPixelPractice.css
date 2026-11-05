@@ -343,3 +343,13 @@ html[data-theme] .practice-player .practice-chart-scroll .practice-sheet .measur
   color: var(--color-text);
   color: color-mix(in srgb, var(--color-chart-section) 65%, var(--color-text));
 }
+
+/* The full-sheet selector used by the Player outranks its older .chosen rule.
+   Make the active cell and repeated range obey the semantic chart surfaces. */
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.chosen {
+  background: var(--color-chart-selected);
+  box-shadow: inset 0 0 0 1px var(--color-warning);
+}
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.looped:not(.chosen) {
+  background: var(--color-surface-raised);
+}
