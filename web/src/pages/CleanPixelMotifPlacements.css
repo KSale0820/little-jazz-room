@@ -1,0 +1,91 @@
+/* Existing decorative regions only. Pixel motifs are CSS masks, never score
+   glyphs, text, chart notation, controls or a new full-screen illustration. */
+.h01-scene-window::before,
+.h01-scene-window::after,
+.g01-companion::after,
+.tool-cat-scene::before,
+.tool-cat-scene::after,
+.p01-page::before {
+  content: '';
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  background-color: var(--color-action);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  opacity: .34;
+}
+.h01-scene-window::before {
+  left: 19px;
+  bottom: 16px;
+  width: 58px;
+  height: 58px;
+  z-index: 1;
+  -webkit-mask-image: url('/visuals/pixel-motifs/plant.svg');
+  mask-image: url('/visuals/pixel-motifs/plant.svg');
+}
+.h01-scene-window::after {
+  right: 22px;
+  top: 126px;
+  width: 43px;
+  height: 43px;
+  z-index: 1;
+  background-color: var(--color-violet);
+  -webkit-mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+  mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+}
+.g01-companion::after {
+  left: 14px;
+  top: 14px;
+  z-index: 0;
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-success);
+  -webkit-mask-image: url('/visuals/pixel-motifs/leaves.svg');
+  mask-image: url('/visuals/pixel-motifs/leaves.svg');
+}
+.tool-cat-scene::before {
+  left: 16px;
+  bottom: 10px;
+  z-index: 1;
+  width: 54px;
+  height: 54px;
+  background-color: var(--color-success);
+  -webkit-mask-image: url('/visuals/pixel-motifs/plant.svg');
+  mask-image: url('/visuals/pixel-motifs/plant.svg');
+}
+.tool-cat-scene::after {
+  right: 28px;
+  bottom: 20px;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  background-color: var(--color-violet);
+  -webkit-mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+  mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+}
+.p01-page { position: relative; }
+.p01-page::before {
+  top: 82px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  z-index: 0;
+  opacity: .20;
+  -webkit-mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+  mask-image: url('/visuals/pixel-motifs/music-notes.svg');
+}
+/* Reachable legacy Explore headers retain their exact footprint, not large
+   painterly plant/books artwork. */
+.explore-page .page-atmosphere {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.explore-page .page-atmosphere-deco { visibility: hidden; }
+.explore-page .page-atmosphere-text h1 { color: var(--color-text); }
+.explore-page .page-atmosphere-sub { color: var(--color-muted); }
