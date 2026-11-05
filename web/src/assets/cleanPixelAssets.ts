@@ -4,6 +4,8 @@ import type { CatId } from '../features/cats/CatCompanion';
 
 /** Mirror the central manifest so strict asset packaging tests cover these files. */
 export const PIXEL_MOTIFS = VISUAL_ASSETS.pixelMotifs;
+/** Owner-approved, individually addressable color motifs shared by Light and Dark themes. */
+export const APPROVED_PIXEL_MOTIFS = VISUAL_ASSETS.approvedPixelMotifs;
 
 /** Decorative poses already in use. This does not authorize adding new placements. */
 export type DecorativeCatPose = 'sleeping' | 'sitting' | 'floor';
