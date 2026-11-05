@@ -14,8 +14,10 @@ try {
       page.on('pageerror', e => errors.push(e.message));
       await page.addInitScript(state => {
         localStorage.setItem('little-jazz-room:selected-cat:v1', 'luna');
-        // This legacy illustration QA deliberately enables the new optional Cat Mode.
-        localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
+        // Validate ordinary Progress session/history with Cat Mode OFF. The selected
+        // companion remains visible and uses its original approved sleeping asset.
+        // The identity matrix below separately checks Cat Mode ON and OFF.
+        localStorage.setItem('little-jazz-room:decorative-cats:v1', 'false');
         if (state === 'completed') {
           const now = new Date();
           const sessions = [0, 1, 2].map((offset, i) => {
