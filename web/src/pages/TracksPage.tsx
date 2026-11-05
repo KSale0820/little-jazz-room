@@ -6,6 +6,7 @@ import { RECORDED_BACKING_TRACKS, isUsableRecordedTrack } from '../features/reco
 import './DemoPages.css';
 import './TracksPage.css';
 import './CleanPixelCharts.css';
+import './CleanPixelHomeLegacy.css';
 
 type Category = 'Recent' | 'Favorites' | 'Standards' | 'Blues' | 'Original studies';
 type FilterField = 'instrument' | 'style' | 'key' | 'difficulty';
