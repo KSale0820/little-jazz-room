@@ -900,3 +900,29 @@ html[data-cat-mode="off"] .g01-cat-cushion,
 html[data-cat-mode="off"] .g01-cat-bubble,
 html[data-cat-mode="off"] .tool-scene-cat,
 html[data-cat-mode="off"] [data-decorative-cat] { visibility: hidden !important; }
+
+
+/* Shared low-contrast pixel accent on legacy page headers, with painterly
+   decoration suppressed. Keeps the original header height and content. */
+html[data-theme] .page-atmosphere {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+html[data-theme] .page-atmosphere h1 { color: var(--color-text); }
+html[data-theme] .page-atmosphere-sub { color: var(--color-muted); }
+html[data-theme] .page-atmosphere-deco { visibility: hidden; }
+html[data-theme] .page-atmosphere::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  bottom: 7px;
+  width: 24px;
+  height: 24px;
+  background: var(--color-violet);
+  opacity: .35;
+  -webkit-mask: url('/visuals/pixel-motifs/music-notes.svg') center / contain no-repeat;
+  mask: url('/visuals/pixel-motifs/music-notes.svg') center / contain no-repeat;
+  pointer-events: none;
+}
