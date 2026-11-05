@@ -21,10 +21,13 @@ const routes = [
 ];
 function contrastRatio(a, b) {
   const parse = value => {
-    const values = value.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number);
-    assert.equal(values?.length, 3, 'Unparseable RGB color: ' + value);
+    // Chromium serializes color-mix() as CSS Color 4 color(srgb ...).
+    // Those channels are already normalized, unlike legacy rgb(0..255).
+    const isNormalized = value.startsWith('color(srgb ');
+    const values = value.match(/-?(?:\d*\.)?\d+/g)?.slice(0, 3).map(Number);
+    assert.equal(values?.length, 3, 'Unparseable CSS color: ' + value);
     return values.map(channel => {
-      const normalized = channel / 255;
+      const normalized = isNormalized ? channel : channel / 255;
       return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
     });
   };
@@ -115,6 +118,10 @@ try {
                 const reference = document.querySelector('.tuner-reference');
                 return reference ? getComputedStyle(reference).backgroundColor : null;
               })(),
+              tunerReferenceInk: (() => {
+                const label = document.querySelector('.tuner-reference strong');
+                return label ? getComputedStyle(label).color : null;
+              })(),
             };
           });
           assert.equal(state.theme, theme, screen + ' wrong palette');
@@ -151,9 +158,17 @@ try {
               'Player notation surface must match the active chart-paper palette');
           }
           if (screen === 'Tuner') {
-            assert.equal(state.tunerReferenceBackground,
-              theme === 'dark' ? 'rgb(41, 33, 57)' : 'rgb(255, 253, 248)',
-              'Tuner reference card must not retain the old cream surface in Dark Mode');
+            assert.ok(state.tunerReferenceBackground && state.tunerReferenceInk,
+              'Tuner reference card / text missing');
+            assert.ok(contrastRatio(state.tunerReferenceInk, state.tunerReferenceBackground) >= 4.5,
+              'Tuner reference pitch lacks 4.5:1 contrast: ' +
+              JSON.stringify({ theme, ink: state.tunerReferenceInk, fill: state.tunerReferenceBackground }));
+            // Light/Dark permit subtle pixel-art tinted surfaces, not a forced exact color.
+            const cardContrastToWhite = contrastRatio('rgb(255, 255, 255)', state.tunerReferenceBackground);
+            if (theme === 'dark') assert.ok(cardContrastToWhite >= 7,
+              'Dark Tuner reverted to a pale reference card');
+            else assert.ok(cardContrastToWhite <= 1.6,
+              'Light Tuner reference card is unexpectedly dark');
           }
           if (screen === 'Player') {
             // Read actual rendered chords under synthetic selection states, not just root variables.
