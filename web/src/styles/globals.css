@@ -898,4 +898,5 @@ html[data-cat-mode="off"] .h01-companion,
 html[data-cat-mode="off"] .g01-cat,
 html[data-cat-mode="off"] .g01-cat-cushion,
 html[data-cat-mode="off"] .g01-cat-bubble,
+html[data-cat-mode="off"] .tool-scene-cat,
 html[data-cat-mode="off"] [data-decorative-cat] { visibility: hidden !important; }
