@@ -274,3 +274,12 @@ html[data-theme="dark"] .tool-tuner .tuner-trail-plot svg polyline {
 html[data-theme="dark"] .tool-tuner .tuner-trail-plot svg circle {
   fill: var(--color-warning);
 }
+
+/* Vite may load the approved ToolsPages.css after the clean theme layer.
+   Scope both slider thumbs so Midnight Jazz never inherits the old green. */
+html[data-theme] .tool-page .metronome-slider::-webkit-slider-thumb {
+  background: var(--color-action);
+}
+html[data-theme] .tool-page .metronome-slider::-moz-range-thumb {
+  background: var(--color-action);
+}
