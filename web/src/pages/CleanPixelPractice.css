@@ -1,0 +1,280 @@
+/* Agent 2: screen-only clean pixel colors. Keep all measurements and interactions
+   in the existing P01/P02 stylesheets; this layer changes presentation only. */
+.p01-page {
+  --p01-ink: var(--color-text);
+  --p01-green: var(--color-action);
+  --p01-brass: var(--color-warning);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.p01-header h1, .p01-tools h2, .p01-action-copy strong { color: inherit; }
+.p01-greeting { color: var(--color-action); }
+.p01-intro, .p01-action-copy small, .p01-continue-copy small { color: var(--color-muted); }
+.p01-action {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.p01-action-primary {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--color-action-text);
+}
+.p01-action-primary .p01-action-copy small { color: var(--color-action-text); }
+.p01-action-secondary:nth-child(3),
+.p01-continue-button,
+.p01-tool { background: var(--color-surface-raised); border-color: var(--color-border); color: var(--color-text); }
+.p01-action-icon { background: var(--color-surface-raised); color: var(--color-action); }
+.p01-action-secondary:nth-child(3) .p01-action-icon { background: var(--color-surface); }
+.p01-continue-icon { background: var(--color-action); color: var(--color-action-text); }
+.p01-tool { color: var(--color-action); }
+.p01-daily-header { color: var(--color-text); }
+.p01-daily-track { background: var(--color-border); }
+.p01-daily-fill { background: var(--color-warning); }
+.p01-page button:focus-visible { outline-color: var(--color-focus); }
+.p01-page button:hover { filter: none; }
+/* Existing decorative slot remains 58x61px. Agent 3 can supply a pixel asset. */
+.p01-action-primary img { visibility: hidden; }
+
+/* Shared Practice / Player and finish screen: aliases prevent legacy rules
+   from forcing the old evergreen/ivory colors in Dark Mode. */
+.practice-player, .practice-complete {
+  --p-green: var(--color-action);
+  --p-ink: var(--color-text);
+  --p-paper: var(--color-bg);
+  --p-sand: var(--color-surface-raised);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.practice-player h1, .practice-player h2, .practice-complete h1 { color: var(--color-text); }
+.practice-title-group .practice-overline { color: var(--color-muted); }
+.practice-title-group p,
+.practice-title-group .practice-chart-style,
+.practice-audio-state,
+.practice-clock,
+.practice-clock strong,
+.practice-clock span,
+.practice-reference-note,
+.practice-chart-caption,
+.practice-playhead-status,
+.practice-step-controls > div span { color: var(--color-muted); }
+.practice-audio-state strong { color: var(--color-success); }
+.practice-back, .practice-more { color: var(--color-text); }
+.practice-more { background: var(--color-surface-raised); border-color: var(--color-border); }
+.practice-guided-progress, .practice-progress-track,
+.practice-timeline { background: var(--color-border); }
+.practice-guided-progress span, .practice-progress-track span,
+.practice-timeline span, .practice-timeline i { background: var(--color-action); }
+.practice-timeline i { border-color: var(--color-bg); }
+.practice-segments { background: var(--color-surface-raised); }
+.practice-segments button { color: var(--color-text); }
+.practice-segments button.selected { background: var(--color-action); color: var(--color-action-text); }
+.practice-notation-panel { color: var(--color-text); }
+.practice-chart-toolbar label { color: var(--color-muted); }
+.practice-chart-toolbar select { background: var(--color-chart-paper); color: var(--color-chart-chord); }
+.practice-chart-scroll, .practice-chart-scroll .chord-grid,
+.practice-player .practice-chart-scroll .chord-grid.practice-sheet {
+  background: var(--color-chart-paper);
+  border-color: var(--color-border);
+}
+.practice-player .practice-chart-scroll .measure,
+.practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure {
+  color: var(--color-chart-chord);
+  background: var(--color-chart-paper);
+  border-color: var(--color-border);
+}
+.practice-player .practice-chart-scroll .measure.chosen,
+.practice-player .practice-chart-scroll .practice-sheet .measure.chosen {
+  background: var(--color-chart-selected);
+  box-shadow: inset 0 -2px 0 var(--color-warning);
+}
+.practice-player .practice-chart-scroll .measure.looped:not(.chosen),
+.practice-player .practice-chart-scroll .practice-sheet .measure.looped:not(.chosen) {
+  background: var(--color-surface-raised);
+}
+.practice-player .practice-chart-scroll .measure-num { color: var(--color-muted); }
+.practice-player .practice-chart-scroll .measure-num:first-letter,
+.practice-free .practice-chart-scroll .measure-num,
+.practice-free .practice-chart-scroll .measure-num::first-letter,
+.practice-player .practice-chart-scroll .measure-annotation {
+  color: var(--color-chart-section);
+}
+.practice-player .practice-chart-scroll .practice-sheet .measure-section-label { color: var(--color-chart-section); }
+.practice-player .practice-chart-scroll .chords,
+.practice-player .practice-chart-scroll .chords span,
+.practice-player .practice-chart-scroll .practice-sheet .chords span {
+  color: var(--color-chart-chord);
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure,
+.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure:last-child {
+  border-color: var(--color-border);
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.playhead {
+  outline-color: var(--color-focus);
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.looped.playhead {
+  background: var(--color-chart-selected);
+}
+.practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords span.chord-active {
+  background: var(--color-chart-selected);
+  color: var(--color-chart-chord);
+  box-shadow: inset 0 -2px 0 var(--color-warning);
+}
+.practice-guided-head, .practice-lesson-panel, .practice-lesson-steps,
+.practice-coach-bubble { background: var(--color-surface-raised); color: var(--color-text); }
+.practice-guided-head::after { content: none; }
+.practice-guided-head strong, .practice-guided-head p,
+.practice-lesson-panel strong, .practice-lesson-panel p,
+.practice-lesson-terms dt { color: var(--color-text); }
+.practice-lesson-terms dd { color: var(--color-muted); }
+.practice-lesson-steps li::marker { color: var(--color-warning); }
+.practice-step-controls > button {
+  background: var(--color-surface-raised);
+  color: var(--color-action);
+}
+.practice-step-controls > button:disabled { color: var(--color-muted); }
+.practice-step-controls .practice-next {
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+.practice-measure-btn, .practice-secondary-transport { color: var(--color-action); }
+.practice-secondary-transport[aria-pressed="true"],
+.practice-unified .practice-secondary-transport[aria-pressed="true"] {
+  background: var(--color-chart-selected);
+  color: var(--color-action);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+.practice-timer-button, .practice-unified .practice-session-row .practice-finish-action {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+.practice-finish-action { color: var(--color-action); }
+.practice-chart-controls label,
+.practice-unified .practice-player-pills label,
+.practice-bpm-field { color: var(--color-muted); }
+.practice-chart-controls select, .practice-unified .practice-player-pills select,
+.practice-unified .practice-player-pills input, .practice-unified .practice-player-pills input[readonly],
+.bpm-stepper, .practice-settings-dialog select,
+.practice-settings-dialog input, .practice-settings-dialog .practice-stepper button {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.bpm-stepper button, .practice-bpm-field .bpm-reset { color: var(--color-action); }
+.practice-unified .practice-time-badge {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.practice-utility-row button, .practice-player .practice-utility-row button {
+  background: var(--color-surface-raised);
+  color: var(--color-action);
+  border-color: var(--color-border);
+}
+.practice-utility-row button[aria-pressed="true"],
+.practice-player .practice-utility-row button[aria-pressed="true"] {
+  background: var(--color-chart-selected);
+}
+.practice-player .practice-utility-row button:disabled,
+.practice-utility-row button:disabled { color: var(--color-muted); opacity: .6; }
+.practice-utility-row small, .practice-utility-row span { color: inherit; }
+.practice-recorded-controls, .practice-unlinked-chart,
+.practice-no-audio, .practice-settings-dialog {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.practice-recorded-controls input[type="range"], .practice-recording-seek input { accent-color: var(--color-action); }
+.practice-recorded-controls button {
+  background: var(--color-surface-raised);
+  color: var(--color-action);
+  border-color: var(--color-border);
+}
+.practice-recording-error { color: var(--color-danger); }
+.practice-recording-times, .practice-recording-ended,
+.practice-unlinked-chart p { color: var(--color-muted); }
+.practice-art-panel, .practice-recording-p02 .practice-recording-art {
+  background: var(--color-surface-raised);
+}
+/* Hide painterly scene images without collapsing their established boxes. */
+.practice-art-panel > img, .practice-recording-p02 .practice-recording-art > img { visibility: hidden; }
+.practice-art-caption, .practice-recording-p02 .practice-recording-art > .practice-art-caption {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+.practice-art-caption strong, .practice-art-caption span { color: var(--color-text); }
+
+/* The existing loop sheet and chart tool overlays keep their placement and scroll. */
+.practice-loop-overlay { background: color-mix(in srgb, var(--color-bg) 72%, transparent); }
+.practice-loop-sheet, .practice-loop-sheet header,
+.practice-loop-footer, .practice-settings-dialog {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.practice-loop-sheet h2, .practice-loop-section h3,
+.practice-loop-sheet strong, .practice-settings-dialog h2 { color: var(--color-text); }
+.practice-loop-eyebrow, .practice-loop-intro, .practice-loop-help,
+.practice-loop-section-heading span, .practice-loop-repeat-program small,
+.practice-settings-dialog p, .practice-settings-dialog .practice-chart-controls label {
+  color: var(--color-muted);
+}
+.practice-loop-sheet button, .practice-loop-mode button,
+.practice-loop-repeat-row button, .practice-loop-section button,
+.practice-loop-repeat-program, .practice-loop-open,
+.practice-settings-dialog .practice-loop-open {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.practice-loop-mode button.active, .practice-loop-apply {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--color-action-text);
+}
+.practice-loop-remove, .practice-loop-remove button { color: var(--color-danger); }
+.practice-loop-sheet input, .practice-loop-sheet select {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.practice-player button:focus-visible, .practice-complete button:focus-visible,
+.practice-loop-sheet button:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+
+/* P06: remove room thumbnail and sprawling leaves, not the stored companion
+   identity/reward or the save, repeat, and progress actions. */
+.practice-complete {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.practice-complete::before, .practice-complete::after,
+.practice-complete-footer::before, .practice-complete-footer::after { content: none; }
+.practice-complete h1, .practice-complete-time,
+.practice-complete-close, .practice-notes-label,
+.practice-rating { color: var(--color-text); }
+.practice-complete-date, .practice-complete-summary span,
+.practice-complete-summary small, .practice-notes-label span,
+.practice-rating small, .practice-local-hint,
+.practice-complete-footer span { color: var(--color-muted); }
+.practice-complete-summary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.practice-complete-summary strong { color: var(--color-text); }
+.practice-complete-summary img { visibility: hidden; }
+.practice-complete textarea {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.practice-rating button { color: var(--color-warning); }
+.practice-primary { background: var(--color-action); color: var(--color-action-text); }
+.practice-secondary { background: var(--color-surface-raised); color: var(--color-action); }
+.practice-complete .practice-confetti i { background: var(--color-warning); }
+.practice-complete .practice-confetti i:nth-child(4n) { background: var(--color-violet); }
+.practice-complete .practice-confetti i:nth-child(4n + 2) { background: var(--color-success); }
+
+@media (prefers-reduced-motion: reduce) {
+  .p01-daily-fill, .practice-guided-progress span, .practice-progress-track span { transition: none; }
+}
