@@ -84,6 +84,7 @@ try {
                 return avatar ? getComputedStyle(avatar).visibility : null;
               })(),
               chartCells: document.querySelectorAll('.chord-grid .measure').length,
+              progressCatSrc: document.querySelector('.g01-cat')?.getAttribute('src') ?? null,
               screenBackground: (() => {
                 const root = document.querySelector('.p01-page, .g01-page');
                 return root ? getComputedStyle(root).backgroundColor : null;
@@ -102,8 +103,13 @@ try {
           assert.equal(state.catMode, catMode ? 'on' : 'off', screen + ' wrong Cat Mode');
           assertWithinViewport(state, label + '-' + screen, height);
           if (['Progress', 'Tuner', 'Metronome'].includes(screen)) {
-            assert.equal(state.catVisibility, catMode ? 'visible' : 'hidden',
-              screen + ' decorative cat visibility does not follow Cat Mode');
+            assert.equal(state.catVisibility, screen === 'Progress' || catMode ? 'visible' : 'hidden',
+              screen + ' selected companion visibility violates Cat Mode rules');
+            if (screen === 'Progress') {
+              assert.ok(state.progressCatSrc, 'Progress companion must load in both modes');
+              if (!catMode) assert.ok(state.progressCatSrc.includes('/visuals/cats/sleeping/'),
+                'Cat Mode OFF should use the standard approved Progress sleeping cat');
+            }
             assert.ok(state.catFootprint && state.catFootprint[2] > 0 && state.catFootprint[3] > 0,
               screen + ' cat footprint is missing');
             const footprintKey = [width, height, theme, screen].join('-');
@@ -115,7 +121,7 @@ try {
             assert.equal(state.profileAvatarVisibility, 'visible',
               'Profile companion avatar must remain visible independently of Cat Mode');
           }
-          const expectedBackground = theme === 'dark' ? 'rgb(17, 26, 23)' : 'rgb(245, 247, 243)';
+          const expectedBackground = theme === 'dark' ? 'rgb(27, 23, 39)' : 'rgb(255, 248, 236)';
           if (['Practice', 'Progress'].includes(screen)) {
             assert.equal(state.screenBackground, expectedBackground,
               screen + ' retains the old room/ivory background instead of the active theme');
@@ -123,12 +129,12 @@ try {
           if (screen === 'Player') {
             assert.ok(state.chartCells >= 12, 'Free Practice chart missing complete 12-bar grid');
             assert.equal(state.chartPaperBackground,
-              theme === 'dark' ? 'rgb(28, 40, 34)' : 'rgb(255, 255, 255)',
+              theme === 'dark' ? 'rgb(33, 26, 47)' : 'rgb(255, 254, 250)',
               'Player notation surface must match the active chart-paper palette');
           }
           if (screen === 'Tuner') {
             assert.equal(state.tunerReferenceBackground,
-              theme === 'dark' ? 'rgb(27, 38, 33)' : 'rgb(255, 255, 255)',
+              theme === 'dark' ? 'rgb(41, 33, 57)' : 'rgb(255, 253, 248)',
               'Tuner reference card must not retain the old cream surface in Dark Mode');
           }
           if (['Practice', 'Player', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
