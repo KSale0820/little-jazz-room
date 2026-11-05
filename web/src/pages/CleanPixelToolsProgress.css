@@ -123,3 +123,71 @@ html[data-theme] .g01-page .g01-companion {
 html[data-theme] .g01-page .g01-goal-plant,
 html[data-theme] .g01-page .g01-plant,
 html[data-theme] .g01-page .g01-cat-cushion { visibility: hidden; }
+
+
+/* Screenshot QA: old G01 / P04-P05 rules have the same specificity and can be
+   evaluated after theme CSS. The scoped palette wins without touching layout. */
+html[data-theme] .g01-page {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+html[data-theme] .g01-page .g01-stats,
+html[data-theme] .g01-page .g01-daily-card,
+html[data-theme] .g01-page .g01-week-chart,
+html[data-theme] .g01-page .g01-session,
+html[data-theme] .g01-page .g01-empty-history {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: none;
+}
+html[data-theme] .g01-page .g01-header h1,
+html[data-theme] .g01-page .g01-settings,
+html[data-theme] .g01-page .g01-stat strong,
+html[data-theme] .g01-page .g01-stat span:not(.g01-stat-icon),
+html[data-theme] .g01-page .g01-daily-card h2,
+html[data-theme] .g01-page .g01-daily-card p,
+html[data-theme] .g01-page .g01-history-heading h2,
+html[data-theme] .g01-page .g01-session-copy strong {
+  color: var(--color-text);
+}
+html[data-theme] .g01-page .g01-chart-axis,
+html[data-theme] .g01-page .g01-chart-labels,
+html[data-theme] .g01-page .g01-session-copy span,
+html[data-theme] .g01-page .g01-session time {
+  color: var(--color-muted);
+}
+html[data-theme] .g01-page .g01-cat-bubble {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+html[data-theme] .g01-page .g01-change,
+html[data-theme] .g01-page .g01-practice-again {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+html[data-theme] .g01-page .g01-goal-track { background: var(--color-border); }
+html[data-theme] .g01-page .g01-goal-fill,
+html[data-theme] .g01-page .g01-chart-bar-today { background: var(--color-action); }
+html[data-theme] .g01-page .g01-chart-bar { background: var(--color-success); }
+html[data-theme] .g01-page .g01-chart-columns {
+  background: repeating-linear-gradient(to bottom, var(--color-border) 0 1px, transparent 1px 47px);
+  border-color: var(--color-border);
+}
+html[data-theme] .tool-page .tuner-reference {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .tuner-reference strong,
+html[data-theme] .tool-page .tuner-reference > span:nth-child(2) {
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .tuner-reference small {
+  color: var(--color-muted);
+}
+html[data-theme] .tool-page .tuner-reference-play {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
