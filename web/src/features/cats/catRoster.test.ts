@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { JAZZ_CATS } from './CatCompanion';
+import { ALL_JAZZ_CATS, JAZZ_CATS, VISIBLE_CAT_IDS, isVisibleCatId } from './CatCompanion';
 import { VISUAL_ASSETS } from '../../assets/visualManifest';
 
 const repoRoot = resolve(__dirname, '../../../..');
@@ -21,20 +21,27 @@ const EXPECTED = [
   ['biscuit', 'Turntables / listening'],
 ];
 
-describe('approved class MVP cat roster', () => {
-  it('keeps the eight approved identities and instruments', () => {
-    expect(JAZZ_CATS.map(c => [c.id, c.instrument])).toEqual(EXPECTED);
+describe('pixel trio roster with preserved historical identities', () => {
+  it('exposes only the three owner-approved pixel companions', () => {
+    expect(JAZZ_CATS.map(c => [c.id, c.instrument])).toEqual(EXPECTED.slice(0, 3));
+    expect(JAZZ_CATS.map(c => c.id)).toEqual([...VISIBLE_CAT_IDS]);
+    expect(isVisibleCatId('luna')).toBe(true);
+    expect(isVisibleCatId('pepper')).toBe(false);
+  });
+
+  it('retains the old eight identities in the compatibility archive', () => {
+    expect(ALL_JAZZ_CATS.map(c => [c.id, c.instrument])).toEqual(EXPECTED);
   });
 
   it('matches the original instrument role table', () => {
     const roles = readJson<{ id: string; instrument: string }[]>(resolve(repoRoot, 'CAT-JAZZ-IDENTITIES.json'));
-    expect(roles.map(r => [r.id, r.instrument])).toEqual(JAZZ_CATS.map(c => [c.id, c.instrument]));
+    expect(roles.map(r => [r.id, r.instrument])).toEqual(ALL_JAZZ_CATS.map(c => [c.id, c.instrument]));
   });
 
   it('has all 24 new approved PNG binaries with valid PNG headers', () => {
     const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
     for (const variant of variants) {
-      for (const cat of JAZZ_CATS) {
+      for (const cat of ALL_JAZZ_CATS) {
         const file = resolve(approvedDir, variant, `${cat.id}.png`);
         expect(existsSync(file), file).toBe(true);
         const bytes = readFileSync(file);
@@ -46,7 +53,7 @@ describe('approved class MVP cat roster', () => {
   });
 
   it('uses exclusively the new artwork paths', () => {
-    for (const cat of JAZZ_CATS) {
+    for (const cat of ALL_JAZZ_CATS) {
       expect(VISUAL_ASSETS.cat.fullBodyFile(cat.id)).toBe(`/visuals/cats/approved-class-mvp/full-body/${cat.id}.png`);
       expect(VISUAL_ASSETS.cat.profileFile(cat.id)).toBe(`/visuals/cats/approved-class-mvp/profiles/${cat.id}.png`);
       expect(VISUAL_ASSETS.cat.closeupFile(cat.id)).toBe(`/visuals/cats/approved-class-mvp/closeups/${cat.id}.png`);
