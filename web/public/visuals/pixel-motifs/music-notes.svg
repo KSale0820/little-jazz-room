@@ -1,3 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">
-  <path fill="#000" d="M8 3h14v3H8zM8 6h3v12H8zM19 6h3v10h-3zM5 16h6v2H5zM3 18h8v3H3zM5 21h4v1H5zM16 14h6v2h-6zM14 16h8v3h-8zM16 19h4v1h-4z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges" aria-hidden="true">
+  <!-- Two beamed eighth notes with stepped pixel heads. -->
+  <path fill="#000" d="M10 3h19v4H10zM10 7h3v16h-3zM26 7h3v14h-3zM7 21h6v2H7zM4 23h9v4H4zM6 27h5v2H6zM23 19h6v2h-6zM20 21h9v4h-9zM22 25h5v2h-5z"/>
 </svg>
