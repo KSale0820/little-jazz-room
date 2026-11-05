@@ -220,7 +220,7 @@ html[data-theme] .h01-scene-window::after {
   background-image: url('/visuals/pixel-motifs/approved/beamed-notes.png');
 }
 html[data-theme] .g01-companion::after {
-  background-image: url('/visuals/pixel-motifs/approved/leaf-cluster.png');
+  background-image: url('/visuals/pixel-motifs/approved/center-leaf.png');
 }
 html[data-theme] .tool-page .tool-cat-scene::before {
   background-image: url('/visuals/pixel-motifs/approved/planter-box.png');
