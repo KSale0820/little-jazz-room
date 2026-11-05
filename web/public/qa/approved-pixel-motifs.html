@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Little Jazz Room | Approved Pixel Motifs</title>
+<style>
+body{margin:0;padding:18px;background:#1b1727;color:#f9f3f9;font:14px/1.4 system-ui,sans-serif}
+h1{font-size:21px;margin:0 0 6px}p{color:#c7bad5;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px}
+.card{background:#292139;border:1px solid #6b587f;border-radius:8px;overflow:hidden}
+.card h2{font-size:13px;font-weight:650;padding:8px 11px;margin:0;text-transform:capitalize}
+.pair{display:grid;grid-template-columns:1fr 1fr}
+.tile{height:125px;display:grid;place-items:center;overflow:hidden}
+.tile img{display:block;max-width:92%;max-height:105px;object-fit:contain;image-rendering:pixelated}
+.day{background:#fff8ec}.night{background:#1b1727}
+.legend{display:grid;grid-template-columns:1fr 1fr;text-align:center;color:#c7bad5;font-size:10px;margin:6px 0 10px}
+</style></head>
+<body><h1>Owner-approved pixel motifs</h1><p>19 transparent, standalone PNGs. Same assets on Sunny Studio (day) and Midnight Jazz (night). This page is for asset QA only.</p>
+<main class="grid" id="grid"></main>
+<script>
+const names=["beamed-notes","center-dot","center-leaf","corner-left","corner-right","divider-leaf","divider-note","eighth-note","hanging-plant","ivy-trail","leaf-cluster","plant-pot","planter-box","plus-sparkle","small-plant","sparkle-cluster","sparkle","staff-wave","treble-clef"];
+const grid=document.getElementById('grid');
+for(const name of names){
+  const card=document.createElement('article');card.className='card';
+  const title=document.createElement('h2');title.textContent=name.replaceAll('-',' ');
+  const pair=document.createElement('div');pair.className='pair';
+  for(const theme of ['day','night']){
+    const tile=document.createElement('div');tile.className='tile '+theme;
+    const img=document.createElement('img');
+    img.src='/visuals/pixel-motifs/approved/'+name+'.png';
+    img.alt=name+' on '+theme+' surface';tile.append(img);pair.append(tile);
+  }
+  const legend=document.createElement('div');legend.className='legend';
+  for(const txt of ['Sunny Studio','Midnight Jazz']){const span=document.createElement('span');span.textContent=txt;legend.append(span)}
+  card.append(title,pair,legend);grid.append(card);
+}
+</script></body></html>
