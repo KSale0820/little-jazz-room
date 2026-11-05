@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
+import { AppearanceProvider } from './context/AppearanceContext';
 import { CreatePage } from './pages/CreatePage';
 import { ExplorePage } from './pages/ExplorePage';
 import { PracticePage } from './pages/PracticePage';
@@ -18,7 +19,8 @@ import { ChartLibraryPage } from './pages/ChartLibraryPage';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <AppearanceProvider>
+      <BrowserRouter>
       <AuthProvider>
         <AppProvider>
           <Routes>
@@ -45,6 +47,7 @@ export default function App() {
           </Routes>
         </AppProvider>
       </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AppearanceProvider>
   );
 }

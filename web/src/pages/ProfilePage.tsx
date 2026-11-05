@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CatChooser, CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { useApp } from '../context/AppContext';
+import { useAppearance } from '../context/AppearanceContext';
 import './ProfilePage.css';
 
 const MONTH_NAMES = [
@@ -16,6 +17,7 @@ export function ProfilePage() {
     sessions, routines,
     showToast, setActiveRoutineId,
   } = useApp();
+  const { theme, mode, setMode, catMode, setCatMode } = useAppearance();
   const navigate = useNavigate();
   const location = useLocation();
   const chooserRef = useRef<HTMLDivElement>(null);
@@ -118,6 +120,23 @@ export function ProfilePage() {
         />
         {catSaveError ? <p className="profile-save-error">{catSaveError}</p> : null}
       </div>
+
+      {/* Appearance preferences live in the existing Profile/Settings destination. */}
+      <section className="box profile-section profile-appearance-settings" aria-labelledby="appearance-heading">
+        <h3 id="appearance-heading">Settings · Appearance</h3>
+        <p className="profile-appearance-help">Choose a palette for your practice space.</p>
+        <div className="profile-theme-choices" role="group" aria-label="Color theme">
+          <button type="button" className="profile-theme-choice" aria-pressed={theme === 'light'} onClick={() => setMode('light')}>Light</button>
+          <button type="button" className="profile-theme-choice" aria-pressed={theme === 'dark'} onClick={() => setMode('dark')}>Dark</button>
+        </div>
+        {mode === 'system'
+          ? <p className="profile-appearance-note">Following your device appearance until you choose a theme.</p>
+          : <p className="profile-appearance-note">Your theme choice is saved on this device.</p>}
+        <label className="profile-cat-mode-label">
+          <input type="checkbox" checked={catMode} onChange={event => setCatMode(event.target.checked)} />
+          <span><strong>Cat Mode</strong><small>Show decorative cats on Home and Progress. Avatars and rewards stay visible.</small></span>
+        </label>
+      </section>
 
       {/* ── Motion preference ── */}
       <label className="profile-motion-label">

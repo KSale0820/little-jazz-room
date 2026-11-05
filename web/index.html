@@ -5,6 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/visuals/brand/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Little Jazz Room</title>
+    <script>
+      (function () {
+        var mode = null;
+        var cats = false;
+        try {
+          mode = localStorage.getItem('little-jazz-room:appearance:v1');
+          cats = localStorage.getItem('little-jazz-room:decorative-cats:v1') === 'true';
+        } catch (_) { /* storage optional */ }
+        var theme = mode === 'dark' || mode === 'light' ? mode :
+          (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.catMode = cats ? 'on' : 'off';
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
