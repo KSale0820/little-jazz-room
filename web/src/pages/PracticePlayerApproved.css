@@ -814,7 +814,6 @@
 }
 .practice-guided.practice-instructions .practice-step-controls > div { flex: 1 1 0; }
 .practice-guided.practice-instructions .practice-step-controls > div span { display: none; }
-.practice-guided .practice-finish-action { display: none; }
 .practice-guided.practice-instructions .practice-coach-dock {
   flex: 0 0 auto;
   margin-top: 5px;
