@@ -1,25 +1,42 @@
-# Clean Pixel Integration: rolling status and defects
+# Clean Pixel Themes: final integration ledger
 
-Controller branch: `integration/clean-pixel-themes` (base `class-demo-2026-10-31` @ `35beaad`). Never merge into demo/master or deploy without owner signoff.
+Integration branch: `integration/clean-pixel-themes`, based on `class-demo-2026-10-31` at `35beaad`. **No changes merged into the demo branch or master; no deployment initiated.** The final integration-to-demo PR requires explicit owner approval before merge.
 
-## Integrated
-- Theme contract, root agent instructions, global semantic palettes, no-flash bootstrap, persisted Light/Dark and Cat Mode, existing Profile/Settings appearance controls.
-- PR [#53](https://github.com/KSale0820/little-jazz-room/pull/53): screen semantic styling for Practice hub, shared Player, Finish. No runtime behavior edits.
-- PR [#54](https://github.com/KSale0820/little-jazz-room/pull/54): Tracks, chart library/editor semantic styling. No runtime behavior edits.
-- PR [#55](https://github.com/KSale0820/little-jazz-room/pull/55): Routine Library and Builder styling. No runtime behavior edits.
-- Controller Profile color/contrast corrections.
+## Implemented
 
-## Validation, by exact integration SHA
-- `32f9f367`: **PASS** `npm run build`, unit tests, Light/Dark x Cat Mode x (390x844, 375x667) mobile screenshot matrix, first-use system theme and reload persistence, current class-demo integration, and chart > practice > finish > progress and chart > exercise > routine > practice/reload. [GitHub Actions](https://github.com/KSale0820/little-jazz-room/actions/runs/41971787973). This was foundation-only.
-- `2f59641c` (P01/P02 merged): **PASS** entire above suite. [GitHub Actions](https://github.com/KSale0820/little-jazz-room/actions/runs/41972117478).
-- `09a2817d` (Tracks/Charts merged): pending final GitHub Actions result at time of entry. [Run](https://github.com/KSale0820/little-jazz-room/actions/runs/41972344142).
-- `f3d8cd08` (Routines/Builder merged): pending final GitHub Actions result at time of entry. [Run](https://github.com/KSale0820/little-jazz-room/actions/runs/41972426116).
+| Owner | Scope | Merged batch |
+| --- | --- | --- |
+| Controller | Contract, root AGENTS.md, palettes/semantic aliases, system-first/no-flash preference bootstrap and persistence, Settings/Appearance Light/Dark + Cat Mode, CSS focus/disabled/contrast, QA workflow | Direct commits |
+| Agent 2 | Practice Hub, shared Player, Completion and chart notation, no logic changes | [#53](https://github.com/KSale0820/little-jazz-room/pull/53) |
+| Agent 2 | Tracks and chart library/editor, no logic changes | [#54](https://github.com/KSale0820/little-jazz-room/pull/54) |
+| Agent 2 | Routine Library, Routine Builder, picker/draft UI | [#55](https://github.com/KSale0820/little-jazz-room/pull/55) |
+| Agent 2 | Tuner, Metronome and Progress presentation | [#56](https://github.com/KSale0820/little-jazz-room/pull/56) |
+| Agent 2 | Legacy Home/Explore/sign-in visuals, preserves existing routes/control geometry | [#57](https://github.com/KSale0820/little-jazz-room/pull/57) |
+| Agent 3 | Pixel plant/leaves/music-note SVGs, central asset mapping and tests, reusable `DecorativeCat`, individual cat light/dark QA contact sheet | [#52](https://github.com/KSale0820/little-jazz-room/pull/52) |
+| Agent 2 | Wire existing decorative Home/Progress/Tuner/Metronome placements, sparse motifs on existing backgrounds, notation contrast refinements | [#58](https://github.com/KSale0820/little-jazz-room/pull/58) |
 
-## Remaining or not yet tested
-- Agent 2: Home, Progress, Tuner, Metronome, other reachable/legacy screens, removal of illustrated large backgrounds, preserving existing control geometry; PR #56 incoming.
-- Agent 3: pixel plant/music-note motifs, reusable DecorativeCat, original-art audit and placement mapping; PR #52 incoming, temporarily blocked by exact approved asset library manifest test until its new 3 SVGs are properly registered.
-- Cat Mode needs to cover all existing **decorative** slots including tuner/metronome; independent avatars, rewards, progress remain visible in either mode. Current controller CSS temporarily gates Home and Progress.
-- No independently reviewed side-by-side screenshots for every screen yet. No claim of actual-device AAC looping, microphone acquisition, recording or native audio verification from browser-only tests.
-- Separate PR #49 player controls redesign and all unrelated PRs are deliberately unmerged.
+Cat Mode defaults OFF, hides **only decorative cat placements**, retains their geometry and does not alter profile avatars, selection, completion rewards, achievements, unlocks or stored sessions. Approved sleeping 128px pixel sprites are reused with crisp rendering; existing approved sitting art retained. No new unverified pixel-cat raster poses were generated.
 
-This file is an execution ledger, not product sign-off. All checks after new batches must be rerun at that exact SHA; known failures must be isolated from regressions.
+The active demo navigation remains Practice-first and retains its four current tabs. Legacy Home stays a legacy component: its illustrated room is hidden, original clickable footprints remain, and sparse pixel motifs are used instead. No unused October handoff navigation has been reinstated.
+
+## Validated
+
+Script `web/scripts/check-clean-pixel-themes.mjs` captures Practice, Player, Profile, Progress, Tuner and Metronome at both 390×844 and 375×667, across Light/Dark × Cat Mode ON/OFF, and checks first-load appearance, explicit preference reload, four-tab layout, overflow, selected chart cells, cat visibility, stable cat bounding rectangles, and avatar visibility. Additional existing browser scripts validate session save/reload, Chart → Practice → Finish → Progress, and Chart → Exercise → Routine → Practice. All run with `npm run build` and `npm test`.
+
+- [Foundation CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41971787973): `32f9f367`.
+- [P01/P02 combined CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41972117478): `2f59641c`.
+- [Tracks/Charts CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41972344142): `09a2817d`.
+- [Routines CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41972426116): `f3d8cd08`.
+- [Home/legacy CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41972862635): `8d04bba4`.
+- [Strict Cat Mode footprint/persistence CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41973187348): `975ed3c2`.
+- [Merged asset component CI PASS](https://github.com/KSale0820/little-jazz-room/actions/runs/41973107873): `342197d8`.
+- [Final decorative placements PR #58 CI PASS](https://github.com/KSale0820/little-jazz-room/pull/58): web build, full browser theme matrix and tuner microphone E2E on PR head `800a0fd7`; native-audio validation was pending when this report was written.
+- [Final merged integration CI](https://github.com/KSale0820/little-jazz-room/actions/runs/41973927172): `d619cbe3` full run launched after merging the final placement batch; check run conclusion for last combined result. Representative PNG screenshot and JSON result artifact is attached under **Artifacts → clean-pixel-mobile-qa**.
+
+## Remaining risks and nonclaims
+
+- Browser/mobile emulation and CI do **not** establish physical iPhone/Android visual quality, on-device microphone latency, real recorded-track playback quality or native audio behavior. Existing audio/tuner/metronome/routine implementation was preserved; no new feature implementation is claimed.
+- All reachable layouts were given semantic paint and browser structural checks, but not every dialog/disabled/focus combination was manually reviewed from screenshots. Physical-device QA and aesthetic signoff remain recommended before merging to demo.
+- Legacy Home lighting preference remains stored; illustrated lighting background is intentionally suppressed in clean themes, so that legacy visual effect is not visible.
+- No new cat poses/animations or new raster replacements; original verified pixel sleeping sprites were judged usable as-is. Art-style review may request future refinements.
+- PR #49 (player control redesign) and unrelated PRs are **not merged**.
