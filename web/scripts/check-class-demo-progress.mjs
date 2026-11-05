@@ -61,12 +61,13 @@ try {
         throw new Error('G01 clean backdrop or original asset packaging mismatch: ' + JSON.stringify(artwork));
       }
       console.log('PASS G01 clean backdrop, hidden large illustrations and original asset packaging at ' + width + 'x' + height);
-      // G01 must use the approved sleeping pose of the currently selected companion.
+      // Progress always displays the selected companion. Luna has a verified
+      // low-resolution replacement when Cat Mode is ON (160px, not 128px).
       await page.waitForFunction(() => {
         const img = document.querySelector('.g01-cat');
         return img instanceof HTMLImageElement &&
-          img.getAttribute('src') === '/visuals/cats/sleeping/luna.png' &&
-          img.complete && img.naturalWidth === 128 && img.naturalHeight === 128;
+          img.getAttribute('src') === '/visuals/cats/clean-pixel/luna-sleeping.png' &&
+          img.complete && img.naturalWidth === 160 && img.naturalHeight === 160;
       });
       if (!(await page.locator('.g01-cat').isVisible())) throw new Error('Selected sleeping cat not visible on G01');
       const heading = await page.locator('.g01-header h1').innerText();
@@ -119,14 +120,37 @@ try {
     await page.goto('http://127.0.0.1:5174/progress', { waitUntil: 'networkidle' });
     await page.waitForFunction(id => {
       const sprite = document.querySelector('.g01-cat');
+      const pixelVerified = ['luna', 'milo', 'maple'].includes(id);
+      const expected = pixelVerified ? '/visuals/cats/clean-pixel/' + id + '-sleeping.png'
+        : '/visuals/cats/sleeping/' + id + '.png';
+      const dimension = pixelVerified ? 160 : 128;
       return sprite instanceof HTMLImageElement &&
-        sprite.getAttribute('src') === '/visuals/cats/sleeping/' + id + '.png' &&
-        sprite.complete && sprite.naturalWidth === 128 && sprite.naturalHeight === 128;
+        sprite.getAttribute('src') === expected &&
+        sprite.complete && sprite.naturalWidth === dimension && sprite.naturalHeight === dimension;
     }, catId);
     await page.evaluate(async () => document.fonts?.ready);
     if (errors.length) throw new Error('G01 cat ' + catId + ': ' + errors.join(' | '));
     await page.screenshot({ path: join(out, 'g01-cat-' + catId + '-390x844.png'), fullPage: false });
-    console.log('PASS G01 selected sleeping companion: ' + catId);
+    console.log('PASS G01 selected sleeping companion, Cat Mode ON: ' + catId);
+    // In OFF mode Progress must STILL display this exact selected identity,
+    // switching to its original approved sleeping asset without moving layout.
+    await page.evaluate(() => localStorage.setItem('little-jazz-room:decorative-cats:v1', 'false'));
+    const onRect = await page.locator('.g01-cat').boundingBox();
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.waitForFunction(id => {
+      const sprite = document.querySelector('.g01-cat');
+      return sprite instanceof HTMLImageElement &&
+        sprite.getAttribute('src') === '/visuals/cats/sleeping/' + id + '.png' &&
+        sprite.complete && sprite.naturalWidth === 128 && sprite.naturalHeight === 128 &&
+        getComputedStyle(sprite).visibility === 'visible';
+    }, catId);
+    const offRect = await page.locator('.g01-cat').boundingBox();
+    if (!onRect || !offRect ||
+        Math.abs(onRect.x - offRect.x) > 1 || Math.abs(onRect.y - offRect.y) > 1 ||
+        Math.abs(onRect.width - offRect.width) > 1 || Math.abs(onRect.height - offRect.height) > 1) {
+      throw new Error('Progress companion placement shifted when changing Cat Mode for ' + catId);
+    }
+    console.log('PASS G01 selected sleeping companion, Cat Mode OFF: ' + catId);
     await context.close();
   }
 } finally {
