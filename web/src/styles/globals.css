@@ -935,3 +935,38 @@ html[data-theme] .page-atmosphere::after {
   mask: url('/visuals/pixel-motifs/music-notes.svg') center / contain no-repeat;
   pointer-events: none;
 }
+
+
+/* Accessibility floor for player notation across the free 12-bar grid and the
+   shared full-sheet chart. Original P02 stylesheet has hard-coded pale-green
+   selected cells; these high-specificity semantic states prevent washed-out
+   white-on-cream chords in Dark mode. No geometry or notation text changes.
+   Agent 2 remains owner of screen-level decorative treatments. */
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure.chosen,
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.chosen {
+  background: var(--color-chart-selected);
+  box-shadow: inset 0 0 0 2px var(--color-chart-selected-outline);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.looped:not(.chosen),
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure.looped:not(.chosen),
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.looped:not(.chosen) {
+  background: var(--color-chart-loop);
+  box-shadow: inset 0 0 0 1px var(--color-chart-repeat);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.playhead,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure.playhead,
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.playhead {
+  outline: 2px solid var(--color-chart-playhead);
+  outline-offset: -2px;
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen.playhead,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure.chosen.playhead,
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.chosen.playhead {
+  box-shadow: inset 0 0 0 2px var(--color-chart-selected-outline),
+              inset 0 -4px 0 var(--color-chart-playhead);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen .chords span,
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen .chords {
+  color: var(--color-chart-chord);
+}

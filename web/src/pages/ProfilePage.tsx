@@ -134,7 +134,7 @@ export function ProfilePage() {
           : <p className="profile-appearance-note">Your theme choice is saved on this device.</p>}
         <label className="profile-cat-mode-label">
           <input type="checkbox" checked={catMode} onChange={event => setCatMode(event.target.checked)} />
-          <span><strong>Cat Mode</strong><small>Show decorative cats on Home and Progress. Avatars and rewards stay visible.</small></span>
+          <span><strong>Cat Mode</strong><small>Show optional scene cats in Home, Tuner and Metronome. Your Progress companion, avatars and rewards always remain.</small></span>
         </label>
       </section>
 
