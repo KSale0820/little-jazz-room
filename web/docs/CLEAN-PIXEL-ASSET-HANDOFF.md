@@ -15,17 +15,19 @@
 
 All are simple single-ink geometric SVG masks designed at a 24px pixel grid. Use a CSS mask with `background-color: var(--color-action)` or another semantic color. Do not rely on `<img>` inheritance of CSS color.
 
-## Exact decorative-cat mapping (current baseline, **not** pixel replacements)
+## Exact decorative-cat mapping (existing pixel sleeping sprites reused)
 
 For each `id` = `luna`, `milo`, `maple`, `mochi`, `pepper`, `patches`, `chai`, `biscuit`:
 
 | Pose | Existing approved source | Verified pixel replacement |
 | --- | --- | --- |
-| sleeping | `/visuals/cats/sleeping/{id}.png` | **not yet supplied** |
+| sleeping | `/visuals/cats/sleeping/{id}.png` | **reuse the exact approved source** (128×128 pixel art, crisp scaling) |
 | sitting | `/visuals/cats/approved-class-mvp/sitting/{id}.png` | **not yet supplied** |
 | floor | `/visuals/cats/approved-class-mvp/full-body/{id}.png` | **not yet supplied** |
 
-`VERIFIED_PIXEL_CATS` is intentionally empty until **each** replacement sprite is visually reviewed on light and dark surfaces at its actual on-screen size. Do not fake poses through stretching/rotation. Avatar, chooser, achievement, and saved-unlock assets are unchanged.
+All eight sleeping cats are already native pixel sprites. No new image exports are needed for the two actual decorative placements, Home and Progress. The comparison sheet is [`clean-pixel-sleeping-cats-light-dark.svg`](./clean-pixel-sleeping-cats-light-dark.svg), embedding the exact original PNG bytes for both semantic surfaces. The eight original PNGs stay unchanged; the component uses crisp pixel rendering when upscaled.
+
+`VERIFIED_PIXEL_CATS` is deliberately empty because it tracks **new replacement files**, not approved existing pixel art. Sitting and floor PNGs are retained for portraits/selection and may not be used as decorative replacements without evidence of a real placement. Do not fake poses through stretching/rotation. Avatar, chooser, achievement, and saved-unlock assets are unchanged.
 
 ## Verification gates for each pixel-cat batch
 
@@ -34,4 +36,4 @@ For each `id` = `luna`, `milo`, `maple`, `mochi`, `pepper`, `patches`, `chai`, `
 3. Each added `VERIFIED_PIXEL_CATS[pose][id]` URL exists in the public asset tree; original approved URL is fallback.
 4. Run `npm run build`, unit tests, and 390x844 / 375x667 screenshots after Agent 2 connects existing slots.
 
-**No cat variants are claimed complete in this foundation PR.** Coordination issue: https://github.com/KSale0820/little-jazz-room/issues/50.
+**All eight existing sleeping variants are reused and inspected; no new raster cats are claimed.** Coordination issue: https://github.com/KSale0820/little-jazz-room/issues/50.
