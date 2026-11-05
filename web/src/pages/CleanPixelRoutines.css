@@ -192,3 +192,49 @@ html[data-theme] .routine-library .routine-card:focus-within {
 html[data-theme] .routine-library .routine-card-art {
   color: var(--color-violet);
 }
+
+/* Two approved colorful pixel botanical stickers; no new page art footprint,
+   hit target, spacer, animation or Cat Mode coupling. */
+html[data-theme] .routine-library .routine-intro,
+html[data-theme] .routine-builder .builder-heading {
+  position: relative;
+}
+html[data-theme] .routine-library .routine-intro::after,
+html[data-theme] .routine-builder .builder-heading::after {
+  content: '';
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  image-rendering: pixelated;
+}
+html[data-theme] .routine-library .routine-intro::after {
+  top: 14px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  opacity: .88;
+  background-image: url('/visuals/pixel-motifs/approved/hanging-plant.png');
+}
+html[data-theme] .routine-builder .builder-heading::after {
+  top: 4px;
+  right: 103px;
+  width: 28px;
+  height: 28px;
+  opacity: .78;
+  background-image: url('/visuals/pixel-motifs/approved/treble-clef.png');
+}
+@media (max-width: 380px) {
+  html[data-theme] .routine-library .routine-intro::after {
+    right: 8px;
+    width: 42px;
+    height: 42px;
+  }
+  html[data-theme] .routine-builder .builder-heading::after {
+    right: 96px;
+    width: 22px;
+    height: 22px;
+  }
+}
