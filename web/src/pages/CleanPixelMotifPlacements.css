@@ -1,11 +1,11 @@
 /* Existing decorative regions only. Pixel motifs are CSS masks, never score
    glyphs, text, chart notation, controls or a new full-screen illustration. */
-.h01-scene-window::before,
-.h01-scene-window::after,
-.g01-companion::after,
-.tool-cat-scene::before,
-.tool-cat-scene::after,
-.p01-page::before {
+html[data-theme] .h01-scene-window::before,
+html[data-theme] .h01-scene-window::after,
+html[data-theme] .g01-companion::after,
+html[data-theme] .tool-cat-scene::before,
+html[data-theme] .tool-cat-scene::after,
+html[data-theme] .p01-page::before {
   content: '';
   position: absolute;
   display: block;
@@ -19,7 +19,7 @@
   mask-size: contain;
   opacity: .34;
 }
-.h01-scene-window::before {
+html[data-theme] .h01-scene-window::before {
   left: 19px;
   bottom: 16px;
   width: 58px;
@@ -28,7 +28,7 @@
   -webkit-mask-image: url('/visuals/pixel-motifs/plant.svg');
   mask-image: url('/visuals/pixel-motifs/plant.svg');
 }
-.h01-scene-window::after {
+html[data-theme] .h01-scene-window::after {
   right: 22px;
   top: 126px;
   width: 43px;
@@ -38,7 +38,7 @@
   -webkit-mask-image: url('/visuals/pixel-motifs/music-notes.svg');
   mask-image: url('/visuals/pixel-motifs/music-notes.svg');
 }
-.g01-companion::after {
+html[data-theme] .g01-companion::after {
   left: 14px;
   top: 14px;
   z-index: 0;
@@ -48,7 +48,7 @@
   -webkit-mask-image: url('/visuals/pixel-motifs/leaves.svg');
   mask-image: url('/visuals/pixel-motifs/leaves.svg');
 }
-.tool-cat-scene::before {
+html[data-theme] .tool-cat-scene::before {
   left: 16px;
   bottom: 10px;
   z-index: 1;
@@ -58,7 +58,7 @@
   -webkit-mask-image: url('/visuals/pixel-motifs/plant.svg');
   mask-image: url('/visuals/pixel-motifs/plant.svg');
 }
-.tool-cat-scene::after {
+html[data-theme] .tool-cat-scene::after {
   right: 28px;
   bottom: 20px;
   z-index: 1;
@@ -68,8 +68,8 @@
   -webkit-mask-image: url('/visuals/pixel-motifs/music-notes.svg');
   mask-image: url('/visuals/pixel-motifs/music-notes.svg');
 }
-.p01-page { position: relative; }
-.p01-page::before {
+html[data-theme] .p01-page { position: relative; }
+html[data-theme] .p01-page::before {
   top: 82px;
   right: 16px;
   width: 30px;
@@ -81,11 +81,11 @@
 }
 /* Reachable legacy Explore headers retain their exact footprint, not large
    painterly plant/books artwork. */
-.explore-page .page-atmosphere {
+html[data-theme] .explore-page .page-atmosphere {
   background: var(--color-surface);
   border-color: var(--color-border);
   color: var(--color-text);
 }
-.explore-page .page-atmosphere-deco { visibility: hidden; }
-.explore-page .page-atmosphere-text h1 { color: var(--color-text); }
-.explore-page .page-atmosphere-sub { color: var(--color-muted); }
+html[data-theme] .explore-page .page-atmosphere-deco { visibility: hidden; }
+html[data-theme] .explore-page .page-atmosphere-text h1 { color: var(--color-text); }
+html[data-theme] .explore-page .page-atmosphere-sub { color: var(--color-muted); }
