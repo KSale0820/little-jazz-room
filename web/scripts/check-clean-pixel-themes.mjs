@@ -20,6 +20,7 @@ const routes = [
   ['Metronome', '/metronome', '.tool-metronome'],
 ];
 const report = [];
+const catLayoutFootprints = new Map();
 const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
 
 function assertWithinViewport(state, label, height) {
@@ -68,22 +69,44 @@ try {
               navCount: nav?.querySelectorAll('a').length ?? 0,
               navTop: rect?.top ?? -1,
               navBottom: rect?.bottom ?? -1,
-              catVisibility: document.querySelector('.g01-cat')
-                ? getComputedStyle(document.querySelector('.g01-cat')).visibility : null,
+              catVisibility: (() => {
+                const cat = document.querySelector('.g01-cat, .tool-scene-cat');
+                return cat ? getComputedStyle(cat).visibility : null;
+              })(),
+              catFootprint: (() => {
+                const cat = document.querySelector('.g01-cat, .tool-scene-cat');
+                if (!cat) return null;
+                const { x, y, width, height } = cat.getBoundingClientRect();
+                return [x, y, width, height].map(value => Math.round(value * 10) / 10);
+              })(),
+              profileAvatarVisibility: (() => {
+                const avatar = document.querySelector('.profile-companion-art .jazz-cat-sprite');
+                return avatar ? getComputedStyle(avatar).visibility : null;
+              })(),
               chartCells: document.querySelectorAll('.chord-grid .measure').length,
             };
           });
           assert.equal(state.theme, theme, screen + ' wrong palette');
           assert.equal(state.catMode, catMode ? 'on' : 'off', screen + ' wrong Cat Mode');
           assertWithinViewport(state, label + '-' + screen, height);
-          if (screen === 'Progress') {
+          if (['Progress', 'Tuner', 'Metronome'].includes(screen)) {
             assert.equal(state.catVisibility, catMode ? 'visible' : 'hidden',
-              'Decorative Progress cat visibility does not follow Cat Mode');
+              screen + ' decorative cat visibility does not follow Cat Mode');
+            assert.ok(state.catFootprint && state.catFootprint[2] > 0 && state.catFootprint[3] > 0,
+              screen + ' cat footprint is missing');
+            const footprintKey = [width, height, theme, screen].join('-');
+            if (!catMode) catLayoutFootprints.set(footprintKey, state.catFootprint);
+            else assert.deepEqual(state.catFootprint, catLayoutFootprints.get(footprintKey),
+              screen + ' must not shift or resize its cat placement when Cat Mode changes');
+          }
+          if (screen === 'Profile') {
+            assert.equal(state.profileAvatarVisibility, 'visible',
+              'Profile companion avatar must remain visible independently of Cat Mode');
           }
           if (screen === 'Player') {
             assert.ok(state.chartCells >= 12, 'Free Practice chart missing complete 12-bar grid');
           }
-          if (['Practice', 'Player', 'Progress', 'Profile'].includes(screen)) {
+          if (['Practice', 'Player', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
             await page.screenshot({
               path: path.join(output, screen.toLowerCase() + '-' + label + '.png'),
               animations: 'disabled',
