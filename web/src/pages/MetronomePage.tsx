@@ -7,6 +7,7 @@ import {
   clampBpm, defaultAccents,
 } from './toolsAudio';
 import './ToolsPages.css';
+import './CleanPixelToolsProgress.css';
 
 type Signature = '2/4' | '3/4' | '4/4' | '6/8';
 type ScheduledBeat = { time: number; index: number; countIn: boolean };
