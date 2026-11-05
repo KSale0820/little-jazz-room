@@ -116,7 +116,10 @@ try {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, deviceScaleFactor: 2 });
     await context.addInitScript(id => {
       localStorage.setItem('little-jazz-room:selected-cat:v1', id);
-      localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
+      // Initialize Cat Mode only on first navigation. Never overwrite a user's
+      // later OFF selection during reload; that is what this test verifies.
+      if (localStorage.getItem('little-jazz-room:decorative-cats:v1') === null)
+        localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
     }, catId);
     const page = await context.newPage();
     const errors = [];
