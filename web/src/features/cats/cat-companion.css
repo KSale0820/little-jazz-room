@@ -93,8 +93,9 @@
   aspect-ratio: 1 / 1;
   object-fit: contain;   /* show full body, not crop */
   object-position: center bottom;
+  image-rendering: pixelated;
   display: block;
-  background: #f3efe6;
+  background: var(--color-surface-raised, #f3efe6);
   padding: 8% 10% 4%;   /* breathing room around the cat */
   box-sizing: border-box;
 }
