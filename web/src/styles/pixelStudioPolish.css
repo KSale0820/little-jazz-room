@@ -1,0 +1,196 @@
+/* Pixel Studio visual recovery. Imported last on purpose.
+   Presentation only: no control geometry, chart notation, routes or storage changes. */
+html[data-theme] {
+  --studio-line: color-mix(in srgb, var(--color-action) 24%, var(--color-border));
+  --studio-shadow: 0 3px 0 color-mix(in srgb, var(--color-border) 42%, transparent),
+                   0 12px 24px color-mix(in srgb, var(--color-bg) 76%, #000);
+}
+html[data-theme="light"] {
+  --studio-glow: rgba(138, 174, 128, .12);
+  --studio-ink-shadow: rgba(42, 57, 45, .08);
+}
+html[data-theme="dark"] {
+  --studio-glow: rgba(188, 163, 244, .12);
+  --studio-ink-shadow: rgba(9, 5, 19, .26);
+}
+
+/* An editorial studio surface rather than a flat single-color page. */
+html[data-theme] .p01-page,
+html[data-theme] .t01-page,
+html[data-theme] .routine-library,
+html[data-theme] .routine-builder,
+html[data-theme] .g01-page,
+html[data-theme] .tool-page,
+html[data-theme] .profile-page,
+html[data-theme] .chart-library-page,
+html[data-theme] .chart-builder-page {
+  background-image: radial-gradient(ellipse at 94% 0%, var(--studio-glow), transparent 54%);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+html[data-theme] :is(.p01-header h1, .t01-title, .routine-intro h1, .builder-heading h1,
+ .g01-header h1, .tool-heading h1, .profile-title, .chart-builder-header h1) {
+  color: var(--color-text);
+  letter-spacing: -.035em;
+}
+html[data-theme] :is(.p01-greeting, .t01-eyebrow, .builder-eyebrow) {
+  color: var(--color-violet);
+  letter-spacing: .08em;
+}
+
+/* Main practice actions have a clear visual hierarchy and a tactile pixel edge. */
+html[data-theme] .p01-page .p01-action-primary {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(120deg, var(--color-action),
+    color-mix(in srgb, var(--color-action) 75%, var(--color-violet)));
+  color: var(--color-action-text);
+  border: 2px solid color-mix(in srgb, var(--color-action) 78%, var(--color-text));
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-violet) 45%, transparent);
+}
+html[data-theme] .p01-page .p01-action-primary .p01-action-copy strong,
+html[data-theme] .p01-page .p01-action-primary .p01-action-copy small {
+  color: var(--color-action-text);
+}
+html[data-theme] .p01-page .p01-action-primary img {
+  visibility: visible;
+  image-rendering: pixelated;
+  opacity: .92;
+  filter: saturate(.85);
+}
+html[data-theme] .p01-page :is(.p01-action-secondary, .p01-continue-button, .p01-tool),
+html[data-theme] .t01-page .t01-track-card,
+html[data-theme] .routine-library .routine-card,
+html[data-theme] .routine-builder .builder-step,
+html[data-theme] .g01-page :is(.g01-daily-card, .g01-week-chart, .g01-stats),
+html[data-theme] .profile-page .profile-companion-card {
+  border-color: var(--studio-line);
+  background-color: var(--color-surface);
+  box-shadow: 0 3px 0 var(--studio-ink-shadow);
+}
+html[data-theme] .p01-page :is(.p01-action-secondary, .p01-continue-button, .p01-tool):active,
+html[data-theme] .t01-page .t01-track-card:active {
+  box-shadow: 0 1px 0 var(--studio-ink-shadow);
+}
+html[data-theme] .p01-page .p01-action-icon {
+  border: 1px solid var(--studio-line);
+  border-radius: 7px;
+}
+html[data-theme] .p01-page .p01-tools h2,
+html[data-theme] .g01-page .g01-daily-card h2 {
+  color: var(--color-text);
+}
+
+/* The music catalog and routine lists should read as a deliberate set. */
+html[data-theme] .t01-page .t01-category[aria-pressed="true"],
+html[data-theme] .routine-library .routine-tabs button.is-selected {
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--color-action-text) 32%, transparent);
+}
+html[data-theme] .t01-page .t01-track-card:focus-within,
+html[data-theme] .routine-library .routine-card:focus-within {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+html[data-theme] .t01-page .t01-search-wrap,
+html[data-theme] .routine-library .routine-search-wrap {
+  border-color: var(--studio-line);
+  box-shadow: 0 2px 0 var(--studio-ink-shadow);
+}
+html[data-theme] .routine-library .routine-card-art {
+  border: 1px solid var(--studio-line);
+  background: var(--color-surface-raised);
+}
+html[data-theme] .chart-builder-page :is(.chart-editor-measure, .chart-library-card) {
+  border-color: var(--color-border);
+}
+/* Do not touch selected, looped or playhead cell paint: the contrast-tested
+   chord-grid state system in CleanPixelPractice.css remains authoritative. */
+
+/* Calm, intentional tool and progress surfaces, not a hollow illustration slot. */
+html[data-theme] .g01-page .g01-companion {
+  background: radial-gradient(ellipse at 52% 76%,
+    color-mix(in srgb, var(--color-violet) 29%, var(--color-surface-raised)),
+    var(--color-surface-raised) 72%);
+  border: 1px solid var(--studio-line);
+  box-shadow: inset 0 -5px 0 color-mix(in srgb, var(--color-action) 18%, transparent);
+}
+html[data-theme] .g01-page .g01-cat-bubble {
+  background: var(--color-surface);
+  border: 1px solid var(--studio-line);
+  box-shadow: 2px 3px 0 var(--studio-ink-shadow);
+}
+html[data-theme] .tool-page :is(.tool-help, .tuner-trail-panel, .tuner-status, .tuner-reference) {
+  border-color: var(--studio-line);
+}
+html[data-theme] .tool-page .metronome-play {
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-violet) 42%, transparent);
+}
+
+/* Restore visibility of the already-approved *color* PNG motifs.
+   These selectors use existing empty decorative slots, not chart cells or controls. */
+html[data-theme] .p01-page::before {
+  width: 47px;
+  height: 47px;
+  right: 12px;
+  top: 65px;
+  opacity: .9;
+}
+html[data-theme] .p01-page .p01-daily::after {
+  width: 56px;
+  height: 56px;
+  right: 8px;
+  opacity: .95;
+}
+html[data-theme] .p01-page .p01-tools::after {
+  width: 31px;
+  height: 31px;
+  opacity: .86;
+}
+html[data-theme] .g01-page .g01-daily-card::after,
+html[data-theme] .g01-page .g01-week-chart::after {
+  width: 32px;
+  height: 32px;
+  opacity: .88;
+}
+html[data-theme] .g01-page .g01-companion::after {
+  width: 55px;
+  height: 55px;
+  opacity: .9;
+}
+html[data-theme] .tool-page .tool-cat-scene::before {
+  width: 65px;
+  height: 65px;
+  opacity: .94;
+}
+html[data-theme] .tool-page .tool-cat-scene::after {
+  width: 43px;
+  height: 43px;
+  opacity: .88;
+}
+html[data-theme] .t01-page .t01-header::before,
+html[data-theme] .routine-library .routine-intro::after {
+  opacity: 1;
+}
+html[data-theme] .chart-library-page .chart-builder-header::after,
+html[data-theme] .chart-builder-page .chart-builder-chart-heading::after {
+  opacity: .96;
+}
+/* Small phones get the same motifs without colliding with headings or hit targets. */
+@media (max-width: 380px) {
+  html[data-theme] .p01-page::before { width: 35px; height: 35px; right: 9px; top: 74px; }
+  html[data-theme] .p01-page .p01-daily::after { width: 40px; height: 40px; }
+  html[data-theme] .routine-library .routine-intro::after { width: 40px; height: 40px; }
+}
+
+/* A restrained 8-bit accent in the existing bottom tab chrome. */
+html[data-theme] .app-shell .bottom-nav {
+  border-top: 2px solid var(--studio-line);
+  box-shadow: 0 -4px 18px var(--studio-ink-shadow);
+}
+html[data-theme] .app-shell .bottom-nav a.current {
+  color: var(--color-action);
+}
+html[data-theme] .app-shell .bottom-nav a:focus-visible,
+html[data-theme] button:focus-visible {
+  outline-color: var(--color-focus);
+}
