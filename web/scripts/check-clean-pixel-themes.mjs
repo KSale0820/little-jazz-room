@@ -11,7 +11,8 @@ await mkdir(output, { recursive: true });
 
 const routes = [
   ['Practice', '/practice', '.p01-page'],
-  ['Player', '/player?mode=free', '.practice-player'],
+  ['Free Practice', '/free-practice', '.fp-page'],
+  ['Player', '/player?chart=blues-f-12', '.practice-player'],
   ['Tracks', '/tracks', '.t01-page'],
   ['Routines', '/routines', '.routine-library'],
   ['Progress', '/progress', '.g01-page'],
@@ -176,7 +177,7 @@ try {
               screen + ' retains the old room/ivory background instead of the active theme');
           }
           if (screen === 'Player') {
-            assert.ok(state.chartCells >= 12, 'Free Practice chart missing complete 12-bar grid');
+            assert.ok(state.chartCells >= 12, 'Chart-linked Player missing complete 12-bar grid');
             assert.equal(state.chartPaperBackground,
               theme === 'dark' ? 'rgb(23, 25, 29)' : 'rgb(255, 254, 250)',
               'Player notation surface must match the active chart-paper palette');
@@ -235,7 +236,7 @@ try {
               'Active selected measure needs a separate visible playhead indicator in ' + label);
           }
 
-          if (['Practice', 'Player', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
+          if (['Practice', 'Free Practice', 'Player', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
             await page.screenshot({
               path: path.join(output, screen.toLowerCase() + '-' + label + '.png'),
               animations: 'disabled',
