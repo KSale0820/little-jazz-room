@@ -134,30 +134,38 @@ function CatChooserArt({ catId }: { catId: CatId }) {
   return <img className="board-cat-art" src={src} onError={onError} alt="" aria-hidden draggable={false} />;
 }
 
-export function CatChooser({ catId, onSelect }:
-  { catId: CatId; onSelect: (id: CatId) => void | Promise<void> }) {
+export function CatChooser({ catId, onSelect, unlockedIds, practiceMinutes = 0 }:
+  { catId: CatId; onSelect: (id: CatId) => void | Promise<void>;
+    unlockedIds?: readonly VisibleCatId[]; practiceMinutes?: number }) {
   return (
     <section aria-labelledby="choose-cat-heading" className="jazz-cat-section board-style">
       <h2 id="choose-cat-heading">Choose your jazz cat</h2>
-      <p className="jazz-cat-lede">Meet Luna, Milo and Maple. Change any time.</p>
+      <p className="jazz-cat-lede">Luna is ready from day one. Unlock more cats as you practice.</p>
       <div className="jazz-cat-grid board-cards" role="group" aria-label="Jazz cat companions">
-        {JAZZ_CATS.map(cat => (
-          <button
-            type="button"
-            key={cat.id}
-            className="board-cat-card"
-            aria-pressed={catId === cat.id}
-            aria-label={`${cat.name}, ${cat.instrument}, ${cat.personality}`}
-            onClick={() => { void onSelect(cat.id); }}
-          >
-            <CatChooserArt catId={cat.id} />
-            <div className="board-cat-meta">
-              <strong>{cat.name}</strong>
-              <span className="board-cat-instrument">{cat.instrument}</span>
-              <span className="board-cat-personality">{cat.personality}</span>
-            </div>
-          </button>
-        ))}
+        {JAZZ_CATS.map(cat => {
+          const requiredMinutes = cat.id === 'milo' ? 60 : cat.id === 'maple' ? 300 : 0;
+          const locked = unlockedIds !== undefined && !unlockedIds.includes(cat.id) && catId !== cat.id;
+          const remaining = Math.max(0, requiredMinutes - practiceMinutes);
+          return (
+            <button
+              type="button"
+              key={cat.id}
+              className="board-cat-card"
+              aria-pressed={catId === cat.id}
+              aria-label={`${cat.name}, ${cat.instrument}, ${cat.personality}${locked ? `, locked, ${remaining} more minutes of practice to unlock` : ', unlocked'}`}
+              disabled={locked}
+              onClick={() => { if (!locked) void onSelect(cat.id); }}
+            >
+              <CatChooserArt catId={cat.id} />
+              <div className="board-cat-meta">
+                <strong>{cat.name}</strong>
+                <span className="board-cat-instrument">{cat.instrument}</span>
+                <span className="board-cat-personality">{cat.personality}</span>
+                {locked && <span className="board-cat-unlock">Unlock in {remaining} min</span>}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </section>
   );
