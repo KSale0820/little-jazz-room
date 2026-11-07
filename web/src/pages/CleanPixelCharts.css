@@ -17,7 +17,6 @@ html[data-theme] .t01-card-tempo,
 html[data-theme] .t01-section-header span,
 html[data-theme] .t01-empty p,
 html[data-theme] .t01-search-wrap input::placeholder { color: var(--color-muted); }
-html[data-theme] .t01-charts-link,
 html[data-theme] .t01-search-wrap,
 html[data-theme] .t01-category,
 html[data-theme] .t01-filter-actions button,
@@ -29,7 +28,6 @@ html[data-theme] .t01-sheet-reset {
   border-color: var(--color-border);
   color: var(--color-text);
 }
-html[data-theme] .t01-charts-link,
 html[data-theme] .t01-filter-actions .t01-filter-primary,
 html[data-theme] .t01-sheet-reset { color: var(--color-action) !important; }
 html[data-theme] .t01-search-wrap > svg,
