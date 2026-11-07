@@ -37,7 +37,9 @@ export function ProfilePage() {
   const unlockedIds = unlockedCompanions(
     unlockMinutes,
     readSavedUnlocks(accountKey),
-    readPreviouslySelectedCat(accountKey),
+    // A previously selected companion stays usable even when older session
+    // records are not loaded locally. Do not downgrade an existing choice.
+    isVisibleCatId(catId) && catId !== 'luna' ? catId : readPreviouslySelectedCat(accountKey),
   );
   const unlockedSignature = unlockedIds.join(',');
   useEffect(() => {
