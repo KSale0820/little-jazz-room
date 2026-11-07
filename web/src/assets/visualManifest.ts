@@ -81,7 +81,6 @@ export const VISUAL_ASSETS = {
   progress: {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',
-    streakFlame: '/visuals/pixel-motifs/approved/streak-flame.svg',
     sleepCushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
   },
   garden: {
@@ -163,6 +162,7 @@ export const VISUAL_ASSETS = {
     musicNotes: '/visuals/pixel-motifs/music-notes.svg',
   },
   /** Approved independent full-color pixel art, for sparse Light/Dark decorations. */
+  streakFlame: '/visuals/pixel-motifs/streak-fire.png',
   approvedPixelMotifs: {
     beamedNotes: '/visuals/pixel-motifs/approved/beamed-notes.png',
     centerDot: '/visuals/pixel-motifs/approved/center-dot.png',
