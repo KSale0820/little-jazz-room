@@ -42,6 +42,14 @@ Status: integration work on `integration/clean-pixel-themes`. Base: `class-demo-
 
 Contrast target: at least WCAG AA 4.5:1 for normal-sized chord text, chart annotations, form labels and selected cell text. For dark selected cells, near-white chords against violet-tinted paper must remain legible; do not use gold-tinted selection fill, white paper under mint chords or color alone to distinguish loop/playhead/selection. Use different border/fill/underline patterns **without changing chart grid geometry**, and test a cell that is selected, looped and current simultaneously. Keep legacy palette aliases in global CSS for gradual migration.
 
+## V4 cleanliness and typography approval (November 6, 2026)
+
+**Latest owner instruction overrides V2 Dark token values above:** Dark theme is **near-black charcoal**, not purple. Live source of truth is `web/src/styles/globals.css`: background `#101113`, surfaces `#1B1D20` and `#24272B`, understated border `#353A40`, near-white text `#F3F5F5`. Sage `#BED5B6` is primary interactive color; lilac `#B8A4DF` is reserved for details and focus. Keep the approved colorful pixel art restrained, not repeated on every outlined container.
+
+Use the existing local system sans-serif stack consistently for UI and headings; no additional fonts or downloads. Keep chart typography unembellished and all controls/navigation in their established locations. The Practice Hub displays saved streak and prior calendar-day minutes in a compact inline status line with a gentle, data-driven encouragement message; daily goal and its progress bar remain.
+
+Light (Sunny Studio) is unchanged. Update visual QA expected Dark background/chart paper values when palette shifts. Do not merge into demo or master or deploy absent separate owner approval.
+
 ## Appearance preference API
 Import `useAppearance` from `../context/AppearanceContext` (or the corresponding relative path). Returns `{ theme, mode, setMode, catMode, setCatMode }`; `mode` is `'system' | 'light' | 'dark'` (only Light/Dark are user-selectable), `theme` is resolved `'light' | 'dark'`; `catMode` is a boolean. Keys: `little-jazz-room:appearance:v1` (absent = system, stored values `light|dark`), `little-jazz-room:decorative-cats:v1` (absent = false). Provider mounts above authentication so first paint, sign-in and offline mode share appearance. An inline `index.html` bootstrap sets `html[data-theme]` before module CSS to prevent wrong-theme flash. System changes apply while mode is `system`. Body classes/legacy cat-motion preferences are unrelated.
 
