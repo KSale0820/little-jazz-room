@@ -170,7 +170,7 @@ try {
             assert.deepEqual(state.profileChooserIds, ['Luna', 'Milo', 'Maple'],
               'Profile must offer only the three currently approved pixel companions');
           }
-          const expectedBackground = theme === 'dark' ? 'rgb(27, 23, 39)' : 'rgb(255, 248, 236)';
+          const expectedBackground = theme === 'dark' ? 'rgb(16, 17, 19)' : 'rgb(255, 248, 236)';
           if (['Practice', 'Progress'].includes(screen)) {
             assert.equal(state.screenBackground, expectedBackground,
               screen + ' retains the old room/ivory background instead of the active theme');
@@ -178,7 +178,7 @@ try {
           if (screen === 'Player') {
             assert.ok(state.chartCells >= 12, 'Free Practice chart missing complete 12-bar grid');
             assert.equal(state.chartPaperBackground,
-              theme === 'dark' ? 'rgb(33, 26, 47)' : 'rgb(255, 254, 250)',
+              theme === 'dark' ? 'rgb(23, 25, 29)' : 'rgb(255, 254, 250)',
               'Player notation surface must match the active chart-paper palette');
           }
           if (screen === 'Tuner') {

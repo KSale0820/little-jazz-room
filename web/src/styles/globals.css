@@ -1,10 +1,12 @@
 @import '../components/PageAtmosphere.css';
 
 :root {
-  font-family: 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ui: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-ui);
   color: var(--ink);
   background: var(--page-bg);
-  --font-serif: 'Palatino Linotype', 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  /* Retained alias: headings now match readable UI type, not mixed serif styles. */
+  --font-serif: var(--font-ui);
   --cream: #fbf8f0;
   --paper: #fffefa;
   --page-bg: #eae7df;
@@ -800,30 +802,30 @@ html[data-theme="light"] {
   --color-chart-playhead: #67419B;
 }
 html[data-theme="dark"] {
-  /* Midnight Jazz: soft-plum panels, lavender accents and pastel music motifs. */
-  --color-bg: #1B1727;
-  --color-surface: #292139;
-  --color-surface-raised: #382C4D;
-  --color-text: #F9F3F9;
-  --color-muted: #C7BAD5;
-  --color-border: #6B587F;
-  --color-action: #BCA3F4;
-  --color-action-text: #24182F;
-  --color-focus: #E5B9FF;
-  --color-success: #93DBB7;
-  --color-warning: #F6CA8C;
-  --color-danger: #FF9CAF;
-  --color-violet: #C8A5FF;
-  --color-pixel-plant: #A7CF94;
-  --color-pixel-note: #ECAAD5;
-  --color-chart-paper: #211A2F;
-  --color-chart-chord: #F8F0F9;
-  --color-chart-section: #F6AEC9;
-  --color-chart-repeat: #99D7FF;
-  --color-chart-selected: #38294E;
-  --color-chart-selected-outline: #D8AEFC;
-  --color-chart-loop: #292D4F;
-  --color-chart-playhead: #D5B5FF;
+  /* Midnight Jazz V4: charcoal/near-black surfaces; sage actions and restrained lilac accents. */
+  --color-bg: #101113;
+  --color-surface: #1B1D20;
+  --color-surface-raised: #24272B;
+  --color-text: #F3F5F5;
+  --color-muted: #B5BCC3;
+  --color-border: #353A40;
+  --color-action: #BED5B6;
+  --color-action-text: #122018;
+  --color-focus: #C9A6EE;
+  --color-success: #9ED9B4;
+  --color-warning: #EFC887;
+  --color-danger: #FF99A8;
+  --color-violet: #B8A4DF;
+  --color-pixel-plant: #A4D29A;
+  --color-pixel-note: #BCA4DE;
+  --color-chart-paper: #17191D;
+  --color-chart-chord: #F6F7F9;
+  --color-chart-section: #E8B8C2;
+  --color-chart-repeat: #A9D5F2;
+  --color-chart-selected: #2D3038;
+  --color-chart-selected-outline: #C9A6EE;
+  --color-chart-loop: #1D302A;
+  --color-chart-playhead: #E3B5F4;
 }
 
 html[data-theme] {

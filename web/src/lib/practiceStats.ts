@@ -22,6 +22,17 @@ export function minutesToday(sessions: PracticeSessionRecord[]): number {
     .reduce((n, s) => n + Math.round(s.durationSeconds / 60), 0);
 }
 
+/** Minutes from completed sessions on the previous *local* calendar day. */
+export function minutesYesterday(sessions: PracticeSessionRecord[], now = new Date()): number {
+  const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).toDateString();
+  return sessions
+    .filter(s => {
+      const date = new Date(s.finishedAt);
+      return !Number.isNaN(date.getTime()) && date.toDateString() === yesterday;
+    })
+    .reduce((total, s) => total + Math.round(Math.max(0, s.durationSeconds) / 60), 0);
+}
+
 export function totalPracticeMinutes(sessions: PracticeSessionRecord[]): number {
   return sessions.reduce((n, s) => n + Math.round(s.durationSeconds / 60), 0);
 }

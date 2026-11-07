@@ -476,3 +476,91 @@ html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .cho
 html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure:is(.chosen, .playhead, .looped) .measure-annotation {
   color: color-mix(in srgb, var(--color-chart-section) 64%, var(--color-text));
 }
+
+
+/* V4: calm editorial hierarchy. Keep the existing action stack, controls and
+   scrolling viewport; the two small stats sit in the header, not a new card. */
+html[data-theme] .p01-page .p01-header h1 {
+  font-family: var(--font-ui);
+  font-size: 31px;
+  font-weight: 750;
+  line-height: 1.13;
+  letter-spacing: -.035em;
+}
+html[data-theme] .p01-page .p01-greeting {
+  font: 650 13px/1.25 var(--font-ui);
+  letter-spacing: .015em;
+}
+html[data-theme] .p01-page .p01-intro {
+  font: 400 13px/1.45 var(--font-ui);
+  color: var(--color-muted);
+}
+html[data-theme] .p01-page :is(.p01-action-copy strong, .p01-tool strong, .p01-tools h2, .p01-continue-copy strong) {
+  font-family: var(--font-ui);
+  letter-spacing: -.02em;
+}
+html[data-theme] .p01-page .p01-action-copy strong { font-size: 17px; font-weight: 700; }
+html[data-theme] .p01-page .p01-action-secondary .p01-action-copy strong { font-size: 16px; }
+html[data-theme] .p01-page .p01-tool strong { font-size: 14px; font-weight: 650; }
+html[data-theme] .p01-page .p01-tools h2 { font-size: 17px; font-weight: 700; }
+html[data-theme] .p01-page .p01-action,
+html[data-theme] .p01-page .p01-continue-button,
+html[data-theme] .p01-page .p01-tool {
+  border-radius: 11px;
+  box-shadow: none;
+}
+html[data-theme="dark"] .p01-page :is(.p01-action-secondary, .p01-continue-button, .p01-tool) {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+html[data-theme="dark"] .p01-page .p01-action-primary {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--color-action-text);
+  box-shadow: none;
+}
+html[data-theme] .p01-page .p01-header { margin-bottom: 17px; }
+html[data-theme] .p01-page .p01-momentum {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 11px;
+  color: var(--color-muted);
+  font: 500 12px/1.4 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+html[data-theme] .p01-page .p01-momentum-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+html[data-theme] .p01-page .p01-momentum-item strong {
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 750;
+}
+html[data-theme] .p01-page .p01-momentum-item img {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .p01-page .p01-momentum-clock {
+  flex: 0 0 16px;
+  color: var(--color-action);
+}
+html[data-theme] .p01-page .p01-momentum-divider { opacity: .52; }
+@media (max-height: 710px) and (max-width: 899px) {
+  html[data-theme] .p01-page .p01-header { margin-bottom: 10px; }
+  html[data-theme] .p01-page .p01-momentum { margin-top: 7px; }
+}
+@media (max-width: 380px) {
+  html[data-theme] .p01-page .p01-header h1 { font-size: 29px; }
+  html[data-theme] .p01-page .p01-momentum { gap: 5px 8px; font-size: 11px; }
+}

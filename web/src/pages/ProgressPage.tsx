@@ -104,7 +104,7 @@ export function ProgressPage() {
 
       <div className="g01-stats" aria-label="Your practice statistics">
         <div className="g01-stat">
-          <span className="g01-stat-icon g01-flame" aria-hidden="true">🔥</span>
+          <span className="g01-stat-icon g01-flame" aria-hidden="true"><img src={VISUAL_ASSETS.streakFlame} width={30} height={30} alt="" /></span>
           <div><strong>{summary.streak}</strong><span>day streak</span></div>
         </div>
         <div className="g01-stat">
