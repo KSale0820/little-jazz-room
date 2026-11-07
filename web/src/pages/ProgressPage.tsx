@@ -5,6 +5,7 @@ import { useApp } from '../context/AppContext';
 import { useAppearance } from '../context/AppearanceContext';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
+import { PracticeCalendar } from '../components/PracticeCalendar';
 import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
 import type { PracticeSessionRecord, Routine } from '../types/content';
 import './ProgressPage.css';
@@ -137,6 +138,8 @@ export function ProgressPage() {
           </div>
         </div>
       </section>
+
+      <PracticeCalendar sessions={sessions} />
 
       <section className="g01-history" aria-labelledby="g01-history-heading">
         <div className="g01-history-heading">

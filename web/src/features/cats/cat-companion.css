@@ -126,3 +126,32 @@
   letter-spacing: 0.02em;
   text-transform: capitalize;
 }
+
+
+/* Practice-time unlocks: keep all three approved characters visible, with clear
+   but subdued states. Locked cards are not actionable; selected cats remain. */
+.jazz-cat-section .board-cat-card:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+  border-style: dashed;
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+.jazz-cat-section .board-cat-card:disabled .board-cat-art {
+  filter: grayscale(1);
+  opacity: .48;
+}
+.jazz-cat-section .board-cat-card:disabled .board-cat-meta {
+  color: var(--color-muted);
+}
+.jazz-cat-section .board-cat-unlock {
+  margin-top: 5px;
+  color: var(--color-muted);
+  font: 600 10px/1.25 var(--font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+}
+.jazz-cat-section .board-cat-card:disabled:hover {
+  box-shadow: none;
+  border-color: var(--color-border);
+  transform: none;
+}
