@@ -162,6 +162,7 @@ export const VISUAL_ASSETS = {
     musicNotes: '/visuals/pixel-motifs/music-notes.svg',
   },
   /** Approved independent full-color pixel art, for sparse Light/Dark decorations. */
+  streakFlame: '/visuals/pixel-motifs/streak-fire.png',
   approvedPixelMotifs: {
     beamedNotes: '/visuals/pixel-motifs/approved/beamed-notes.png',
     centerDot: '/visuals/pixel-motifs/approved/center-dot.png',
