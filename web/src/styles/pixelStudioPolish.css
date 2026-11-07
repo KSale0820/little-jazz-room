@@ -53,10 +53,19 @@ html[data-theme] .p01-page .p01-action-primary .p01-action-copy small {
   color: var(--color-action-text);
 }
 html[data-theme] .p01-page .p01-action-primary img {
-  visibility: visible;
+  visibility: hidden;
+}
+html[data-theme] .p01-page .p01-action-primary::after {
+  content: '';
+  position: absolute;
+  right: 35px;
+  top: 13px;
+  width: 57px;
+  height: 57px;
+  pointer-events: none;
+  background: url('/visuals/pixel-motifs/approved/beamed-notes.png') center / contain no-repeat;
   image-rendering: pixelated;
-  opacity: .92;
-  filter: saturate(.85);
+  opacity: .96;
 }
 html[data-theme] .p01-page :is(.p01-action-secondary, .p01-continue-button, .p01-tool),
 html[data-theme] .t01-page .t01-track-card,
