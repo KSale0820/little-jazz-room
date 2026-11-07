@@ -283,3 +283,25 @@ html[data-theme] .tool-page .metronome-slider::-webkit-slider-thumb {
 html[data-theme] .tool-page .metronome-slider::-moz-range-thumb {
   background: var(--color-action);
 }
+
+
+/* V4 typography: Progress uses the same quiet UI sans as Practice, with no
+   new cards, layout changes or changes to selected companion/reward behavior. */
+html[data-theme] .g01-page :is(.g01-header h1, .g01-history-heading h2, .g01-daily-card h2,
+  .g01-session-copy strong, .g01-stat strong) {
+  font-family: var(--font-ui);
+  letter-spacing: -.025em;
+}
+html[data-theme] .g01-page .g01-stat strong { font-size: 30px; font-weight: 750; }
+html[data-theme] .g01-page .g01-flame img {
+  display: block;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme="dark"] .g01-page :is(.g01-stats, .g01-daily-card, .g01-week-chart, .g01-session) {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
