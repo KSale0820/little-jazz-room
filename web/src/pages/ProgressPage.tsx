@@ -5,6 +5,7 @@ import { useApp } from '../context/AppContext';
 import { useAppearance } from '../context/AppearanceContext';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
+import { PracticeCalendar } from '../components/PracticeCalendar';
 import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
 import type { PracticeSessionRecord, Routine } from '../types/content';
 import './ProgressPage.css';
@@ -104,7 +105,7 @@ export function ProgressPage() {
 
       <div className="g01-stats" aria-label="Your practice statistics">
         <div className="g01-stat">
-          <span className="g01-stat-icon g01-flame" aria-hidden="true"><img src={VISUAL_ASSETS.progress.streakFlame} alt="" /></span>
+          <span className="g01-stat-icon g01-flame" aria-hidden="true"><img src={VISUAL_ASSETS.streakFlame} width={30} height={30} alt="" /></span>
           <div><strong>{summary.streak}</strong><span>day streak</span></div>
         </div>
         <div className="g01-stat">
@@ -137,6 +138,8 @@ export function ProgressPage() {
           </div>
         </div>
       </section>
+
+      <PracticeCalendar sessions={sessions} />
 
       <section className="g01-history" aria-labelledby="g01-history-heading">
         <div className="g01-history-heading">
