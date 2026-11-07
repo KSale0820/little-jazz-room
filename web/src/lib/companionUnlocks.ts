@@ -1,12 +1,6 @@
 import type { PracticeSessionRecord } from '../types/content';
-import { VISIBLE_CAT_IDS, isVisibleCatId, type VisibleCatId } from '../features/cats/CatCompanion';
-
-/** Practice-time milestones for the three owner-approved companions only. */
-export const COMPANION_UNLOCK_MINUTES: Readonly<Record<VisibleCatId, number>> = {
-  luna: 0,
-  milo: 60,
-  maple: 300,
-};
+import { VISIBLE_CAT_IDS, isVisibleCatId, COMPANION_UNLOCK_MINUTES, type VisibleCatId } from '../features/cats/CatCompanion';
+export { COMPANION_UNLOCK_MINUTES } from '../features/cats/CatCompanion';
 
 const UNLOCK_KEY = 'little-jazz-room:unlocked-companions:v1';
 const SELECTED_KEY = 'little-jazz-room:selected-cat:v1';
