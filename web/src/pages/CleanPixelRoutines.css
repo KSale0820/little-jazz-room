@@ -1,0 +1,240 @@
+/* Agent 2: routine library, detail and builder. Paint only. */
+html[data-theme] .routine-library,
+html[data-theme] .routine-builder {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+html[data-theme] .routine-topbar,
+html[data-theme] .builder-topbar { border-color: var(--color-border); }
+html[data-theme] .routine-topbar > span:not(.routine-topbar-space),
+html[data-theme] .routine-eyebrow,
+html[data-theme] .routine-intro > p:last-child,
+html[data-theme] .routine-list-header > span,
+html[data-theme] .routine-card-desc,
+html[data-theme] .routine-tip,
+html[data-theme] .builder-topbar > span,
+html[data-theme] .builder-eyebrow,
+html[data-theme] .builder-step-header span,
+html[data-theme] .builder-step-content > span,
+html[data-theme] .builder-step-time,
+html[data-theme] .builder-tip { color: var(--color-muted); }
+html[data-theme] .routine-back,
+html[data-theme] .builder-back,
+html[data-theme] .routine-intro h1,
+html[data-theme] .routine-list-header h2,
+html[data-theme] .routine-card-title,
+html[data-theme] .builder-heading h1,
+html[data-theme] .builder-step-header h2,
+html[data-theme] .builder-panel h3 { color: var(--color-text); }
+html[data-theme] .routine-tabs,
+html[data-theme] .routine-card-tags > span {
+  background: var(--color-surface-raised);
+  color: var(--color-muted);
+}
+html[data-theme] .routine-tabs button { color: var(--color-text); }
+html[data-theme] .routine-tabs button.is-selected {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  box-shadow: none;
+}
+html[data-theme] .routine-search-wrap,
+html[data-theme] .routine-card,
+html[data-theme] .routine-filters select,
+html[data-theme] .routine-create-button,
+html[data-theme] .routine-empty,
+html[data-theme] .routine-tip,
+html[data-theme] .builder-draft,
+html[data-theme] .builder-close,
+html[data-theme] .builder-field,
+html[data-theme] .builder-step,
+html[data-theme] .builder-panel,
+html[data-theme] .builder-tip,
+html[data-theme] .builder-preview,
+html[data-theme] .builder-picker-dialog,
+html[data-theme] .builder-picker-result,
+html[data-theme] .builder-picker-confirm {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme] .routine-search-wrap input,
+html[data-theme] .routine-filters select,
+html[data-theme] .builder-field,
+html[data-theme] .builder-step-time input,
+html[data-theme] .builder-picker-dialog input,
+html[data-theme] .builder-picker-dialog select {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .routine-search-wrap:focus-within,
+html[data-theme] .routine-library button:focus-visible,
+html[data-theme] .routine-builder button:focus-visible,
+html[data-theme] .routine-builder input:focus-visible,
+html[data-theme] .routine-builder select:focus-visible,
+html[data-theme] .routine-builder textarea:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+html[data-theme] .routine-filters label::after { color: var(--color-muted); }
+html[data-theme] .routine-card-art,
+html[data-theme] .routine-card-art.art-1,
+html[data-theme] .routine-card-art.art-2 {
+  background: var(--color-surface-raised);
+  color: var(--color-violet);
+}
+html[data-theme] .routine-card-tags .routine-tag-goal {
+  color: var(--color-success);
+  background: var(--color-surface-raised);
+}
+html[data-theme] .routine-bookmark { color: var(--color-muted); }
+html[data-theme] .routine-bookmark.is-saved { color: var(--color-warning); }
+html[data-theme] .routine-create-button,
+html[data-theme] .routine-empty button,
+html[data-theme] .routine-show-all {
+  color: var(--color-action);
+}
+html[data-theme] .routine-empty strong { color: var(--color-text); }
+html[data-theme] .routine-empty p { color: var(--color-muted); }
+
+/* Builder labels, panels and locally edited step order/times. */
+html[data-theme] .builder-form > label,
+html[data-theme] .builder-two-fields label,
+html[data-theme] .builder-custom-form > label,
+html[data-theme] .builder-panel > label,
+html[data-theme] .builder-visibility legend,
+html[data-theme] .builder-step-content strong { color: var(--color-text); }
+html[data-theme] .builder-form > label span { color: var(--color-danger); }
+html[data-theme] .builder-visibility-options label,
+html[data-theme] .builder-step-time input,
+html[data-theme] .builder-step-move button,
+html[data-theme] .builder-step-delete,
+html[data-theme] .builder-add-actions button,
+html[data-theme] .builder-panel-actions button,
+html[data-theme] .builder-secondary-actions button,
+html[data-theme] .builder-picker-tabs button,
+html[data-theme] .builder-picker-result button,
+html[data-theme] .builder-picker-confirm-actions button {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme] .builder-visibility-options label.selected,
+html[data-theme] .builder-picker-tabs button.is-selected {
+  background: var(--color-chart-selected);
+  border-color: var(--color-focus);
+  color: var(--color-text);
+}
+html[data-theme] .builder-visibility-options input { accent-color: var(--color-action); }
+html[data-theme] .builder-visibility > p,
+html[data-theme] .builder-step-grip,
+html[data-theme] .builder-step-instructions,
+html[data-theme] .builder-picker-result p,
+html[data-theme] .builder-picker-result span,
+html[data-theme] .builder-picker-count,
+html[data-theme] .builder-picker-empty,
+html[data-theme] .builder-picker-confirm p { color: var(--color-muted); }
+html[data-theme] .builder-step-time input:focus { outline-color: var(--color-focus); }
+html[data-theme] .builder-step-delete { color: var(--color-danger); }
+html[data-theme] .builder-panel-primary,
+html[data-theme] .builder-panel-actions button:first-child,
+html[data-theme] .builder-save,
+html[data-theme] .builder-primary-actions .builder-save,
+html[data-theme] .builder-picker-confirm-actions button:last-child,
+html[data-theme] .builder-picker-result button:not(:disabled) {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+html[data-theme] .builder-preview,
+html[data-theme] .builder-secondary-actions button {
+  background: var(--color-surface-raised);
+  color: var(--color-action);
+  border-color: var(--color-border);
+}
+html[data-theme] .builder-save:disabled,
+html[data-theme] .builder-picker-result button:disabled,
+html[data-theme] .builder-picker-confirm-actions button:disabled { opacity: .55; }
+html[data-theme] .builder-picker-backdrop {
+  background: color-mix(in srgb, var(--color-bg) 75%, transparent);
+}
+html[data-theme] .builder-picker-dialog { color: var(--color-text); }
+html[data-theme] .builder-picker-top h3,
+html[data-theme] .builder-picker-confirm h4,
+html[data-theme] .builder-picker-result h4 { color: var(--color-text); }
+html[data-theme] .builder-picker-label,
+html[data-theme] .builder-picker-filters label,
+html[data-theme] .builder-picker-confirm li { color: var(--color-text); }
+html[data-theme] .builder-picker-confirm li span { color: var(--color-muted); }
+html[data-theme] .builder-picker-close { color: var(--color-action); }
+
+/* Cozy Pixel refinement: a restrained theme response in already-approved cards.
+   The step editor, picker and all hit targets retain their positions and sizes. */
+html[data-theme="dark"] .routine-library .routine-card,
+html[data-theme="dark"] .routine-builder .builder-step,
+html[data-theme="dark"] .routine-builder .builder-picker-result {
+  background: color-mix(in srgb, var(--color-surface) 92%, var(--color-violet));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-violet) 18%, transparent);
+}
+html[data-theme="light"] .routine-library .routine-card,
+html[data-theme="light"] .routine-builder .builder-step {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-action) 15%, transparent);
+}
+html[data-theme] .routine-builder .builder-visibility-options label.selected,
+html[data-theme] .routine-builder .builder-picker-tabs button.is-selected {
+  background: color-mix(in srgb, var(--color-surface-raised) 81%, var(--color-violet));
+  border-color: var(--color-focus);
+  color: var(--color-text);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-violet) 35%, transparent);
+}
+html[data-theme] .routine-builder .builder-step:focus-within,
+html[data-theme] .routine-library .routine-card:focus-within {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
+html[data-theme] .routine-library .routine-card-art {
+  color: var(--color-violet);
+}
+
+/* Two approved colorful pixel botanical stickers; no new page art footprint,
+   hit target, spacer, animation or Cat Mode coupling. */
+html[data-theme] .routine-library .routine-intro,
+html[data-theme] .routine-builder .builder-heading {
+  position: relative;
+}
+html[data-theme] .routine-library .routine-intro::after,
+html[data-theme] .routine-builder .builder-heading::after {
+  content: '';
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  image-rendering: pixelated;
+}
+html[data-theme] .routine-library .routine-intro::after {
+  top: 14px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  opacity: .88;
+  background-image: url('/visuals/pixel-motifs/approved/hanging-plant.png');
+}
+html[data-theme] .routine-builder .builder-heading::after {
+  top: 4px;
+  right: 103px;
+  width: 28px;
+  height: 28px;
+  opacity: .78;
+  background-image: url('/visuals/pixel-motifs/approved/treble-clef.png');
+}
+@media (max-width: 380px) {
+  html[data-theme] .routine-library .routine-intro::after {
+    right: 8px;
+    width: 42px;
+    height: 42px;
+  }
+  html[data-theme] .routine-builder .builder-heading::after {
+    right: 96px;
+    width: 22px;
+    height: 22px;
+  }
+}

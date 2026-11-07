@@ -10,6 +10,7 @@ import {
 } from '../features/charts/chartModel';
 import { createChartRepository, newLocalChartId } from '../features/charts/chartRepository';
 import './ChartBuilderPage.css';
+import './CleanPixelCharts.css';
 
 const FEELS = ['Swing', 'Blues', 'Bossa Nova', 'Ballad', 'Straight'];
 const SECTION_LABELS = ['A', 'B', 'C', 'D'] as const;

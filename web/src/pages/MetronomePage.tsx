@@ -2,11 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
+import { DecorativeCat } from '../features/cats/DecorativeCat';
 import {
   audioContextConstructor, beatIntervalSeconds, beatsPerMeasure,
   clampBpm, defaultAccents,
 } from './toolsAudio';
 import './ToolsPages.css';
+import './CleanPixelToolsProgress.css';
+import './CleanPixelMotifPlacements.css';
 
 type Signature = '2/4' | '3/4' | '4/4' | '6/8';
 type ScheduledBeat = { time: number; index: number; countIn: boolean };
@@ -226,7 +229,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
       <input id="metronome-tempo-range" className="metronome-slider" type="range"
         min="40" max="240" step="1" value={bpm}
         onChange={event => setTempo(Number(event.target.value))}
-        style={{ background: 'linear-gradient(to right, #1c5942 ' + (bpm - 40) / 2 + '%, #e4e4d8 ' + (bpm - 40) / 2 + '%)' }} />
+        style={{ background: 'linear-gradient(to right, var(--color-action) ' + (bpm - 40) / 2 + '%, var(--color-surface-raised) ' + (bpm - 40) / 2 + '%)' }} />
       <div className="metronome-tap-row">
         <button type="button" className="metronome-tap" onClick={tapTempo}>Tap Tempo</button>
         <span>{taps >= 2 ? 'Tempo set from your taps' : 'Tap twice or more to set BPM'}</span>
@@ -274,7 +277,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
         <img className="tool-scene-plant tool-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-plant tool-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
         <img className="tool-scene-rug" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.rug} alt="" />
-        <img className="tool-scene-cat" src={VISUAL_ASSETS.cat.sittingFile(catId)} alt="" />
+        <DecorativeCat catId={catId} variant="sitting" size={168} className="tool-scene-cat" />
       </div>
     </section>
   );

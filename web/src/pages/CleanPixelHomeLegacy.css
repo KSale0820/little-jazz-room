@@ -1,0 +1,131 @@
+/* Agent 2: Home and legacy reachable pages. Preserve hotspots, cards and
+   navigation exactly in the coordinates of the current running app. */
+html[data-theme] .h01-page { background: var(--color-bg); color: var(--color-text); }
+html[data-theme] .h01-scene-window { background: var(--color-surface-raised); }
+html[data-theme] .h01-room-image { visibility: hidden; }
+html[data-theme] .h01-scene-fade { background: none; }
+html[data-theme] .h01-hotspot-label {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+html[data-theme] .h01-hotspot-dot { background: var(--color-violet); }
+html[data-theme] .h01-hotspot:focus-visible,
+html[data-theme] .h01-companion:focus-visible,
+html[data-theme] .h01-settings-button:focus-visible,
+html[data-theme] .h01-primary-button:focus-visible,
+html[data-theme] .h01-secondary-button:focus-visible,
+html[data-theme] .h01-change-button:focus-visible,
+html[data-theme] .h01-play-button:focus-visible,
+html[data-theme] .h01-routine-link:focus-visible,
+html[data-theme] .h01-stats-card:focus-visible { outline-color: var(--color-focus); }
+html[data-theme] .h01-hotspot:active .h01-hotspot-label { background: var(--color-chart-selected); }
+html[data-theme] .h01-greeting h1,
+html[data-theme] .h01-card-title h2,
+html[data-theme] .h01-daily-copy strong,
+html[data-theme] .h01-stats-card,
+html[data-theme] .h01-routine-link { color: var(--color-text); }
+html[data-theme] .h01-greeting p,
+html[data-theme] .h01-daily-copy small,
+html[data-theme] .h01-stats-streak small,
+html[data-theme] .h01-lighting-toggle { color: var(--color-muted); }
+html[data-theme] .h01-settings-button,
+html[data-theme] .h01-sprig,
+html[data-theme] .h01-change-button,
+html[data-theme] .h01-routine-empty { color: var(--color-action); }
+html[data-theme] .h01-content { background: var(--color-bg); }
+html[data-theme] .h01-primary-button,
+html[data-theme] .h01-play-button {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--color-action-text);
+}
+html[data-theme] .h01-secondary-button,
+html[data-theme] .h01-daily-card,
+html[data-theme] .h01-stats-card,
+html[data-theme] .h01-lighting-options,
+html[data-theme] .h01-lighting-options button {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme] .h01-daily-art { visibility: hidden; background: var(--color-surface-raised); }
+html[data-theme] .h01-stats-icon i,
+html[data-theme] .h01-progress-track i { background: var(--color-action); }
+html[data-theme] .h01-progress-track,
+html[data-theme] .h01-stats-divider { background: var(--color-border); }
+html[data-theme] .h01-flame { color: var(--color-warning); }
+html[data-theme] .h01-lighting-options button[aria-pressed='true'] {
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+/* Prior room light options remain accessible but do not repaint clean theme. */
+
+/* Reachable legacy browse and chart/detail screens. */
+html[data-theme] .demo-page,
+html[data-theme] .explore-page { background: var(--color-bg); color: var(--color-text); }
+html[data-theme] .demo-heading,
+html[data-theme] .demo-card-title,
+html[data-theme] .demo-section-title,
+html[data-theme] .demo-stat strong,
+html[data-theme] .demo-row-title { color: var(--color-text); }
+html[data-theme] .demo-eyebrow,
+html[data-theme] .demo-subtitle,
+html[data-theme] .demo-card-desc,
+html[data-theme] .demo-row-meta,
+html[data-theme] .demo-stat span,
+html[data-theme] .demo-history small { color: var(--color-muted); }
+html[data-theme] .demo-link,
+html[data-theme] .demo-card,
+html[data-theme] .demo-row,
+html[data-theme] .demo-stat,
+html[data-theme] .demo-search,
+html[data-theme] .demo-filter,
+html[data-theme] .demo-cat-art {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+html[data-theme] .demo-card-tint,
+html[data-theme] .demo-card-peach,
+html[data-theme] .demo-preview {
+  background: var(--color-surface-raised);
+  color: var(--color-muted);
+}
+html[data-theme] .demo-card-image { visibility: hidden; }
+html[data-theme] .demo-primary,
+html[data-theme] .demo-filter[aria-pressed="true"] {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+html[data-theme] .demo-primary:hover { background: var(--color-action); }
+html[data-theme] .demo-chevron { color: var(--color-action); }
+html[data-theme] .demo-history li { border-color: var(--color-border); }
+html[data-theme] .demo-link:focus-visible,
+html[data-theme] .demo-card:focus-visible,
+html[data-theme] .demo-row:focus-visible,
+html[data-theme] .demo-primary:focus-visible { outline-color: var(--color-focus); }
+html[data-theme] .explore-page .search,
+html[data-theme] .explore-page .chip,
+html[data-theme] .explore-page .minirow,
+html[data-theme] .explore-page .box,
+html[data-theme] .explore-page .pill,
+html[data-theme] .explore-page .tabs {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme] .explore-page .chip.selected,
+html[data-theme] .explore-page .tabs .active {
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+html[data-theme] .sign-in-page { background: var(--color-bg); color: var(--color-text); }
+html[data-theme] .team-beta-note { color: var(--color-muted); }
+html[data-theme] .sign-in-error { color: var(--color-danger); }
+html[data-theme] .sign-in-form input { background: var(--color-surface); border-color: var(--color-border); color: var(--color-text); }
+html[data-theme] .sign-in-form input:focus-visible { outline-color: var(--color-focus); }

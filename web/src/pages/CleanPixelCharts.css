@@ -1,0 +1,306 @@
+/* Agent 2: theme-only paint for the existing Tracks and chart editor layouts.
+   Geometry, measure counts, time signatures, content and interactions are unchanged. */
+html[data-theme] .t01-page,
+html[data-theme] .chart-builder-page {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+html[data-theme] .t01-title,
+html[data-theme] .t01-section-header h2,
+html[data-theme] .t01-card-title,
+html[data-theme] .t01-empty h2,
+html[data-theme] .t01-sheet-top h2,
+html[data-theme] .t01-filter-field legend { color: var(--color-text); }
+html[data-theme] .t01-eyebrow,
+html[data-theme] .t01-card-subtitle,
+html[data-theme] .t01-card-tempo,
+html[data-theme] .t01-section-header span,
+html[data-theme] .t01-empty p,
+html[data-theme] .t01-search-wrap input::placeholder { color: var(--color-muted); }
+html[data-theme] .t01-search-wrap,
+html[data-theme] .t01-category,
+html[data-theme] .t01-filter-actions button,
+html[data-theme] .t01-track-card,
+html[data-theme] .t01-filter-sheet,
+html[data-theme] .t01-option,
+html[data-theme] .t01-sheet-reset {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme] .t01-filter-actions .t01-filter-primary,
+html[data-theme] .t01-sheet-reset { color: var(--color-action) !important; }
+html[data-theme] .t01-search-wrap > svg,
+html[data-theme] .t01-search-wrap input,
+html[data-theme] .t01-card-footer > svg { color: var(--color-text); }
+html[data-theme] .t01-search-wrap:focus-within,
+html[data-theme] .t01-page button:focus-visible {
+  outline-color: var(--color-focus);
+}
+html[data-theme] .t01-category { color: var(--color-text) !important; }
+html[data-theme] .t01-category[aria-pressed="true"],
+html[data-theme] .t01-option[aria-pressed="true"],
+html[data-theme] .t01-filter-count,
+html[data-theme] .t01-sheet-apply,
+html[data-theme] .t01-empty-clear {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--color-action-text) !important;
+}
+html[data-theme] .t01-filter-actions .t01-filter-primary,
+html[data-theme] .t01-empty-symbol { background: var(--color-surface-raised); border-color: var(--color-border); }
+html[data-theme] .t01-status.t01-audio {
+  color: var(--color-warning);
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+}
+html[data-theme] .t01-status.t01-chart {
+  color: var(--color-success);
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+}
+html[data-theme] .t01-favorite { color: var(--color-muted) !important; }
+html[data-theme] .t01-favorite.is-favorite { color: var(--color-warning) !important; }
+html[data-theme] .t01-track-card:has(.t01-card-open:hover) { border-color: var(--color-action); }
+html[data-theme] .t01-empty-symbol { color: var(--color-action); }
+html[data-theme] .t01-empty-reset { color: var(--color-action) !important; }
+html[data-theme] .t01-overlay-backdrop { background: color-mix(in srgb, var(--color-bg) 80%, transparent); }
+html[data-theme] .t01-filter-sheet { color: var(--color-text); }
+html[data-theme] .t01-sheet-top button,
+html[data-theme] .t01-option,
+html[data-theme] .t01-chart-only { color: var(--color-text) !important; }
+html[data-theme] .t01-chart-only input { accent-color: var(--color-action); }
+html[data-theme] .t01-sheet-footer { border-top-color: var(--color-border); }
+html[data-theme] .t01-filter-actions button[aria-pressed="true"],
+html[data-theme] .t01-option[aria-pressed="true"] { color: var(--color-action-text) !important; }
+
+/* My Charts, create/edit, 3/4–6/8, and the fully editable measure grid. */
+html[data-theme] .chart-builder-header h1,
+html[data-theme] .chart-builder-chart-heading h2,
+html[data-theme] .chart-builder-section-title,
+html[data-theme] .chart-builder-selection h3,
+html[data-theme] .chart-builder-current-key,
+html[data-theme] .chart-library-card h3 {
+  color: var(--color-text);
+}
+html[data-theme] .chart-builder-eyebrow,
+html[data-theme] .chart-builder-chart-heading p,
+html[data-theme] .chart-builder-chart-heading > span,
+html[data-theme] .chart-builder-caption,
+html[data-theme] .chart-library-card p,
+html[data-theme] .chart-library-empty,
+html[data-theme] .chart-builder-selection h3 span { color: var(--color-muted); }
+html[data-theme] .chart-builder-page button:focus-visible,
+html[data-theme] .chart-builder-page input:focus-visible,
+html[data-theme] .chart-builder-page select:focus-visible { outline-color: var(--color-focus); }
+html[data-theme] .chart-builder-primary,
+html[data-theme] .chart-builder-key-scroll button[aria-pressed="true"],
+html[data-theme] .chart-builder-meter button[aria-pressed="true"],
+html[data-theme] .chart-builder-tools button:first-child {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+html[data-theme] .chart-builder-secondary,
+html[data-theme] .chart-builder-key-arrows button,
+html[data-theme] .chart-builder-key-scroll button,
+html[data-theme] .chart-builder-key-type button,
+html[data-theme] .chart-builder-meter button,
+html[data-theme] .chart-builder-inline-input button,
+html[data-theme] .chart-builder-tools button,
+html[data-theme] .chart-builder-measure-actions button,
+html[data-theme] .chart-builder-add-row button,
+html[data-theme] .chart-builder-toolbar button,
+html[data-theme] .chart-builder-section-tools > button,
+html[data-theme] .chart-library-actions button {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .chart-builder-key-scroll button[aria-pressed="true"],
+html[data-theme] .chart-builder-meter button[aria-pressed="true"] { color: var(--color-action-text); }
+html[data-theme] .chart-builder-error,
+html[data-theme] .chart-builder-annotation-edit,
+html[data-theme] .chart-editor-chord-error {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+html[data-theme] .chart-builder-error,
+html[data-theme] .chart-builder-annotation-edit { background: var(--color-surface-raised); }
+html[data-theme] .chart-builder-notice {
+  color: var(--color-success);
+  background: var(--color-surface-raised);
+}
+html[data-theme] .chart-builder-field span,
+html[data-theme] .chart-builder-field-label,
+html[data-theme] .chart-builder-meter legend,
+html[data-theme] .chart-builder-section-tools label,
+html[data-theme] .chart-builder-selection h3,
+html[data-theme] .chart-builder-annotation-edit label { color: var(--color-text); }
+html[data-theme] .chart-builder-page input,
+html[data-theme] .chart-builder-page select,
+html[data-theme] .chart-builder-annotation-edit input,
+html[data-theme] .chart-builder-key-type input,
+html[data-theme] .chart-builder-section-tools select {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .chart-builder-page input::placeholder { color: var(--color-muted); }
+html[data-theme] .chart-builder-key-type input { accent-color: var(--color-action); }
+html[data-theme] .chart-builder-selection,
+html[data-theme] .chart-library-card,
+html[data-theme] .chart-builder-section-title span {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .chart-editor-grid,
+html[data-theme] .chart-editor-row,
+html[data-theme] .chart-editor-row + .chart-editor-row {
+  background: var(--color-chart-paper);
+  border-color: var(--color-border);
+}
+html[data-theme] .chart-editor-measure,
+html[data-theme] .chart-editor-row .chart-editor-measure {
+  background: var(--color-chart-paper);
+  color: var(--color-chart-chord);
+  border-color: var(--color-border);
+}
+html[data-theme] .chart-editor-measure.is-selected {
+  background: var(--color-chart-selected);
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+html[data-theme] .chart-editor-measure.is-selected .chart-editor-chord input { color: var(--color-chart-chord); }
+html[data-theme] .chart-editor-measure-number,
+html[data-theme] .chart-editor-chord small { color: var(--color-muted); }
+html[data-theme] .chart-editor-annotation,
+html[data-theme] .chart-editor-section-label,
+html[data-theme] .chart-library-card .chart-library-instruction { color: var(--color-chart-section); }
+html[data-theme] .chart-editor-chord input {
+  background: transparent;
+  color: var(--color-chart-chord);
+  border-color: transparent;
+}
+html[data-theme] .chart-editor-chord input:focus,
+html[data-theme] .chart-editor-chord input.is-selected {
+  background: var(--color-chart-selected);
+  color: var(--color-chart-chord);
+  border-color: var(--color-focus);
+}
+html[data-theme] .chart-editor-chord input[aria-invalid="true"] { border-color: var(--color-danger); }
+html[data-theme] .chart-editor-chord-error { color: var(--color-danger); }
+html[data-theme] .chart-builder-annotation-edit button,
+html[data-theme] .chart-builder-measure-actions button:last-child,
+html[data-theme] .chart-library-actions .chart-library-delete,
+html[data-theme] .chart-builder-toolbar button.is-red {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+html[data-theme] .chart-library-actions .chart-library-delete { background: var(--color-surface-raised); }
+html[data-theme] .chart-builder-split-adjust input { accent-color: var(--color-action); }
+html[data-theme] .chart-builder-page button:disabled { color: var(--color-muted); }
+
+
+/* Selection keeps red section / annotation text AA-readable on the dark
+   gold-tinted chart cell. No changes to chord spelling or measure geometry. */
+html[data-theme] .chart-editor-measure.is-selected .chart-editor-annotation,
+html[data-theme] .chart-editor-measure.is-selected .chart-editor-section-label {
+  color: var(--color-text);
+  color: color-mix(in srgb, var(--color-chart-section) 65%, var(--color-text));
+}
+
+/* Cozy Pixel secondary screens. Use the controller's shared theme tokens;
+   no dimensions, editor behavior, or measure markup are changed. */
+html[data-theme="dark"] .t01-page .t01-track-card,
+html[data-theme="dark"] .chart-builder-page .chart-library-card {
+  background: color-mix(in srgb, var(--color-surface) 94%, var(--color-violet));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-violet) 16%, transparent);
+}
+html[data-theme="light"] .t01-page .t01-track-card,
+html[data-theme="light"] .chart-builder-page .chart-library-card {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-action) 14%, transparent);
+}
+html[data-theme] .chart-builder-page .chart-editor-measure.is-selected,
+html[data-theme] .chart-builder-page .chart-editor-row .chart-editor-measure.is-selected {
+  background: color-mix(in srgb, var(--color-chart-paper) 86%, var(--color-violet));
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+  color: var(--color-chart-chord);
+}
+html[data-theme="light"] .chart-builder-page .chart-editor-measure.is-selected,
+html[data-theme="light"] .chart-builder-page .chart-editor-row .chart-editor-measure.is-selected {
+  background: color-mix(in srgb, var(--color-chart-paper) 92%, var(--color-violet));
+}
+html[data-theme] .chart-builder-page .chart-editor-chord input:is(:focus, .is-selected) {
+  background: color-mix(in srgb, var(--color-chart-paper) 83%, var(--color-violet));
+  border-color: var(--color-focus);
+  color: var(--color-chart-chord);
+}
+html[data-theme] .chart-builder-page .chart-editor-measure.is-selected :is(.chart-editor-annotation, .chart-editor-section-label) {
+  color: color-mix(in srgb, var(--color-chart-section) 64%, var(--color-text));
+}
+html[data-theme] .chart-builder-page .chart-editor-measure.is-selected .chart-editor-chord input {
+  color: var(--color-chart-chord);
+}
+html[data-theme] .t01-page .t01-track-card:focus-within,
+html[data-theme] .chart-builder-page .chart-library-card:focus-within {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+/* Approved polished pixel PNGs (Agent 3 PR #74) on spare header space.
+   Purely decorative, non-interactive, with unchanged chart and button geometry.
+   Assets are the same on both palettes and have transparent backgrounds. */
+html[data-theme] .t01-page .t01-header,
+html[data-theme] .chart-library-page .chart-builder-header,
+html[data-theme] .chart-builder-page .chart-builder-chart-heading {
+  position: relative;
+}
+html[data-theme] .t01-page .t01-header::before,
+html[data-theme] .chart-library-page .chart-builder-header::after,
+html[data-theme] .chart-builder-page .chart-builder-chart-heading::after {
+  content: '';
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .t01-page .t01-header::before {
+  top: 7px;
+  right: 120px;
+  width: 43px;
+  height: 43px;
+  opacity: .88;
+  background-image: url('/visuals/pixel-motifs/approved/beamed-notes.png');
+}
+html[data-theme] .chart-library-page .chart-builder-header::after {
+  top: 4px;
+  right: 91px;
+  width: 31px;
+  height: 31px;
+  opacity: .8;
+  background-image: url('/visuals/pixel-motifs/approved/small-plant.png');
+}
+html[data-theme] .chart-builder-page .chart-builder-chart-heading::after {
+  top: -2px;
+  left: 172px;
+  width: 24px;
+  height: 24px;
+  opacity: .67;
+  background-image: url('/visuals/pixel-motifs/approved/eighth-note.png');
+}
+@media (max-width: 380px) {
+  html[data-theme] .t01-page .t01-header::before {
+    right: 111px;
+    width: 32px;
+    height: 32px;
+  }
+  html[data-theme] .chart-builder-page .chart-builder-chart-heading::after {
+    left: 166px;
+    width: 20px;
+    height: 20px;
+  }
+}

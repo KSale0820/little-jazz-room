@@ -1,6 +1,6 @@
 /* ── Sprite base ─────────────────────────────────────────────── */
 .jazz-cat-sprite {
-  image-rendering: auto;
+  image-rendering: pixelated;
   object-fit: contain;
   transform-origin: center bottom;
 }
@@ -22,7 +22,7 @@
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 14px 12px 16px;
-  box-shadow: 0 4px 18px #1a2b1e09;
+  box-shadow: 0 4px 18px color-mix(in srgb, var(--color-border) 20%, transparent);
 }
 
 .jazz-cat-section h2 {
@@ -40,46 +40,42 @@
 }
 
 /* ── Cat grid ────────────────────────────────────────────────── */
+/* The newly approved 3-cat roster fits as one row even on narrow phones.
+   Each card remains a full-size touch target; other page geometry is unchanged. */
 .jazz-cat-grid.board-cards {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin: 0;
 }
 
-@media (min-width: 420px) {
-  .jazz-cat-grid.board-cards {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
 /* ── Individual cat card ─────────────────────────────────────── */
 .board-cat-card {
-  background: #faf8f3;
-  border: 1.5px solid #e4dfd4;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
   border-radius: 14px;
   padding: 0;
   overflow: hidden;
   cursor: pointer;
   text-align: center;
   color: inherit;
-  box-shadow: 0 2px 10px #1a2b1e07;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--color-border) 17%, transparent);
   display: flex;
   flex-direction: column;
   transition: box-shadow 0.15s, border-color 0.15s, transform 0.12s;
 }
 
 .board-cat-card:hover {
-  box-shadow: 0 6px 20px #1a2b1e14;
-  border-color: #c5d4c0;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--color-border) 26%, transparent);
+  border-color: var(--color-violet);
   transform: translateY(-2px);
 }
 
 /* Selected state */
 .board-cat-card[aria-pressed='true'] {
   border: 2px solid var(--sage);
-  box-shadow: 0 0 0 3px #2f6a5220, 0 4px 14px #1a2b1e14;
-  background: #f0f7f0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-violet) 22%, transparent), 0 4px 14px color-mix(in srgb, var(--color-border) 28%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 86%, var(--color-violet));
 }
 
 .board-cat-card:focus-visible {
@@ -93,8 +89,9 @@
   aspect-ratio: 1 / 1;
   object-fit: contain;   /* show full body, not crop */
   object-position: center bottom;
+  image-rendering: pixelated;
   display: block;
-  background: #f3efe6;
+  background: var(--color-surface-raised, #f3efe6);
   padding: 8% 10% 4%;   /* breathing room around the cat */
   box-sizing: border-box;
 }
@@ -106,7 +103,7 @@
   flex-direction: column;
   gap: 2px;
   background: var(--paper);
-  border-top: 1px solid #ede9e0;
+  border-top: 1px solid var(--color-border);
 }
 
 .board-cat-meta strong {
@@ -128,4 +125,33 @@
   color: var(--sage);
   letter-spacing: 0.02em;
   text-transform: capitalize;
+}
+
+
+/* Practice-time unlocks: keep all three approved characters visible, with clear
+   but subdued states. Locked cards are not actionable; selected cats remain. */
+.jazz-cat-section .board-cat-card:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+  border-style: dashed;
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+.jazz-cat-section .board-cat-card:disabled .board-cat-art {
+  filter: grayscale(1);
+  opacity: .48;
+}
+.jazz-cat-section .board-cat-card:disabled .board-cat-meta {
+  color: var(--color-muted);
+}
+.jazz-cat-section .board-cat-unlock {
+  margin-top: 5px;
+  color: var(--color-muted);
+  font: 600 10px/1.25 var(--font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+}
+.jazz-cat-section .board-cat-card:disabled:hover {
+  box-shadow: none;
+  border-color: var(--color-border);
+  transform: none;
 }

@@ -2,10 +2,15 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { useApp } from '../context/AppContext';
+import { useAppearance } from '../context/AppearanceContext';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
+import { DecorativeCat } from '../features/cats/DecorativeCat';
+import { PracticeCalendar } from '../components/PracticeCalendar';
 import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
 import type { PracticeSessionRecord, Routine } from '../types/content';
 import './ProgressPage.css';
+import './CleanPixelToolsProgress.css';
+import './CleanPixelMotifPlacements.css';
 
 // The same daily target as H01 Home. This is a goal, not seeded progress.
 const DAILY_GOAL_MINUTES = 30;
@@ -54,6 +59,7 @@ function sessionDateLabel(value: string, now: Date): string {
 
 export function ProgressPage() {
   const { sessions, catId, routines, exercises, setActiveRoutineId } = useApp();
+  const { catMode } = useAppearance();
   const navigate = useNavigate();
   const [showAllHistory, setShowAllHistory] = useState(false);
   const now = new Date();
@@ -69,7 +75,7 @@ export function ProgressPage() {
 
   const practiceAgain = () => {
     setActiveRoutineId(routineForReplay(orderedSessions[0], routines));
-    navigate('/player');
+    navigate(routineForReplay(orderedSessions[0], routines) ? '/player' : '/free-practice');
   };
 
   return (
@@ -88,7 +94,9 @@ export function ProgressPage() {
         <img className="g01-plant g01-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" aria-hidden="true" />
         <img className="g01-plant g01-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" aria-hidden="true" />
         <img className="g01-cat-cushion" src={VISUAL_ASSETS.progress.sleepCushion} alt="" aria-hidden="true" draggable={false} />
-        <CatSprite catId={catId} variant="sleeping" size={204} className="g01-cat" />
+        {catMode
+          ? <DecorativeCat catId={catId} variant="sitting" size={204} className="g01-cat" />
+          : <CatSprite catId={catId} variant="sleeping" size={204} className="g01-cat" decorative />}
         <p className="g01-cat-bubble">{orderedSessions.length ? 'Keep the rhythm going!' : 'Every practice starts somewhere!'}</p>
         <button type="button" className="g01-change" onClick={() => navigate('/profile', { state: { scrollToCat: true } })} aria-label={'Change companion, currently ' + (cat?.name ?? 'Luna')}>
           Change
@@ -97,7 +105,7 @@ export function ProgressPage() {
 
       <div className="g01-stats" aria-label="Your practice statistics">
         <div className="g01-stat">
-          <span className="g01-stat-icon g01-flame" aria-hidden="true">🔥</span>
+          <span className="g01-stat-icon g01-flame" aria-hidden="true"><img src={VISUAL_ASSETS.streakFlame} width={30} height={30} alt="" /></span>
           <div><strong>{summary.streak}</strong><span>day streak</span></div>
         </div>
         <div className="g01-stat">
@@ -130,6 +138,8 @@ export function ProgressPage() {
           </div>
         </div>
       </section>
+
+      <PracticeCalendar sessions={sessions} />
 
       <section className="g01-history" aria-labelledby="g01-history-heading">
         <div className="g01-history-heading">

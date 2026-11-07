@@ -3,8 +3,10 @@ import { PixelIcon } from '../components/PixelIcon';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { timeGreeting } from '../lib/greeting';
-import { minutesToday } from '../lib/practiceStats';
+import { computeGentleStreak, minutesToday, minutesYesterday } from '../lib/practiceStats';
 import './PracticeHubPage.css';
+import './CleanPixelPractice.css';
+import './CleanPixelMotifPlacements.css';
 
 const DAILY_GOAL_MINUTES = 30;
 
@@ -16,11 +18,22 @@ export function PracticeHubPage() {
     ? routines.find(routine => routine.id === latestSession.routineId)
     : null;
   const practicedMinutes = minutesToday(sessions);
+  const yesterdayMinutes = minutesYesterday(sessions);
+  const streak = computeGentleStreak(sessions);
+  const encouragement = practicedMinutes >= DAILY_GOAL_MINUTES
+    ? 'Goal reached! Enjoy the progress you made today.'
+    : practicedMinutes > 0
+      ? 'You showed up today. Every minute counts.'
+      : yesterdayMinutes > 0
+        ? 'Yesterday counted. A little practice today keeps the rhythm going.'
+        : streak > 0
+          ? 'Keep the rhythm going, even with a short session.'
+          : 'A few focused minutes are a great place to start.';
   const goalPercent = Math.min(100, Math.max(0, (practicedMinutes / DAILY_GOAL_MINUTES) * 100));
 
   const startFreePractice = () => {
     setActiveRoutineId(null);
-    navigate('/player?mode=free');
+    navigate('/free-practice');
   };
 
   // A saved session has finished. This starts another session with the same
@@ -28,7 +41,7 @@ export function PracticeHubPage() {
   const continuePractice = () => {
     if (!latestSession) return;
     setActiveRoutineId(recentRoutine?.id ?? null);
-    navigate(recentRoutine ? '/player?routine=' + encodeURIComponent(recentRoutine.id) : '/player?mode=free');
+    navigate(recentRoutine ? '/player?routine=' + encodeURIComponent(recentRoutine.id) : '/free-practice');
   };
 
   return (
@@ -36,7 +49,20 @@ export function PracticeHubPage() {
       <header className="p01-header">
         <p className="p01-greeting">{timeGreeting().replace(/\.$/, ',')}</p>
         <h1>Let&apos;s Practice</h1>
-        <p className="p01-intro">How would you like to practice today?</p>
+        <p className="p01-intro">{encouragement}</p>
+        <div className="p01-momentum" aria-label="Recent practice activity">
+          <span className="p01-momentum-item">
+            <img src={VISUAL_ASSETS.streakFlame} width="19" height="19" alt="" aria-hidden="true" />
+            <strong>{streak}</strong> day streak
+          </span>
+          <span className="p01-momentum-divider" aria-hidden="true">·</span>
+          <span className="p01-momentum-item">
+            <svg className="p01-momentum-clock" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+            </svg>
+            <strong>{yesterdayMinutes}</strong> min yesterday
+          </span>
+        </div>
       </header>
 
       {latestSession && (

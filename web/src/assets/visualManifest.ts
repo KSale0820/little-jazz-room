@@ -63,6 +63,21 @@ export const VISUAL_ASSETS = {
     profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
     closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
   },
+  /** Three opt-in low-resolution decorative characters; the eight approved identity assets remain untouched. */
+  decorativePixelCats: {
+    luna: {
+      sleeping: '/visuals/cats/clean-pixel/luna-sleeping.png',
+      sitting: '/visuals/cats/clean-pixel/luna-sitting.png',
+    },
+    milo: {
+      sleeping: '/visuals/cats/clean-pixel/milo-sleeping.png',
+      sitting: '/visuals/cats/clean-pixel/milo-sitting.png',
+    },
+    maple: {
+      sleeping: '/visuals/cats/clean-pixel/maple-sleeping.png',
+      sitting: '/visuals/cats/clean-pixel/maple-sitting.png',
+    },
+  },
   progress: {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',
@@ -139,6 +154,35 @@ export const VISUAL_ASSETS = {
     search: '/visuals/icons/icon-search.svg',
     share: '/visuals/icons/icon-share.svg',
     skip: '/visuals/icons/icon-skip.svg',
+  },
+  /** Minimal geometric motifs for both clean themes, tinted via CSS mask and semantic tokens. */
+  pixelMotifs: {
+    plant: '/visuals/pixel-motifs/plant.svg',
+    leaves: '/visuals/pixel-motifs/leaves.svg',
+    musicNotes: '/visuals/pixel-motifs/music-notes.svg',
+  },
+  /** Approved independent full-color pixel art, for sparse Light/Dark decorations. */
+  streakFlame: '/visuals/pixel-motifs/streak-fire.png',
+  approvedPixelMotifs: {
+    beamedNotes: '/visuals/pixel-motifs/approved/beamed-notes.png',
+    centerDot: '/visuals/pixel-motifs/approved/center-dot.png',
+    centerLeaf: '/visuals/pixel-motifs/approved/center-leaf.png',
+    cornerLeft: '/visuals/pixel-motifs/approved/corner-left.png',
+    cornerRight: '/visuals/pixel-motifs/approved/corner-right.png',
+    dividerLeaf: '/visuals/pixel-motifs/approved/divider-leaf.png',
+    dividerNote: '/visuals/pixel-motifs/approved/divider-note.png',
+    eighthNote: '/visuals/pixel-motifs/approved/eighth-note.png',
+    hangingPlant: '/visuals/pixel-motifs/approved/hanging-plant.png',
+    ivyTrail: '/visuals/pixel-motifs/approved/ivy-trail.png',
+    leafCluster: '/visuals/pixel-motifs/approved/leaf-cluster.png',
+    plantPot: '/visuals/pixel-motifs/approved/plant-pot.png',
+    planterBox: '/visuals/pixel-motifs/approved/planter-box.png',
+    plusSparkle: '/visuals/pixel-motifs/approved/plus-sparkle.png',
+    smallPlant: '/visuals/pixel-motifs/approved/small-plant.png',
+    sparkleCluster: '/visuals/pixel-motifs/approved/sparkle-cluster.png',
+    sparkle: '/visuals/pixel-motifs/approved/sparkle.png',
+    staffWave: '/visuals/pixel-motifs/approved/staff-wave.png',
+    trebleClef: '/visuals/pixel-motifs/approved/treble-clef.png',
   },
   achievements: {
     firstPractice: '/visuals/achievements/achievement-first-practice.png',

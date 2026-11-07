@@ -14,6 +14,7 @@ import {
   appendBuilderExercise, exerciseSummary, previewRoutineImport, searchCatalogExercises, searchCatalogRoutines
 } from './routinePickerLogic';
 import './CreatePage.css';
+import './CleanPixelRoutines.css';
 
 interface BuilderStep { exerciseId: string; minutes: number; }
 interface ChartReturnDraft {

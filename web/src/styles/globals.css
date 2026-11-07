@@ -1,10 +1,12 @@
 @import '../components/PageAtmosphere.css';
 
 :root {
-  font-family: 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ui: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-ui);
   color: var(--ink);
   background: var(--page-bg);
-  --font-serif: 'Palatino Linotype', 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  /* Retained alias: headings now match readable UI type, not mixed serif styles. */
+  --font-serif: var(--font-ui);
   --cream: #fbf8f0;
   --paper: #fffefa;
   --page-bg: #eae7df;
@@ -769,4 +771,204 @@ textarea.field {
 
 body.no-cat-motion .jazz-cat-animated {
   animation: none !important;
+}
+
+
+/* CLEAN PIXEL THEMES: semantic foundation; page-specific rules remain with Agent 2. */
+html[data-theme="light"] {
+  /* Sunny Studio: warm ivory, botanical sage and gentle peach/purple accents. */
+  --color-bg: #FFF8EC;
+  --color-surface: #FFFDF8;
+  --color-surface-raised: #F3EBD9;
+  --color-text: #312C34;
+  --color-muted: #605866;
+  --color-border: #D9C7CE;
+  --color-action: #2C624A;
+  --color-action-text: #FFFFFF;
+  --color-focus: #7953B4;
+  --color-success: #2D7655;
+  --color-warning: #976023;
+  --color-danger: #AC3A55;
+  --color-violet: #7753A6;
+  --color-pixel-plant: #679C72;
+  --color-pixel-note: #A26F9D;
+  --color-chart-paper: #FFFEFA;
+  --color-chart-chord: #2D3531;
+  --color-chart-section: #9E3156;
+  --color-chart-repeat: #2C588D;
+  --color-chart-selected: #EDE2F6;
+  --color-chart-selected-outline: #7753A6;
+  --color-chart-loop: #E0F0E7;
+  --color-chart-playhead: #67419B;
+}
+html[data-theme="dark"] {
+  /* Midnight Jazz V4: charcoal/near-black surfaces; sage actions and restrained lilac accents. */
+  --color-bg: #101113;
+  --color-surface: #1B1D20;
+  --color-surface-raised: #24272B;
+  --color-text: #F3F5F5;
+  --color-muted: #B5BCC3;
+  --color-border: #353A40;
+  --color-action: #BED5B6;
+  --color-action-text: #122018;
+  --color-focus: #C9A6EE;
+  --color-success: #9ED9B4;
+  --color-warning: #EFC887;
+  --color-danger: #FF99A8;
+  --color-violet: #B8A4DF;
+  --color-pixel-plant: #A4D29A;
+  --color-pixel-note: #BCA4DE;
+  --color-chart-paper: #17191D;
+  --color-chart-chord: #F6F7F9;
+  --color-chart-section: #E8B8C2;
+  --color-chart-repeat: #A9D5F2;
+  --color-chart-selected: #2D3038;
+  --color-chart-selected-outline: #C9A6EE;
+  --color-chart-loop: #1D302A;
+  --color-chart-playhead: #E3B5F4;
+}
+
+html[data-theme] {
+  --cream: var(--color-bg);
+  --paper: var(--color-surface);
+  --page-bg: var(--color-bg);
+  --evergreen: var(--color-text);
+  --ink: var(--color-text);
+  --ink-muted: var(--color-muted);
+  --sage: var(--color-action);
+  --sage-soft: var(--color-surface-raised);
+  --green: var(--color-action);
+  --light: var(--color-surface-raised);
+  --border: var(--color-border);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+html[data-theme] body,
+html[data-theme] .app-shell {
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+html[data-theme] a { color: var(--color-action); }
+html[data-theme] small,
+html[data-theme] .muted { color: var(--color-muted); }
+html[data-theme] .box,
+html[data-theme] .simple,
+html[data-theme] .stat {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .btn {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .btn.primary,
+html[data-theme] .tabs button.active {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+html[data-theme] .btn.pale { background: var(--color-surface-raised); }
+html[data-theme] .field,
+html[data-theme] .search,
+html[data-theme] .picker {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .bottom-nav {
+  background: var(--color-surface);
+  border-top-color: var(--color-border);
+}
+html[data-theme] .bottom-nav a { color: var(--color-muted); }
+html[data-theme] .bottom-nav a.current { color: var(--color-action); }
+html[data-theme] .toast-message {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+html[data-theme] button:focus-visible,
+html[data-theme] [tabindex]:focus-visible,
+html[data-theme] a:focus-visible,
+html[data-theme] input:focus-visible,
+html[data-theme] select:focus-visible,
+html[data-theme] textarea:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+html[data-theme] button:disabled,
+html[data-theme] [aria-disabled="true"] { opacity: 0.57; cursor: not-allowed; }
+html[data-theme] .botanical-frame::before,
+html[data-theme] .botanical-frame::after { background-image: none; }
+html[data-theme="dark"] { scrollbar-color: var(--color-border) var(--color-bg); }
+
+/* Cat Mode hides optional scene decoration only.
+   Progress has a required companion in both modes; its OFF sprite is CatSprite.
+   visibility (not display:none) retains the existing optional-cat footprints. */
+html[data-cat-mode="off"] .h01-companion,
+html[data-cat-mode="off"] .tool-scene-cat,
+html[data-cat-mode="off"] [data-decorative-cat] { visibility: hidden !important; }
+
+
+/* Shared low-contrast pixel accent on legacy page headers, with painterly
+   decoration suppressed. Keeps the original header height and content. */
+html[data-theme] .page-atmosphere {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+html[data-theme] .page-atmosphere h1 { color: var(--color-text); }
+html[data-theme] .page-atmosphere-sub { color: var(--color-muted); }
+html[data-theme] .page-atmosphere-deco { visibility: hidden; }
+html[data-theme] .page-atmosphere::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  bottom: 7px;
+  width: 24px;
+  height: 24px;
+  background: var(--color-violet);
+  opacity: .35;
+  -webkit-mask: url('/visuals/pixel-motifs/music-notes.svg') center / contain no-repeat;
+  mask: url('/visuals/pixel-motifs/music-notes.svg') center / contain no-repeat;
+  pointer-events: none;
+}
+
+
+/* Accessibility floor for player notation across the free 12-bar grid and the
+   shared full-sheet chart. Original P02 stylesheet has hard-coded pale-green
+   selected cells; these high-specificity semantic states prevent washed-out
+   white-on-cream chords in Dark mode. No geometry or notation text changes.
+   Agent 2 remains owner of screen-level decorative treatments. */
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure.chosen,
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.chosen {
+  background: var(--color-chart-selected);
+  box-shadow: inset 0 0 0 2px var(--color-chart-selected-outline);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.looped:not(.chosen),
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure.looped:not(.chosen),
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.looped:not(.chosen) {
+  background: var(--color-chart-loop);
+  box-shadow: inset 0 0 0 1px var(--color-chart-repeat);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.playhead,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure.playhead,
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.playhead {
+  outline: 2px solid var(--color-chart-playhead);
+  outline-offset: -2px;
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen.playhead,
+html[data-theme] .practice-player .practice-chart-scroll .chord-grid.practice-sheet .measure.chosen.playhead,
+html[data-theme] .practice-player .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.chosen.playhead {
+  box-shadow: inset 0 0 0 2px var(--color-chart-selected-outline),
+              inset 0 -4px 0 var(--color-chart-playhead);
+}
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen .chords span,
+html[data-theme] .practice-player .practice-chart-scroll .measure.chosen .chords {
+  color: var(--color-chart-chord);
 }

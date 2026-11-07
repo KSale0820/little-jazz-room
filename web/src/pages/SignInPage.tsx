@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './SignInPage.css';
+import './CleanPixelHomeLegacy.css';
 
 export function SignInPage() {
   const { configured, loading, user, signIn, authError } = useAuth();

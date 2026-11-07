@@ -1,0 +1,307 @@
+/* Agent 2: tool and progress presentation. Original dimensions and logic remain. */
+.tool-page {
+  --tool-ink: var(--color-text);
+  --tool-evergreen: var(--color-action);
+  --tool-muted: var(--color-muted);
+  --tool-sage: var(--color-surface-raised);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.tool-page > .tool-bottom-art, .tool-vine,
+.tool-scene-plant, .tool-scene-rug { visibility: hidden; }
+.tool-cat-scene, .tool-has-background .tool-cat-scene { background: transparent; }
+.tool-heading h1, .tool-back, .tool-settings,
+.tuner-reading strong, .tuner-reading > span,
+.tuner-measurements strong, .metronome-bpm strong,
+.metronome-bpm > span, .metronome-field h2,
+.metronome-step { color: var(--color-text); }
+.tool-help, .tuner-trail-panel {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.tool-page button:focus-visible,
+.tool-page input:focus-visible,
+.metronome-countin input:focus-visible + .metronome-switch { outline-color: var(--color-focus); }
+.tool-tuner .tuner-modes, .metronome-step,
+.metronome-signatures button, .metronome-count-select {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.tuner-modes button { color: var(--color-muted); }
+.tuner-modes button[aria-pressed="true"], .metronome-signatures button[aria-pressed="true"] {
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+.tuner-reading small, .tuner-measurements span,
+.tuner-reference small, .metronome-tap-row > span,
+.metronome-playing-status, .tuner-trail-high,
+.tuner-trail-low, .tuner-trail-panel > small { color: var(--color-muted); }
+.tuner-status, .tuner-mic, .tuner-mic[aria-pressed="true"],
+.tuner-trail-toggle {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+  color: var(--color-action);
+}
+.tuner-measurements div + div { border-color: var(--color-border); }
+.tuner-reference, .tuner-reference > span:nth-child(2),
+.tuner-speaker { color: var(--color-text); }
+.tuner-reference strong { color: var(--color-text); }
+.tuner-reference-play, .metronome-play,
+.metronome-beats button.is-accent {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+.tool-error { background: var(--color-surface-raised); border-color: var(--color-danger); color: var(--color-danger); }
+.metronome-slider { accent-color: var(--color-action); }
+.metronome-slider::-webkit-slider-thumb,
+.metronome-slider::-moz-range-thumb { background: var(--color-action); }
+.metronome-tap { background: var(--color-surface); border-color: var(--color-border); color: var(--color-action); }
+.metronome-beats button { color: var(--color-muted); }
+.metronome-beats button.is-current { outline-color: var(--color-focus); }
+.metronome-switch { background: var(--color-border); }
+.metronome-switch::after { background: var(--color-surface); }
+.metronome-countin input:checked + .metronome-switch { background: var(--color-action); }
+.tuner-trail-heading strong { color: var(--color-text); }
+.tuner-trail-panel svg { color: var(--color-chart-repeat); }
+
+/* G01 Progress: deliberately preserve the same card dimensions and cat stage. */
+.g01-page { background: var(--color-bg); color: var(--color-text); }
+.g01-header h1, .g01-settings,
+.g01-stat strong, .g01-stat span:not(.g01-stat-icon),
+.g01-daily-card h2, .g01-daily-card p,
+.g01-history-heading h2, .g01-session-copy strong { color: var(--color-text); }
+.g01-companion { background: var(--color-surface-raised); }
+.g01-cat-cushion, .g01-plant, .g01-goal-plant { visibility: hidden; }
+.g01-cat-bubble {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: none;
+}
+.g01-change, .g01-practice-again {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+.g01-change:hover, .g01-practice-again:hover {
+  background: var(--color-action);
+}
+.g01-stats, .g01-daily-card, .g01-week-chart,
+.g01-session, .g01-empty-history {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: none;
+}
+.g01-stat + .g01-stat { border-color: var(--color-border); }
+.g01-bars-icon i, .g01-goal-fill,
+.g01-chart-bar-today { background: var(--color-action); }
+.g01-goal-track { background: var(--color-border); }
+.g01-chart-axis, .g01-chart-labels, .g01-session-copy span,
+.g01-session time, .g01-empty-history { color: var(--color-muted); }
+.g01-chart-columns {
+  border-color: var(--color-border);
+  background: repeating-linear-gradient(to bottom, var(--color-border) 0 1px, transparent 1px 47px);
+}
+.g01-chart-bar { background: var(--color-success); }
+.g01-chart-bar-today { background: var(--color-action); }
+.g01-history-heading button { color: var(--color-action); }
+.g01-session img { background: var(--color-surface-raised); }
+.g01-page button:focus-visible { outline-color: var(--color-focus); }
+@media (prefers-reduced-motion: reduce) {
+  .g01-goal-fill { transition: none; }
+}
+
+
+/* Stronger than the original G01 painting rule regardless of CSS import order.
+   The stage keeps its exact height while the large room illustration is removed. */
+html[data-theme] .g01-page .g01-companion {
+  background: var(--color-surface-raised);
+  background-image: none;
+}
+html[data-theme] .g01-page .g01-goal-plant,
+html[data-theme] .g01-page .g01-plant,
+html[data-theme] .g01-page .g01-cat-cushion { visibility: hidden; }
+
+
+/* Screenshot QA: old G01 / P04-P05 rules have the same specificity and can be
+   evaluated after theme CSS. The scoped palette wins without touching layout. */
+html[data-theme] .g01-page {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+html[data-theme] .g01-page .g01-stats,
+html[data-theme] .g01-page .g01-daily-card,
+html[data-theme] .g01-page .g01-week-chart,
+html[data-theme] .g01-page .g01-session,
+html[data-theme] .g01-page .g01-empty-history {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: none;
+}
+html[data-theme] .g01-page .g01-header h1,
+html[data-theme] .g01-page .g01-settings,
+html[data-theme] .g01-page .g01-stat strong,
+html[data-theme] .g01-page .g01-stat span:not(.g01-stat-icon),
+html[data-theme] .g01-page .g01-daily-card h2,
+html[data-theme] .g01-page .g01-daily-card p,
+html[data-theme] .g01-page .g01-history-heading h2,
+html[data-theme] .g01-page .g01-session-copy strong {
+  color: var(--color-text);
+}
+html[data-theme] .g01-page .g01-chart-axis,
+html[data-theme] .g01-page .g01-chart-labels,
+html[data-theme] .g01-page .g01-session-copy span,
+html[data-theme] .g01-page .g01-session time {
+  color: var(--color-muted);
+}
+html[data-theme] .g01-page .g01-cat-bubble {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+html[data-theme] .g01-page .g01-change,
+html[data-theme] .g01-page .g01-practice-again {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+html[data-theme] .g01-page .g01-goal-track { background: var(--color-border); }
+html[data-theme] .g01-page .g01-goal-fill,
+html[data-theme] .g01-page .g01-chart-bar-today { background: var(--color-action); }
+html[data-theme] .g01-page .g01-chart-bar { background: var(--color-success); }
+html[data-theme] .g01-page .g01-chart-columns {
+  background: repeating-linear-gradient(to bottom, var(--color-border) 0 1px, transparent 1px 47px);
+  border-color: var(--color-border);
+}
+html[data-theme] .tool-page .tuner-reference {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .tuner-reference strong,
+html[data-theme] .tool-page .tuner-reference > span:nth-child(2) {
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .tuner-reference small {
+  color: var(--color-muted);
+}
+html[data-theme] .tool-page .tuner-reference-play {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border-color: var(--color-action);
+}
+
+/* Cozy Pixel tool and Progress accents; same geometry and saved data.
+   Decorative Tuner/Metronome cats still use Agent 3's visibility-preserving
+   DecorativeCat component. Progress companion behavior is controller/Agent 3. */
+html[data-theme="dark"] .tool-page .tool-cat-scene,
+html[data-theme="dark"] .g01-page .g01-companion {
+  background-color: color-mix(in srgb, var(--color-surface-raised) 87%, var(--color-violet));
+}
+html[data-theme="light"] .tool-page .tool-cat-scene,
+html[data-theme="light"] .g01-page .g01-companion {
+  background-color: color-mix(in srgb, var(--color-surface-raised) 94%, var(--color-action));
+}
+html[data-theme] .tool-page .tool-cat-scene,
+html[data-theme] .g01-page .g01-companion {
+  background-image: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-violet) 24%, var(--color-border));
+}
+html[data-theme] .tool-page .tool-cat-scene .pixel-decorative-cat,
+html[data-theme] .g01-page .g01-companion .g01-cat {
+  filter: drop-shadow(0 2px 1px color-mix(in srgb, var(--color-bg) 42%, transparent));
+}
+/* Keep the existing light/dark tool panels clean. Only paint the focus rings,
+   readouts and already-existent beat signatures. */
+html[data-theme] .tool-page .metronome-signatures button[aria-pressed="true"],
+html[data-theme] .tool-page .tuner-modes button[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-violet) 36%, transparent);
+}
+html[data-theme] .tool-page .metronome-beats button.is-current {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+html[data-theme="dark"] .tool-page :is(.tuner-trail-panel, .tool-help) {
+  background: color-mix(in srgb, var(--color-surface) 94%, var(--color-violet));
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+/* The Tuner reference readout stays on the exact shared surface token
+   required by the existing Light/Dark visual regression contract. */
+html[data-theme="dark"] .tool-page .tuner-reference {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme="dark"] .g01-page :is(.g01-stats, .g01-daily-card, .g01-week-chart) {
+  background: color-mix(in srgb, var(--color-surface) 95%, var(--color-violet));
+  color: var(--color-text);
+}
+html[data-theme="light"] .g01-page :is(.g01-stats, .g01-daily-card, .g01-week-chart) {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-action) 14%, transparent);
+}
+html[data-theme] .g01-page .g01-cat-bubble {
+  border: 1px solid color-mix(in srgb, var(--color-violet) 24%, var(--color-border));
+}
+
+/* Midnight Jazz Tuner: legacy SVG strokes are literal paint attributes.
+   Override only those colors; tuning logic, geometry and hit targets stay intact. */
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg > line {
+  stroke: var(--color-muted);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg > line:nth-child(n+6):nth-child(-n+20) {
+  stroke: var(--color-success);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg > line:is(:nth-child(-n+3), :nth-child(n+23)) {
+  stroke: var(--color-danger);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg > line:nth-child(13) {
+  stroke: var(--color-chart-playhead);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg path {
+  fill: var(--color-chart-playhead);
+}
+html[data-theme="dark"] .tool-tuner .tuner-gauge svg circle {
+  fill: var(--color-muted);
+}
+html[data-theme="dark"] .tool-tuner .tuner-trail-plot svg > line {
+  stroke: var(--color-border);
+}
+html[data-theme="dark"] .tool-tuner .tuner-trail-plot svg polyline {
+  stroke: var(--color-success);
+}
+html[data-theme="dark"] .tool-tuner .tuner-trail-plot svg circle {
+  fill: var(--color-warning);
+}
+
+/* Vite may load the approved ToolsPages.css after the clean theme layer.
+   Scope both slider thumbs so Midnight Jazz never inherits the old green. */
+html[data-theme] .tool-page .metronome-slider::-webkit-slider-thumb {
+  background: var(--color-action);
+}
+html[data-theme] .tool-page .metronome-slider::-moz-range-thumb {
+  background: var(--color-action);
+}
+
+
+/* V4 typography: Progress uses the same quiet UI sans as Practice, with no
+   new cards, layout changes or changes to selected companion/reward behavior. */
+html[data-theme] .g01-page :is(.g01-header h1, .g01-history-heading h2, .g01-daily-card h2,
+  .g01-session-copy strong, .g01-stat strong) {
+  font-family: var(--font-ui);
+  letter-spacing: -.025em;
+}
+html[data-theme] .g01-page .g01-stat strong { font-size: 30px; font-weight: 750; }
+html[data-theme] .g01-page .g01-flame img {
+  display: block;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme="dark"] .g01-page :is(.g01-stats, .g01-daily-card, .g01-week-chart, .g01-session) {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
