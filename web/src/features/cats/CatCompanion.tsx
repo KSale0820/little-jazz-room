@@ -19,6 +19,13 @@ export const ALL_JAZZ_CATS = [
 export type CatId = (typeof ALL_JAZZ_CATS)[number]['id'];
 export const VISIBLE_CAT_IDS = ['luna', 'milo', 'maple'] as const;
 export type VisibleCatId = typeof VISIBLE_CAT_IDS[number];
+/** Real logged practice required for each approved companion; no new cat art. */
+export const COMPANION_UNLOCK_MINUTES: Readonly<Record<VisibleCatId, number>> = {
+  luna: 0,
+  milo: 60,
+  maple: 300,
+};
+
 export const JAZZ_CATS = ALL_JAZZ_CATS.filter(
   (cat): cat is Extract<(typeof ALL_JAZZ_CATS)[number], { id: VisibleCatId }> =>
     VISIBLE_CAT_IDS.some(id => id === cat.id),
@@ -143,7 +150,7 @@ export function CatChooser({ catId, onSelect, unlockedIds, practiceMinutes = 0 }
       <p className="jazz-cat-lede">Luna is ready from day one. Unlock more cats as you practice.</p>
       <div className="jazz-cat-grid board-cards" role="group" aria-label="Jazz cat companions">
         {JAZZ_CATS.map(cat => {
-          const requiredMinutes = cat.id === 'milo' ? 60 : cat.id === 'maple' ? 300 : 0;
+          const requiredMinutes = COMPANION_UNLOCK_MINUTES[cat.id];
           const locked = unlockedIds !== undefined && !unlockedIds.includes(cat.id) && catId !== cat.id;
           const remaining = Math.max(0, requiredMinutes - practiceMinutes);
           return (
