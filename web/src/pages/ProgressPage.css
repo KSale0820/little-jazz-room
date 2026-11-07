@@ -38,7 +38,8 @@
 .g01-stat strong { font: 700 32px/.97 Georgia, 'Times New Roman', serif; color: #121e21; font-variant-numeric: tabular-nums; }
 .g01-stat span:not(.g01-stat-icon) { font-size: 12px; white-space: nowrap; color: #25302d; margin-top: 5px; }
 .g01-stat-icon { flex: 0 0 35px; height: 38px; display: flex; align-items: center; justify-content: center; }
-.g01-flame { font-size: 33px; line-height: 1; }
+.g01-flame { line-height: 1; }
+.g01-flame img { width: 35px; height: 38px; object-fit: contain; image-rendering: pixelated; display: block; }
 .g01-bars-icon { align-items: end; gap: 4px; padding-bottom: 4px; }
 .g01-bars-icon i { display: block; width: 8px; border-radius: 2px 2px 0 0; background: #46775b; }
 .g01-bars-icon i:nth-child(1) { height: 11px; } .g01-bars-icon i:nth-child(2) { height: 20px; } .g01-bars-icon i:nth-child(3) { height: 30px; }
