@@ -49,6 +49,8 @@ jobs:
         run: node scripts/check-class-demo-integration.mjs
       - name: Chart to practice and chart to routine reload paths
         run: node scripts/check-chart-routine-player-integration.mjs
+      - name: Timer-first Free Practice end-to-end
+        run: node scripts/check-free-practice.mjs
       - name: Upload screenshot and test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -56,6 +58,7 @@ jobs:
           name: clean-pixel-mobile-qa-${{ github.run_number }}
           path: |
             web/docs/screenshots/clean-pixel-qa/
+            web/docs/screenshots/free-practice/
             web/docs/screenshots/class-demo-integration/
             web/docs/screenshots/chart-routine-player-integration/
           if-no-files-found: warn
