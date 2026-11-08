@@ -224,7 +224,7 @@ export function FreePracticePage() {
           {queue.length === 0 && !recordingId && <p>Free-form practice, at your own pace.</p>}
         </div>
         <div className="fp-completion-shelf" aria-hidden="true">
-          <img src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" />
+          <img src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
           {catMode && <DecorativeCat catId={catId} variant="sitting" size={68} className="fp-summary-cat" />}
           <img src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
         </div>
@@ -259,7 +259,7 @@ export function FreePracticePage() {
           <img src={PIXEL_ART + 'approved-isolated-icons/play.png'} alt="" aria-hidden="true" />Start Practice
         </button>
         <div className="fp-intro-shelf" aria-hidden="true">
-          <img className="fp-intro-plant" src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" />
+          <img className="fp-intro-plant" src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
           {catMode && <DecorativeCat catId={catId} variant="sleeping" size={82} className="fp-intro-cat" />}
           <img className="fp-intro-note" src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
         </div>
@@ -277,7 +277,7 @@ export function FreePracticePage() {
               {!running && <span className="fp-paused-pill">Ⅱ Paused</span>}
             </div>
             <div className="fp-timer-shelf" aria-hidden="true">
-              <img src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" />
+              <img src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
               {catMode && <DecorativeCat catId={catId} variant={running ? 'sitting' : 'sleeping'} size={66} className="fp-timer-cat" />}
               <img src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
             </div>
