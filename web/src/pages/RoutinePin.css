@@ -1,0 +1,25 @@
+/* Pin controls sit below the existing saved-bookmark action; neither triggers playback. */
+.routine-library .routine-card { min-height: 104px; }
+.routine-library .routine-card-main { padding-right: 48px; }
+.routine-library .routine-bookmark {
+  right: 4px;
+  top: 0;
+  width: 43px;
+  height: 47px;
+}
+.routine-library .routine-pin {
+  position: absolute;
+  right: 4px;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 47px;
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font: 700 26px/1 var(--font-ui);
+}
+.routine-library .routine-pin.is-pinned { color: var(--color-action); }
+.routine-library .routine-pin:focus-visible,
+.routine-library .routine-bookmark:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -3px; }
