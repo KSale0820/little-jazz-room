@@ -36,7 +36,6 @@ export function ProfilePage() {
     }
   }, [location.state]);
 
-  const selectedCat = JAZZ_CATS.find(cat => cat.id === catId) ?? JAZZ_CATS[0];
   const displayNameSource: unknown = user?.user_metadata?.display_name ??
     user?.user_metadata?.full_name ?? user?.user_metadata?.name;
   const displayName = typeof displayNameSource === 'string' && displayNameSource.trim()
