@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
 import {
   audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, pitchTrailGeometry,
@@ -11,6 +10,7 @@ import {
 import './ToolsPages.css';
 import './CleanPixelToolsProgress.css';
 import './CleanPixelMotifPlacements.css';
+import './ToolsPolishedPair.css';
 
 type MicStatus = 'idle' | 'requesting' | 'listening' | 'denied' | 'unsupported' | 'error';
 type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
@@ -18,7 +18,6 @@ type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
 export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
-  const [roomArtLoaded, setRoomArtLoaded] = useState(false);
   const [mode, setMode] = useState<TuningMode>('chromatic');
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
@@ -298,7 +297,8 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const needleAngle = reading && isNearString
     ? Math.max(-70, Math.min(70, reading.cents * 1.4)) : null;
   const getTuningMessage = () => {
-    if (status !== 'listening') return status === 'requesting' ? 'Connecting microphone…' : 'Ready to tune';
+    if (status !== 'listening') return status === 'requesting' ? 'Connecting microphone…' :
+      status === 'denied' || status === 'unsupported' || status === 'error' ? 'Microphone unavailable' : 'Ready to tune';
     if (micSignal === 'interrupted') return 'Audio paused. Tap Resume audio.';
     if (micSignal === 'quiet') return 'Listening for a note…';
     if (micSignal === 'unsteady') return 'Sound heard. Hold a steady note.';
@@ -309,11 +309,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   };
 
   return (
-    <section className={`tool-page tool-tuner${roomArtLoaded ? ' tool-has-background' : ''}`} aria-label="Chromatic instrument tuner" data-capture-path={capturePath}>
-      <img className="tool-bottom-art" src={VISUAL_ASSETS.tools.tunerBackground} alt="" aria-hidden="true"
-        onLoad={() => setRoomArtLoaded(true)} onError={() => setRoomArtLoaded(false)} />
-      <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
-      <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
+    <section className="tool-page tool-tuner" aria-label="Chromatic instrument tuner" data-capture-path={capturePath}>
       <header className="tool-heading">
         <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))} aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
         <h1>Tuner</h1>
@@ -360,7 +356,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           ) : <circle cx="160" cy="141" r="5" fill="#afbaa9" />}
         </svg>
       </div>
-      <div className="tuner-status" role="status">{getTuningMessage()}</div>
+      <div className={`tuner-status${status === 'listening' && isNearString && isTuned ? ' is-in-tune' : ''}${status === 'denied' || status === 'unsupported' || status === 'error' ? ' is-error' : ''}`} role="status">{getTuningMessage()}</div>
       <div className="tuner-measurements">
         <div><strong>{reading && isNearString ? reading.targetLabel : '—'}</strong><span>{reading && isNearString ? reading.targetFrequency.toFixed(1) + ' Hz target' : 'Target'}</span></div>
         <div><strong>{reading && isNearString ? (reading.cents >= 0 ? '+' : '') + Math.round(reading.cents) + '¢' : '—'}</strong><span>Deviation</span></div>
@@ -406,13 +402,10 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <span><strong>Reference Pitch</strong><small>Play A (440 Hz)</small></span>
         <button type="button" className="tuner-reference-play" onClick={() => void toggleReference()}
           aria-label={referencePlaying ? 'Stop A 440 hertz tone' : 'Play A 440 hertz tone'}>
-          {referencePlaying ? 'Ⅱ' : '▶'}
+          <img src={referencePlaying ? '/visuals/tools/pixel/stop.png' : '/visuals/tools/pixel/play.png'} alt="" aria-hidden="true" />
         </button>
       </div>
       <div className="tool-cat-scene tool-tuner-scene" aria-hidden="true">
-        <img className="tool-scene-plant tool-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
-        <img className="tool-scene-plant tool-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
-        <img className="tool-scene-rug" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.rug} alt="" />
         <DecorativeCat catId={catId} variant="sleeping" size={182} className="tool-scene-cat" />
       </div>
     </section>
