@@ -30,7 +30,7 @@ html[data-theme] .p01-page.p01-suave img.p01-suave-coach-cat {
   image-rendering: pixelated;
   /* The approved source has transparent breathing room within its image bounds.
      Scale its actual pixels, not the surrounding helper card. */
-  transform: scale(1.52);
+  transform: scale(1.14);
   transform-origin: center 57%;
 }
 
@@ -204,7 +204,7 @@ html[data-theme="dark"] .app-shell:has(.p01-suave) .bottom-nav a.current {
     width: 100px;
     height: 78px;
     margin-top: -8px;
-    transform: scale(1.35);
+    transform: scale(1.08);
     transform-origin: center 57%;
   }
   html[data-theme] .p01-page.p01-suave .p01-action-primary img.p01-suave-approved-sax {
