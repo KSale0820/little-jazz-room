@@ -505,40 +505,40 @@ export function CreatePage() {
 
       {showExerciseForm && <section className="builder-panel builder-custom-form builder-studio" aria-label={editId ? 'Edit exercise' : 'Create exercise'}>
         <header className="builder-exercise-header">
-          <div>
-            <p className="builder-exercise-eyebrow">EXERCISE STUDIO</p>
-            <h3>{editId ? 'Edit exercise' : 'Create exercise'}</h3>
-            <p className="builder-exercise-description">Build a focused activity for your routine.</p>
-          </div>
-          <span className="builder-exercise-duration">{exMinutes > 0 ? exMinutes : '–'} min</span>
+          <button type="button" className="builder-exercise-back" aria-label="Close exercise builder" onClick={() => setShowExerciseForm(false)}>‹</button>
+          <span className="builder-exercise-heading-icon" aria-hidden="true">◈</span>
+          <h3 aria-label={editId ? 'Edit exercise' : 'Create exercise'}>Exercise Builder</h3>
+          <span className="builder-exercise-mode">{editId ? 'EDIT' : 'NEW'}</span>
         </header>
-        <p className="builder-exercise-section-label">01 <span>Essentials</span></p>
-        <label htmlFor="exTitle">Exercise title</label>
-        <input className="builder-field" id="exTitle" value={exTitle} onChange={e => setExTitle(e.target.value)} />
-        <div className="builder-two-fields">
-          <div><label htmlFor="exCat">Category</label><select id="exCat" className="builder-field" value={exCategory} onChange={e => setExCategory(e.target.value)}>
-            {['Technique', 'Harmony', 'Improvisation', 'Repertoire', 'Rhythm', 'Ear Training'].map(c => <option key={c}>{c}</option>)}
-          </select></div>
-          <div><label htmlFor="exLevel">Level</label><select id="exLevel" className="builder-field" value={exLevel} onChange={e => setExLevel(e.target.value)}>
-            {['Beginner', 'Intermediate', 'Advanced'].map(l => <option key={l}>{l}</option>)}
-          </select></div>
-        </div>
-        <label htmlFor="exMin">How long? (minutes)</label>
-        <input id="exMin" type="number" min="1" className="builder-field" value={exMinutes} onChange={e => setExMinutes(Number(e.target.value))} />
-        <p className="builder-exercise-section-label">02 <span>Instructions</span></p>
-        <label htmlFor="exInst">What should you do?</label>
-        <textarea id="exInst" className="builder-field" value={exInstructions} onChange={e => setExInstructions(e.target.value)} />
-        <p className="builder-exercise-section-label">03 <span>Chart accompaniment · optional</span></p>
-        <label htmlFor="exChartSearch">Find a chart</label>
+
+        <label htmlFor="exTitle" className="builder-exercise-title-hint">Exercise name</label>
+        <input className="builder-field builder-exercise-title-input" id="exTitle"
+          placeholder="e.g. Comping – Autumn Leaves" value={exTitle} onChange={e => setExTitle(e.target.value)} />
+
+        <div className="builder-exercise-section-label"><span aria-hidden="true">▤</span><span>Linked Chart</span><small>Optional</small></div>
+        {exChartId ? <div className="builder-exercise-linked-card" role="status">
+          <span className="builder-exercise-linked-icon" aria-hidden="true">▤</span>
+          <div className="builder-exercise-linked-copy">
+            <strong>{charts.find(chart => chart.id === exChartId)?.title ?? 'Chart unavailable'}</strong>
+            <span>{(() => {
+              const linked = charts.find(chart => chart.id === exChartId);
+              return linked ? linked.concert_key.replace(/b/g, '♭') + ' · ' + linked.time_signature.join('/') + ' · ' + linked.bars.length + ' measures'
+                : 'Choose another chart';
+            })()}</span>
+          </div>
+          <button type="button" aria-label="Remove linked chart" title="Remove chart"
+            onClick={() => setExChartId('')}>×</button>
+        </div> : <p className="builder-exercise-empty-chart">No chart linked. Add one to practice with chord changes.</p>}
+        <label htmlFor="exChartSearch" className="builder-exercise-minor-label">Search charts</label>
         <input id="exChartSearch" type="search" className="builder-field" placeholder="Search by chart name"
           value={chartSearch} onChange={event => setChartSearch(event.target.value)} />
-        <label htmlFor="exChart">Linked chart</label>
+        <label htmlFor="exChart" className="builder-exercise-minor-label">Choose a chart</label>
         <select id="exChart" className="builder-field" value={exChartId} onChange={e => setExChartId(e.target.value)}>
           <option value="">None</option>
           {charts.filter(chart => chart.id === exChartId || chart.title.toLowerCase().includes(chartSearch.trim().toLowerCase()))
             .map(chart => <option key={chart.id} value={chart.id}>{chart.title}</option>)}
         </select>
-        <p className="builder-exercise-linked" role="status">{exChartId
+        <p className="builder-exercise-linked builder-studio-visually-hidden" role="status">{exChartId
           ? 'Linked: ' + (charts.find(chart => chart.id === exChartId)?.title ?? 'Chart unavailable')
           : 'No chart linked. You can practice without one.'}</p>
         <div className="builder-panel-actions builder-exercise-chart-actions">
@@ -546,15 +546,41 @@ export function CreatePage() {
           {exChartId && charts.some(chart => chart.id === exChartId && chart.is_custom) &&
             <button type="button" onClick={() => openChartBuilder(exChartId)}>Edit Chart</button>}
         </div>
+
+        <div className="builder-exercise-section-label"><span aria-hidden="true">✎</span><span>Instructions</span></div>
+        <label htmlFor="exInst" className="builder-exercise-minor-label">What should you practice?</label>
+        <textarea id="exInst" className="builder-field" placeholder="Describe a short, clear practice activity"
+          value={exInstructions} onChange={e => setExInstructions(e.target.value)} />
+
+        <div className="builder-exercise-section-label"><span aria-hidden="true">☷</span><span>Settings</span></div>
+        <div className="builder-two-fields builder-exercise-settings">
+          <div><label htmlFor="exCat">Focus</label>
+            <select id="exCat" className="builder-field" value={exCategory} onChange={e => setExCategory(e.target.value)}>
+              {['Technique', 'Harmony', 'Improvisation', 'Repertoire', 'Rhythm', 'Ear Training'].map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+          <div><label htmlFor="exLevel">Level</label>
+            <select id="exLevel" className="builder-field" value={exLevel} onChange={e => setExLevel(e.target.value)}>
+              {['Beginner', 'Intermediate', 'Advanced'].map(l => <option key={l}>{l}</option>)}
+            </select>
+          </div>
+          <div><label htmlFor="exMin">Time (minutes)</label>
+            <input id="exMin" type="number" min="1" className="builder-field" value={exMinutes}
+              onChange={e => setExMinutes(Number(e.target.value))} />
+          </div>
+        </div>
         <div className="builder-exercise-preview" aria-label="Exercise summary preview">
-          <span>EXERCISE PREVIEW</span>
-          <strong>{exTitle.trim() || 'Untitled exercise'}</strong>
-          <p>{exCategory} · {exLevel} · {exMinutes > 0 ? exMinutes : '–'} min{exChartId ? ' · With chord chart' : ''}</p>
-          <p>{exInstructions.trim() || 'Your practice instructions will appear here.'}</p>
+          <span className="builder-exercise-preview-icon" aria-hidden="true">▷</span>
+          <div>
+            <strong>Exercise Preview</strong>
+            <p>{exTitle.trim() || 'Untitled exercise'} · {exCategory} · {exMinutes > 0 ? exMinutes : '–'} min</p>
+            <p>{exChartId ? charts.find(chart => chart.id === exChartId)?.title ?? 'Chart unavailable' : 'No chart'} · {exLevel}</p>
+            <p>{exInstructions.trim() || 'Your practice instructions will appear here.'}</p>
+          </div>
         </div>
         <div className="builder-panel-actions builder-exercise-save-actions">
-          <button type="button" onClick={() => void saveExercise()} disabled={saving}>Save exercise</button>
           <button type="button" onClick={() => setShowExerciseForm(false)}>Cancel</button>
+          <button type="button" onClick={() => void saveExercise()} disabled={saving}>Save exercise</button>
         </div>
       </section>}
 
