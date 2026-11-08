@@ -30,6 +30,15 @@ describe('Routine library filters', () => {
     expect(matchesRoutineFilters(routine, { ...filters, focus: ['Repertoire'] }, [exercise])).toBe(false);
   });
 
+  it('does not mistake incidental exercise instructions for a routine focus', () => {
+    const chordRoutine = { ...routine, title: 'Chord Voicings', description: 'Learn voice leading' };
+    const chordExercise = { title: 'Practice ii V I voicings', category: 'Harmony',
+      instructions: 'Keep a steady rhythm while repeating the exercise.' } as Exercise;
+    const focuses = routineFocuses(chordRoutine, [chordExercise]);
+    expect(focuses).toContain('Harmony');
+    expect(focuses).not.toContain('Rhythm');
+  });
+
   it('supports instruments marked All and inclusive duration bands', () => {
     const universal = { ...routine, applicable_instruments: ['All'], duration_minutes: 30 };
     expect(matchesRoutineFilters(universal, { ...EMPTY_ROUTINE_FILTERS, instrument: 'Drums', duration: '30' }, [])).toBe(true);
