@@ -157,6 +157,7 @@ html[data-theme] .p01-suave .p01-daily .p01-daily-fill {
 }
 html[data-theme="dark"] .p01-suave .p01-suave-brand {
   border-radius: 0 0 12px 12px;
+  background: linear-gradient(180deg, #f9e8e0, #f5ded7);
 }
 
 @media (max-width: 380px) {
