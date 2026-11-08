@@ -108,6 +108,7 @@ export function PracticeHubPage() {
           <span className="p01-action-copy">
             <strong>Free Practice</strong><small>Start a session at your own pace.</small>
           </span>
+          <img className="p01-suave-primary-sparkle" src={ART + 'small-sparkle-cluster-sharp.png'} alt="" aria-hidden="true" />
           <img className="p01-suave-sax" src={ICON + 'saxophone-poster.png'} alt="" aria-hidden="true" />
           <span className="p01-chevron" aria-hidden="true">›</span>
         </button>
@@ -135,7 +136,7 @@ export function PracticeHubPage() {
       </section>
 
       <section className="p01-tools" aria-labelledby="p01-tools-heading">
-        <h2 id="p01-tools-heading">Quick Tools <span aria-hidden="true">✦</span></h2>
+        <h2 id="p01-tools-heading">Quick Tools <img className="p01-suave-divider-sparkle" src={ART + 'sparkle-gold-sharp.png'} alt="" aria-hidden="true" /></h2>
         <div className="p01-tool-grid">
           <button type="button" className="p01-tool" onClick={() => navigate('/tuner')}>
             <span className="p01-tuning-fork" aria-hidden="true" /><strong>Tuner</strong>
