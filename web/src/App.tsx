@@ -8,6 +8,7 @@ import { ExplorePage } from './pages/ExplorePage';
 import { PracticePage } from './pages/PracticePage';
 import { FreePracticePage } from './pages/FreePracticePage';
 import { ProfilePage } from './pages/ProfilePage';
+import { SettingsPage } from './pages/SettingsPage';
 import { TracksPage } from './pages/TracksPage';
 import { PracticeHubPage } from './pages/PracticeHubPage';
 import { TunerPage } from './pages/TunerPage';
@@ -51,6 +52,7 @@ export default function App() {
               <Route path="player" element={<PracticePlayerEntry />} />
               <Route path="progress" element={<ProgressPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="settings" element={<SettingsPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
