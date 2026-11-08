@@ -26,7 +26,7 @@ export function PixelIcon({ route }: { route: NavRoute }) {
   if (route === 'practice' || route === 'tracks' || route === 'routines' || route === 'progress') {
     return <img className="pix pix-image" src={REFRESHED_NAV + 'nav-' + route + '.png'} alt="" aria-hidden="true" />;
   }
-  if (route === 'explore' || route === 'practice') {
+  if (route === 'explore') {
     return (
       <span
         className="pix pix-mask"
