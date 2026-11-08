@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
+import { PracticeSaxIcon } from './PracticeSaxIcon';
 import { timeGreeting } from '../lib/greeting';
 import { computeGentleStreak, minutesToday, minutesYesterday } from '../lib/practiceStats';
 import { readPinnedPracticeRoutine, readPracticeGoal, savePracticeGoal } from '../lib/practiceHomePreferences';
@@ -59,7 +60,7 @@ export function PracticeHubPage() {
     setGoalOpen(false);
   };
   const growthStage = percent >= 100 ? 4 : percent >= 75 ? 3 : percent >= 50 ? 2 : percent >= 25 ? 1 : 0;
-  const growthArt = ART + 'plant-growth-stages/plant-stage-' + growthStage + '.png';
+  const growthArt = growthStage === 0 ? ICON + 'sprout.png' : ART + 'plant-growth-stages/plant-stage-' + growthStage + '.png';
 
   return (
     <section className="p01-page p01-suave" aria-label="Practice hub">
@@ -103,7 +104,8 @@ export function PracticeHubPage() {
             <strong>Free Practice</strong><small>Start a session at your own pace.</small>
           </span>
           <img className="p01-suave-primary-sparkle" src={ART + 'small-sparkle-cluster-sharp.png'} alt="" aria-hidden="true" />
-          <img className="p01-suave-sax" src={ICON + 'saxophone-poster.png'} alt="" aria-hidden="true" />
+          <img className="p01-suave-hero-note" src={ART + 'music-note-purple-sharp.png'} alt="" aria-hidden="true" />
+          <PracticeSaxIcon />
           <span className="p01-chevron" aria-hidden="true">›</span>
         </button>
         <div className="p01-suave-action-pair">
