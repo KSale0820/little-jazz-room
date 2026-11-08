@@ -12,9 +12,17 @@ const browser = await chromium.launch({ headless: true });
 
 try {
   for (const [width, height] of [[390, 844], [375, 667]]) {
+    for (const theme of ['light', 'dark']) {
+      for (const catMode of [false, true]) {
+    const shot = width + 'x' + height + '-' + theme + '-cat-' + (catMode ? 'on' : 'off');
     const context = await browser.newContext({
       viewport: { width, height }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
+      colorScheme: theme, reducedMotion: 'reduce',
     });
+    await context.addInitScript(({ theme, catMode }) => {
+      localStorage.setItem('little-jazz-room:appearance:v1', theme);
+      localStorage.setItem('little-jazz-room:decorative-cats:v1', String(catMode));
+    }, { theme, catMode });
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -25,9 +33,15 @@ try {
     await page.getByRole('heading', { name: 'Free Practice' }).waitFor();
     assert(await page.locator('.chord-grid').count() === 0, 'Free Practice must not auto-select a random chart');
     assert((await page.getByRole('timer').innerText()).trim() === '00:00', 'Timer should start at zero');
-    await page.screenshot({ path: join(output, 'empty-' + width + 'x' + height + '.png') });
+    assert(await page.locator('.fp-header-cat').count() === Number(catMode), 'Decorative cat must disappear without an empty placeholder when Cat Mode OFF');
+    const art = await page.locator('.fp-timer-heading > img, .fp-play img, .fp-finish img').evaluateAll(images =>
+      images.map(img => ({ src: img.getAttribute('src'), loaded: img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0 })));
+    assert(art.every(item => item.loaded), 'Approved pixel assets must load: ' + JSON.stringify(art));
+    await page.screenshot({ path: join(output, 'empty-' + shot + '.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Exercise', exact: true }).click();
+    await page.locator('.fp-picker').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(output, 'exercise-picker-' + shot + '.png'), fullPage: true });
     await page.getByRole('button', { name: '+ Scales' }).click();
     assert(await page.locator('.fp-queue-item').count() === 1, 'Technique was not added');
     await page.getByRole('button', { name: 'Chart', exact: true }).click();
@@ -43,14 +57,19 @@ try {
     assert(audioSrc?.includes('/audio/backing-tracks/autumn-leaves.m4a'), 'Expected a real cataloged backing track');
     const playable = await page.request.get(base + audioSrc);
     assert(playable.status() === 200, 'Cataloged backing-track media file must exist');
-    await page.screenshot({ path: join(output, 'with-items-' + width + 'x' + height + '.png') });
+    await page.locator('.fp-queue').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(output, 'with-items-' + shot + '.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Start practice timer' }).click();
     await page.waitForTimeout(1350);
+    await page.locator('.fp-timer').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(output, 'active-' + shot + '.png'), fullPage: true });
     await page.getByRole('button', { name: 'Pause practice timer' }).click();
+    await page.screenshot({ path: join(output, 'paused-' + shot + '.png'), fullPage: true });
     assert(await page.getByRole('timer').innerText() !== '00:00', 'Practice timer did not advance');
     await page.getByRole('button', { name: 'Finish Session' }).click();
     await page.getByRole('heading', { name: 'Session Saved' }).waitFor();
+    await page.screenshot({ path: join(output, 'completed-' + shot + '.png'), fullPage: true });
     const records = await page.evaluate(() => {
       const key = 'little-jazz-room:practice-sessions:v1:anonymous';
       return JSON.parse(localStorage.getItem(key) || '[]');
@@ -69,8 +88,10 @@ try {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     assert(overflow <= 1, 'Unexpected horizontal overflow: ' + overflow);
     assert(errors.length === 0, 'Browser errors: ' + errors.join(' | '));
-    console.log('PASS Free Practice ' + width + 'x' + height + ': no random chart, timer, queue, real audio, unique save, Progress/reload/replay');
+    console.log('PASS Free Practice ' + shot + ': no random chart, timer, queue, real audio, unique save, Progress/reload/replay');
     await context.close();
+      }
+    }
   }
 } finally {
   await browser.close();
