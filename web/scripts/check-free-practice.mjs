@@ -50,7 +50,7 @@ try {
     await page.getByRole('button', { name: 'Pause practice timer' }).click();
     assert(await page.getByRole('timer').innerText() !== '00:00', 'Practice timer did not advance');
     await page.getByRole('button', { name: 'Finish Session' }).click();
-    await page.getByRole('heading', { name: 'Session Saved' }).waitFor();
+    await page.getByRole('heading', { name: 'Practice complete' }).waitFor();
     const records = await page.evaluate(() => {
       const key = 'little-jazz-room:practice-sessions:v1:anonymous';
       return JSON.parse(localStorage.getItem(key) || '[]');
