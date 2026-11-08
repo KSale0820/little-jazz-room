@@ -11,6 +11,7 @@ import {
 import { createChartRepository, newLocalChartId } from '../features/charts/chartRepository';
 import './ChartBuilderPage.css';
 import './CleanPixelCharts.css';
+import './BuilderStudio.css';
 
 const FEELS = ['Swing', 'Blues', 'Bossa Nova', 'Ballad', 'Straight'];
 const SECTION_LABELS = ['A', 'B', 'C', 'D'] as const;
@@ -275,9 +276,13 @@ export function ChartBuilderPage() {
   }
 
   return (
-    <section className="chart-builder-page" aria-label="Create Chart">
+    <section className="chart-builder-page builder-studio" aria-label={chartId ? "Edit Chart" : "Create Chart"}>
       <header className="chart-builder-header">
-        <div><p className="chart-builder-eyebrow">WRITE YOUR MUSIC</p><h1>{chartId ? 'Edit Chart' : 'Create Chart'}</h1></div>
+        <div className="builder-studio-heading">
+          <p className="chart-builder-eyebrow">CHART STUDIO</p>
+          <h1>{chartId ? 'Edit Chart' : 'Create Chart'}</h1>
+          <p className="builder-studio-subtitle">Shape your harmony, one measure at a time.</p>
+        </div>
         <div className="chart-builder-header-actions">
           <button type="button" className="chart-builder-secondary" onClick={cancel}>Cancel</button>
           <button type="button" className="chart-builder-primary" disabled={readOnly} onClick={save}>Save</button>
@@ -285,6 +290,11 @@ export function ChartBuilderPage() {
       </header>
       {readOnly && <p className="chart-builder-notice">This is a built-in chart. Open My Charts and choose Edit a copy to make changes.</p>}
       {error && <p role="alert" className="chart-builder-error">{error}</p>}
+      <p className="builder-studio-status" role="status">
+        <span className="builder-studio-status-dot" aria-hidden="true" />
+        {readOnly ? 'Reference chart · view only' : dirty ? 'Unsaved changes' : 'Ready to edit'}
+        {searchParams.has('returnTo') && <span> · Linked exercise workflow</span>}
+      </p>
 
       <label className="chart-builder-field">
         <span>Chart name</span>
@@ -351,7 +361,10 @@ export function ChartBuilderPage() {
 
       <div className="chart-builder-chart-heading">
         <div><h2>Your chord chart</h2><p>Tap a measure and type its chord. Use familiar symbols like Dm7 or G7.</p></div>
-        <span>{draft.bars.length} measures</span>
+        <div className="builder-studio-chart-meta" aria-label="Chart structure">
+          <span>{draft.beats}/{draft.beat_unit ?? 4}</span>
+          <span>{draft.bars.length} measures</span>
+        </div>
       </div>
       <EditableChartGrid bars={draft.bars} selectedBarId={selectedBarId} selectedChordId={selectedChordId}
         onSelect={select}
@@ -361,6 +374,10 @@ export function ChartBuilderPage() {
         selectedInputRef={selectedInputRef}
         editor={selectedBar ? (
 <section className="chart-builder-selection" aria-label={'Edit measure ' + selectedBar.number}>
+        <div className="builder-studio-selection-heading">
+          <strong>Measure {selectedBar.number}</strong>
+          <span>{selectedBar.events.length} {selectedBar.events.length === 1 ? 'chord' : 'chords'} · {draft.beats}/{draft.beat_unit ?? 4}</span>
+        </div>
         <div className="chart-builder-toolbar" role="toolbar" aria-label={'Edit measure ' + selectedBar.number + ' controls'}>
           <button type="button" disabled={readOnly || !selectedEvent} title="Flat" aria-label="Insert flat symbol"
             onClick={() => insertAccidental('♭')}>♭</button>
@@ -420,7 +437,7 @@ export function ChartBuilderPage() {
         <button type="button" disabled={readOnly} onClick={() => addBars(4)}>+ Add 4 measures</button>
         <button type="button" disabled={readOnly} onClick={() => addBars(8)}>+ Add 8 measures</button>
       </div>
-      <p className="chart-builder-caption">Tap a measure to edit. Label the first measure of each section A, B, C or D, then use Copy section to build an A–B–A form. Meter is counted in the written denominator notes; BPM remains quarter-note based.</p>
+      <p className="chart-builder-caption">Use A–D section labels and Copy section to build a form such as A–B–A. Beat durations follow the selected meter; BPM stays quarter-note based.</p>
       <div className="chart-builder-footer">
         <button type="button" className="chart-builder-secondary" onClick={cancel}>Cancel</button>
         <button type="button" className="chart-builder-primary" disabled={readOnly} onClick={save}>Save Chart</button>
