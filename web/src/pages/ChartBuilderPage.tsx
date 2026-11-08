@@ -278,15 +278,10 @@ export function ChartBuilderPage() {
   return (
     <section className="chart-builder-page builder-studio" aria-label={chartId ? "Edit Chart" : "Create Chart"}>
       <header className="chart-builder-header">
-        <div className="builder-studio-heading">
-          <p className="chart-builder-eyebrow">CHART STUDIO</p>
-          <h1>{chartId ? 'Edit Chart' : 'Create Chart'}</h1>
-          <p className="builder-studio-subtitle">Shape your harmony, one measure at a time.</p>
-        </div>
-        <div className="chart-builder-header-actions">
-          <button type="button" className="chart-builder-secondary" onClick={cancel}>Cancel</button>
-          <button type="button" className="chart-builder-primary" disabled={readOnly} onClick={save}>Save</button>
-        </div>
+        <button type="button" className="builder-studio-back" aria-label="Back to My Charts" onClick={cancel}>‹</button>
+        <span className="builder-studio-title-icon" aria-hidden="true">▤</span>
+        <h1 aria-label={chartId ? 'Edit Chart' : 'Create Chart'}>Chart Builder</h1>
+        <span className="builder-studio-view-label">{chartId ? 'EDIT' : 'NEW'}</span>
       </header>
       {readOnly && <p className="chart-builder-notice">This is a built-in chart. Open My Charts and choose Edit a copy to make changes.</p>}
       {error && <p role="alert" className="chart-builder-error">{error}</p>}
@@ -297,7 +292,7 @@ export function ChartBuilderPage() {
       </p>
 
       <label className="chart-builder-field">
-        <span>Chart name</span>
+        <span className="builder-studio-field-hint">Chart name</span>
         <input type="text" disabled={readOnly} value={draft.title} maxLength={100}
           placeholder="e.g. My First ii–V–I" onChange={event => edit(before => ({ ...before, title: event.target.value }))} />
       </label>
@@ -353,13 +348,14 @@ export function ChartBuilderPage() {
           value={draft.feel}
           onChange={event => edit(before => ({ ...before, feel: event.target.value }))} />
       </label>}
-      <label className="chart-builder-field">
-        <span>Style instruction for the whole chart (optional)</span>
-        <input type="text" disabled={readOnly} value={draft.style_instruction} maxLength={120}
-          placeholder="e.g. Medium swing throughout" onChange={event => edit(before => ({ ...before, style_instruction: event.target.value }))} />
-      </label>
 
-      <div className="chart-builder-chart-heading">
+
+      <nav className="builder-studio-tabs" aria-label="Chart builder sections">
+        <a href="#studio-chart">Chart</a>
+        <a href="#studio-sections">Sections</a>
+        <a href="#studio-details">Details</a>
+      </nav>
+      <div className="chart-builder-chart-heading" id="studio-chart">
         <div><h2>Your chord chart</h2><p>Tap a measure and type its chord. Use familiar symbols like Dm7 or G7.</p></div>
         <div className="builder-studio-chart-meta" aria-label="Chart structure">
           <span>{draft.beats}/{draft.beat_unit ?? 4}</span>
@@ -399,7 +395,7 @@ export function ChartBuilderPage() {
           <button type="button" className="is-red" disabled={readOnly || draft.bars.length <= 1}
             title="Delete measure" aria-label="Delete measure" onClick={remove}>−</button>
         </div>
-        <div className="chart-builder-section-tools">
+        <div className="chart-builder-section-tools" id="studio-sections">
           <label htmlFor="chart-section-label">Section starts here
             <select id="chart-section-label" value={selectedBar.section ?? ''}
               disabled={readOnly} onChange={event => markSection(event.target.value)}>
@@ -437,6 +433,14 @@ export function ChartBuilderPage() {
         <button type="button" disabled={readOnly} onClick={() => addBars(4)}>+ Add 4 measures</button>
         <button type="button" disabled={readOnly} onClick={() => addBars(8)}>+ Add 8 measures</button>
       </div>
+      <details className="builder-studio-chart-details" id="studio-details">
+        <summary>Additional chart details <span aria-hidden="true">⌄</span></summary>
+      <label className="chart-builder-field">
+        <span>Style instruction for the whole chart (optional)</span>
+        <input type="text" disabled={readOnly} value={draft.style_instruction} maxLength={120}
+          placeholder="e.g. Medium swing throughout" onChange={event => edit(before => ({ ...before, style_instruction: event.target.value }))} />
+      </label>
+      </details>
       <p className="chart-builder-caption">Use A–D section labels and Copy section to build a form such as A–B–A. Beat durations follow the selected meter; BPM stays quarter-note based.</p>
       <div className="chart-builder-footer">
         <button type="button" className="chart-builder-secondary" onClick={cancel}>Cancel</button>
