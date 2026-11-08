@@ -351,3 +351,365 @@ html[data-theme] .p01-suave .p01-daily-fill {
 html[data-theme] .p01-suave .p01-action-icon img { width: 28px; height: 28px; display: block; object-fit: contain; image-rendering: pixelated; }
 html[data-theme] .p01-suave .p01-suave-metronome-art { width: 30px; height: 32px; object-fit: contain; image-rendering: pixelated; }
 html[data-theme] .p01-suave .p01-momentum-clock { width: 17px; height: 17px; object-fit: contain; image-rendering: pixelated; }
+
+
+/* Approved November 7 screenshot fidelity pass: restores the layered botanical
+   header, softer cards, balanced vertical rhythm, and the compact goal panel.
+   These overrides affect P01 only and intentionally retain real controls. */
+html[data-theme] .p01-page.p01-suave {
+  padding: 10px 16px 27px;
+  background-image:
+    radial-gradient(ellipse 90% 42% at 44% 2%, #f8e0d5 0%, transparent 100%),
+    linear-gradient(180deg, #fff2eb 0%, #fff9ef 49%, #fbf5ed 100%);
+}
+html[data-theme] .p01-suave .p01-header {
+  min-height: 0;
+  padding: 0;
+  margin-bottom: 12px;
+  isolation: isolate;
+}
+html[data-theme] .p01-suave .p01-suave-brand {
+  position: relative;
+  z-index: 2;
+  height: 93px;
+  width: min(74%, 265px);
+  margin-left: 21px;
+  display: flex;
+  align-items: center;
+}
+html[data-theme] .p01-suave .p01-suave-brand img:first-child {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 76px;
+  object-fit: contain;
+  object-position: left center;
+}
+.p01-suave-art-strip {
+  position: absolute;
+  z-index: 1;
+  inset: 0 -16px auto -16px;
+  height: 111px;
+  pointer-events: none;
+  overflow: visible;
+}
+.p01-suave-art-strip::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 77px;
+  height: 33px;
+  background: linear-gradient(180deg, #edd1cb84, #f5e4db00);
+  clip-path: polygon(0 20%, 12% 12%, 28% 18%, 43% 37%, 60% 73%, 77% 87%, 100% 49%, 100% 100%, 0 100%);
+}
+.p01-suave-art-strip .p01-suave-top-ivy {
+  position: absolute;
+  z-index: 3;
+  top: 7px;
+  left: 0;
+  display: block;
+  width: 47px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.p01-suave-art-strip .p01-suave-floating-note {
+  position: absolute;
+  z-index: 3;
+  top: 15px;
+  left: 60%;
+  width: 24px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.p01-suave-art-strip .p01-suave-window-art {
+  position: absolute;
+  z-index: 2;
+  width: 194px;
+  height: 118px;
+  top: -8px;
+  right: 0;
+  overflow: visible;
+}
+html[data-theme] .p01-suave .p01-greeting {
+  position: relative;
+  z-index: 2;
+  margin: 3px 0 0;
+  color: #205a46;
+  font: 750 15px/1.2 var(--font-ui);
+}
+html[data-theme] .p01-suave .p01-header h1 {
+  position: relative;
+  z-index: 2;
+  margin: 4px 0 3px;
+  font: 790 clamp(32px, 8.7vw, 38px)/1.13 var(--font-ui);
+  color: #222034;
+  letter-spacing: -.05em;
+}
+html[data-theme] .p01-suave .p01-intro {
+  max-width: min(67%, 262px);
+  min-height: 32px;
+  margin: 6px 0 0;
+  font: 400 12px/1.35 var(--font-ui);
+  color: #696179;
+}
+html[data-theme] .p01-suave .p01-suave-coach {
+  top: 128px;
+  right: 0;
+  width: 108px;
+  height: 97px;
+}
+html[data-theme] .p01-suave .p01-suave-bubble {
+  padding: 7px 6px;
+  background: #fff3f5;
+  border: 1.5px solid #9b80ae;
+  box-shadow: 0 1px 0 #ab8db5;
+  color: #4e4161;
+  line-height: 1.18;
+  font-size: 11px;
+}
+html[data-theme] .p01-suave .p01-suave-bubble strong { color: #1e5c43; }
+html[data-theme] .p01-suave .p01-suave-bubble::after {
+  background: #fff3f5;
+  border-color: #9b80ae;
+}
+html[data-theme] .p01-suave .p01-suave-coach-cat {
+  width: 63px;
+  height: 60px;
+  margin: -2px auto 0;
+}
+html[data-theme] .p01-suave .p01-momentum {
+  margin-top: 11px;
+  margin-bottom: 0;
+  padding: 6px 10px;
+  color: #31283a;
+  background: #fff0e8;
+  border: 1px solid #efcfc2;
+  font: 400 11px/1.2 var(--font-ui);
+}
+html[data-theme] .p01-suave .p01-momentum-item strong {
+  color: #262135;
+  font-size: 13px;
+}
+html[data-theme] .p01-suave .p01-actions { gap: 8px; }
+html[data-theme] .p01-suave .p01-action-primary {
+  min-height: 72px;
+  padding: 9px 13px 9px 17px;
+  border-radius: 13px;
+  border-color: #e7be6a;
+  background:
+    radial-gradient(ellipse 53% 100% at 97% -25%, #396e5a82, transparent),
+    radial-gradient(ellipse 70% 100% at 75% 135%, #204536aa, transparent),
+    linear-gradient(108deg, #204e3d 0%, #0e4936 100%);
+  box-shadow: 0 3px 0 #b99fbd, 0 5px 11px #56464d1f;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-action-copy strong {
+  font: 700 24px/1.1 Georgia, 'Palatino Linotype', serif;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-action-copy small {
+  font-size: 11.5px;
+}
+html[data-theme] .p01-suave .p01-action-primary img.p01-suave-sax {
+  width: 69px;
+  height: 62px;
+  flex-basis: 69px;
+  image-rendering: pixelated;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-chevron {
+  font-size: 25px;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair { gap: 10px; }
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary {
+  position: relative;
+  min-height: 62px;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 13px;
+  border-color: #bda2c5;
+  background: linear-gradient(145deg, #fff9f3, #f5e7ee 85%);
+  box-shadow: 0 3px 0 #d8c1d8;
+  overflow: hidden;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary::after {
+  content: '';
+  position: absolute;
+  width: 62px;
+  height: 37px;
+  right: -9px;
+  bottom: -13px;
+  border-radius: 100% 0 0 0;
+  background: #c9b3d234;
+  pointer-events: none;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-icon {
+  flex: 0 0 35px;
+  width: 35px;
+  height: 35px;
+  background: transparent;
+  border: 0;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-icon img {
+  width: 34px;
+  height: 34px;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy strong {
+  font-size: 13px;
+  color: #28243a;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy small {
+  font-size: 10px;
+  color: #655c73;
+}
+html[data-theme] .p01-suave .p01-suave-pinned {
+  min-height: 43px;
+  margin-top: 8px;
+  padding: 6px 9px;
+  border-color: #ac8fb8;
+  background: linear-gradient(120deg, #fff5f6, #f3e1ef);
+  box-shadow: 0 2px 0 #c9b3d0;
+}
+html[data-theme] .p01-suave .p01-suave-pin-copy strong {
+  color: #2c263b;
+  font-size: 13px;
+}
+html[data-theme] .p01-suave .p01-suave-pin-copy span { color: #65547b; font-size: 10px; }
+html[data-theme] .p01-suave .p01-suave-start { min-height: 34px; }
+html[data-theme] .p01-suave .p01-tools { margin-top: 12px; }
+html[data-theme] .p01-suave .p01-tools h2 {
+  font: 780 18px/1.2 var(--font-ui);
+  color: #2a2538;
+  margin-bottom: 7px;
+}
+html[data-theme] .p01-suave .p01-tool {
+  min-height: 40px;
+  padding: 7px 8px;
+  gap: 8px;
+  border-radius: 11px;
+  background: #fff8f2;
+  border-color: #c8bcb8;
+  box-shadow: 0 2px 0 #e2cfcb;
+}
+html[data-theme] .p01-suave .p01-tool strong {
+  font: 740 14px var(--font-ui);
+  color: #225541;
+}
+html[data-theme] .p01-suave .p01-tuning-fork { transform: scale(.78); }
+html[data-theme] .p01-suave .p01-suave-metronome-art { width: 25px; height: 29px; }
+html[data-theme] .p01-suave .p01-daily {
+  position: relative;
+  overflow: hidden;
+  margin-top: 15px;
+  padding: 9px 12px 13px;
+  border: 1.5px solid #91af83;
+  border-radius: 15px;
+  background:
+    radial-gradient(ellipse 68% 37px at 22% 112%, #b7cea36b 4%, transparent 95%),
+    radial-gradient(ellipse 75% 40px at 98% 121%, #94ba835e 7%, transparent 95%),
+    linear-gradient(150deg, #fff9ee 0%, #f7f0e5 100%);
+  box-shadow: 0 3px 0 #b9cfa4, 0 5px 12px #877a6421;
+}
+html[data-theme] .p01-suave .p01-suave-goal-row { min-height: 41px; gap: 9px; }
+html[data-theme] .p01-suave .p01-suave-target {
+  color: #635078;
+  width: 38px; height: 38px; flex-basis: 38px;
+}
+html[data-theme] .p01-suave .p01-suave-goal-copy strong {
+  font-size: 15px;
+  color: #2c283d;
+}
+html[data-theme] .p01-suave .p01-suave-goal-copy small { color: #685f72; font-size: 10px; }
+html[data-theme] .p01-suave .p01-suave-goal-value {
+  padding: 7px 10px;
+  border: 1px solid #d1d2b3;
+  background: #e9e8cf;
+  color: #1d5644;
+  font-size: 12px;
+}
+html[data-theme] .p01-suave .p01-suave-rule {
+  margin: 6px 0 9px;
+  background: #e3c8cc;
+}
+html[data-theme] .p01-suave .p01-daily-header {
+  font: 800 15px/1.1 var(--font-ui);
+  margin-bottom: 8px;
+  color: #282339;
+}
+html[data-theme] .p01-suave .p01-daily-header strong { font-size: 13px; }
+html[data-theme] .p01-suave .p01-daily-track {
+  height: 20px;
+  border: 1.5px solid #195e48;
+  background: #fff4e3;
+  box-shadow: inset 0 1px 3px #cbbfa67d;
+}
+html[data-theme] .p01-suave .p01-daily-fill { background: #428c66; }
+html[data-theme] .p01-suave .p01-suave-growing-plant {
+  width: 46px;
+  height: 42px;
+  flex-basis: 46px;
+}
+html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav {
+  left: 9px;
+  right: 9px;
+  bottom: max(7px, env(safe-area-inset-bottom));
+  border: 1px solid #d9c8bf;
+  border-radius: 20px;
+  background: #fff7f2;
+  padding: 6px 5px;
+  box-shadow: 0 3px 0 #dcc5c1, 0 4px 15px #39242f12;
+}
+html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav a {
+  min-height: 48px;
+  padding: 5px 2px;
+  color: #6b5b79;
+}
+html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav a.current {
+  background: #e2e9d8;
+  color: #20583e;
+  box-shadow: none;
+  border-radius: 14px;
+}
+html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav a.current::before { content: none; }
+/* The approved color treatment belongs to light mode only.
+   Dark mode uses accessible semantic palette and maintains all controls. */
+html[data-theme="dark"] .p01-page.p01-suave {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+html[data-theme="dark"] .p01-suave :is(.p01-greeting, .p01-header h1, .p01-intro, .p01-momentum,
+  .p01-momentum-item strong, .p01-action-secondary .p01-action-copy strong, .p01-action-secondary .p01-action-copy small,
+  .p01-suave-pin-copy strong, .p01-suave-pin-copy span, .p01-tools h2, .p01-tool strong,
+  .p01-suave-goal-copy strong, .p01-suave-goal-copy small, .p01-daily-header) {
+  color: var(--color-text);
+}
+html[data-theme="dark"] .p01-suave :is(.p01-momentum, .p01-suave-pinned, .p01-daily, .p01-action-secondary,
+  .p01-tool, .p01-suave-bubble) {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+html[data-theme="dark"] .p01-suave :is(.p01-suave-goal-value, .p01-suave-bubble::after) {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+@media (max-width: 380px) {
+  html[data-theme] .p01-page.p01-suave { padding-left: 12px; padding-right: 12px; }
+  html[data-theme] .p01-suave .p01-suave-brand { width: 70%; margin-left: 18px; height: 89px; }
+  .p01-suave-art-strip { left: -12px; right: -12px; }
+  .p01-suave-art-strip .p01-suave-window-art { width: 179px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary { gap: 5px; padding: 7px 6px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-icon { width: 30px; flex-basis: 30px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-icon img { width: 29px; height: 29px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy strong { font-size: 12px; }
+}
+@media (max-height: 710px) {
+  html[data-theme] .p01-suave .p01-suave-brand { height: 81px; }
+  html[data-theme] .p01-suave .p01-suave-brand img:first-child { height: 65px; }
+  html[data-theme] .p01-suave .p01-suave-window-art { height: 103px; }
+  html[data-theme] .p01-suave .p01-suave-coach { top: 115px; }
+  html[data-theme] .p01-suave .p01-action-primary { min-height: 68px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary { min-height: 60px; }
+  html[data-theme] .p01-suave .p01-tools { margin-top: 10px; }
+  html[data-theme] .p01-suave .p01-daily { margin-top: 11px; }
+}
