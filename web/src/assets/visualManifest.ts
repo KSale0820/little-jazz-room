@@ -155,6 +155,16 @@ export const VISUAL_ASSETS = {
     share: '/visuals/icons/icon-share.svg',
     skip: '/visuals/icons/icon-skip.svg',
   },
+  /** Tracks + Charts approved November 7, 2026 UI. SVG fallbacks plus PR #84 crisp pixel icons. */
+  tracksApproved: {
+    title: '/visuals/tracks-approved/tracks-title.svg',
+    studyShelf: '/visuals/tracks-approved/jazz-study-shelf.svg',
+    bookmarkFilledFallback: '/visuals/tracks-approved/bookmark-filled.svg',
+    recordFallback: '/visuals/tracks-approved/record.svg',
+    bookmark: '/visuals/tracks-approved/bookmark.png',
+    record: '/visuals/tracks-approved/record.png',
+    chevron: '/visuals/tracks-approved/chevron.png',
+  },
   /** Minimal geometric motifs for both clean themes, tinted via CSS mask and semantic tokens. */
   pixelMotifs: {
     plant: '/visuals/pixel-motifs/plant.svg',
