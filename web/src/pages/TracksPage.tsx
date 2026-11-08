@@ -209,7 +209,7 @@ export function TracksPage() {
       </div>
       <button type="button" className="t01-bookmarked-link"
         aria-pressed={category === 'Bookmarked'} onClick={() => { setCategory(old => old === 'Bookmarked' ? 'All' : 'Bookmarked'); setQuery(''); }}>
-        <img src="/visuals/tracks-approved/bookmark-filled.svg" alt="" aria-hidden="true" />
+        <img src="/visuals/tracks-approved/bookmark.png" alt="" aria-hidden="true" />
         <span className="t01-bookmarked-copy"><strong>Bookmarked</strong><small>Saved tracks &amp; charts{favorites.length ? ' · ' + favorites.length : ''}</small></span>
         <TrackIcon name="chevron" />
       </button>
@@ -229,7 +229,7 @@ export function TracksPage() {
             ].filter(Boolean).join(' · ');
             return (
               <article className="t01-track-card" key={track.id}>
-                <img className="t01-record-icon" src="/visuals/tracks-approved/record.svg" alt="" aria-hidden="true" />
+                <img className="t01-record-icon" src="/visuals/tracks-approved/record.png" alt="" aria-hidden="true" />
                 <button type="button" className="t01-card-open" disabled={!isAvailable}
                   aria-label={'Open ' + track.title + (track.chart ? ' chord chart' : ' backing track')}
                   onClick={() => openChart(track.chart?.id ?? null, hasAudio ? track.recordingId : null)}>
