@@ -238,6 +238,15 @@ html[data-theme] .routine-approved .routine-pin {
   font: 650 11px var(--font-ui);
   text-decoration: none;
 }
+html[data-theme] .routine-approved .routine-pin {
+  border-left: 1px solid color-mix(in srgb, var(--routine-border) 70%, transparent);
+  color: var(--color-violet);
+}
+html[data-theme] .routine-approved .routine-pin svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
 html[data-theme] .routine-approved .routine-pin.is-pinned {
   color: var(--color-success);
   text-decoration: underline;
