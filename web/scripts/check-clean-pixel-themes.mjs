@@ -202,7 +202,7 @@ try {
             const controls = await page.evaluate(() => {
               const icon = document.querySelector('.practice-timer-button .practice-play-pixel');
               const play = document.querySelector('.practice-timer-button');
-              const labelNames = ['Configure loop', 'Repeat playback', 'Transpose concert chart key',
+              const labelNames = ['Configure loop', 'Repeat playback',
                 'Increase reference BPM', 'Decrease reference BPM', 'Raise concert key one semitone',
                 'Lower concert key one semitone', 'Metronome', 'Tuner', 'Finish Session'];
               const buttonNames = [...document.querySelectorAll('.practice-player button')]
@@ -217,6 +217,8 @@ try {
                 width: rect?.width || 0,
                 height: rect?.height || 0,
                 missing: labelNames.filter(label => !buttonNames.some(name => name.includes(label))),
+                missingSelects: ['Transpose concert chart key', 'Transposing instrument'].filter(label =>
+                  !document.querySelector(`select[aria-label="${label}"]`)),
               };
             });
             assert.ok(controls.mask.includes('/practice-player/svg/play.svg'),
@@ -226,6 +228,7 @@ try {
             assert.ok(contrastRatio(controls.ink, controls.bg) >= 3,
               'Play glyph contrast below 3:1 in ' + label + ': ' + JSON.stringify(controls));
             assert.deepEqual(controls.missing, [], 'Practice Player lost visible functional controls in ' + label);
+            assert.deepEqual(controls.missingSelects, [], 'Practice Player lost musical settings in ' + label);
           }
           if (screen === 'Player') {
             // Read actual rendered chords under synthetic selection states, not just root variables.
