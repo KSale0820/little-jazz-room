@@ -239,7 +239,7 @@ export function RoutineLibraryPage() {
               : tab === 'Saved' && !bookmarks.length
                 ? 'Save a routine with its bookmark icon to find it here.'
                 : 'Try another search or adjust the filters.'}</p>
-            {(query || countRoutineFilters(filters)) > 0 && <button type="button" onClick={resetAllFilters}>Clear search and filters</button>}
+            {(Boolean(query) || countRoutineFilters(filters) > 0) && <button type="button" onClick={resetAllFilters}>Clear search and filters</button>}
           </div>
         )}
       </div>
