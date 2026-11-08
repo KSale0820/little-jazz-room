@@ -650,3 +650,81 @@ html[data-theme] .tool-metronome .metronome-tap {
   }
   html[data-theme] .tool-metronome .metronome-tap-row { min-height: 41px; padding-bottom: 4px; }
 }
+
+/* Final screenshot corrections: make gauge labels completely visible and keep
+   optional cats in the short iPhone viewport without obscuring controls. */
+html[data-theme] .tool-tuner .tuner-indicator .tuner-gauge-labels {
+  top: 5px;
+  left: 12px;
+  right: 12px;
+  z-index: 1;
+}
+html[data-theme] .tool-tuner .tuner-indicator .tuner-gauge svg {
+  margin-top: 17px;
+  height: calc(100% - 17px);
+}
+html[data-theme] .tool-tuner:has(.tuner-unavailable) .tuner-trail-controls,
+html[data-theme] .tool-tuner:has(.tuner-unavailable) .tuner-trail-panel {
+  display: none;
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  html[data-theme] .tool-metronome .metronome-tempo {
+    margin-top: 5px;
+    padding-block: 5px;
+  }
+  html[data-theme] .tool-metronome .metronome-bpm strong { font-size: 53px; }
+  html[data-theme] .tool-metronome .metronome-slider { margin: 8px 0 2px; }
+  html[data-theme] .tool-metronome .metronome-action-group {
+    min-height: 74px;
+    gap: 1px;
+    margin: 0 auto 3px;
+  }
+  html[data-theme] .tool-metronome .metronome-action-group .metronome-play {
+    width: 58px;
+    height: 58px;
+    padding: 5px;
+  }
+  html[data-theme] .tool-metronome .metronome-action-group .metronome-play img {
+    width: 46px;
+    height: 46px;
+  }
+  html[data-theme] .tool-metronome .metronome-tap-row {
+    min-height: 35px;
+    padding-bottom: 2px;
+  }
+  html[data-theme] .tool-metronome .metronome-field { margin-top: 6px; }
+  html[data-theme] .tool-metronome .metronome-field h2 { margin-bottom: 4px; }
+  html[data-theme] .tool-metronome .metronome-signatures button { min-height: 44px; }
+  html[data-theme] .tool-metronome .metronome-beats { min-height: 43px; }
+  html[data-theme] .tool-metronome .metronome-beats button {
+    min-height: 40px;
+    height: 40px;
+    width: 40px;
+  }
+  html[data-theme] .tool-metronome .metronome-countin {
+    min-height: 49px;
+    margin-top: 6px;
+    padding: 4px 10px;
+  }
+  html[data-theme] .tool-metronome .tool-cat-scene {
+    min-height: 61px;
+    height: 61px;
+    margin-top: 2px;
+  }
+  html[data-theme] .tool-metronome .tool-cat-scene .tool-scene-cat {
+    width: 95px;
+    height: 85px;
+    bottom: -4px;
+    right: 26px;
+  }
+  html[data-theme] .tool-metronome .tool-cat-scene::before {
+    bottom: 1px;
+    width: 35px;
+    height: 35px;
+  }
+  html[data-theme] .tool-metronome .tool-cat-scene::after {
+    bottom: 5px;
+    width: 25px;
+    height: 25px;
+  }
+}
