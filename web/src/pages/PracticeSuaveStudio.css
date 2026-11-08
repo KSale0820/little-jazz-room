@@ -881,3 +881,42 @@ html[data-theme="dark"] .p01-suave .p01-suave-brand {
 html[data-theme="dark"] .p01-suave .p01-suave-brand img:first-child {
   filter: brightness(.88) saturate(.85);
 }
+
+
+/* Free Practice is an instrument-led action, never the framed music-poster
+   placeholder. The approved PNG note/sparkle accent the golden sax SVG. */
+html[data-theme] .p01-suave .p01-action-primary .p01-suave-sax-illustration {
+  display: block;
+  flex: 0 0 71px;
+  width: 71px;
+  height: 69px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 2px #11282065);
+  pointer-events: none;
+}
+html[data-theme] .p01-suave .p01-action-primary img.p01-suave-hero-note {
+  position: absolute;
+  right: 103px;
+  top: 11px;
+  width: 19px;
+  height: 22px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  visibility: visible;
+  filter: none;
+  opacity: .94;
+  pointer-events: none;
+}
+@media (max-height: 710px) {
+  html[data-theme] .p01-suave .p01-action-primary .p01-suave-sax-illustration {
+    flex-basis: 59px;
+    width: 59px;
+    height: 56px;
+  }
+  html[data-theme] .p01-suave .p01-action-primary img.p01-suave-hero-note {
+    width: 15px;
+    height: 17px;
+    right: 85px;
+    top: 8px;
+  }
+}
