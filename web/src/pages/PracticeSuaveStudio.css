@@ -224,8 +224,10 @@ html[data-theme] .p01-suave .p01-suave-pinned {
   width: 22px;
   color: var(--color-violet);
   font-size: 28px;
-  transform: rotate(180deg);
   flex: 0 0 22px;
+  height: 29px;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 .p01-suave-pin-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; gap: 3px; }
 .p01-suave-pin-copy strong { color: var(--color-text); font: 750 14px/1.1 var(--font-ui); }
@@ -344,3 +346,8 @@ html[data-theme] .p01-suave .p01-daily-fill {
 @media (prefers-reduced-motion: reduce) {
   html[data-theme] .p01-suave .p01-daily-fill { transition: none; }
 }
+
+/* Refreshed approved PR #84 UI icons: transparent PNG pixels, no blur. */
+html[data-theme] .p01-suave .p01-action-icon img { width: 28px; height: 28px; display: block; object-fit: contain; image-rendering: pixelated; }
+html[data-theme] .p01-suave .p01-suave-metronome-art { width: 30px; height: 32px; object-fit: contain; image-rendering: pixelated; }
+html[data-theme] .p01-suave .p01-momentum-clock { width: 17px; height: 17px; object-fit: contain; image-rendering: pixelated; }
