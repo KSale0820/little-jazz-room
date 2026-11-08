@@ -677,7 +677,7 @@ export function PracticePage() {
                 <button type="button" onClick={() => stepMeasure(1)}>Next measure</button>
               </div>
               <p>{formatChartMeta(chart)} · Key {chart.concert_key.replace('b', '♭')}</p>
-              {chart.style_instruction && <p>{chart.style_instruction}</p>}
+              {!chart.is_custom && chart.style_instruction && <p>{chart.style_instruction}</p>}
               <p>{activeRecording ? 'Recorded audio plays at its original speed and pitch.' : 'Chart-only practice follows the selected BPM; no recording is attached.'}</p>
               {activeRecording && <p>Chart selection stays linked to the recording.</p>}
             </div>
