@@ -209,7 +209,7 @@ export function RoutineLibraryPage() {
               <button type="button" className={'routine-pin' + (pinnedId === routine.id ? ' is-pinned' : '')}
                 aria-label={(pinnedId === routine.id ? 'Unpin ' : 'Pin ') + routine.title + ' on Practice home'
                 } aria-pressed={pinnedId === routine.id} onClick={() => togglePin(routine.id)}>
-                <span aria-hidden="true">{pinnedId === routine.id ? '◆' : '◇'}</span>
+                <span>{pinnedId === routine.id ? 'Pinned' : 'Pin'}</span>
               </button>
             </article>
           );
