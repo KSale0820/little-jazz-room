@@ -14,13 +14,46 @@ html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand {
   overflow: hidden;
   z-index: 2;
 }
-html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand img:first-child {
-  display: block;
-  width: 100%;
+/* The newest PR #84 assets are transparent, so the original overlapping
+   botanical wordmark and lamp/window remain distinct and crisp. */
+html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand {
+  overflow: visible;
+  isolation: isolate;
+}
+html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand img.p01-suave-approved-wordmark {
+  position: absolute;
+  z-index: 3;
+  left: -4px;
+  top: -5px;
+  width: 72%;
   height: 100%;
-  object-fit: fill;
-  object-position: center;
+  object-fit: cover;
+  object-position: center center;
   image-rendering: auto;
+}
+html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand img.p01-suave-approved-window {
+  position: absolute;
+  z-index: 2;
+  right: -4px;
+  top: -17px;
+  width: 51%;
+  height: 133%;
+  object-fit: contain;
+  object-position: right center;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  height: 23px;
+  bottom: -6px;
+  left: -3px;
+  right: -3px;
+  background: linear-gradient(180deg, #edd0c4a3, transparent);
+  clip-path: polygon(0 50%, 13% 22%, 31% 28%, 50% 86%, 76% 97%, 100% 37%, 100% 100%, 0 100%);
+  pointer-events: none;
 }
 html[data-theme] .p01-suave .p01-greeting { margin-top: 2px; }
 html[data-theme] .p01-suave .p01-header h1 { letter-spacing: -.04em; }
@@ -124,4 +157,9 @@ html[data-theme] .p01-suave .p01-daily .p01-daily-fill {
 }
 html[data-theme="dark"] .p01-suave .p01-suave-brand {
   border-radius: 0 0 12px 12px;
+}
+
+@media (max-width: 380px) {
+  html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand img.p01-suave-approved-wordmark { left: -3px; width: 75%; }
+  html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand img.p01-suave-approved-window { width: 50%; right: -3px; top: -12px; }
 }
