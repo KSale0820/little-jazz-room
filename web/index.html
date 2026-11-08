@@ -8,10 +8,10 @@
     <script>
       (function () {
         var mode = null;
-        var cats = false;
+        var cats = true;
         try {
           mode = localStorage.getItem('little-jazz-room:appearance:v1');
-          cats = localStorage.getItem('little-jazz-room:decorative-cats:v1') === 'true';
+          cats = localStorage.getItem('little-jazz-room:decorative-cats:v1') !== 'false';
         } catch (_) { /* storage optional */ }
         var theme = mode === 'dark' || mode === 'light' ? mode :
           (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');

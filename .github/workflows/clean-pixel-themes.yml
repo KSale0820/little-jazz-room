@@ -43,6 +43,8 @@ jobs:
             sleep 1
           done
           curl -f http://127.0.0.1:5174/
+      - name: Capture Progress redesign reference screenshots
+        run: node scripts/check-progress-redesign.mjs
       - name: Clean pixel Light/Dark x Cat Mode mobile matrix
         run: node scripts/check-clean-pixel-themes.mjs
       - name: Existing complete class walkthrough
@@ -57,6 +59,7 @@ jobs:
         with:
           name: clean-pixel-mobile-qa-${{ github.run_number }}
           path: |
+            web/docs/screenshots/progress-redesign-qa/
             web/docs/screenshots/clean-pixel-qa/
             web/docs/screenshots/free-practice/
             web/docs/screenshots/class-demo-integration/

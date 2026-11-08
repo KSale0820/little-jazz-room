@@ -15,7 +15,7 @@ const routes = [
   ['Player', '/player?chart=blues-f-12', '.practice-player'],
   ['Tracks', '/tracks', '.t01-page'],
   ['Routines', '/routines', '.routine-library'],
-  ['Progress', '/progress', '.g01-page'],
+  ['Progress', '/progress', '.pgr-page'],
   ['Profile', '/profile', '.profile-page'],
   ['Tuner', '/tuner', '.tool-tuner'],
   ['Metronome', '/metronome', '.tool-metronome'],
@@ -93,11 +93,11 @@ try {
               navTop: rect?.top ?? -1,
               navBottom: rect?.bottom ?? -1,
               catVisibility: (() => {
-                const cat = document.querySelector('.g01-cat, .tool-scene-cat');
+                const cat = document.querySelector('.pgr-cat, .tool-scene-cat');
                 return cat ? getComputedStyle(cat).visibility : null;
               })(),
               catFootprint: (() => {
-                const cat = document.querySelector('.g01-cat, .tool-scene-cat');
+                const cat = document.querySelector('.pgr-cat, .tool-scene-cat');
                 if (!cat) return null;
                 const { x, y, width, height } = cat.getBoundingClientRect();
                 return [x, y, width, height].map(value => Math.round(value * 10) / 10);
@@ -107,7 +107,7 @@ try {
                 return avatar ? getComputedStyle(avatar).visibility : null;
               })(),
               chartCells: document.querySelectorAll('.chord-grid .measure').length,
-              progressCatSrc: document.querySelector('.g01-cat')?.getAttribute('src') ?? null,
+              progressCatSrc: document.querySelector('.pgr-cat')?.getAttribute('src') ?? null,
               profileAvatarSrc: document.querySelector('.profile-companion-art .jazz-cat-sprite')?.getAttribute('src') ?? null,
               profileChooserIds: [...document.querySelectorAll('.board-cat-card')].map(button =>
                 button.getAttribute('aria-label')?.split(',')[0] ?? ''),
@@ -115,7 +115,7 @@ try {
                 img => img.getAttribute('src') ?? ''),
 
               screenBackground: (() => {
-                const root = document.querySelector('.p01-page, .g01-page');
+                const root = document.querySelector('.p01-page, .pgr-page');
                 return root ? getComputedStyle(root).backgroundColor : null;
               })(),
               chartPaperBackground: (() => {
@@ -259,8 +259,8 @@ try {
   await page.goto(base + '/profile', { waitUntil: 'networkidle' });
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark',
     'First use should honor dark system preference');
-  assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'off',
-    'First use should disable decorative cats');
+  assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'on',
+    'First use should enable decorative cats by default');
   await page.getByRole('button', { name: 'Light', exact: true }).click();
   await page.getByRole('checkbox', { name: /Cat Mode/ }).check();
   await page.reload({ waitUntil: 'networkidle' });
