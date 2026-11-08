@@ -184,8 +184,7 @@ export function TracksPage() {
   return (
     <section className="t01-page t01-approved" aria-label="Tracks and charts library">
       <header className="t01-header t01-pixel-header">
-        <h1 className="t01-approved-title">
-          <span className="sr-only">Tracks and Charts</span>
+        <h1 className="t01-approved-title" aria-label="Tracks and Charts">
           <img src="/visuals/tracks-approved/tracks-title.png" alt="" aria-hidden="true" />
         </h1>
         <img className="t01-pixel-shelf" src="/visuals/tracks-approved/jazz-study-shelf.png" alt="" aria-hidden="true" />
