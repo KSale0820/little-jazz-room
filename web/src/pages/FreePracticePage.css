@@ -188,7 +188,13 @@
 .fp-chart .chord-grid .measure { min-width: 0; min-height: 54px; font-size: 11px; }
 .fp-selected-recording { padding: 8px 12px; border-top: 1px solid var(--color-border); color: var(--color-text); font-size: 12px; }
 .fp-start-workspace { margin-top: 12px; }
-.fp-session-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.fp-session-actions {
+  position: sticky; bottom: 7px; z-index: 3;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-top: 12px; padding: 7px 0;
+  background: var(--color-bg);
+  border-radius: 12px;
+}
 .fp-session-actions button { min-height: 51px; padding: 8px 9px; border-radius: 10px; font: 750 13px/1.1 var(--font-ui); }
 .fp-pause-action {
   display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -263,3 +269,4 @@
     height: calc(100% - 76px); min-height: 0; overflow-y: auto; padding-bottom: 0;
   }
 }
+.fp-completion-shelf:not(:has(.fp-summary-cat)) { justify-content: center; gap: 34px; }
