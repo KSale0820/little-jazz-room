@@ -377,6 +377,21 @@ export function PracticePage() {
     setNowMs(now);
   }
 
+  // Keep a time-based transport even in chart-only mode, without pretending
+  // that a backing-track recording exists. The chart follower is the clock.
+  const chartSecondsPerBeat = 240 / (tempo * chart.time_signature[1]);
+  const chartSequenceSeconds = sequenceDuration(chart, activeSections) * chartSecondsPerBeat;
+  const chartPositionSeconds = Math.min(chartSequenceSeconds, (repeatWholePlan && chartSequenceSeconds > 0
+    ? playhead.sequenceBeat * chartSecondsPerBeat % chartSequenceSeconds
+    : playhead.sequenceBeat * chartSecondsPerBeat));
+
+  function seekChartSeconds(seconds: number) {
+    const now = performance.now();
+    const clamped = Math.max(0, Math.min(chartSequenceSeconds, seconds));
+    setMusicalClock({ chartBeat: clamped / chartSecondsPerBeat, startedAtMs: isRunning ? now : null });
+    setNowMs(now);
+  }
+
   function stepMeasure(delta: number) {
     const now = performance.now();
     const beats = beatsPerMeasure(chart);
@@ -641,7 +656,13 @@ export function PracticePage() {
                 onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
                 {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
               </select>
+              <label htmlFor="practice-instrument">Transposing instrument</label>
+              <select id="practice-instrument" value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)}
+                aria-label="Transposing instrument">
+                <option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option>
+              </select>
               <p>{formatChartMeta(chart)} · Key {chart.concert_key.replace('b', '♭')}</p>
+              <p>{activeRecording ? 'Recorded audio plays at its original speed and pitch.' : 'Chart-only practice follows the selected BPM; no recording is attached.'}</p>
               {activeRecording && <p>Chart selection stays linked to the recording.</p>}
             </div>
           </details>
@@ -735,19 +756,20 @@ export function PracticePage() {
           </div>
         ) : (
           <div className="practice-chart-seek">
-            <input type="range" min={0} max={Math.max(0, chart.bars.length - 1)}
-              step={1} value={playhead.barIndex} aria-label="Seek to chart measure"
-              onChange={event => moveToBar(Number(event.target.value))} />
+            <input type="range" min={0} max={Math.max(1, chartSequenceSeconds)}
+              step={0.25} value={chartPositionSeconds} aria-label="Seek within chord chart practice"
+              onChange={event => seekChartSeconds(Number(event.target.value))} />
             <div className="practice-recording-times">
-              <span>Bar {playhead.barIndex + 1}</span><span>{chart.bars.length} bars</span>
+              <span>{formatPracticeTime(Math.floor(chartPositionSeconds))}</span>
+              <span>−{formatPracticeTime(Math.ceil(Math.max(0, chartSequenceSeconds - chartPositionSeconds)))}</span>
             </div>
           </div>
         )}
         <div className="practice-control-row" role="group" aria-label="Playback and chart navigation">
           <button className="practice-measure-btn" type="button"
-            aria-label={activeRecording ? 'Back 10 seconds' : 'Previous measure'}
-            onClick={() => activeRecording ? seekRecording((audioRef.current?.currentTime ?? 0) - 10) : stepMeasure(-1)}>
-            <PlayerPixelIcon name="skip-back" /><span>{activeRecording ? '10s' : 'Bar'}</span>
+            aria-label="Back 10 seconds"
+            onClick={() => activeRecording ? seekRecording((audioRef.current?.currentTime ?? 0) - 10) : seekChartSeconds(chartPositionSeconds - 10)}>
+            <PlayerPixelIcon name="skip-back" /><span>10s</span>
           </button>
           <button className="practice-loop-control" type="button"
             aria-label="Configure loop" aria-pressed={loopEnabled}
@@ -763,9 +785,9 @@ export function PracticePage() {
             <PlayerPixelIcon name="repeat" /><span>Repeat</span>
           </button>
           <button className="practice-measure-btn" type="button"
-            aria-label={activeRecording ? 'Forward 10 seconds' : 'Next measure'}
-            onClick={() => activeRecording ? seekRecording((audioRef.current?.currentTime ?? 0) + 10) : stepMeasure(1)}>
-            <PlayerPixelIcon name="skip-forward" /><span>{activeRecording ? '10s' : 'Bar'}</span>
+            aria-label="Forward 10 seconds"
+            onClick={() => activeRecording ? seekRecording((audioRef.current?.currentTime ?? 0) + 10) : seekChartSeconds(chartPositionSeconds + 10)}>
+            <PlayerPixelIcon name="skip-forward" /><span>10s</span>
           </button>
         </div>
         <div className="practice-chart-controls practice-player-pills" id="practice-inline-settings" aria-label="Musical settings">
@@ -803,13 +825,7 @@ export function PracticePage() {
             changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100);
             setChartKey(chart.concert_key);
           }}>Original</button>
-          <label className="practice-instrument-field" htmlFor="practice-instrument">Instrument
-            <select id="practice-instrument" value={writtenPitch}
-              onChange={event => setWrittenPitch(event.target.value as WrittenPitch)}
-              aria-label="Transposing instrument">
-              <option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option>
-            </select>
-          </label>
+
         </div>
         <p className="practice-reference-note">{activeRecording
           ? 'BPM and key are chart references. Recorded audio keeps its original speed and pitch.'
