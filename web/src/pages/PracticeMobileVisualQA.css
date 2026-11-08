@@ -1,0 +1,218 @@
+/* Screenshot-driven P01 corrections, 2026-11-08.
+   Do not alter layout/logic on other routes. Applies after PracticeApprovedFinish.css. */
+
+/* Cat preview was constrained to a 63x60 box (50px high on short phones).
+   Reserve space above the stats row and increase its visible footprint. */
+html[data-theme] .p01-page.p01-suave .p01-suave-coach {
+  top: 116px;
+  right: 2px;
+  width: 128px;
+  height: 130px;
+  z-index: 4;
+  pointer-events: none;
+}
+html[data-theme] .p01-page.p01-suave .p01-suave-bubble {
+  width: 124px;
+  max-width: 124px;
+  margin: 0 auto;
+  padding: 6px 7px;
+  font-size: 11px;
+  position: relative;
+  z-index: 2;
+}
+html[data-theme] .p01-page.p01-suave img.p01-suave-coach-cat {
+  display: block;
+  width: 108px;
+  height: 88px;
+  max-width: none;
+  margin: -9px auto 0;
+  object-fit: contain;
+  image-rendering: pixelated;
+  transform: none;
+}
+
+/* The previous top:0 inherited a translateY(-50%) from an earlier layout,
+   sending the sax and purple notes ABOVE their parent button. */
+html[data-theme] .p01-page.p01-suave .p01-action-primary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+html[data-theme] .p01-page.p01-suave .p01-action-primary img.p01-suave-approved-sax {
+  position: absolute;
+  width: 110px;
+  height: 74px;
+  max-width: none;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  object-fit: contain;
+  object-position: center;
+  filter: none;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+html[data-theme] .p01-page.p01-suave .p01-action-primary .p01-action-copy {
+  flex: 0 1 62%;
+  width: 62%;
+  max-width: 62%;
+  min-width: 0;
+  padding: 0;
+  position: relative;
+  z-index: 2;
+}
+html[data-theme] .p01-page.p01-suave .p01-action-primary .p01-chevron {
+  z-index: 3;
+  margin-left: auto;
+}
+html[data-theme] .p01-page.p01-suave .p01-action-primary :is(.p01-suave-primary-sparkle,.p01-suave-hero-note) {
+  display: none;
+}
+
+/* Dark mode must not reuse peach/light card backgrounds and dark text. */
+html[data-theme="dark"] .p01-page.p01-suave {
+  background: linear-gradient(180deg,#201d29 0%, #181b26 53%, #161921 100%);
+  color: #f4eee9;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-header .p01-suave-brand {
+  background: linear-gradient(180deg,#24212d,#211e29);
+  border-bottom: 1px solid #4a3d51;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 8px #10101940;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-header .p01-suave-brand img.p01-suave-approved-wordmark {
+  filter: invert(.87) hue-rotate(130deg) saturate(.7) brightness(1.2);
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-header .p01-suave-brand img.p01-suave-approved-window {
+  filter: brightness(.86) saturate(1.1);
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-header .p01-suave-brand::after {
+  background: linear-gradient(180deg,#64536e50,transparent);
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-greeting {
+  color: #9ed8b8;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-header h1,
+html[data-theme="dark"] .p01-page.p01-suave .p01-tools h2,
+html[data-theme="dark"] .p01-page.p01-suave .p01-daily-header,
+html[data-theme="dark"] .p01-page.p01-suave .p01-daily-header strong {
+  color: #f6f0eb;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-intro {
+  color: #d8d0de;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-momentum {
+  background: #302a38;
+  border-color: #796681;
+  color: #f0e8ef;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-momentum-item strong {
+  color: #fff5eb;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-momentum-clock {
+  filter: brightness(1.45);
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-pinned {
+  background: linear-gradient(120deg,#302837,#292531);
+  border-color: #8b7097;
+  box-shadow: 0 2px 0 #55425c;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-pin-copy strong {
+  color: #f9f1f5;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-pin-copy span,
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-pin-browse {
+  color: #d2c5da;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-tool {
+  background: #2b2b34;
+  border-color: #827787;
+  box-shadow: 0 2px 0 #443e4c;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-tool strong {
+  color: #d9f4e4;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-tuning-fork {
+  color: #a6e0c0;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-metronome-art {
+  filter: brightness(1.25);
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-daily {
+  background: linear-gradient(150deg,#302d36,#262a31);
+  border-color: #7fa18c;
+  color: #f6f0e9;
+  box-shadow: 0 3px 0 #415948, 0 5px 12px #0004;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-goal-row,
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-goal-copy strong,
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-target,
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-goal-row .p01-chevron {
+  color: #f4f1ed;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-goal-copy small {
+  color: #d8cfdc;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-goal-value {
+  background: #335244;
+  border-color: #668d75;
+  color: #f3ffe9;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-suave-rule {
+  background: #62596b;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-daily-track {
+  background: #383940;
+  border-color: #789b85;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-daily-fill {
+  background: #78bd91;
+  background-image: none;
+}
+html[data-theme="dark"] .p01-page.p01-suave .p01-action-secondary .p01-action-icon img {
+  filter: brightness(1.28);
+}
+html[data-theme="dark"] .app-shell:has(.p01-suave) .bottom-nav a {
+  color: #e0d5e6;
+}
+html[data-theme="dark"] .app-shell:has(.p01-suave) .bottom-nav a img {
+  filter: brightness(0) invert(.88);
+}
+html[data-theme="dark"] .app-shell:has(.p01-suave) .bottom-nav a.current {
+  background: #365344;
+  color: #f1ffef;
+}
+
+/* Short phone: keep cat and icon visibly larger without covering controls. */
+@media (max-width: 380px), (max-height: 710px) {
+  html[data-theme] .p01-page.p01-suave .p01-suave-coach {
+    top: 106px;
+    right: 0;
+    width: 119px;
+    height: 120px;
+  }
+  html[data-theme] .p01-page.p01-suave .p01-suave-bubble {
+    width: 116px;
+    max-width: 116px;
+    font-size: 10px;
+    padding: 5px 6px;
+  }
+  html[data-theme] .p01-page.p01-suave img.p01-suave-coach-cat {
+    width: 100px;
+    height: 78px;
+    margin-top: -8px;
+  }
+  html[data-theme] .p01-page.p01-suave .p01-action-primary img.p01-suave-approved-sax {
+    width: 89px;
+    height: 61px;
+    right: 26px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  html[data-theme] .p01-page.p01-suave .p01-action-primary .p01-action-copy {
+    width: 65%;
+    max-width: 65%;
+    flex-basis: 65%;
+    padding: 0;
+  }
+}
