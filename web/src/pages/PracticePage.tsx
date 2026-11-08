@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { PracticeTimeBadge } from '../components/PracticeMediaControls';
@@ -56,7 +57,7 @@ const PLAYER_PIXEL_ICONS: Record<PlayerPixelIconName, string> = {
   mixer: `${PLAYER_PIXEL_ROOT}/svg/mixer.svg`,
   tuner: `${PLAYER_PIXEL_ROOT}/svg/tuner.svg`,
   metronome: `${SHARP_PIXEL_ROOT}/refreshed-icons/metronome.png`,
-  play: `${SHARP_PIXEL_ROOT}/approved-isolated-icons/play.png`,
+  play: `${PLAYER_PIXEL_ROOT}/svg/play.svg`,
   pause: `${PLAYER_PIXEL_ROOT}/svg/pause.svg`,
   repeat: `${SHARP_PIXEL_ROOT}/approved-isolated-icons/repeat.png`,
   'skip-back': `${PLAYER_PIXEL_ROOT}/svg/skip-back.svg`,
@@ -66,8 +67,20 @@ const PLAYER_PIXEL_ICONS: Record<PlayerPixelIconName, string> = {
   'finish-check': `${PLAYER_PIXEL_ROOT}/svg/finish-check.svg`,
 };
 
+const MONOCHROME_PLAYER_ICONS: ReadonlySet<PlayerPixelIconName> = new Set([
+  'play', 'pause', 'repeat', 'skip-back', 'skip-forward', 'step-up', 'step-down', 'finish-check',
+]);
+
 function PlayerPixelIcon({ name, className = 'practice-pixel-icon' }: { name: PlayerPixelIconName; className?: string }) {
-  return <img src={PLAYER_PIXEL_ICONS[name]} className={className} alt="" aria-hidden="true" draggable={false} />;
+  const src = PLAYER_PIXEL_ICONS[name];
+  // Monochrome controls inherit their button's semantic text color. Masking the
+  // transparent silhouette keeps the pixel edges crisp in both Light and Dark.
+  if (MONOCHROME_PLAYER_ICONS.has(name)) {
+    return <span className={`${className} practice-pixel-mask`}
+      style={{ '--practice-pixel-mask': `url("${src}")` } as CSSProperties}
+      aria-hidden="true" />;
+  }
+  return <img src={src} className={className} alt="" aria-hidden="true" draggable={false} />;
 }
 
 function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
