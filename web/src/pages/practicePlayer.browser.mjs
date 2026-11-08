@@ -76,7 +76,7 @@ try {
     await page.getByRole('button', { name: 'Resume practice timer' }).click();
     await page.waitForTimeout(1100);
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
-    await page.getByRole('heading', { name: 'Practice complete' }).waitFor();
+    await page.getByRole('heading', { name: /Session Complete!|Great practice!/i }).waitFor();
     check(await page.locator('.sc-trophy img').count() === 1, 'Missing approved completion trophy');
     await capture(page, folder, 'P06-free-completion');
     check(await page.locator('.sc-decoration .sc-sprout').count() === 1, 'Completion decoration missing');
