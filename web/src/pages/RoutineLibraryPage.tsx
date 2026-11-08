@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Routine } from '../types/content';
+import { readPinnedPracticeRoutine, savePinnedPracticeRoutine } from '../lib/practiceHomePreferences';
 import './RoutineLibraryPage.css';
 import './CleanPixelRoutines.css';
+import './RoutinePin.css';
 
 type RoutineTab = 'Presets' | 'My Routines' | 'Shared';
 type Filters = { instrument: string; goal: string; duration: string; level: string };
@@ -45,8 +47,10 @@ export function RoutineLibraryPage() {
   const [showAllPresets, setShowAllPresets] = useState(false);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [bookmarks, setBookmarks] = useState<string[]>(() => readBookmarks(repo.scope));
+  const [pinnedId, setPinnedId] = useState<string | null>(() => readPinnedPracticeRoutine(repo.scope));
 
   useEffect(() => setBookmarks(readBookmarks(repo.scope)), [repo.scope]);
+  useEffect(() => setPinnedId(readPinnedPracticeRoutine(repo.scope)), [repo.scope]);
 
   const exerciseMap = useMemo(() => new Map(exercises.map(exercise => [exercise.id, exercise])), [exercises]);
 
@@ -98,6 +102,12 @@ export function RoutineLibraryPage() {
       try { localStorage.setItem(bookmarkKey(repo.scope), JSON.stringify(next)); } catch { /* optional storage */ }
       return next;
     });
+  };
+
+  const togglePin = (id: string) => {
+    const next = pinnedId === id ? null : id;
+    savePinnedPracticeRoutine(repo.scope, next);
+    setPinnedId(next);
   };
 
   const openRoutine = (id: string) => {
@@ -195,6 +205,11 @@ export function RoutineLibraryPage() {
                 aria-pressed={isBookmarked} onClick={() => toggleBookmark(routine.id)}>
                 <svg viewBox="0 0 24 24" width="22" height="22" fill={isBookmarked ? 'currentColor' : 'none'}
                   stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M5.5 3.5h13v17L12 16l-6.5 4.5z"/></svg>
+              </button>
+              <button type="button" className={'routine-pin' + (pinnedId === routine.id ? ' is-pinned' : '')}
+                aria-label={(pinnedId === routine.id ? 'Unpin ' : 'Pin ') + routine.title + ' on Practice home'
+                } aria-pressed={pinnedId === routine.id} onClick={() => togglePin(routine.id)}>
+                <span aria-hidden="true">{pinnedId === routine.id ? '◆' : '◇'}</span>
               </button>
             </article>
           );
