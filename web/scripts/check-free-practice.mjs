@@ -32,30 +32,42 @@ try {
     await page.waitForURL(url => url.pathname === '/free-practice');
     await page.getByRole('heading', { name: 'Free Practice' }).waitFor();
     assert(await page.locator('.chord-grid').count() === 0, 'Free Practice must not auto-select a random chart');
-    assert((await page.getByRole('timer').innerText()).trim() === '00:00', 'Timer should start at zero');
-    assert(await page.locator('.fp-header-cat').count() === Number(catMode), 'Decorative cat must disappear without an empty placeholder when Cat Mode OFF');
-    const art = await page.locator('.fp-timer-heading > img, .fp-play img, .fp-finish img').evaluateAll(images =>
+    assert(await page.locator('.fp-intro').isVisible(), 'Free Practice should begin with the approved intro');
+    assert(await page.locator('.fp-intro-cat').count() === Number(catMode), 'Intro cat must disappear without an empty placeholder when Cat Mode OFF');
+    const art = await page.locator('.fp-intro-art img, .fp-intro-start img').evaluateAll(images =>
       images.map(img => ({ src: img.getAttribute('src'), loaded: img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0 })));
     assert(art.every(item => item.loaded), 'Approved pixel assets must load: ' + JSON.stringify(art));
-    await page.screenshot({ path: join(output, 'empty-' + shot + '.png'), fullPage: true });
+    await page.screenshot({ path: join(output, 'intro-' + shot + '.png'), fullPage: true });
+
+    await page.getByRole('button', { name: 'Start Practice', exact: true }).click();
+    assert((await page.locator('.fp-target-picker strong').innerText()).trim() === '25:00', 'Default practice target should be 25:00');
+    await page.getByRole('button', { name: 'Decrease time goal by 5 minutes' }).click();
+    assert((await page.locator('.fp-target-picker strong').innerText()).trim() === '20:00', 'Time target decrement did not work');
+    await page.getByRole('button', { name: 'Increase time goal by 5 minutes' }).click();
+    assert((await page.locator('.fp-target-picker strong').innerText()).trim() === '25:00', 'Time target increment did not work');
+    await page.screenshot({ path: join(output, 'setup-' + shot + '.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Exercise', exact: true }).click();
     await page.locator('.fp-picker').scrollIntoViewIfNeeded();
     await page.screenshot({ path: join(output, 'exercise-picker-' + shot + '.png'), fullPage: true });
     await page.getByRole('button', { name: '+ Scales' }).click();
     assert(await page.locator('.fp-queue-item').count() === 1, 'Technique was not added');
-    await page.getByRole('button', { name: 'Exercise', exact: true }).click();
+    await page.getByRole('button', { name: 'Goal', exact: true }).click();
     await page.getByRole('textbox', { name: 'Custom practice goal' }).fill('Smooth ii-V-I changes');
     await page.getByRole('button', { name: 'Add Goal' }).click();
     assert(await page.locator('.fp-queue-item').count() === 2, 'Personal goal was not added');
     await page.getByRole('button', { name: 'Chart', exact: true }).click();
+    await page.screenshot({ path: join(output, 'chart-picker-' + shot + '.png'), fullPage: true });
     await page.locator('.fp-picker-results button').first().click();
     assert(await page.locator('.fp-queue-item').count() === 3, 'Chart was not added');
     await page.locator('.fp-queue-title').last().click();
     await page.locator('.fp-chart .chord-grid').waitFor();
     await page.getByRole('checkbox', { name: 'Completed Scales' }).check();
 
+    await page.getByRole('button', { name: 'Routine', exact: true }).click();
+    await page.screenshot({ path: join(output, 'routine-picker-' + shot + '.png'), fullPage: true });
     await page.getByRole('button', { name: 'Backing Track', exact: true }).click();
+    await page.screenshot({ path: join(output, 'track-picker-' + shot + '.png'), fullPage: true });
     await page.locator('.fp-picker-results button').first().click();
     const audioSrc = await page.locator('.fp-audio audio').getAttribute('src');
     assert(audioSrc?.includes('/audio/backing-tracks/autumn-leaves.m4a'), 'Expected a real cataloged backing track');
@@ -72,7 +84,7 @@ try {
     await page.screenshot({ path: join(output, 'paused-' + shot + '.png'), fullPage: true });
     assert(await page.getByRole('timer').innerText() !== '00:00', 'Practice timer did not advance');
     await page.getByRole('button', { name: 'Finish Session' }).click();
-    await page.getByRole('heading', { name: 'Session Saved' }).waitFor();
+    await page.getByText('Session Saved ✓').waitFor();
     await page.screenshot({ path: join(output, 'completed-' + shot + '.png'), fullPage: true });
     const records = await page.evaluate(() => {
       const key = 'little-jazz-room:practice-sessions:v1:anonymous';
@@ -80,7 +92,7 @@ try {
     });
     assert(records.length === 1 && records[0].durationSeconds >= 1, 'Expected one actual persisted session');
     assert(!records[0].routineId, 'Free practice must not become a guided routine');
-    await page.getByRole('button', { name: 'View Progress' }).click();
+    await page.getByRole('button', { name: /View Saved Session/ }).click();
     await page.waitForURL(url => url.pathname === '/progress');
     await page.reload({ waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Practice Again' }).click();
