@@ -66,16 +66,16 @@ export const VISUAL_ASSETS = {
   /** Three opt-in low-resolution decorative characters; the eight approved identity assets remain untouched. */
   decorativePixelCats: {
     luna: {
-      sleeping: '/visuals/cats/clean-pixel/luna-sleeping.png',
-      sitting: '/visuals/cats/clean-pixel/luna-sitting.png',
+      sleeping: '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/luna-sleeping.png',
+      sitting: '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/luna-sitting.png',
     },
     milo: {
-      sleeping: '/visuals/cats/clean-pixel/milo-sleeping.png',
-      sitting: '/visuals/cats/clean-pixel/milo-sitting.png',
+      sleeping: '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/milo-sleeping.png',
+      sitting: '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/milo-sitting.png',
     },
     maple: {
-      sleeping: '/visuals/cats/clean-pixel/maple-sleeping.png',
-      sitting: '/visuals/cats/clean-pixel/maple-sitting.png',
+      sleeping: '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/maple-sleeping.png',
+      sitting: '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/maple-sitting.png',
     },
   },
   progress: {
@@ -162,7 +162,7 @@ export const VISUAL_ASSETS = {
     musicNotes: '/visuals/pixel-motifs/music-notes.svg',
   },
   /** Approved independent full-color pixel art, for sparse Light/Dark decorations. */
-  streakFlame: '/visuals/pixel-motifs/streak-fire.png',
+  streakFlame: '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/progress/streak-flame.png',
   approvedPixelMotifs: {
     beamedNotes: '/visuals/pixel-motifs/approved/beamed-notes.png',
     centerDot: '/visuals/pixel-motifs/approved/center-dot.png',
