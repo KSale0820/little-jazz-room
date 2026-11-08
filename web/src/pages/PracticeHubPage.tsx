@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
-import { PracticeHeroVignette } from './PracticeHeroVignette';
 import { timeGreeting } from '../lib/greeting';
 import { computeGentleStreak, minutesToday, minutesYesterday } from '../lib/practiceStats';
 import { readPinnedPracticeRoutine, readPracticeGoal, savePracticeGoal } from '../lib/practiceHomePreferences';
@@ -33,7 +32,7 @@ export function PracticeHubPage() {
     ? 'Goal reached! Enjoy the progress you made today.'
     : today > 0 ? 'You showed up today. Every minute counts.'
       : yesterday > 0 ? 'Yesterday counted. Keep your jazz journey going.'
-        : 'A few focused minutes are a great place to start.';
+        : 'A few focused minutes are a great place to start—keep your jazz journey going.';
 
   useEffect(() => {
     if (!goalOpen) return;
@@ -66,12 +65,7 @@ export function PracticeHubPage() {
     <section className="p01-page p01-suave" aria-label="Practice hub">
       <header className="p01-header p01-suave-header">
         <div className="p01-suave-brand" aria-label="Little Jazz Room">
-          <img src={VISUAL_ASSETS.brand.wordmark} alt="Little Jazz Room" />
-        </div>
-        <div className="p01-suave-art-strip" aria-hidden="true">
-          <img className="p01-suave-top-ivy" src={VISUAL_ASSETS.approvedPixelMotifs.ivyTrail} alt="" />
-          <img className="p01-suave-floating-note" src={ART + 'music-note-purple-sharp.png'} alt="" />
-          <PracticeHeroVignette />
+          <img src={ART + 'practice-approved-header.webp'} alt="Little Jazz Room" />
         </div>
         <p className="p01-greeting">{timeGreeting().replace(/\.$/, ',')}</p>
         <h1>Let&apos;s Practice</h1>
