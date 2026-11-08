@@ -1,6 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PixelIcon } from '../components/PixelIcon';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
@@ -87,7 +86,7 @@ export function PracticeHubPage() {
           </span>
           <span className="p01-momentum-divider" aria-hidden="true">|</span>
           <span className="p01-momentum-item">
-            <svg className="p01-momentum-clock" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+            <img className="p01-momentum-clock" src={ART + "refreshed-icons/clock.png"} width="17" height="17" alt="" aria-hidden="true" />
             <strong>{yesterday}</strong> min yesterday
           </span>
         </div>
@@ -113,12 +112,12 @@ export function PracticeHubPage() {
         </button>
         <div className="p01-suave-action-pair">
           <button type="button" className="p01-action p01-action-secondary" onClick={() => navigate('/tracks')}>
-            <span className="p01-action-icon" aria-hidden="true"><PixelIcon route="tracks" /></span>
+            <span className="p01-action-icon" aria-hidden="true"><img src={ART + "refreshed-icons/record.png"} alt="" /></span>
             <span className="p01-action-copy"><strong>Practice with a Track</strong><small>Find a chart or track study.</small></span>
             <span className="p01-chevron" aria-hidden="true">›</span>
           </button>
           <button type="button" className="p01-action p01-action-secondary" onClick={() => navigate('/routines')}>
-            <span className="p01-action-icon" aria-hidden="true"><PixelIcon route="routines" /></span>
+            <span className="p01-action-icon" aria-hidden="true"><img src={ART + "refreshed-icons/routine-list.png"} alt="" /></span>
             <span className="p01-action-copy"><strong>Follow a Routine</strong><small>Choose a guided practice plan.</small></span>
             <span className="p01-chevron" aria-hidden="true">›</span>
           </button>
@@ -126,7 +125,7 @@ export function PracticeHubPage() {
       </div>
 
       <section className="p01-suave-pinned" aria-label="Pinned routine">
-        <span className="p01-suave-pin-symbol" aria-hidden="true">▮</span>
+        <img className="p01-suave-pin-symbol" src={ART + "refreshed-icons/bookmark.png"} alt="" aria-hidden="true" />
         <div className="p01-suave-pin-copy"><strong>Pinned Routine</strong><span>{pinned?.title ?? 'Choose a routine to pin'}</span></div>
         {pinned && <button type="button" className="p01-suave-start" onClick={startPinned} aria-label={'Start ' + pinned.title}><img src={ICON + 'play.png'} alt="" />Start</button>}
         <button type="button" className="p01-suave-pin-browse" onClick={() => navigate('/routines')} aria-label={pinned ? 'Change pinned routine' : 'Choose a routine to pin'}>›</button>
@@ -139,7 +138,7 @@ export function PracticeHubPage() {
             <span className="p01-tuning-fork" aria-hidden="true" /><strong>Tuner</strong>
           </button>
           <button type="button" className="p01-tool" onClick={() => navigate('/metronome')}>
-            <span className="p01-metronome-symbol" style={{ WebkitMaskImage: `url("${VISUAL_ASSETS.icons.metronome}")`, maskImage: `url("${VISUAL_ASSETS.icons.metronome}")` }} aria-hidden="true" /><strong>Metronome</strong>
+            <img className="p01-suave-metronome-art" src={ART + "refreshed-icons/metronome.png"} alt="" aria-hidden="true" /><strong>Metronome</strong>
           </button>
         </div>
       </section>
