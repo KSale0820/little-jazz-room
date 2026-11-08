@@ -691,7 +691,7 @@ export function PracticePage() {
           <span>{routine ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length : chart.difficulty || 'All levels'}</span>
           <span>{displayChartForm(chart.form) || chart.time_signature.join('/')}</span>
         </div>
-
+        {chart.is_custom && chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
       </div>
 
       {activeRecording && <audio
