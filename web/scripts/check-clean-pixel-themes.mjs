@@ -295,6 +295,11 @@ try {
     await page.getByRole('heading', { name: 'Autumn Leaves' }).waitFor();
     assert.equal(await page.locator('.practice-chart-scroll .measure').count(), 35,
       'Autumn Leaves must preserve all 35 real chord measures');
+    const finish = await page.locator('.practice-finish-action').boundingBox();
+    const navBar = await page.locator('nav.bottom-nav').boundingBox();
+    assert.ok(finish && navBar && finish.y + finish.height <= navBar.y + 1,
+      'Finish Session must stay visible above bottom navigation for Autumn Leaves: ' +
+      JSON.stringify({ theme, finish, navBar }));
     await page.screenshot({
       path: path.join(output, 'player-autumn-leaves-390x844-' + theme + '.png'),
       animations: 'disabled',
