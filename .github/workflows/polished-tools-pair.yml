@@ -1,0 +1,53 @@
+name: Tuner and metronome clean-pixel review
+
+on:
+  pull_request:
+    branches: [integration/clean-pixel-themes]
+    paths:
+      - 'web/src/pages/TunerPage.tsx'
+      - 'web/src/pages/MetronomePage.tsx'
+      - 'web/src/pages/ToolsPolishedPair.css'
+      - 'web/scripts/check-polished-tools-pair.mjs'
+      - 'web/public/visuals/tools/pixel/**'
+      - '.github/workflows/polished-tools-pair.yml'
+  workflow_dispatch:
+
+jobs:
+  tool-pair-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Unit tests
+        run: npm test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local app
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/ljr-tools-pair.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:5174/tuner > /dev/null && break
+            sleep 1
+          done
+          curl -f http://127.0.0.1:5174/metronome
+      - name: Review responsive tools and real control states
+        run: node scripts/check-polished-tools-pair.mjs
+      - name: Save real full-screen browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: polished-tools-pair-390x844-and-375x667
+          path: web/docs/screenshots/polished-tools-pair/
+          if-no-files-found: warn
