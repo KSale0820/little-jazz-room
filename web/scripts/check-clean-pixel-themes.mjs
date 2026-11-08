@@ -285,6 +285,24 @@ try {
     }
   }
 
+  // Compare the implemented player against the approved Autumn Leaves reference
+  // using the real seeded 35-bar chart, not placeholder/mockup chord data.
+  for (const theme of ['light', 'dark']) {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    await context.addInitScript(theme => localStorage.setItem('little-jazz-room:appearance:v1', theme), theme);
+    const page = await context.newPage();
+    await page.goto(base + '/player?chart=autumn-leaves-gm-video-35', { waitUntil: 'networkidle' });
+    await page.getByRole('heading', { name: 'Autumn Leaves' }).waitFor();
+    assert.equal(await page.locator('.practice-chart-scroll .measure').count(), 35,
+      'Autumn Leaves must preserve all 35 real chord measures');
+    await page.screenshot({
+      path: path.join(output, 'player-autumn-leaves-390x844-' + theme + '.png'),
+      animations: 'disabled',
+    });
+    await context.close();
+    report.push({ screen: 'Autumn Leaves Practice Player', label: '390x844-' + theme, status: 'PASS' });
+  }
+
   // Exercise actual controls (not direct localStorage writes) and confirm reload.
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 }, colorScheme: 'dark',
