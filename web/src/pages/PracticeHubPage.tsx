@@ -10,6 +10,7 @@ import './PracticeHubPage.css';
 import './CleanPixelPractice.css';
 import './CleanPixelMotifPlacements.css';
 import './PracticeSuaveStudio.css';
+import './PracticeApprovedFinish.css';
 
 const ART = '/visuals/new-assets/2026-11-07-sharp-pixel/';
 const ICON = ART + 'approved-isolated-icons/';
