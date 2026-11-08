@@ -15,6 +15,7 @@ import {
 } from './routinePickerLogic';
 import './CreatePage.css';
 import './CleanPixelRoutines.css';
+import './BuilderStudio.css';
 
 interface BuilderStep { exerciseId: string; minutes: number; }
 interface ChartReturnDraft {
@@ -502,9 +503,17 @@ export function CreatePage() {
         </section>
       </div>}
 
-      {showExerciseForm && <div className="builder-panel builder-custom-form">
-        <h3>{editId ? 'Edit exercise' : 'Create your own exercise'}</h3>
-        <label htmlFor="exTitle">Title</label>
+      {showExerciseForm && <section className="builder-panel builder-custom-form builder-studio" aria-label={editId ? 'Edit exercise' : 'Create exercise'}>
+        <header className="builder-exercise-header">
+          <div>
+            <p className="builder-exercise-eyebrow">EXERCISE STUDIO</p>
+            <h3>{editId ? 'Edit exercise' : 'Create exercise'}</h3>
+            <p className="builder-exercise-description">Build a focused activity for your routine.</p>
+          </div>
+          <span className="builder-exercise-duration">{exMinutes > 0 ? exMinutes : '–'} min</span>
+        </header>
+        <p className="builder-exercise-section-label">01 <span>Essentials</span></p>
+        <label htmlFor="exTitle">Exercise title</label>
         <input className="builder-field" id="exTitle" value={exTitle} onChange={e => setExTitle(e.target.value)} />
         <div className="builder-two-fields">
           <div><label htmlFor="exCat">Category</label><select id="exCat" className="builder-field" value={exCategory} onChange={e => setExCategory(e.target.value)}>
@@ -516,9 +525,11 @@ export function CreatePage() {
         </div>
         <label htmlFor="exMin">How long? (minutes)</label>
         <input id="exMin" type="number" min="1" className="builder-field" value={exMinutes} onChange={e => setExMinutes(Number(e.target.value))} />
+        <p className="builder-exercise-section-label">02 <span>Instructions</span></p>
         <label htmlFor="exInst">What should you do?</label>
         <textarea id="exInst" className="builder-field" value={exInstructions} onChange={e => setExInstructions(e.target.value)} />
-        <label htmlFor="exChartSearch">Find a chart (optional)</label>
+        <p className="builder-exercise-section-label">03 <span>Chart accompaniment · optional</span></p>
+        <label htmlFor="exChartSearch">Find a chart</label>
         <input id="exChartSearch" type="search" className="builder-field" placeholder="Search by chart name"
           value={chartSearch} onChange={event => setChartSearch(event.target.value)} />
         <label htmlFor="exChart">Linked chart</label>
@@ -527,16 +538,25 @@ export function CreatePage() {
           {charts.filter(chart => chart.id === exChartId || chart.title.toLowerCase().includes(chartSearch.trim().toLowerCase()))
             .map(chart => <option key={chart.id} value={chart.id}>{chart.title}</option>)}
         </select>
-        <div className="builder-panel-actions">
+        <p className="builder-exercise-linked" role="status">{exChartId
+          ? 'Linked: ' + (charts.find(chart => chart.id === exChartId)?.title ?? 'Chart unavailable')
+          : 'No chart linked. You can practice without one.'}</p>
+        <div className="builder-panel-actions builder-exercise-chart-actions">
           <button type="button" onClick={() => openChartBuilder()}>+ Create Chart</button>
           {exChartId && charts.some(chart => chart.id === exChartId && chart.is_custom) &&
             <button type="button" onClick={() => openChartBuilder(exChartId)}>Edit Chart</button>}
         </div>
-        <div className="builder-panel-actions">
+        <div className="builder-exercise-preview" aria-label="Exercise summary preview">
+          <span>EXERCISE PREVIEW</span>
+          <strong>{exTitle.trim() || 'Untitled exercise'}</strong>
+          <p>{exCategory} · {exLevel} · {exMinutes > 0 ? exMinutes : '–'} min{exChartId ? ' · With chord chart' : ''}</p>
+          <p>{exInstructions.trim() || 'Your practice instructions will appear here.'}</p>
+        </div>
+        <div className="builder-panel-actions builder-exercise-save-actions">
           <button type="button" onClick={() => void saveExercise()} disabled={saving}>Save exercise</button>
           <button type="button" onClick={() => setShowExerciseForm(false)}>Cancel</button>
         </div>
-      </div>}
+      </section>}
 
       <p className="builder-tip"><span aria-hidden="true">i</span> Use the move controls to reorder steps. Every step needs a positive duration.</p>
       <div className="builder-footer">
