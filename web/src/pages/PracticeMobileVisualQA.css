@@ -216,3 +216,19 @@ html[data-theme="dark"] .app-shell:has(.p01-suave) .bottom-nav a.current {
     padding: 0;
   }
 }
+/* Full-size approved sleeping companion, including transparent canvas
+   padding inherent to the owner-supplied PNG. Visual silhouette is ~85px. */
+html[data-theme] .p01-page.p01-suave img.p01-suave-coach-cat {
+  width: 138px;
+  height: 138px;
+  margin: -28px auto 0;
+  max-width: none;
+  object-fit: contain;
+}
+@media (max-width: 380px), (max-height: 710px) {
+  html[data-theme] .p01-page.p01-suave img.p01-suave-coach-cat {
+    width: 127px;
+    height: 127px;
+    margin-top: -25px;
+  }
+}
