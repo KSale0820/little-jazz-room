@@ -81,6 +81,7 @@ try {
     await capture(page, folder, 'P06-free-completion');
     check(await page.locator('.sc-decoration .sc-sprout').count() === 1, 'Completion decoration missing');
     await capture(page, folder, 'P06-free-companion-bottom');
+    await page.getByText('Session notes and rating').click();
     await page.getByRole('textbox', { name: /Notes/ }).fill('Stayed with the changes.');
     await page.getByRole('button', { name: '4 stars' }).click();
     await page.getByRole('button', { name: 'Save session', exact: true }).click();
