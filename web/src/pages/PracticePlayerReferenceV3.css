@@ -570,3 +570,35 @@ html[data-theme] .practice-player.practice-unified input:focus-visible {
   html[data-theme] .practice-player.practice-unified .practice-transport .practice-player-pills { gap: 4px; padding-inline: 5px; }
   html[data-theme] .practice-player.practice-unified > .practice-utility-row button span { font-size: 11px; }
 }
+
+/* Long standards keep the complete chord grid scrollable, without pushing
+   the indispensable Finish Session button underneath the fixed tab bar. */
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all.chart-dense {
+  max-height: clamp(210px, 26dvh, 235px);
+  margin-bottom: 7px;
+  padding-block: 7px;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .measure {
+  min-height: clamp(60px, 7.3dvh, 66px);
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) > .practice-title-group {
+  margin-bottom: 11px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) .practice-chart-tags > span {
+  min-height: 25px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) :is(.practice-recording-seek, .practice-chart-seek) {
+  margin-bottom: 7px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) .practice-control-row {
+  margin-bottom: 8px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) .practice-transport .practice-player-pills {
+  margin-bottom: 7px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) > .practice-utility-row {
+  margin-bottom: 6px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) > .practice-session-row {
+  gap: 6px;
+}
