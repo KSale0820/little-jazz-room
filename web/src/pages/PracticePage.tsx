@@ -275,9 +275,10 @@ export function PracticePage() {
     activeRecording ? false : repeatWholePlan,
   );
   const currentSection = activeSections && playhead.sectionIndex !== null ? activeSections[playhead.sectionIndex] : null;
-  const loopRange: [number, number] | null = currentSection ? [currentSection.startBar, currentSection.endBar] : null;
-  const planStatus = activeRecording ? 'Recording plays at its original key and tempo' : playhead.ended ? 'Chart finished' : currentSection
-    ? 'Section ' + ((playhead.sectionIndex ?? 0) + 1) + ' of ' + activeSections!.length + ' · Pass ' + playhead.pass + ' of ' + currentSection.plays
+  const loopRange: [number, number] | null = loopEnabled && currentSection ? [currentSection.startBar, currentSection.endBar] : null;
+  const planStatus = activeRecording ? 'Recording plays at its original key and tempo' : playhead.ended ? 'Chart finished'
+    : !loopEnabled && repeatWholePlan ? 'Repeating whole chart'
+    : currentSection ? 'Section ' + ((playhead.sectionIndex ?? 0) + 1) + ' of ' + activeSections!.length + ' · Pass ' + playhead.pass + ' of ' + currentSection.plays
     : 'Chart once';
 
   function chooseChart(id: string) {
@@ -755,14 +756,13 @@ export function PracticePage() {
             <label htmlFor="practice-concert-key">Key</label>
             <div className="practice-key-stepper">
               <select id="practice-concert-key" value={CHROMA[pitchClass(chartKey) ?? 0]}
-                onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key"
-                disabled={Boolean(activeRecording)}>
+                onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">
                 {CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}
               </select>
               <div className="practice-stepper-arrows">
-                <button type="button" aria-label="Raise concert key one semitone" disabled={Boolean(activeRecording)}
+                <button type="button" aria-label="Raise concert key one semitone"
                   onClick={() => setChartKey(CHROMA[((pitchClass(chartKey) ?? 0) + 1) % CHROMA.length])}><PlayerPixelIcon name="step-up" /></button>
-                <button type="button" aria-label="Lower concert key one semitone" disabled={Boolean(activeRecording)}
+                <button type="button" aria-label="Lower concert key one semitone"
                   onClick={() => setChartKey(CHROMA[((pitchClass(chartKey) ?? 0) + CHROMA.length - 1) % CHROMA.length])}><PlayerPixelIcon name="step-down" /></button>
               </div>
             </div>
