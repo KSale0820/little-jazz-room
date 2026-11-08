@@ -51,6 +51,9 @@ const TRACK_CATALOG: Array<TrackPreview & { recordingId: string | null }> = [
   })),
 ];
 
+// Match the approved library's featured ordering where playable chart data exists.
+// Missing reference tunes are never fabricated as recordings or charts.
+const FEATURED_TITLES: string[] = ['Autumn Leaves', 'Blue Bossa', 'Tenor Madness', 'All the Things You Are', 'So What'];
 const CATEGORIES: Category[] = ['All', 'Standards', 'Blues', 'Bossa', 'Ballad', 'Up-Tempo'];
 const FIELDS: { key: FilterField; title: string; options: string[] }[] = [
   { key: 'instrument', title: 'Instrument', options: ['All', 'Piano', 'Guitar', 'Bass', 'Drums', 'Trumpet', 'Alto Saxophone', 'Tenor Saxophone'] },
@@ -138,7 +141,13 @@ export function TracksPage() {
       recordingId: null,
       chart,
     }));
-    return [...tracks, ...chartsWithoutTracks];
+    return [...tracks, ...chartsWithoutTracks].sort((a, b) => {
+      const rank = (title: string) => {
+        const position = FEATURED_TITLES.indexOf(title);
+        return position < 0 ? FEATURED_TITLES.length : position;
+      };
+      return rank(a.title) - rank(b.title);
+    });
   }, [charts]);
   const filtered = useMemo(() => catalog.filter(track => {
     const term = query.trim().toLowerCase();
