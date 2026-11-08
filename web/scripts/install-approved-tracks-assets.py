@@ -74,7 +74,7 @@ def main(zip_path: str) -> None:
     addition = needle + "\n    bookmarkFilledSource: '/docs/approved-ui/bookmark-filled-source.png',"
     # The source bookmark is a design reference, not a runtime asset; no manifest entry needed.
 
-    print("Updated TracksPage and visualManifest; exact PNG bytes verified.")
+    # Remove only the two obsolete SVG stand-ins; the strict visual manifest\n    # test requires every installed visual to have a registered URL.\n    for obsolete in ("tracks-title.svg", "jazz-study-shelf.svg"):\n        fallback = ROOT / "web/public/visuals/tracks-approved" / obsolete\n        if fallback.exists():\n            fallback.unlink()\n            print(f"Retired substitute: {fallback.relative_to(ROOT)}")\n\n    print("Updated TracksPage and visualManifest; exact PNG bytes verified.")
     print("Run: cd web && npm run build && npm test")
     print("Then git add web/public/visuals/tracks-approved web/docs/approved-ui web/src/pages/TracksPage.tsx web/src/assets/visualManifest.ts")
     print("Commit and push the PR #86 branch. Do not overwrite these exact PNGs with regenerated art.")
