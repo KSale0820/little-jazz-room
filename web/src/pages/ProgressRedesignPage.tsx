@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { useAppearance } from '../context/AppearanceContext';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { PracticeCalendar } from '../components/PracticeCalendar';
@@ -8,7 +9,7 @@ import { summarizeProgress, routineForReplay } from './ProgressPage';
 import type { PracticeSessionRecord } from '../types/content';
 import './ProgressRedesignPage.css';
 
-const ART = '/visuals/progress/piano-pixel/';
+const ART = VISUAL_ASSETS.progress.pianoPixel;
 const WEEK_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
 
 function inCurrentWeek(session: PracticeSessionRecord, now: Date): boolean {
@@ -59,12 +60,12 @@ export function ProgressRedesignPage() {
           <p>Your practice journey at a glance.</p>
         </div>
         <div className="pgr-cat-stage" aria-label={'Your companion: ' + (cat?.name ?? 'Luna')}>
-          <img src={ART + 'piano-keys-wide.png'} className="pgr-piano" alt="" aria-hidden="true" />
+          <img src={ART.wide} className="pgr-piano" alt="" aria-hidden="true" />
           <CatSprite catId={catId} size={112} variant={catMode ? 'floor' : 'sleeping'} decorative className={'pgr-cat ' + (catMode ? 'is-sitting' : 'is-sleeping')} />
         </div>
         <button type="button" className="pgr-settings" onClick={() => navigate('/profile')}
           aria-label="Open settings">
-          <img src={ART + 'settings-outline.png'} alt="" aria-hidden="true" />
+          <img src={ART.settingsOutline} alt="" aria-hidden="true" />
         </button>
       </header>
 
@@ -72,13 +73,13 @@ export function ProgressRedesignPage() {
         <h2>Theme</h2>
         <div className="pgr-theme-choices" role="group" aria-label="Appearance controls">
           <button type="button" onClick={() => setMode('light')} aria-pressed={theme === 'light'} aria-label="Light theme">
-            <img src={ART + (theme === 'light' ? 'light-active.png' : 'light-outline.png')} alt="" />
+            <img src={(theme === 'light' ? ART.lightActive : ART.lightOutline)} alt="" />
           </button>
           <button type="button" onClick={() => setMode('dark')} aria-pressed={theme === 'dark'} aria-label="Dark theme">
-            <img src={ART + (theme === 'dark' ? 'dark-active.png' : 'dark-outline.png')} alt="" />
+            <img src={(theme === 'dark' ? ART.darkActive : ART.darkOutline)} alt="" />
           </button>
           <button type="button" onClick={() => setCatMode(!catMode)} aria-pressed={catMode} aria-label="Cat Mode">
-            <img src={ART + (catMode ? 'cat-mode-active.png' : 'cat-mode-outline.png')} alt="" />
+            <img src={(catMode ? ART.catModeActive : ART.catModeOutline)} alt="" />
           </button>
         </div>
       </section>
