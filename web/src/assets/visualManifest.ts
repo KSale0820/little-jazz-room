@@ -157,8 +157,8 @@ export const VISUAL_ASSETS = {
   },
   /** Tracks + Charts approved November 7, 2026 UI. SVG fallbacks plus PR #84 crisp pixel icons. */
   tracksApproved: {
-    title: '/visuals/tracks-approved/tracks-title.svg',
-    studyShelf: '/visuals/tracks-approved/jazz-study-shelf.svg',
+    title: '/visuals/tracks-approved/tracks-title.png',
+    studyShelf: '/visuals/tracks-approved/jazz-study-shelf.png',
     bookmarkFilledFallback: '/visuals/tracks-approved/bookmark-filled.svg',
     recordFallback: '/visuals/tracks-approved/record.svg',
     bookmark: '/visuals/tracks-approved/bookmark.png',
