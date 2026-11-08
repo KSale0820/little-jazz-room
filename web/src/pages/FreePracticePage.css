@@ -270,3 +270,24 @@
   }
 }
 .fp-completion-shelf:not(:has(.fp-summary-cat)) { justify-content: center; gap: 34px; }
+
+/* A 375×667 phone must keep the completion CTA reachable above the bottom dock. */
+@media (max-width: 899px) and (max-height: 720px) {
+  .fp-completed { padding-top: 8px; }
+  .fp-completed .fp-top { margin-bottom: 0; }
+  .fp-completed .fp-back { min-height: 32px; }
+  .fp-completion-card h1 { margin: 0 0 8px; font-size: 20px; }
+  .fp-completed-duration { min-height: 67px; padding: 8px 11px; gap: 10px; }
+  .fp-completed-duration img { width: 36px; height: 36px; }
+  .fp-completed-duration strong { font-size: 23px; }
+  .fp-completed-summary { margin-top: 9px; padding: 6px 10px; }
+  .fp-completed-summary h2 { padding-bottom: 4px; }
+  .fp-summary-line { min-height: 29px; padding: 5px 2px; font-size: 11px; }
+  .fp-completion-shelf { min-height: 47px; margin-top: 7px; }
+  .fp-completion-shelf > img:first-child { width: 37px; height: 38px; }
+  .fp-completion-shelf > img:last-child { width: 23px; height: 25px; }
+  .fp-summary-cat { width: 48px; height: 48px; }
+  .fp-save-status { margin-top: 5px; }
+  .fp-completion-actions { margin-top: 8px; gap: 6px; }
+  .fp-completion-actions > button { min-height: 44px; }
+}
