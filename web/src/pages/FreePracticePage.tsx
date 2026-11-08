@@ -200,7 +200,7 @@ export function FreePracticePage() {
       </header>
       <div className="fp-completion-card" role="status">
         <img src={PIXEL_ART + 'practice-player/png/finish-check.png'} alt="" aria-hidden="true" />
-        <h2>{saved ? 'Session saved' : saveError ? 'Could not save' : 'Saving your session…'}</h2>
+        <h2>{saved ? 'Session Saved' : saveError ? 'Could not save' : 'Saving your session…'}</h2>
         <strong className="fp-time">{formatPracticeTime(finished.durationSeconds)}</strong>
         <p>{saved ? 'Your practice has been added to Progress.' : saveError ? 'Your practice is still here. Retry saving below.' : 'Keeping your progress up to date.'}</p>
       </div>
@@ -250,7 +250,7 @@ export function FreePracticePage() {
             ['routine', 'Routine', 'refreshed-icons/routine-list.png', 'Your plan'],
             ['track', 'Backing Track', 'refreshed-icons/record.png', 'Recorded audio'],
           ] as const).map(([kind, label, icon, description]) => (
-            <button type="button" key={kind} className="fp-choice" aria-expanded={picker === kind} onClick={() => openPicker(kind)}>
+            <button type="button" key={kind} className="fp-choice" aria-label={label} aria-expanded={picker === kind} onClick={() => openPicker(kind)}>
               <span className="fp-choice-icon" aria-hidden="true"><img src={PIXEL_ART + icon} alt="" /></span>
               <span className="fp-choice-copy"><strong>{label}</strong><small>{description}</small></span>
               <span className="fp-chevron" aria-hidden="true">{picker === kind ? '⌄' : '›'}</span>
