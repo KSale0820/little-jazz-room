@@ -15,7 +15,7 @@ const routes = [
   ['Player', '/player?chart=blues-f-12', '.practice-player'],
   ['Tracks', '/tracks', '.t01-page'],
   ['Routines', '/routines', '.routine-library'],
-  ['Progress', '/progress', '.g01-page'],
+  ['Progress', '/progress', '.pgr-page'],
   ['Profile', '/profile', '.profile-page'],
   ['Tuner', '/tuner', '.tool-tuner'],
   ['Metronome', '/metronome', '.tool-metronome'],
@@ -93,11 +93,11 @@ try {
               navTop: rect?.top ?? -1,
               navBottom: rect?.bottom ?? -1,
               catVisibility: (() => {
-                const cat = document.querySelector('.g01-cat, .tool-scene-cat');
+                const cat = document.querySelector('.pgr-cat, .tool-scene-cat');
                 return cat ? getComputedStyle(cat).visibility : null;
               })(),
               catFootprint: (() => {
-                const cat = document.querySelector('.g01-cat, .tool-scene-cat');
+                const cat = document.querySelector('.pgr-cat, .tool-scene-cat');
                 if (!cat) return null;
                 const { x, y, width, height } = cat.getBoundingClientRect();
                 return [x, y, width, height].map(value => Math.round(value * 10) / 10);
@@ -107,7 +107,7 @@ try {
                 return avatar ? getComputedStyle(avatar).visibility : null;
               })(),
               chartCells: document.querySelectorAll('.chord-grid .measure').length,
-              progressCatSrc: document.querySelector('.g01-cat')?.getAttribute('src') ?? null,
+              progressCatSrc: document.querySelector('.pgr-cat')?.getAttribute('src') ?? null,
               profileAvatarSrc: document.querySelector('.profile-companion-art .jazz-cat-sprite')?.getAttribute('src') ?? null,
               profileChooserIds: [...document.querySelectorAll('.board-cat-card')].map(button =>
                 button.getAttribute('aria-label')?.split(',')[0] ?? ''),
@@ -115,7 +115,7 @@ try {
                 img => img.getAttribute('src') ?? ''),
 
               screenBackground: (() => {
-                const root = document.querySelector('.p01-page, .g01-page');
+                const root = document.querySelector('.p01-page, .pgr-page');
                 return root ? getComputedStyle(root).backgroundColor : null;
               })(),
               chartPaperBackground: (() => {
@@ -250,35 +250,32 @@ try {
     }
   }
 
-  // Profile Settings deliberately has no appearance controls. Preferences remain
-  // supported by the shared appearance provider and must survive reloads.
+  // Unified Profile Settings does not expose theme controls. Its underlying
+  // appearance preferences still persist across reload and device changes.
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 }, colorScheme: 'dark',
     isMobile: true, hasTouch: true,
   });
   const page = await context.newPage();
   await page.goto(base + '/settings', { waitUntil: 'networkidle' });
-  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark',
-    'First use should honor dark system preference');
-  assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'off',
-    'First use should disable decorative cats');
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+  assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'on',
+    'Keep the current default decorative Cat Mode behavior');
   assert.equal(await page.getByRole('heading', { name: 'Profile Settings' }).count(), 1);
   await page.evaluate(() => {
     localStorage.setItem('little-jazz-room:appearance:v1', 'light');
-    localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
-  });
-  await page.reload({ waitUntil: 'networkidle' });
-  assert.equal(await page.locator('html').getAttribute('data-theme'), 'light',
-    'Saved appearance preference must survive reload');
-  assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'on',
-    'Saved Cat Mode preference must survive reload');
-  await page.evaluate(() => {
-    localStorage.setItem('little-jazz-room:appearance:v1', 'dark');
     localStorage.setItem('little-jazz-room:decorative-cats:v1', 'false');
   });
   await page.reload({ waitUntil: 'networkidle' });
-  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
   assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'off');
+  await page.evaluate(() => {
+    localStorage.setItem('little-jazz-room:appearance:v1', 'dark');
+    localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
+  });
+  await page.reload({ waitUntil: 'networkidle' });
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+  assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'on');
   await context.close();
   report.push({ screen: 'Appearance bootstrap persistence', label: '390x844', status: 'PASS' });
 } finally {
