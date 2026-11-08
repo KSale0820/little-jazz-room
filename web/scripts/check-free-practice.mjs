@@ -44,9 +44,13 @@ try {
     await page.screenshot({ path: join(output, 'exercise-picker-' + shot + '.png'), fullPage: true });
     await page.getByRole('button', { name: '+ Scales' }).click();
     assert(await page.locator('.fp-queue-item').count() === 1, 'Technique was not added');
+    await page.getByRole('button', { name: 'Exercise', exact: true }).click();
+    await page.getByRole('textbox', { name: 'Custom practice goal' }).fill('Smooth ii-V-I changes');
+    await page.getByRole('button', { name: 'Add Goal' }).click();
+    assert(await page.locator('.fp-queue-item').count() === 2, 'Personal goal was not added');
     await page.getByRole('button', { name: 'Chart', exact: true }).click();
     await page.locator('.fp-picker-results button').first().click();
-    assert(await page.locator('.fp-queue-item').count() === 2, 'Chart was not added');
+    assert(await page.locator('.fp-queue-item').count() === 3, 'Chart was not added');
     await page.locator('.fp-queue-title').last().click();
     await page.locator('.fp-chart .chord-grid').waitFor();
     await page.getByRole('checkbox', { name: 'Completed Scales' }).check();
