@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { ChordGrid } from '../components/ChordGrid';
@@ -271,7 +271,7 @@ export function FreePracticePage() {
             <button type="button" aria-label="Increase time goal by 5 minutes" disabled={targetMinutes >= 240} onClick={() => setTargetMinutes(v => Math.min(240, v + 5))}>+</button>
           </div>
         : <section className="fp-timer" aria-label="Practice time recorder">
-            <div className="fp-timer-ring" style={{ '--fp-progress': Math.min(100, seconds / (targetMinutes * 60) * 100) + '%' } as React.CSSProperties}>
+            <div className="fp-timer-ring" style={{ '--fp-progress': Math.min(100, seconds / (targetMinutes * 60) * 100) + '%' } as CSSProperties}>
               <strong className="fp-time" role="timer" aria-live="off">{formatPracticeTime(seconds)}</strong>
               <span>/ {formatPracticeTime(targetMinutes * 60)}</span>
               {!running && <span className="fp-paused-pill">Ⅱ Paused</span>}
@@ -282,48 +282,12 @@ export function FreePracticePage() {
               <img src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
             </div>
           </section>}
-      <section className="fp-add" aria-labelledby="fp-add-heading">
-        <div className="fp-section-heading"><h2 id="fp-add-heading">Build your session <img src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" aria-hidden="true" /></h2><span>Optional</span></div>
-        <p className="fp-section-lead">Add something to work on, or just play freely.</p>
-        <div className="fp-choice-list">
-          {([
-            ['exercise', 'Exercise', 'approved-isolated-icons/music-bubble.png', 'Drills & goals'],
-            ['chart', 'Chart', 'music-note-purple-sharp.png', 'Chord study'],
-            ['routine', 'Routine', 'refreshed-icons/routine-list.png', 'Your plan'],
-            ['track', 'Backing Track', 'refreshed-icons/record.png', 'Recorded audio'],
-          ] as const).map(([kind, label, icon, description]) => (
-            <button type="button" key={kind} className="fp-choice" aria-label={label} aria-expanded={picker === kind} onClick={() => openPicker(kind)}>
-              <span className="fp-choice-icon" aria-hidden="true"><img src={PIXEL_ART + icon} alt="" /></span>
-              <span className="fp-choice-copy"><strong>{label}</strong><small>{description}</small></span>
-              <span className="fp-chevron" aria-hidden="true">{picker === kind ? '⌄' : '›'}</span>
-            </button>
-          ))}
+      {(phase === 'active' || queue.length > 0 || Boolean(recording)) && <section className="fp-queue" aria-label="Practice queue">
+        <div className="fp-session-head">
+          <h2>{phase === 'active' ? 'This Session' : 'Selected Activities'}</h2>
+          {phase === 'active' && <button type="button" className="fp-edit" aria-expanded={showChoices} onClick={() => { setShowChoices(v => !v); setPicker(null); }}>Edit</button>}
         </div>
-
-        {picker && <div className="fp-picker" aria-label={'Choose ' + picker}>
-          <div className="fp-picker-head"><strong>{picker === 'track' ? 'Backing Tracks' : picker === 'exercise' ? 'Exercises & Goals' : picker === 'chart' ? 'Charts' : 'Routines'}</strong>
-            <button type="button" onClick={() => setPicker(null)} aria-label="Close choices">×</button>
-          </div>
-          {picker === 'exercise' && <div className="fp-techniques" aria-label="Quick techniques and personal goals">
-            <p className="fp-picker-lead">Pick a technique or set a personal focus goal.</p>
-            {TECHNIQUES.map(value => <button key={value} type="button" onClick={() => addTechnique(value)}>+ {value}</button>)}
-            <form onSubmit={event => { event.preventDefault(); addGoal(customTechnique); }} className="fp-custom">
-              <input aria-label="Custom practice goal" value={customTechnique} onChange={event => setCustomTechnique(event.target.value)} placeholder="Your focus goal" maxLength={80}/>
-              <button type="submit" disabled={!customTechnique.trim()}>Add Goal</button>
-            </form>
-          </div>}
-          <input className="fp-search" aria-label="Search choices" type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={'Search ' + (picker === 'track' ? 'tracks' : picker === 'exercise' ? 'exercises' : picker + 's')}/>
-          <div className="fp-picker-results">
-            {visibleOptions.map(item => <button type="button" key={item.id} onClick={() => selectOption(item.id, item.title)}>
-              <span><strong>{item.title}</strong><small>{item.description}</small></span><span aria-hidden="true">+</span>
-            </button>)}
-            {visibleOptions.length === 0 && <p>{picker === 'track' ? 'No playable audio available.' : 'No matches.'}</p>}
-          </div>
-        </div>}
-      </section>
-
-      {queue.length > 0 && <section className="fp-queue" aria-label="Practice queue">
-        <div className="fp-section-heading"><h2>Session activities</h2><span>{queue.filter(item => item.done).length} / {queue.length} done</span></div>
+        {queue.length === 0 && !recording && <p className="fp-queue-empty">Just you and the music. Add something whenever you like.</p>}
         {queue.map(item => <div className="fp-queue-item" key={item.key}>
           <div className="fp-queue-row">
             <input type="checkbox" aria-label={'Completed ' + item.title} checked={item.done}
@@ -348,7 +312,58 @@ export function FreePracticePage() {
             {activeItem?.kind === 'goal' && <p>Keep this goal in mind as you practice. Mark it complete when you're happy with your progress.</p>}
           </div>}
         </div>)}
+        {recording && <div className="fp-selected-recording"><strong>Track:</strong> {recording.title}</div>}
       </section>}
+
+      {(phase === 'setup' || showChoices) && <section className="fp-add" aria-labelledby="fp-add-heading">
+        <h2 id="fp-add-heading">Add to This Session <span>(Optional)</span></h2>
+        <div className="fp-choice-list">
+          {([
+            ['goal', 'Goal', 'approved-isolated-icons/sprout.png'],
+            ['exercise', 'Exercise', 'approved-isolated-icons/music-bubble.png'],
+            ['chart', 'Chart', 'music-note-purple-sharp.png'],
+            ['routine', 'Routine', 'refreshed-icons/routine-list.png'],
+            ['track', 'Backing Track', 'refreshed-icons/record.png'],
+          ] as const).map(([kind, label, icon]) => (
+            <button type="button" key={kind} className="fp-choice" aria-label={label} aria-expanded={picker === kind} onClick={() => openPicker(kind)}>
+              <span className="fp-choice-icon" aria-hidden="true"><img src={PIXEL_ART + icon} alt="" /></span>
+              <span className="fp-choice-copy"><strong>{label}</strong></span>
+              <span className="fp-chevron" aria-hidden="true">{picker === kind ? '⌄' : '›'}</span>
+            </button>
+          ))}
+        </div>
+        {picker && <div className="fp-picker" aria-label={'Choose ' + picker}>
+          <div className="fp-picker-head"><strong>{picker === 'goal' ? 'Set a Focus Goal' : picker === 'track' ? 'Backing Tracks' : picker === 'exercise' ? 'Exercises & Techniques' : picker === 'chart' ? 'Charts' : 'Routines'}</strong>
+            <button type="button" onClick={() => setPicker(null)} aria-label="Close choices">×</button>
+          </div>
+          {picker === 'goal' && <form onSubmit={event => { event.preventDefault(); addGoal(customTechnique); }} className="fp-custom">
+            <input aria-label="Custom practice goal" value={customTechnique} onChange={event => setCustomTechnique(event.target.value)} placeholder="What would you like to work on?" maxLength={80}/>
+            <button type="submit" disabled={!customTechnique.trim()}>Add Goal</button>
+          </form>}
+          {picker === 'exercise' && <div className="fp-techniques" aria-label="Quick techniques">
+            {TECHNIQUES.map(value => <button key={value} type="button" onClick={() => addTechnique(value)}>+ {value}</button>)}
+          </div>}
+          {picker !== 'goal' && <>
+            <input className="fp-search" aria-label="Search choices" type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={'Search ' + (picker === 'track' ? 'tracks' : picker === 'exercise' ? 'exercises' : picker + 's')}/>
+            <div className="fp-picker-results">
+              {visibleOptions.map(item => <button type="button" key={item.id} onClick={() => selectOption(item.id, item.title)}>
+                <span><strong>{item.title}</strong><small>{item.description}</small></span><span aria-hidden="true">+</span>
+              </button>)}
+              {visibleOptions.length === 0 && <p>{picker === 'track' ? 'No playable audio available.' : 'No matches.'}</p>}
+            </div>
+          </>}
+        </div>}
+      </section>}
+
+      {phase === 'setup' ? <button type="button" className="fp-primary fp-start-workspace" aria-label="Start practice timer" onClick={toggleClock}>
+          <img src={PIXEL_ART + 'approved-isolated-icons/play.png'} alt="" aria-hidden="true" />Start Practice
+        </button> : <div className="fp-session-actions">
+          <button type="button" className="fp-pause-action" aria-label={running ? 'Pause practice timer' : 'Resume practice timer'} onClick={toggleClock}>
+            <img src={PIXEL_ART + (running ? 'practice-player/png/pause.png' : 'approved-isolated-icons/play.png')} alt="" aria-hidden="true" />
+            {running ? 'Pause' : 'Resume'}
+          </button>
+          <button type="button" className="fp-finish-action" onClick={finishSession}>Finish Session</button>
+        </div>}
 
       {recording && <section className="fp-audio" aria-label="Backing track">
         <div className="fp-audio-head"><strong>{recording.title}</strong><button type="button" onClick={() => {
@@ -363,6 +378,7 @@ export function FreePracticePage() {
         <button type="button" onClick={event => openTool('metronome', event.currentTarget)}><img src={PIXEL_ART + 'refreshed-icons/metronome.png'} alt="" aria-hidden="true" />Metronome</button>
         <button type="button" onClick={event => openTool('tuner', event.currentTarget)}><img src={PIXEL_ART + 'practice-player/png/tuner.png'} alt="" aria-hidden="true" />Tuner</button>
       </div>
+      </>}
     </section>
 
     {tool && createPortal(<div className="fp-tool-overlay" ref={toolDialogRef} role="dialog" aria-modal="true" aria-label={tool === 'tuner' ? 'Tuner' : 'Metronome'}
