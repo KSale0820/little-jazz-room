@@ -218,6 +218,16 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
         min="40" max="240" step="1" value={bpm}
         onChange={event => setTempo(Number(event.target.value))}
         style={{ background: 'linear-gradient(to right, var(--color-action) ' + (bpm - 40) / 2 + '%, var(--color-surface-raised) ' + (bpm - 40) / 2 + '%)' }} />
+      <div className="metronome-action-group">
+      <p className="metronome-playing-status" role="status">
+        {playing ? countingIn ? 'Counting in…' : 'Playing · ' + signature :
+          signature === '6/8' ? 'BPM counts dotted-quarter beats' : 'Ready when you are'}
+      </p>
+      <button type="button" className="metronome-play" onClick={() => playing ? stop() : void start()}
+        aria-label={playing ? 'Stop metronome' : 'Start metronome'} aria-pressed={playing}>
+        <img src={playing ? '/visuals/tools/pixel/stop.png' : '/visuals/tools/pixel/play.png'} alt="" aria-hidden="true" />
+      </button>
+      </div>
       <div className="metronome-tap-row">
         <button type="button" className="metronome-tap" onClick={tapTempo}>Tap Tempo</button>
         <span>{taps >= 2 ? 'Tempo set from your taps' : 'Tap twice or more to set BPM'}</span>
@@ -252,14 +262,6 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
           {beatCount * countInBars} beats <span aria-hidden="true">›</span>
         </button>
       </div>
-      <p className="metronome-playing-status" role="status">
-        {playing ? countingIn ? 'Counting in…' : 'Playing · ' + signature :
-          signature === '6/8' ? 'BPM counts dotted-quarter beats' : 'Ready when you are'}
-      </p>
-      <button type="button" className="metronome-play" onClick={() => playing ? stop() : void start()}
-        aria-label={playing ? 'Stop metronome' : 'Start metronome'} aria-pressed={playing}>
-        <img src={playing ? '/visuals/tools/pixel/stop.png' : '/visuals/tools/pixel/play.png'} alt="" aria-hidden="true" />
-      </button>
       {error ? <p className="tool-error" role="alert">{error}</p> : null}
       <div className="tool-cat-scene tool-metronome-scene" aria-hidden="true">
         <DecorativeCat catId={catId} variant="sitting" size={168} className="tool-scene-cat" />
