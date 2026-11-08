@@ -17,25 +17,36 @@ html[data-theme] .t01-approved {
 html[data-theme] .t01-approved * { box-sizing: border-box; }
 html[data-theme] .t01-approved .t01-pixel-header {
   display: grid;
-  grid-template-columns: minmax(0, 48%) minmax(0, 52%);
+  grid-template-columns: minmax(0, 47%) minmax(0, 53%);
   gap: 0;
-  align-items: end;
+  align-items: center;
   min-height: 148px;
   margin: 0 0 16px;
   overflow: visible;
 }
 html[data-theme] .t01-approved .t01-pixel-header::before { content: none !important; display: none !important; }
 html[data-theme] .t01-approved-title {
-  margin: 0 0 16px;
+  margin: 0;
   min-width: 0;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  align-self: center;
+  position: relative;
+  z-index: 1;
 }
-html[data-theme] .t01-approved-title img { display: block; width: 100%; max-width: 205px; height: auto; image-rendering: pixelated; }
+html[data-theme] .t01-approved-title img {
+  display: block;
+  width: 100%;
+  max-width: 205px;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
 html[data-theme] .t01-pixel-shelf {
   display: block;
-  width: 121%;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
   height: auto;
   max-height: 160px;
   object-fit: contain;
@@ -149,10 +160,12 @@ html[data-theme] .t01-approved .t01-card-open {
   min-width: 0; align-items: flex-start; text-align: left;
   padding: 0; margin: 0; border: 0; background: none; box-shadow: none;
   color: var(--color-text); min-height: 50px; justify-content: center;
+  width: auto; max-width: 100%;
 }
 html[data-theme] .t01-approved .t01-card-title {
   font: 700 clamp(16px,4.7vw,22px) Georgia,serif;
   letter-spacing: -.03em; color: var(--color-text);
+  padding: 0;
   width: 100%; display: block;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
@@ -184,7 +197,15 @@ html[data-theme] .t01-approved .t01-empty > img { height: 53px; width: 45px; obj
 html[data-theme] .t01-approved .t01-empty h2 { color: var(--color-text); font-size: 23px; margin: 0 0 8px; }
 html[data-theme] .t01-approved .t01-empty p { color: var(--color-muted); margin: 0 0 16px; }
 html[data-theme] .t01-approved .t01-empty-clear { color: var(--color-action-text) !important; background: var(--color-action); }
-html[data-theme="dark"] .t01-approved-title img { filter: brightness(1.9) saturate(.75); }
+/* The approved light-theme title PNG uses dark green lettering. Brightness
+   alone leaves those pixels too dim on charcoal; recolor only the decorative
+   heading artwork in Dark, preserving its original pixel geometry. */
+html[data-theme="dark"] .t01-approved .t01-approved-title img {
+  filter: brightness(0) saturate(100%) invert(88%) sepia(11%) saturate(484%) hue-rotate(62deg) brightness(96%) contrast(94%);
+}
+html[data-theme="dark"] .t01-approved .t01-approved-title {
+  color: var(--color-text);
+}
 html[data-theme="dark"] .t01-approved .t01-bookmarked-link { box-shadow: none; }
 @media (max-width: 370px) {
   html[data-theme] .t01-approved { padding-inline: 10px; }
