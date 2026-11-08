@@ -367,7 +367,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           <small>Open string: {reading.targetLabel}</small>
         ) : null}
       </div>
-      <div className={`tuner-status${status === 'listening' && isNearString && isTuned ? ' is-in-tune' : ''}${status === 'denied' || status === 'unsupported' || status === 'error' ? ' is-error' : ''}`} role="status">{getTuningMessage()}</div>
+      <div className={`tuner-status${status === 'listening' && isNearString && isTuned ? ' is-in-tune' : ''}`} role="status">{getTuningMessage()}</div>
           </div>
       <div className="tuner-measurements">
         <div><strong>{reading && isNearString ? reading.targetLabel : '—'}</strong><span>{reading && isNearString ? reading.targetFrequency.toFixed(1) + ' Hz target' : 'Target'}</span></div>
