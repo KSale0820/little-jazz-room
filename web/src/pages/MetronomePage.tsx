@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
 import {
   audioContextConstructor, beatIntervalSeconds, beatsPerMeasure,
@@ -10,6 +9,7 @@ import {
 import './ToolsPages.css';
 import './CleanPixelToolsProgress.css';
 import './CleanPixelMotifPlacements.css';
+import './ToolsPolishedPair.css';
 
 type Signature = '2/4' | '3/4' | '4/4' | '6/8';
 type ScheduledBeat = { time: number; index: number; countIn: boolean };
@@ -17,9 +17,6 @@ type ScheduledBeat = { time: number; index: number; countIn: boolean };
 export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
-  const [roomArtLoaded, setRoomArtLoaded] = useState(false);
-  const [roomArtSource, setRoomArtSource] = useState<string>(VISUAL_ASSETS.tools.metronomeBackground);
-  const newRoomArtLoaded = roomArtLoaded && roomArtSource === VISUAL_ASSETS.tools.metronomeBackground;
   const [bpm, setBpm] = useState(100);
   const [signature, setSignature] = useState<Signature>('4/4');
   const [accents, setAccents] = useState<boolean[]>(defaultAccents('4/4'));
@@ -203,16 +200,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
 
   const beatCount = beatsPerMeasure(signature);
   return (
-    <section className={`tool-page tool-metronome${roomArtLoaded ? ' tool-has-background' : ''}${newRoomArtLoaded ? ' tool-has-new-room' : ''}`} aria-label="Metronome">
-      <img className="tool-bottom-art" src={roomArtSource} alt="" aria-hidden="true"
-        onLoad={() => setRoomArtLoaded(true)} onError={() => {
-          setRoomArtLoaded(false);
-          if (roomArtSource !== VISUAL_ASSETS.tools.metronomeFallback) {
-            setRoomArtSource(VISUAL_ASSETS.tools.metronomeFallback);
-          }
-        }} />
-      <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
-      <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
+    <section className="tool-page tool-metronome" aria-label="Metronome">
       <header className="tool-heading">
         <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))} aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
         <h1>Metronome</h1>
@@ -269,14 +257,11 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
           signature === '6/8' ? 'BPM counts dotted-quarter beats' : 'Ready when you are'}
       </p>
       <button type="button" className="metronome-play" onClick={() => playing ? stop() : void start()}
-        aria-label={playing ? 'Pause metronome' : 'Start metronome'} aria-pressed={playing}>
-        <span aria-hidden="true">{playing ? 'Ⅱ' : '▶'}</span>
+        aria-label={playing ? 'Stop metronome' : 'Start metronome'} aria-pressed={playing}>
+        <img src={playing ? '/visuals/tools/pixel/stop.png' : '/visuals/tools/pixel/play.png'} alt="" aria-hidden="true" />
       </button>
       {error ? <p className="tool-error" role="alert">{error}</p> : null}
       <div className="tool-cat-scene tool-metronome-scene" aria-hidden="true">
-        <img className="tool-scene-plant tool-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
-        <img className="tool-scene-plant tool-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
-        <img className="tool-scene-rug" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.rug} alt="" />
         <DecorativeCat catId={catId} variant="sitting" size={168} className="tool-scene-cat" />
       </div>
     </section>
