@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { ChordGrid } from '../components/ChordGrid';
+import { SessionCompletion } from '../components/SessionCompletion';
 import { useApp } from '../context/AppContext';
 import { RECORDED_BACKING_TRACKS, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
 import type { PracticeSessionRecord } from '../types/content';
@@ -188,19 +189,19 @@ export function FreePracticePage() {
   };
 
   if (finished) {
-    return <section className="fp-page fp-completed" aria-label="Free Practice complete">
-      <header className="fp-top"><button type="button" className="fp-back" onClick={() => navigate('/practice')}>‹ Practice</button></header>
-      <h1>Free Practice</h1>
-      <div className="fp-timer" role="status">
-        <h2>{saved ? 'Session Saved' : saveError ? 'Save Failed' : 'Saving Session'}</h2>
-        <strong className="fp-time">{formatPracticeTime(finished.durationSeconds)}</strong>
-      </div>
-      {saveError && <button type="button" className="fp-primary" disabled={saving} onClick={() => void saveSession(finished)}>Retry Save</button>}
-      {saved && <>
-        <button type="button" className="fp-primary" onClick={() => navigate('/progress')}>View Progress</button>
-        <button type="button" className="fp-secondary" onClick={reset}>Practice Again</button>
-      </>}
-    </section>;
+    return <SessionCompletion
+      record={finished}
+      kind="free"
+      title="Free Practice"
+      subtitle={recording ? 'With recorded backing track' : 'Open practice'}
+      activities={queue.filter(item => item.done).map(item => item.title)}
+      activityLabel="Activities completed"
+      status={saved ? 'saved' : saveError ? 'error' : 'saving'}
+      onSave={() => { void saveSession(finished); }}
+      onProgress={() => navigate('/progress')}
+      onPracticeAgain={reset}
+      onPractice={() => navigate('/practice')}
+    />;
   }
 
   return <>
