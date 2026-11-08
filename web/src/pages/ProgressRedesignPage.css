@@ -197,3 +197,17 @@ html[data-theme="dark"] .app-shell:has(.pgr-page) .bottom-nav a.current {
   box-shadow: inset 0 0 0 1px #8ab59a;
   border-radius: 7px;
 }
+
+/* Keep the calendar's accessible heading while avoiding a duplicate visible
+   title and practice-day count already shown in the summary strip. */
+.pgr-page .practice-calendar-header { position: relative; }
+.pgr-page .practice-calendar-header > div:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  padding: 0;
+}
+.pgr-page .practice-calendar-month { min-height: 46px; }
