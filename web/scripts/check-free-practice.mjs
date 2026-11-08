@@ -87,6 +87,12 @@ try {
     await page.getByRole('button', { name: 'Finish Session' }).click();
     await page.getByText('Session Saved ✓').waitFor();
     assert(await page.locator('.fp-completion-card h1').isVisible(), 'Completion headline should be visible after saving');
+    const actionReach = await page.evaluate(() => {
+      const nav = document.querySelector('.bottom-nav')?.getBoundingClientRect();
+      const action = document.querySelector('.fp-completion-actions button:last-child')?.getBoundingClientRect();
+      return { navTop: nav?.top ?? 0, actionBottom: action?.bottom ?? Infinity };
+    });
+    assert(actionReach.actionBottom <= actionReach.navTop + 1, 'Completion actions clip under the bottom navigation: ' + JSON.stringify(actionReach));
     await page.screenshot({ path: join(output, 'completed-' + shot + '.png'), fullPage: true });
     const records = await page.evaluate(() => {
       const key = 'little-jazz-room:practice-sessions:v1:anonymous';
