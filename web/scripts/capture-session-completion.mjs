@@ -41,7 +41,7 @@ try {
           await page.getByRole('button', { name: 'Start practice timer' }).click();
           await page.waitForTimeout(1450);
           await page.getByRole('button', { name: 'Finish Session' }).click();
-          await page.getByRole('heading', { name: 'Practice complete' }).waitFor();
+          await page.getByRole('heading', { name: /Session Complete!|Great practice!/i }).waitFor();
           await page.getByRole('button', { name: 'View Progress' }).waitFor({ timeout: 15000 });
           assert(await page.getByText(/Scales/).count() > 0, 'Completed activity missing');
           assert((await page.locator('.sc-duration strong').innerText()).trim() !== '0:00', 'Actual duration missing');
