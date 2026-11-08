@@ -109,8 +109,23 @@ describe('approved visual library', () => {
     }
   });
 
+  it('validates the ten additive approved completion sprites without mutating the locked pack', () => {
+    const base = 'new-assets/2026-11-07-sharp-pixel/';
+    const names = [
+      ...['trophy', 'stopwatch', 'star', 'calendar-reward', 'sprout']
+        .map(name => base + 'approved-isolated-icons/' + name + '.png'),
+      ...[0, 1, 2, 3, 4].map(stage => base + 'plant-growth-stages/plant-stage-' + stage + '.png'),
+    ];
+    for (const name of names) {
+      const file = join(publicVisuals, name);
+      const info = readPngInfo(readFileSync(file));
+      expect(info.width, name).toBeGreaterThan(0);
+      expect(info.height, name).toBeGreaterThan(0);
+    }
+  });
+
   it('matches the packaged files byte for byte, including alpha and svg structure', () => {
-    const installed = new Set(walkFiles(publicVisuals));
+    // Additive review/staging art is outside the locked original pack.\n    // Keep original packaged hash and inventory checks strict.\n    const installed = new Set(walkFiles(publicVisuals).filter(path => !path.startsWith('new-assets/')));
     const fromManifest = new Set<string>(collectVisualUrls(VISUAL_ASSETS));
     // H01's newly supplied photo is installed separately from the original asset pack.
     // Keep legacy pack checks strict while allowing it to arrive in a distinct commit.
