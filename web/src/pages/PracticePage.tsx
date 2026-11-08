@@ -27,6 +27,7 @@ import './PracticePage.css';
 import './PracticePlayerApproved.css';
 import './CleanPixelPractice.css';
 import './PracticePlayerPixelV2.css';
+import './PracticePlayerReferenceV3.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'instructions' | 'chart';
