@@ -186,9 +186,9 @@ export function TracksPage() {
       <header className="t01-header t01-pixel-header">
         <h1 className="t01-approved-title">
           <span className="sr-only">Tracks and Charts</span>
-          <img src="/visuals/tracks-approved/tracks-title.svg" alt="" aria-hidden="true" />
+          <img src="/visuals/tracks-approved/tracks-title.png" alt="" aria-hidden="true" />
         </h1>
-        <img className="t01-pixel-shelf" src="/visuals/tracks-approved/jazz-study-shelf.svg" alt="" aria-hidden="true" />
+        <img className="t01-pixel-shelf" src="/visuals/tracks-approved/jazz-study-shelf.png" alt="" aria-hidden="true" />
       </header>
       <div className="t01-search-wrap">
         <TrackIcon name="search" />
