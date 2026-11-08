@@ -223,8 +223,12 @@ export function RoutineLibraryPage() {
               </button>
               <button type="button" className={'routine-pin' + (pinned ? ' is-pinned' : '')}
                 aria-label={(pinned ? 'Unpin ' : 'Pin ') + routine.title + ' on Practice home'}
-                aria-pressed={pinned} onClick={() => togglePin(routine.id)}>
-                {pinned ? 'Pinned' : 'Pin'}
+                aria-pressed={pinned} onClick={() => togglePin(routine.id)}
+                title={pinned ? 'Unpin from Practice' : 'Pin to Practice'}>
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill={pinned ? 'currentColor' : 'none'}
+                  stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m15 3 6 6-4 1-3 4v3l-2 2-2-6-6-2 2-2h3l4-3z" /><path d="m12 18-4 4" />
+                </svg>
               </button>
             </article>
           );
