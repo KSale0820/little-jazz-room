@@ -66,6 +66,8 @@ try {
       await page.getByRole('textbox', { name: 'Measure ' + (index + 1) + ' chord 1' }).fill(symbol);
     }
     await shot('chart-create');
+    assert.equal(await page.locator('.chart-editor-row').first().locator('.chart-editor-measure').count(), 4,
+      label + ' chart grid must show four measures per row');
     await page.getByRole('textbox', { name: 'Measure 2 chord 1' }).focus();
     await page.getByRole('button', { name: 'Add Annotation' }).click();
     await page.getByRole('textbox', { name: 'Red style note for this measure' }).fill('Play lightly');
@@ -78,14 +80,16 @@ try {
 
     await page.getByRole('button', { name: 'Save Chart' }).click();
     await page.getByRole('heading', { name: 'My Charts', exact: true }).waitFor();
+    await shot('chart-library');
     const saved = (await page.evaluate(localList, 'little-jazz-room:charts:v1:'))
       .find(chart => chart.title === chartName);
     assert.ok(saved?.id, label + ' chart not saved');
     assert.deepEqual(saved.time_signature, meter.split('/').map(Number));
     assert.equal(saved.bars[1].annotation, 'Play lightly');
     await page.reload({ waitUntil: 'networkidle' });
-    await page.locator('.chart-library-card').filter({ hasText: chartName })
-      .getByRole('button', { name: 'Edit', exact: true }).click();
+    const savedCard = page.locator('.chart-library-card').filter({ hasText: chartName });
+    await savedCard.locator('summary', { hasText: '•••' }).click();
+    await savedCard.getByRole('button', { name: 'Edit', exact: true }).click();
     await page.getByRole('heading', { name: 'Edit Chart' }).waitFor();
     assert.equal(await page.getByRole('textbox', { name: 'Chart name' }).inputValue(), chartName);
     await shot('chart-edit-populated');
@@ -105,7 +109,7 @@ try {
     await page.locator('#exInst').fill('Play the ii–V–I progression slowly, then repeat in time.');
     await page.locator('#exChartSearch').fill(chartName);
     await page.locator('#exChart').selectOption(saved.id);
-    assert.ok((await page.locator('.builder-exercise-linked').innerText()).includes(chartName));
+    assert.ok((await page.locator('.builder-exercise-linked-card').innerText()).includes(chartName));
     assert.ok((await page.locator('.builder-exercise-preview').innerText()).includes(exerciseName));
     assert.equal(await page.locator('.builder-custom-form .jazz-cat-sprite').count(), 0);
     await shot('exercise-create-linked-selection');
