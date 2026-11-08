@@ -13,13 +13,13 @@
   bottom: 0;
   display: grid;
   place-items: center;
-  width: 43px;
+  width: 48px;
   height: 47px;
   border: 0;
   background: transparent;
   color: var(--color-muted);
-  font: 700 26px/1 var(--font-ui);
+  font: 700 12px/1 var(--font-ui);
 }
-.routine-library .routine-pin.is-pinned { color: var(--color-action); }
+.routine-library .routine-pin.is-pinned { color: var(--color-action); text-decoration: underline; text-underline-offset: 3px; }
 .routine-library .routine-pin:focus-visible,
 .routine-library .routine-bookmark:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -3px; }
