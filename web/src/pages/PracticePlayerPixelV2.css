@@ -1,0 +1,492 @@
+/*
+ * P02 Practice Player — crisp pixel theme.
+ * Scope: visual layout only. All chart, audio, timer, routine and tool logic
+ * lives in PracticePage.tsx and is deliberately left intact.
+ * The active Light/Dark theme tokens provide contrast in both modes.
+ */
+html[data-theme] .practice-player.practice-unified {
+  --pp-bg: var(--color-bg, #fff8ee);
+  --pp-paper: var(--color-chart-paper, #fffdf6);
+  --pp-surface: var(--color-surface, #fffcf5);
+  --pp-raised: var(--color-surface-raised, #f1f1e6);
+  --pp-ink: var(--color-text, #173d30);
+  --pp-green: var(--color-action, #23523e);
+  --pp-muted: var(--color-muted, #647168);
+  --pp-line: var(--color-border, #cbc5b8);
+  --pp-gold: #cda953;
+  background: var(--pp-bg);
+  color: var(--pp-ink);
+  padding: 13px 14px max(20px, env(safe-area-inset-bottom));
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 6px;
+  padding: 3px 0 4px;
+}
+html[data-theme] .practice-player.practice-unified .practice-back {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border: 1px solid var(--pp-line);
+  border-radius: 10px;
+  background: var(--pp-surface);
+  color: var(--pp-green);
+  font: 400 29px/1 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified .practice-title-group {
+  min-width: 0;
+  flex: 1;
+}
+html[data-theme] .practice-player.practice-unified .practice-title-group .practice-overline {
+  display: block;
+  margin: 1px 0 4px;
+  color: var(--pp-muted);
+  font: 700 10px/1.2 var(--font-ui, system-ui);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+html[data-theme] .practice-player.practice-unified .practice-title-group h1 {
+  margin: 0;
+  color: var(--pp-green);
+  font: 750 clamp(24px, 6.8vw, 30px)/1.08 Georgia, serif;
+  letter-spacing: -.025em;
+}
+html[data-theme] .practice-player.practice-unified .practice-title-group p {
+  color: var(--pp-muted);
+  font-size: 11px;
+  line-height: 1.35;
+  padding-top: 5px;
+}
+html[data-theme] .practice-player.practice-unified .practice-audio-state {
+  color: var(--pp-muted);
+  margin: 4px 0 8px;
+  font: 11px/1.3 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified .practice-audio-state strong { color: var(--pp-green); }
+html[data-theme] .practice-player.practice-unified .practice-guided-progress { margin-bottom: 8px; }
+html[data-theme] .practice-player.practice-unified .practice-chart-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 31px;
+  margin: 0 0 5px;
+  gap: 8px;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-toolbar label {
+  font: 650 10px/1.2 var(--font-ui, system-ui);
+  color: var(--pp-muted);
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-toolbar select {
+  max-width: min(235px, 76%);
+  min-width: 0;
+  min-height: 30px;
+  padding: 4px 9px;
+  font: 600 12px var(--font-ui, system-ui);
+  border: 1px solid var(--pp-line);
+  border-radius: 7px;
+  background: var(--pp-paper);
+  color: var(--pp-ink);
+  box-shadow: none;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all {
+  max-height: clamp(230px, 37dvh, 360px);
+  margin: 0 0 9px;
+  padding: 0 0 1px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--pp-paper);
+  border: 1px solid var(--pp-line);
+  border-radius: 10px;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border: 0;
+  border-radius: 0;
+  padding-left: 33px;
+  overflow: visible;
+  background: var(--pp-paper);
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure {
+  min-height: clamp(63px, 9.1dvh, 81px);
+  padding: 18px 3px 8px;
+  box-sizing: border-box;
+  border: 0;
+  border-top: 1px solid var(--pp-line);
+  border-right: 1px solid var(--pp-line);
+  border-bottom: 1px solid var(--pp-line);
+  box-shadow: none;
+  background: var(--pp-paper);
+  color: var(--color-chart-chord, #153f32);
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure:nth-child(4n+1) {
+  border-left: 1px solid var(--pp-line);
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.chosen,
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.playhead {
+  background: var(--color-chart-selected, #f5e7c4);
+  box-shadow: inset 0 0 0 2px var(--pp-gold);
+  outline: none;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.looped:not(.chosen):not(.playhead) {
+  background: color-mix(in srgb, var(--pp-paper) 82%, var(--pp-green));
+  box-shadow: none;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords,
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords span {
+  color: var(--color-chart-chord, #153f32);
+  font: 700 clamp(12px, 3.3vw, 17px)/1.15 Georgia, serif;
+  letter-spacing: -.035em;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure-section-label {
+  left: -33px;
+  width: 30px;
+  color: var(--color-chart-section, #b34f4e);
+  font-size: 11px;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .measure-annotation {
+  max-width: 70%;
+  font-size: 8px;
+  color: var(--color-chart-section, #b34f4e);
+}
+
+/* Real seek controls for either audio time or the current chart bar. */
+html[data-theme] .practice-player.practice-unified .practice-transport {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+html[data-theme] .practice-player.practice-unified .practice-recording-seek,
+html[data-theme] .practice-player.practice-unified .practice-chart-seek {
+  margin: 3px 0 6px;
+}
+html[data-theme] .practice-player.practice-unified :is(.practice-recording-seek, .practice-chart-seek) input[type="range"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--pp-green);
+  cursor: pointer;
+}
+html[data-theme] .practice-player.practice-unified .practice-recording-times {
+  display: flex;
+  justify-content: space-between;
+  margin: -2px 1px 0;
+  color: var(--pp-muted);
+  font: 600 11px/1.3 var(--font-ui, system-ui);
+  font-variant-numeric: tabular-nums;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row,
+html[data-theme] .practice-player.practice-unified.practice-instructions .practice-control-row {
+  width: 100%;
+  max-width: none;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,.94fr) 61px minmax(0,1.08fr) minmax(0,1fr);
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 9px;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row button {
+  min-width: 0;
+  height: 53px;
+  min-height: 53px;
+  border: 1px solid var(--pp-line);
+  border-radius: 10px;
+  background: var(--pp-surface);
+  color: var(--pp-green);
+  font: 700 12px/1.1 var(--font-ui, system-ui);
+  padding: 3px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  box-shadow: none;
+  cursor: pointer;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-loop-control {
+  font: 750 13px/1 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row button[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--pp-raised) 65%, var(--pp-green));
+  box-shadow: inset 0 0 0 1px var(--pp-green);
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-timer-button {
+  width: 61px;
+  height: 61px;
+  min-height: 61px;
+  justify-self: center;
+  border: 2px solid var(--pp-gold);
+  border-radius: 13px;
+  background: var(--pp-green);
+  color: var(--color-action-text, #fff9ee);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--pp-green) 50%, transparent);
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row :is(.practice-measure-btn, .practice-repeat-control) span {
+  font-size: 10px;
+  line-height: 1.1;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-repeat-control span { font-size: 11px; }
+.practice-player.practice-unified .practice-pixel-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex: 0 0 auto;
+}
+.practice-player.practice-unified .practice-control-row .practice-pixel-icon {
+  width: 20px;
+  height: 20px;
+}
+.practice-player.practice-unified .practice-control-row .practice-play-pixel {
+  width: 30px;
+  height: 30px;
+}
+.practice-player.practice-unified .practice-control-row .practice-timer-button .practice-play-pixel[src$="/play.png"] {
+  filter: brightness(0) invert(1);
+}
+
+/* BPM, key, original reset, and the previously available transposing instrument. */
+html[data-theme] .practice-player.practice-unified .practice-transport .practice-player-pills {
+  display: grid;
+  grid-template-columns: minmax(0,1.08fr) minmax(0,1fr) minmax(70px,.78fr);
+  gap: 7px;
+  align-items: center;
+  padding: 9px 10px;
+  margin: 3px 0 5px;
+  min-width: 0;
+  border: 1px solid var(--pp-line);
+  border-radius: 11px;
+  background: var(--pp-surface);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.practice-bpm-field,.practice-key-field) {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr);
+  align-items: center;
+  gap: 5px;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.practice-bpm-field,.practice-key-field) > label {
+  font: 750 11px/1 var(--font-ui, system-ui);
+  color: var(--pp-ink);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.bpm-stepper,.practice-key-stepper) {
+  display: flex;
+  min-width: 0;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid var(--pp-line);
+  border-radius: 8px;
+  background: var(--pp-paper);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.bpm-stepper input, .practice-key-stepper select) {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 38px;
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: var(--pp-green);
+  font: 750 16px/1 var(--font-ui, system-ui);
+  text-align: center;
+  box-shadow: none;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-stepper-arrows {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 26px;
+  border-left: 1px solid var(--pp-line);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-stepper-arrows button {
+  width: 26px;
+  height: 20px;
+  min-height: 20px;
+  padding: 1px;
+  border: 0;
+  border-radius: 0;
+  background: var(--pp-raised);
+  display: grid;
+  place-items: center;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-stepper-arrows button:first-child {
+  border-bottom: 1px solid var(--pp-line);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-stepper-arrows .practice-pixel-icon {
+  width: 15px;
+  height: 15px;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-original-reset {
+  min-height: 44px;
+  border: 0;
+  padding: 3px 0;
+  background: transparent;
+  color: var(--pp-green);
+  font: 700 11px/1.2 var(--font-ui, system-ui);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-instrument-field {
+  grid-column: 1 / -1;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--pp-muted);
+  font: 600 10px/1 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-instrument-field select {
+  width: auto;
+  min-width: 105px;
+  min-height: 30px;
+  height: 30px;
+  padding: 3px 9px;
+  border: 1px solid var(--pp-line);
+  border-radius: 8px;
+  background: var(--pp-paper);
+  color: var(--pp-ink);
+  font: 650 11px/1 var(--font-ui, system-ui);
+  text-align: left;
+}
+html[data-theme] .practice-player.practice-unified .practice-transport > .practice-reference-note {
+  display: block;
+  margin: 1px 0 7px;
+  color: var(--pp-muted);
+  font: 10px/1.35 var(--font-ui, system-ui);
+}
+
+/* Tool buttons are genuine actions; the Mixer stays honestly marked Preview. */
+html[data-theme] .practice-player.practice-unified > .practice-utility-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  margin: 4px 0 9px;
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row button {
+  min-height: 57px;
+  padding: 7px 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  background: var(--pp-surface);
+  color: var(--pp-ink);
+  border: 1px solid var(--pp-line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row .practice-tool-glyph {
+  display: block;
+  width: 23px;
+  height: 23px;
+  min-height: 23px;
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row button span {
+  margin: 0;
+  color: var(--pp-ink);
+  font: 700 11px/1.1 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row button small {
+  width: 100%;
+  margin: -3px 0 0;
+  color: var(--pp-muted);
+  font: 600 9px/1 var(--font-ui, system-ui);
+  text-align: center;
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row button:disabled {
+  opacity: .64;
+  cursor: not-allowed;
+}
+
+/* Practice time remains independently tracked and Finish Session stays prominent. */
+html[data-theme] .practice-player.practice-unified > .practice-session-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 7px;
+  margin: 0;
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row .practice-time-badge {
+  display: flex;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  border: 0;
+  box-shadow: none;
+  padding: 2px 8px;
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--pp-muted);
+  font: 600 12px/1.2 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row .practice-time-badge strong {
+  color: var(--pp-green);
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row .practice-finish-action {
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+  margin: 0;
+  padding: 9px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  border: 2px solid var(--pp-gold);
+  border-radius: 12px;
+  background: var(--pp-green);
+  color: var(--color-action-text, #fff9ed);
+  font: 750 17px/1.1 Georgia, serif;
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pp-paper) 25%, transparent);
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row .practice-finish-action .practice-pixel-icon {
+  width: 22px;
+  height: 22px;
+}
+html[data-theme] .practice-player.practice-unified button:focus-visible,
+html[data-theme] .practice-player.practice-unified select:focus-visible,
+html[data-theme] .practice-player.practice-unified input:focus-visible {
+  outline: 2px solid var(--color-focus, var(--pp-gold));
+  outline-offset: 2px;
+}
+@media (max-width: 370px) {
+  html[data-theme] .practice-player.practice-unified { padding-inline: 10px; }
+  html[data-theme] .practice-player.practice-unified .practice-title-group h1 { font-size: 23px; }
+  html[data-theme] .practice-player.practice-unified .practice-control-row { gap: 4px; grid-template-columns: minmax(0,1fr) minmax(0,.92fr) 54px minmax(0,1fr) minmax(0,1fr); }
+  html[data-theme] .practice-player.practice-unified .practice-control-row .practice-timer-button { width: 54px; height: 57px; min-height: 57px; }
+  html[data-theme] .practice-player.practice-unified .practice-player-pills { padding-inline: 6px; gap: 4px; }
+  html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.practice-bpm-field,.practice-key-field) { gap: 3px; }
+  html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.practice-bpm-field,.practice-key-field) > label { font-size: 10px; }
+  html[data-theme] .practice-player.practice-unified > .practice-utility-row button span { font-size: 10px; }
+}
+@media (max-height: 730px) {
+  html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all { max-height: 33dvh; }
+  html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure { min-height: 54px; }
+  html[data-theme] .practice-player.practice-unified .practice-control-row { margin: 4px 0 6px; }
+  html[data-theme] .practice-player.practice-unified > .practice-utility-row { margin-bottom: 5px; }
+}
