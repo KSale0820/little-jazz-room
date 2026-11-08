@@ -20,7 +20,7 @@ html[data-theme] .t01-approved .t01-pixel-header {
   grid-template-columns: minmax(0, 47%) minmax(0, 53%);
   gap: 0;
   align-items: center;
-  min-height: 148px;
+  min-height: 124px;
   margin: 0 0 16px;
   overflow: visible;
 }
@@ -38,17 +38,20 @@ html[data-theme] .t01-approved-title {
 html[data-theme] .t01-approved-title img {
   display: block;
   width: 100%;
-  max-width: 205px;
+  max-width: none;
+  width: 300px;
   height: auto;
   object-fit: contain;
+  transform: translate(-58px, 10px);
   image-rendering: pixelated;
 }
 html[data-theme] .t01-pixel-shelf {
   display: block;
-  width: 100%;
-  max-width: 100%;
+  width: 320px;
+  max-width: none;
   height: auto;
-  max-height: 160px;
+  max-height: none;
+  transform: translate(50px, 10px);
   object-fit: contain;
   object-position: right bottom;
   justify-self: end;
@@ -88,15 +91,15 @@ html[data-theme] .t01-approved .t01-advanced-filter svg { width: 17px; height: 1
 html[data-theme] .t01-approved .t01-categories {
   margin: 0 -14px 13px 0;
   padding: 0 14px 3px 0;
-  display: flex; gap: 6px; overflow-x: auto;
+  display: flex; gap: 4px; overflow-x: auto;
   scrollbar-width: none;
 }
 html[data-theme] .t01-approved .t01-category {
-  min-height: 40px; padding: 0 13px; flex: 0 0 auto;
+  min-height: 40px; padding: 0 8px; flex: 0 0 auto;
   border-radius: 23px; background: var(--color-surface);
   border: 1px solid var(--color-border);
   color: var(--color-text) !important;
-  font-size: 13px; font-weight: 500;
+  font-size: 11.5px; font-weight: 500;
   box-shadow: 0 1px 1px #191c1510;
 }
 html[data-theme] .t01-approved .t01-category[aria-pressed="true"] {
