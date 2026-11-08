@@ -34,13 +34,14 @@ export const countRoutineFilters = (filters: RoutineFilters) =>
   filters.focus.length + Number(Boolean(filters.instrument)) +
   Number(Boolean(filters.duration)) + Number(Boolean(filters.level));
 
-/** Labels are derived from actual routine and exercise descriptions, never inferred from the mockup. */
+/** Classify focuses from routine metadata and the named exercise categories/titles.
+ * Full exercise instructions often mention unrelated skills; searching them yields false matches. */
 export function routineFocuses(routine: Routine, linkedExercises: Exercise[]): RoutineFocus[] {
   const goal = (routine as Routine & { goal?: string }).goal ?? '';
   const text = [
     goal, routine.title, routine.description ?? '',
     ...linkedExercises.flatMap(exercise =>
-      [exercise.category, exercise.title, exercise.description ?? '', exercise.instructions]),
+      [exercise.category, exercise.title, exercise.description ?? '']),
   ].join(' ').toLowerCase();
 
   const found = new Set<RoutineFocus>();
@@ -66,6 +67,7 @@ function matchesInstrument(instruments: string[], requested: string): boolean {
   return instruments.some(value => {
     const name = value.toLowerCase();
     if (requested === 'Sax') return name.includes('sax');
+    if (requested === 'Voice') return name === 'voice' || name.includes('vocal') || name.includes('sing');
     return name === requested.toLowerCase() || name.includes(requested.toLowerCase() + ' ');
   });
 }
