@@ -89,7 +89,10 @@ export function FreePracticePage() {
     } else {
       clock.current.startedAt = Date.now();
       setRunning(true);
-      if (phase === 'setup') setExpandedKey(null);
+      if (phase === 'setup') {
+        setExpandedKey(null);
+        setPicker(null);
+      }
       setPhase('active');
       setShowChoices(false);
     }
