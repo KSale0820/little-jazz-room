@@ -77,6 +77,7 @@ try {
     await page.screenshot({ path: join(output, 'with-items-' + shot + '.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Start practice timer' }).click();
+    assert(await page.locator('.fp-chart').count() === 0, 'Starting the clock should collapse details so timer and actions remain easy to find');
     await page.waitForTimeout(1350);
     await page.locator('.fp-timer').scrollIntoViewIfNeeded();
     await page.screenshot({ path: join(output, 'active-' + shot + '.png'), fullPage: true });
@@ -85,6 +86,7 @@ try {
     assert(await page.getByRole('timer').innerText() !== '00:00', 'Practice timer did not advance');
     await page.getByRole('button', { name: 'Finish Session' }).click();
     await page.getByText('Session Saved ✓').waitFor();
+    assert(await page.locator('.fp-completion-card h1').isVisible(), 'Completion headline should be visible after saving');
     await page.screenshot({ path: join(output, 'completed-' + shot + '.png'), fullPage: true });
     const records = await page.evaluate(() => {
       const key = 'little-jazz-room:practice-sessions:v1:anonymous';
