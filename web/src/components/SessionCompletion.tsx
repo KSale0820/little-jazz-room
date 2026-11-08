@@ -80,7 +80,7 @@ export function SessionCompletion({
   return <section className="sc-page" aria-label="Practice session complete">
     <header className="sc-top">
       <span className="sc-eyebrow">{kind === 'guided' ? 'Guided practice' : kind === 'chart' ? 'Chart practice' : 'Free practice'}</span>
-      <button type="button" className="sc-back" onClick={onPractice}>Back to Practice</button>
+      <button type="button" className="sc-back" onClick={onPractice} disabled={status !== 'saved'}>Back to Practice</button>
     </header>
 
     <div className="sc-hero">
@@ -136,8 +136,8 @@ export function SessionCompletion({
           </button>}
       {status === 'error' && <p className="sc-error" role="alert">Your session was not saved. Retry before leaving.</p>}
       <div className="sc-next">
-        <button type="button" className="sc-secondary" onClick={onPracticeAgain}>Practice again</button>
-        <button type="button" className="sc-secondary" onClick={onPractice}>Practice hub</button>
+        <button type="button" className="sc-secondary" onClick={onPracticeAgain} disabled={status !== 'saved'}>Practice again</button>
+        <button type="button" className="sc-secondary" onClick={onPractice} disabled={status !== 'saved'}>Practice hub</button>
       </div>
     </div>
 
