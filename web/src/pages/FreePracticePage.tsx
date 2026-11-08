@@ -45,7 +45,6 @@ export function FreePracticePage() {
   const [tool, setTool] = useState<PracticeTool | null>(null);
   const [finished, setFinished] = useState<PracticeSessionRecord | null>(null);
   const [saved, setSaved] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
 
   const elapsedMs = () => clock.current.accumulatedMs +
@@ -123,7 +122,6 @@ export function FreePracticePage() {
   const saveSession = async (record: PracticeSessionRecord) => {
     if (saved || saveInFlight.current) return;
     saveInFlight.current = true;
-    setSaving(true);
     setSaveError(false);
     try {
       await addSession(record);
@@ -141,7 +139,6 @@ export function FreePracticePage() {
       showToast('Could not save your session. Try again.');
     } finally {
       saveInFlight.current = false;
-      setSaving(false);
     }
   };
 
