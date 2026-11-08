@@ -37,11 +37,12 @@ function readSystemTheme(): Theme {
   }
 }
 
+/** Cat Mode is on for new installations; an explicit saved off preference wins. */
 function readDecorativeCats(): boolean {
   try {
-    return window.localStorage.getItem(DECORATIVE_CATS_KEY) === 'true';
+    return window.localStorage.getItem(DECORATIVE_CATS_KEY) !== 'false';
   } catch {
-    return false;
+    return true;
   }
 }
 
