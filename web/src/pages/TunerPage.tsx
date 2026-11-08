@@ -325,16 +325,20 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           </button>
         ))}
       </div>
-      <div className="tuner-reading" aria-live="off">
-        <strong>{reading?.note ?? '—'}</strong>
-        <span>{reading ? reading.frequency.toFixed(1) + ' Hz' : 'No pitch detected'}</span>
-        {reading && mode !== 'chromatic' && reading.isOpenString ? (
-          <small>Open string: {reading.targetLabel}</small>
-        ) : null}
-      </div>
+      {status === 'denied' || status === 'unsupported' || status === 'error' ? (
+        <section className="tuner-unavailable" role="alert">
+          <div className="tuner-unavailable-symbol" aria-hidden="true">!</div>
+          <h2>{status === 'denied' ? 'Microphone access denied' :
+            status === 'unsupported' ? 'Microphone unavailable' : 'Tuner unavailable'}</h2>
+          <p>{message || 'Microphone input could not be started. Check your device settings and try again.'}</p>
+        </section>
+      ) : (
+        <>
+          <div className="tuner-indicator">
       <div className="tuner-gauge" aria-label={reading && isNearString
         ? 'Deviation ' + Math.round(reading.cents) + ' cents'
         : 'No valid tuning measurement'}>
+        <div className="tuner-gauge-labels" aria-hidden="true"><span>−50</span><span>−20</span><span>0</span><span>+20</span><span>+50</span></div>
         <svg viewBox="0 0 320 150" role="img" aria-hidden="true">
           {Array.from({ length: 25 }, (_, index) => {
             const degrees = -70 + index * (140 / 24);
@@ -356,11 +360,21 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           ) : <circle cx="160" cy="141" r="5" fill="#afbaa9" />}
         </svg>
       </div>
+      <div className="tuner-reading" aria-live="off">
+        <strong>{reading?.note ?? '—'}</strong>
+        <span>{reading ? reading.frequency.toFixed(1) + ' Hz' : 'No pitch detected'}</span>
+        {reading && mode !== 'chromatic' && reading.isOpenString ? (
+          <small>Open string: {reading.targetLabel}</small>
+        ) : null}
+      </div>
       <div className={`tuner-status${status === 'listening' && isNearString && isTuned ? ' is-in-tune' : ''}${status === 'denied' || status === 'unsupported' || status === 'error' ? ' is-error' : ''}`} role="status">{getTuningMessage()}</div>
+          </div>
       <div className="tuner-measurements">
         <div><strong>{reading && isNearString ? reading.targetLabel : '—'}</strong><span>{reading && isNearString ? reading.targetFrequency.toFixed(1) + ' Hz target' : 'Target'}</span></div>
         <div><strong>{reading && isNearString ? (reading.cents >= 0 ? '+' : '') + Math.round(reading.cents) + '¢' : '—'}</strong><span>Deviation</span></div>
       </div>
+        </>
+      )}
       <div className="tuner-trail-controls">
         <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
           onClick={() => setShowPitchTrail(value => !value)}>
@@ -394,7 +408,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       {status === 'listening' && micSignal === 'interrupted' ? (
         <button className="tuner-mic" type="button" onClick={resumeMicrophoneAudio}>Resume audio</button>
       ) : null}
-      {(status === 'denied' || status === 'unsupported' || status === 'error' || message) ? (
+      {message && status !== 'denied' && status !== 'unsupported' && status !== 'error' ? (
         <p className="tool-error" role="alert">{message}</p>
       ) : null}
       <div className="tuner-reference">
