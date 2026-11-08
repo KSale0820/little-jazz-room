@@ -477,3 +477,176 @@ html[data-theme] .tool-page input:focus-visible {
     -webkit-overflow-scrolling: touch;
   }
 }
+
+
+/* Owner-approved November 8 visual mockup refinement.
+   The indicator is a single precision card with arc ABOVE the measured note. */
+html[data-theme] .tool-tuner .tuner-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 13px 10px 12px;
+  margin-top: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-surface);
+}
+html[data-theme] .tool-tuner .tuner-indicator .tuner-gauge {
+  position: relative;
+  height: 138px;
+  width: min(100%, 340px);
+  max-width: 340px;
+  margin: 0;
+  flex-shrink: 0;
+}
+html[data-theme] .tool-tuner .tuner-indicator .tuner-gauge-labels {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: -4px;
+  left: 10px;
+  right: 10px;
+  color: var(--color-muted);
+  font: 650 11px/1.2 var(--font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+html[data-theme] .tool-tuner .tuner-indicator .tuner-gauge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin-top: 8px;
+}
+html[data-theme] .tool-tuner .tuner-indicator .tuner-reading {
+  min-height: 91px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  margin: -1px 0 0;
+  padding: 1px 0 4px;
+  justify-content: center;
+  width: 100%;
+}
+html[data-theme] .tool-tuner .tuner-indicator .tuner-reading strong {
+  font-size: clamp(67px, 18vw, 80px);
+  font-weight: 780;
+}
+html[data-theme] .tool-tuner .tuner-indicator .tuner-reading > span {
+  font-size: 14px;
+  font-weight: 560;
+  color: var(--color-text);
+}
+html[data-theme] .tool-tuner .tuner-indicator .tuner-status {
+  min-height: 34px;
+  padding: 7px 16px;
+  font-size: 13px;
+}
+html[data-theme] .tool-tuner .tuner-measurements {
+  margin-top: 13px;
+  width: min(100%, 295px);
+}
+html[data-theme] .tool-tuner .tuner-trail-controls { margin-top: 10px; }
+html[data-theme] .tool-tuner .tuner-unavailable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: clamp(220px, 41vh, 315px);
+  margin-top: 12px;
+  padding: 22px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-surface);
+  text-align: center;
+  color: var(--color-text);
+}
+html[data-theme] .tool-tuner .tuner-unavailable-symbol {
+  display: grid;
+  place-items: center;
+  width: 65px;
+  height: 65px;
+  margin-bottom: 16px;
+  border: 3px solid var(--color-danger);
+  border-radius: 50%;
+  font: 800 34px/1 var(--font-ui, system-ui, sans-serif);
+  color: var(--color-danger);
+}
+html[data-theme] .tool-tuner .tuner-unavailable h2 {
+  margin: 0 0 10px;
+  font: 760 20px/1.25 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: -.025em;
+  color: var(--color-text);
+}
+html[data-theme] .tool-tuner .tuner-unavailable p {
+  max-width: 295px;
+  font: 510 13px/1.55 var(--font-ui, system-ui, sans-serif);
+  color: var(--color-muted);
+}
+
+/* The approved metronome centers its primary transport under BPM, leaving
+   every existing slider, meter, accent and count-in control functional. */
+html[data-theme] .tool-metronome .metronome-action-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 4px auto 9px;
+  min-height: 106px;
+}
+html[data-theme] .tool-metronome .metronome-action-group .metronome-play {
+  order: 0;
+  width: 81px;
+  height: 81px;
+  padding: 9px;
+  margin: 0;
+  box-shadow: none;
+}
+html[data-theme] .tool-metronome .metronome-action-group .metronome-playing-status {
+  order: 1;
+  margin: 0;
+  min-height: 18px;
+  font-size: 11px;
+}
+html[data-theme] .tool-metronome .metronome-action-group .metronome-play[aria-pressed='true'] {
+  border-color: var(--color-violet);
+  background: var(--color-violet);
+}
+html[data-theme] .tool-metronome .metronome-action-group .metronome-play[aria-pressed='true'] img {
+  filter: none;
+}
+html[data-theme='dark'] .tool-metronome .metronome-action-group .metronome-play {
+  background: var(--color-violet);
+  border-color: var(--color-violet);
+}
+html[data-theme] .tool-metronome .metronome-tap-row {
+  justify-content: center;
+  gap: 14px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+html[data-theme] .tool-metronome .metronome-tap {
+  min-width: 116px;
+  text-align: center;
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  html[data-theme] .tool-tuner .tuner-indicator {
+    margin-top: 8px;
+    padding: 7px 8px 9px;
+  }
+  html[data-theme] .tool-tuner .tuner-indicator .tuner-gauge { height: 116px; }
+  html[data-theme] .tool-tuner .tuner-indicator .tuner-reading { min-height: 75px; }
+  html[data-theme] .tool-tuner .tuner-indicator .tuner-reading strong { font-size: 60px; }
+  html[data-theme] .tool-tuner .tuner-unavailable { min-height: 205px; }
+  html[data-theme] .tool-metronome .metronome-action-group { min-height: 86px; margin: 0 auto 4px; }
+  html[data-theme] .tool-metronome .metronome-action-group .metronome-play {
+    width: 63px;
+    height: 63px;
+    padding: 7px;
+  }
+  html[data-theme] .tool-metronome .metronome-action-group .metronome-play img {
+    width: 48px;
+    height: 48px;
+  }
+  html[data-theme] .tool-metronome .metronome-tap-row { min-height: 41px; padding-bottom: 4px; }
+}
