@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { RECORDED_BACKING_TRACKS, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
@@ -82,8 +82,9 @@ export function TracksPage() {
   const [availableRecordings, setAvailableRecordings] = useState<string[]>([]);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [trackSearchParams] = useSearchParams();
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState<Category>('Recent');
+  const [category, setCategory] = useState<Category>(() => trackSearchParams.get('category') === 'Favorites' ? 'Favorites' : 'Recent');
   const [applied, setApplied] = useState<TrackFilter>({ ...EMPTY_FILTER });
   const [draft, setDraft] = useState<TrackFilter>({ ...EMPTY_FILTER });
   const [filterOpen, setFilterOpen] = useState(false);
