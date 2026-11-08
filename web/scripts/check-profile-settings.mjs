@@ -30,8 +30,8 @@ try {
           isMobile: true, hasTouch: true, reducedMotion: 'reduce',
         });
         await context.addInitScript(({ theme, cats, storageTheme, storageCats }) => {
-          localStorage.setItem(storageTheme, theme);
-          localStorage.setItem(storageCats, String(cats));
+          if (localStorage.getItem(storageTheme) === null) localStorage.setItem(storageTheme, theme);
+          if (localStorage.getItem(storageCats) === null) localStorage.setItem(storageCats, String(cats));
         }, { theme, cats, storageTheme, storageCats });
         const page = await context.newPage();
         const errors = [];
@@ -94,6 +94,7 @@ try {
             'Maple selection persists');
           assert.equal(await page.locator('.profile-companion-art img').isVisible(), true);
           assert.ok((await page.locator('.profile-companion-art img').getAttribute('src'))?.includes('maple-sitting'));
+          await page.screenshot({ path: path.join(output, label + '-maple-selected.png'), fullPage: true });
         }
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
         assert.ok(overflow <= 1, label + ' horizontal page overflow: ' + overflow);
