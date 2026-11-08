@@ -47,7 +47,7 @@ try {
           assert((await page.locator('.sc-duration strong').innerText()).trim() !== '0:00', 'Actual duration missing');
           assert(await page.locator('.sc-unlock').count() === Number(reward), 'Incorrect reward state');
           assert((await page.locator('.sc-hero-cat').count() > 0) === catMode, 'Decorative Cat Mode mismatch');
-          if (reward) assert(await page.locator('.sc-earned-cats img').count() === 1, 'Earned Milo not shown');
+          if (reward) assert(await page.locator('.sc-unlock-art img').count() === 1, 'Earned Milo not shown');
           assert(await page.evaluate(() => document.documentElement.dataset.theme) === theme, 'Wrong theme');
           const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
           assert(overflow <= 1, 'Horizontal overflow ' + overflow);
