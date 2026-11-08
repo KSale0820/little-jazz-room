@@ -250,32 +250,37 @@ try {
     }
   }
 
-  // Exercise actual controls (not direct localStorage writes) and confirm reload.
+  // Profile Settings deliberately has no appearance controls. Preferences remain
+  // supported by the shared appearance provider and must survive reloads.
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 }, colorScheme: 'dark',
     isMobile: true, hasTouch: true,
   });
   const page = await context.newPage();
-  await page.goto(base + '/profile', { waitUntil: 'networkidle' });
+  await page.goto(base + '/settings', { waitUntil: 'networkidle' });
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark',
     'First use should honor dark system preference');
   assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'off',
     'First use should disable decorative cats');
-  await page.getByRole('button', { name: 'Light', exact: true }).click();
-  await page.getByRole('checkbox', { name: /Cat Mode/ }).check();
+  assert.equal(await page.getByRole('heading', { name: 'Profile Settings' }).count(), 1);
+  await page.evaluate(() => {
+    localStorage.setItem('little-jazz-room:appearance:v1', 'light');
+    localStorage.setItem('little-jazz-room:decorative-cats:v1', 'true');
+  });
   await page.reload({ waitUntil: 'networkidle' });
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light',
-    'Explicit Light preference must survive reload');
+    'Saved appearance preference must survive reload');
   assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'on',
-    'Cat Mode preference must survive reload');
-  assert.equal(await page.getByRole('button', { name: 'Light', exact: true }).getAttribute('aria-pressed'), 'true');
-  await page.getByRole('button', { name: 'Dark', exact: true }).click();
-  await page.getByRole('checkbox', { name: /Cat Mode/ }).uncheck();
+    'Saved Cat Mode preference must survive reload');
+  await page.evaluate(() => {
+    localStorage.setItem('little-jazz-room:appearance:v1', 'dark');
+    localStorage.setItem('little-jazz-room:decorative-cats:v1', 'false');
+  });
   await page.reload({ waitUntil: 'networkidle' });
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
   assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'off');
   await context.close();
-  report.push({ screen: 'Settings persistence', label: '390x844', status: 'PASS' });
+  report.push({ screen: 'Appearance bootstrap persistence', label: '390x844', status: 'PASS' });
 } finally {
   await browser.close();
 }
