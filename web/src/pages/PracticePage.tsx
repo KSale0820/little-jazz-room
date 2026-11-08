@@ -622,16 +622,40 @@ export function PracticePage() {
     <>
     <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${activeRecording ? 'practice-has-recording' : ''} ${routine && panel === 'instructions' ? 'practice-instructions' : ''} practice-unified`} aria-label="Shared practice player">
       <header className="practice-player-head">
-        <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
-        <div className="practice-title-group">
-          <span className="practice-overline">{routine ? 'Guided Practice' : 'Free Practice'}</span>
-          <h1>{routine?.title ?? chart.title}</h1>
-          <p>{routine
-            ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length + ' · ' + (playableStep?.title ?? 'Exercise')
-            : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
-          {chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
+        <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 4 7 12l8 8"/></svg>
+        </button>
+        <span className="practice-page-heading">Practice</span>
+        <div className="practice-header-actions">
+          <button className="practice-bookmark-link" type="button" aria-label="View bookmarked tracks and charts"
+            onClick={() => navigate('/tracks?category=Favorites')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4V3.5Z"/></svg>
+          </button>
+          <details className="practice-header-more">
+            <summary aria-label="More practice options" title="More practice options">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+            </summary>
+            <div className="practice-more-panel">
+              <label htmlFor="player-chart">Choose study chart</label>
+              <select id="player-chart" value={chartId} disabled={Boolean(activeRecording)}
+                onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
+                {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
+              </select>
+              <p>{formatChartMeta(chart)} · Key {chart.concert_key.replace('b', '♭')}</p>
+              {activeRecording && <p>Chart selection stays linked to the recording.</p>}
+            </div>
+          </details>
         </div>
       </header>
+      <div className="practice-title-group">
+        <h1>{routine?.title ?? chart.title}</h1>
+        <div className="practice-chart-tags" aria-label="Chart details">
+          <span>{routine ? 'Guided Practice' : chart.feel || 'Practice chart'}</span>
+          <span>{routine ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length : chart.difficulty || 'All levels'}</span>
+          <span>{chart.form || chart.time_signature.join('/')}</span>
+        </div>
+        {chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
+      </div>
 
       {activeRecording && <audio
         key={activeRecording.id} ref={audioRef} src={activeRecording.src} preload="metadata" loop={repeatRecording}
@@ -671,12 +695,7 @@ export function PracticePage() {
         </div>
       ) : (
         <div className="practice-notation-panel" role="tabpanel" aria-label="Jazz chord chart">
-          <div className="practice-chart-toolbar">
-            <label htmlFor="player-chart">{routine && !playableStep?.chart_id ? "Reference chart" : "Study chart"}</label>
-            <select id="player-chart" value={chartId} disabled={Boolean(activeRecording)} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
-              {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
-            </select>
-          </div>
+
           <div className={`practice-chart-scroll practice-chart-all ${chart.bars.length > 16 ? 'chart-dense' : 'chart-standard'}`}
             aria-label={`Chord chart with ${chart.bars.length} measures. Scroll to see later bars.`}>
             <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
