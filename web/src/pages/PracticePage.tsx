@@ -661,6 +661,10 @@ export function PracticePage() {
                 aria-label="Transposing instrument">
                 <option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option>
               </select>
+              <div className="practice-measure-jump" role="group" aria-label="Measure navigation">
+                <button type="button" onClick={() => stepMeasure(-1)}>Previous measure</button>
+                <button type="button" onClick={() => stepMeasure(1)}>Next measure</button>
+              </div>
               <p>{formatChartMeta(chart)} · Key {chart.concert_key.replace('b', '♭')}</p>
               <p>{activeRecording ? 'Recorded audio plays at its original speed and pitch.' : 'Chart-only practice follows the selected BPM; no recording is attached.'}</p>
               {activeRecording && <p>Chart selection stays linked to the recording.</p>}
