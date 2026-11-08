@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
+import { PracticeHeroVignette } from './PracticeHeroVignette';
 import { timeGreeting } from '../lib/greeting';
 import { computeGentleStreak, minutesToday, minutesYesterday } from '../lib/practiceStats';
 import { readPinnedPracticeRoutine, readPracticeGoal, savePracticeGoal } from '../lib/practiceHomePreferences';
@@ -64,13 +65,13 @@ export function PracticeHubPage() {
   return (
     <section className="p01-page p01-suave" aria-label="Practice hub">
       <header className="p01-header p01-suave-header">
-        <div className="p01-suave-brand">
+        <div className="p01-suave-brand" aria-label="Little Jazz Room">
           <img src={VISUAL_ASSETS.brand.wordmark} alt="Little Jazz Room" />
-          <img className="p01-suave-floating-note" src={ART + 'music-note-purple-sharp.png'} alt="" aria-hidden="true" />
         </div>
-        <div className="p01-suave-vignette" aria-hidden="true">
-          <img src={VISUAL_ASSETS.sharedMvp.covers.evening} alt="" />
-          <img className="p01-suave-vine" src={VISUAL_ASSETS.approvedPixelMotifs.hangingPlant} alt="" />
+        <div className="p01-suave-art-strip" aria-hidden="true">
+          <img className="p01-suave-top-ivy" src={VISUAL_ASSETS.approvedPixelMotifs.ivyTrail} alt="" />
+          <img className="p01-suave-floating-note" src={ART + 'music-note-purple-sharp.png'} alt="" />
+          <PracticeHeroVignette />
         </div>
         <p className="p01-greeting">{timeGreeting().replace(/\.$/, ',')}</p>
         <h1>Let&apos;s Practice</h1>
@@ -127,7 +128,9 @@ export function PracticeHubPage() {
       <section className="p01-suave-pinned" aria-label="Pinned routine">
         <img className="p01-suave-pin-symbol" src={ART + "refreshed-icons/bookmark.png"} alt="" aria-hidden="true" />
         <div className="p01-suave-pin-copy"><strong>Pinned Routine</strong><span>{pinned?.title ?? 'Choose a routine to pin'}</span></div>
-        {pinned && <button type="button" className="p01-suave-start" onClick={startPinned} aria-label={'Start ' + pinned.title}><img src={ICON + 'play.png'} alt="" />Start</button>}
+        {pinned
+          ? <button type="button" className="p01-suave-start" onClick={startPinned} aria-label={'Start ' + pinned.title}><img src={ICON + 'play.png'} alt="" />Start</button>
+          : <button type="button" className="p01-suave-start" onClick={() => navigate('/routines')}>Choose</button>}
         <button type="button" className="p01-suave-pin-browse" onClick={() => navigate('/routines')} aria-label={pinned ? 'Change pinned routine' : 'Choose a routine to pin'}>›</button>
       </section>
 
@@ -145,7 +148,7 @@ export function PracticeHubPage() {
 
       <section className="p01-daily" aria-label="Daily practice progress">
         <button type="button" className="p01-suave-goal-row" onClick={() => { setGoalDraft(String(dailyGoal)); setGoalOpen(true); }} aria-label={'Edit daily practice goal, currently ' + dailyGoal + ' minutes'}>
-          <span className="p01-suave-target" aria-hidden="true">◎</span>
+          <svg className="p01-suave-target" viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="23" cy="25" r="18"/><circle cx="23" cy="25" r="12"/><circle cx="23" cy="25" r="5"/><path d="M23 25 39 9M35 9h5v5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           <span className="p01-suave-goal-copy"><strong>Practice Goal</strong><small>Your daily practice time.</small></span>
           <span className="p01-suave-goal-value">{dailyGoal} min / day</span><span className="p01-chevron" aria-hidden="true">›</span>
         </button>
