@@ -1,0 +1,55 @@
+name: Session completion review screenshots
+
+on:
+  pull_request:
+    branches: [integration/clean-pixel-themes]
+    paths:
+      - 'web/src/components/SessionCompletion*'
+      - 'web/src/pages/FreePracticePage.tsx'
+      - 'web/src/pages/PracticePage.tsx'
+      - 'web/src/features/recordings/RecordingOnlyPractice.tsx'
+      - 'web/scripts/capture-session-completion.mjs'
+      - '.github/workflows/session-completion-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Test completion persistence and existing sessions
+        run: npm test
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: Start local app (no deployment)
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/session-completion-vite.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+          curl -f http://127.0.0.1:5174/ > /dev/null
+      - name: Capture real Light/Dark + Cat Mode + reward UI and verify Progress persistence
+        run: node scripts/capture-session-completion.mjs
+      - name: Attach screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: session-completion-review-${{ github.run_number }}
+          path: web/docs/screenshots/session-completion-review/
+          if-no-files-found: warn
