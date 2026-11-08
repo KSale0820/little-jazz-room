@@ -20,6 +20,12 @@ export function PracticeHubPage() {
   const [dailyGoal, setDailyGoal] = useState(() => readPracticeGoal(repo.scope));
   const [goalOpen, setGoalOpen] = useState(false);
   const [goalDraft, setGoalDraft] = useState(String(dailyGoal));
+  useEffect(() => {
+    const next = readPracticeGoal(repo.scope);
+    setDailyGoal(next);
+    setGoalDraft(String(next));
+    setGoalOpen(false);
+  }, [repo.scope]);
   const pinId = readPinnedPracticeRoutine(repo.scope);
   const pinned = routines.find(routine => routine.id === pinId);
   const latestSession = [...sessions].sort((a, b) => b.finishedAt.localeCompare(a.finishedAt))[0];
