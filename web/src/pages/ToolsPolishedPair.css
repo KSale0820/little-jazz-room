@@ -1,0 +1,479 @@
+/* Tuner + Metronome paired instrument UI, 2026-11-08.
+   Scoped to the tool routes. Shared tokens belong to the theme controller.
+   No fake audio metering, decorative motion, or changes to microphone/timing. */
+html[data-theme] .tool-page {
+  --tool-ink: var(--color-text);
+  --tool-muted: var(--color-muted);
+  --tool-evergreen: var(--color-action);
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: 15px 18px max(12px, env(safe-area-inset-bottom));
+  gap: 0;
+  overflow: visible;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .tool-page .tool-heading {
+  grid-template-columns: 44px minmax(0,1fr) 44px;
+  min-height: 49px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--color-border);
+}
+html[data-theme] .tool-page .tool-heading h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font: 750 clamp(22px, 6vw, 26px)/1.15 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: -.035em;
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .tool-heading h1::before {
+  content: '';
+  width: 29px;
+  height: 32px;
+  flex: 0 0 29px;
+  background: center / contain no-repeat url('/visuals/tools/pixel/tuner.png');
+  image-rendering: pixelated;
+}
+html[data-theme] .tool-metronome .tool-heading h1::before {
+  width: 34px;
+  height: 36px;
+  flex-basis: 34px;
+  background-image: url('/visuals/tools/pixel/metronome.png');
+}
+html[data-theme] .tool-page .tool-back,
+html[data-theme] .tool-page .tool-settings {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font: 450 32px/1 var(--font-ui, system-ui, sans-serif);
+  color: var(--color-text);
+  border-radius: 12px;
+}
+html[data-theme] .tool-page .tool-settings { font-size: 24px; }
+html[data-theme] .tool-page :is(.tool-back,.tool-settings):active {
+  background: var(--color-surface-raised);
+}
+html[data-theme] .tool-page .tool-help {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+html[data-theme] .tool-tuner .tuner-modes {
+  margin: 14px auto 0;
+  width: 100%;
+  max-width: 365px;
+  grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 13px;
+  background: var(--color-surface-raised);
+}
+html[data-theme] .tool-page .tuner-modes button {
+  min-height: 40px;
+  padding: 0 4px;
+  border-radius: 9px;
+  color: var(--color-muted);
+  font: 650 13px/1.15 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0;
+  overflow: visible;
+}
+html[data-theme] .tool-page .tuner-modes button[aria-pressed='true'],
+html[data-theme] .tool-page .metronome-signatures button[aria-pressed='true'] {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  box-shadow: none;
+}
+html[data-theme] .tool-page .tuner-reading {
+  min-height: 119px;
+  margin-top: 14px;
+  padding: 11px 8px 7px;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 17px;
+  background: var(--color-surface);
+}
+html[data-theme] .tool-page .tuner-reading strong {
+  font: 760 clamp(62px, 18vw, 78px)/.98 var(--font-ui, system-ui, sans-serif);
+  color: var(--color-text);
+  letter-spacing: -.065em;
+  font-variant-numeric: tabular-nums;
+}
+html[data-theme] .tool-page .tuner-reading > span {
+  margin-top: 2px;
+  color: var(--color-muted);
+  font: 520 14px/1.3 var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .tool-page .tuner-reading small {
+  margin-top: 3px;
+  font: 550 12px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .tool-page .tuner-gauge {
+  height: 117px;
+  max-width: 330px;
+  margin-top: 3px;
+}
+html[data-theme] .tool-page .tuner-status {
+  min-height: 36px;
+  height: auto;
+  flex: none;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 8px 20px;
+  border-radius: 100px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font: 680 14px/1.3 var(--font-ui, system-ui, sans-serif);
+  white-space: normal;
+  overflow: visible;
+}
+html[data-theme] .tool-page .tuner-status.is-in-tune {
+  color: var(--color-action-text);
+  background: var(--color-action);
+  border-color: var(--color-action);
+}
+html[data-theme] .tool-page .tuner-status.is-error {
+  color: var(--color-danger);
+  background: var(--color-surface);
+  border-color: var(--color-danger);
+}
+html[data-theme] .tool-page .tuner-measurements {
+  width: min(100%, 320px);
+  margin-top: 10px;
+}
+html[data-theme] .tool-page .tuner-measurements strong {
+  font: 730 22px/1.15 var(--font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+}
+html[data-theme] .tool-page .tuner-measurements span {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+html[data-theme] .tool-page .tuner-trail-controls { margin-top: 9px; }
+html[data-theme] .tool-page .tuner-trail-toggle {
+  min-height: 40px;
+  padding: 7px 13px;
+  font: 650 12px/1.2 var(--font-ui, system-ui, sans-serif);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-action);
+  border-radius: 11px;
+}
+html[data-theme] .tool-page .tuner-trail-toggle[aria-pressed='true'] {
+  background: var(--color-surface-raised);
+}
+html[data-theme] .tool-page .tuner-trail-panel {
+  margin-top: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+html[data-theme] .tool-page .tuner-trail-heading strong {
+  font: 680 14px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .tool-page .tuner-mic {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  gap: 7px;
+  width: min(100%, 300px);
+  min-height: 49px;
+  margin-top: 12px;
+  padding: 9px 13px;
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border: 1px solid var(--color-action);
+  border-radius: 14px;
+  font: 720 14px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .tool-page .tuner-mic[aria-pressed='true'] {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+html[data-theme] .tool-page .tuner-mic span { font-size: 16px; }
+html[data-theme] .tool-page .tuner-reference {
+  margin-top: 13px;
+  padding: 9px 12px;
+  min-height: 65px;
+  border: 1px solid var(--color-border);
+  border-radius: 15px;
+  background: var(--color-surface);
+}
+html[data-theme] .tool-page .tuner-reference strong {
+  font: 700 15px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .tool-page .tuner-reference small { font-size: 12px; }
+html[data-theme] .tool-page .tuner-speaker { font-size: 25px; }
+html[data-theme] .tool-page .tuner-reference-play {
+  width: 43px;
+  height: 43px;
+  flex-basis: 43px;
+  display: grid;
+  place-items: center;
+  padding: 5px;
+  border-radius: 12px;
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+html[data-theme] .tool-page .tuner-reference-play img {
+  display: block;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .tool-page .tool-error {
+  margin-top: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--color-danger);
+  background: var(--color-surface);
+  border-radius: 10px;
+  color: var(--color-danger);
+  font-size: 12px;
+}
+/* Metronome: the same panels, but an independent rhythm-first hierarchy. */
+html[data-theme] .tool-page .metronome-tempo {
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  gap: 9px;
+  margin: 17px 0 0;
+  padding: 11px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 17px;
+  background: var(--color-surface);
+}
+html[data-theme] .tool-page .metronome-step {
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--color-border);
+  border-radius: 13px;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font: 430 30px/1 var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .tool-page .metronome-bpm strong {
+  font: 790 clamp(61px, 17vw, 76px)/.95 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: -.055em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .metronome-bpm > span {
+  font: 680 12px/1.4 var(--font-ui, system-ui, sans-serif);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--color-muted);
+}
+html[data-theme] .tool-page .metronome-slider {
+  margin: 20px 0 10px;
+  width: calc(100% - 20px);
+  height: 7px;
+}
+html[data-theme] .tool-page .metronome-slider::-webkit-slider-thumb,
+html[data-theme] .tool-page .metronome-slider::-moz-range-thumb {
+  background: var(--color-action);
+  border: 2px solid var(--color-surface);
+  width: 26px;
+  height: 26px;
+}
+html[data-theme] .tool-page .metronome-tap-row {
+  min-height: 44px;
+  align-items: center;
+  gap: 11px;
+}
+html[data-theme] .tool-page .metronome-tap {
+  min-height: 42px;
+  padding: 7px 13px;
+  font: 690 13px/1.2 var(--font-ui, system-ui, sans-serif);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-action);
+}
+html[data-theme] .tool-page .metronome-tap-row > span {
+  font: 510 11px/1.35 var(--font-ui, system-ui, sans-serif);
+  color: var(--color-muted);
+}
+html[data-theme] .tool-page .metronome-field { margin-top: 15px; }
+html[data-theme] .tool-page .metronome-field h2 {
+  margin-bottom: 9px;
+  font: 710 14px/1.2 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0;
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .metronome-signatures { gap: 8px; }
+html[data-theme] .tool-page .metronome-signatures button {
+  min-height: 49px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-raised);
+  font: 710 17px/1 var(--font-ui, system-ui, sans-serif);
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .metronome-beats {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+}
+html[data-theme] .tool-page .metronome-beats button {
+  display: grid;
+  place-items: center;
+  width: clamp(40px, 11vw, 46px);
+  height: clamp(40px, 11vw, 46px);
+  min-height: 40px;
+  flex: 0 1 auto;
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
+  background: var(--color-surface);
+  color: var(--color-muted);
+}
+html[data-theme] .tool-page .metronome-beats button.is-accent {
+  border-color: var(--color-action);
+  background: var(--color-action);
+  color: var(--color-action-text);
+}
+html[data-theme] .tool-page .metronome-beats button.is-current {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+html[data-theme] .tool-page .metronome-countin {
+  margin-top: 14px;
+  padding: 10px 12px;
+  min-height: 59px;
+  border: 1px solid var(--color-border);
+  border-radius: 13px;
+  background: var(--color-surface);
+}
+html[data-theme] .tool-page .metronome-countin label {
+  font: 670 14px/1.2 var(--font-ui, system-ui, sans-serif);
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .metronome-count-select {
+  min-height: 40px;
+  padding: 5px 9px;
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
+  background: var(--color-surface-raised);
+  font: 670 12px/1.2 var(--font-ui, system-ui, sans-serif);
+  color: var(--color-text);
+}
+html[data-theme] .tool-page .metronome-count-select span { margin-left: 6px; }
+html[data-theme] .tool-page .metronome-playing-status {
+  margin: 12px 0 9px;
+  min-height: 19px;
+  font: 620 12px/1.3 var(--font-ui, system-ui, sans-serif);
+  color: var(--color-muted);
+}
+html[data-theme] .tool-page .metronome-play {
+  width: 80px;
+  height: 80px;
+  padding: 8px;
+  border: 1px solid var(--color-action);
+  border-radius: 50%;
+  background: var(--color-action);
+  color: var(--color-action-text);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--color-border) 60%, transparent);
+}
+html[data-theme] .tool-page .metronome-play[aria-pressed='true'] {
+  background: var(--color-surface);
+  border: 2px solid var(--color-action);
+}
+html[data-theme] .tool-page .metronome-play img {
+  width: 56px;
+  height: 56px;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .tool-page .tool-cat-scene {
+  flex-shrink: 0;
+  width: calc(100% + 36px);
+  height: 94px;
+  min-height: 94px;
+  margin: 9px 0 -12px -18px;
+  background: transparent;
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent);
+  box-shadow: none;
+  overflow: hidden;
+}
+html[data-theme] .tool-page .tool-cat-scene .tool-scene-cat {
+  width: 145px;
+  height: 120px;
+  bottom: -4px;
+  right: auto;
+  left: calc(50% - 72px);
+  transform: none;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .tool-metronome .tool-cat-scene .tool-scene-cat {
+  left: auto;
+  right: 24px;
+  width: 130px;
+  height: 120px;
+  bottom: -8px;
+  transform: none;
+}
+html[data-theme] .tool-page .tool-cat-scene::before {
+  left: 18px;
+  width: 47px;
+  height: 47px;
+  opacity: .85;
+}
+html[data-theme] .tool-page .tool-cat-scene::after {
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  opacity: .68;
+}
+html[data-theme] .tool-page button:focus-visible,
+html[data-theme] .tool-page input:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+/* Short iPhones can scroll the native app-shell viewport: never reduce touch
+   targets below 40px or hide precision measurements behind art. */
+@media (max-width: 380px) {
+  html[data-theme] .tool-page { padding-inline: 15px; }
+  html[data-theme] .tool-page .tool-cat-scene {
+    width: calc(100% + 30px);
+    margin-left: -15px;
+  }
+  html[data-theme] .tool-page .metronome-beats { gap: 6px; }
+  html[data-theme] .tool-page .metronome-tempo { padding-inline: 7px; }
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  html[data-theme] .tool-page { padding-top: 8px; }
+  html[data-theme] .tool-page .tool-heading { min-height: 44px; }
+  html[data-theme] .tool-page .tuner-reading { margin-top: 10px; min-height: 99px; }
+  html[data-theme] .tool-page .tuner-reading strong { font-size: 60px; }
+  html[data-theme] .tool-page .tuner-gauge { height: 99px; }
+  html[data-theme] .tool-page .tuner-measurements { margin-top: 8px; }
+  html[data-theme] .tool-page .metronome-tempo { margin-top: 10px; }
+  html[data-theme] .tool-page .metronome-bpm strong { font-size: 60px; }
+  html[data-theme] .tool-page .metronome-slider { margin-top: 14px; }
+  html[data-theme] .tool-page .metronome-field { margin-top: 10px; }
+  html[data-theme] .tool-page .metronome-signatures button { min-height: 42px; }
+  html[data-theme] .tool-page .metronome-countin { margin-top: 10px; }
+  html[data-theme] .tool-page .metronome-playing-status { margin: 8px 0; }
+  html[data-theme] .tool-page .metronome-play { width: 72px; height: 72px; }
+  html[data-theme] .tool-page .metronome-play img { width: 52px; height: 52px; }
+  html[data-theme] .tool-page .tool-cat-scene { min-height: 78px; height: 78px; }
+}
+/* Avoid clipping on iOS Safari's short scrollport, even with expanded help or
+   a microphone permission message. Parent viewport is scrollable. */
+@media (max-width: 899px) {
+  .app-shell:has(.viewport > .tool-page) .viewport {
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
