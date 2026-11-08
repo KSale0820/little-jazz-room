@@ -49,3 +49,15 @@
 .sc-page button:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
 @media (max-width: 380px) { .sc-page { padding: 14px 13px 24px; } .sc-card { padding: 14px; } .sc-hero { padding-top: 0; } }
 @media (max-height: 700px) { .sc-hero { padding-bottom: 10px; } .sc-subtitle { margin-bottom: 10px; } .sc-trophy { width: 58px; height: 58px; margin-bottom: 8px; } .sc-trophy img { width: 44px; height: 44px; } }
+
+/* Player-only optional feedback is kept intact, but matches the shared UI. */
+.sc-feedback { max-width: 440px; margin: 0 auto 12px; padding: 13px 16px; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); }
+.sc-feedback label { display: block; margin-bottom: 7px; color: var(--color-text); font-weight: 700; font-size: 13px; }
+.sc-feedback label span { color: var(--color-muted); font-size: 11px; font-weight: 400; }
+.sc-feedback textarea { width: 100%; min-height: 65px; padding: 10px 12px; resize: vertical; border: 1px solid var(--color-border); border-radius: 10px; color: var(--color-text); background: var(--color-surface-raised); font: 400 13px/1.45 var(--font-ui); }
+.sc-rating { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 9px; }
+.sc-rating > span { font-size: 13px; font-weight: 700; }
+.sc-rating small { display: block; color: var(--color-muted); font-size: 11px; font-weight: 400; }
+.sc-rating [role="group"] { display: flex; gap: 1px; }
+.sc-rating button { width: 32px; min-height: 44px; border: 0; background: transparent; color: var(--color-warning); font-size: 23px; }
+.sc-page button:disabled { cursor: not-allowed; opacity: .58; }
