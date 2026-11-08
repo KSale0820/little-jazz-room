@@ -58,8 +58,8 @@ export function PracticeHubPage() {
     setDailyGoal(savePracticeGoal(repo.scope, minutes));
     setGoalOpen(false);
   };
-  const growthArt = percent >= 100 ? VISUAL_ASSETS.approvedPixelMotifs.plantPot
-    : percent >= 50 ? VISUAL_ASSETS.approvedPixelMotifs.smallPlant : ICON + 'sprout.png';
+  const growthStage = percent >= 100 ? 4 : percent >= 75 ? 3 : percent >= 50 ? 2 : percent >= 25 ? 1 : 0;
+  const growthArt = ART + 'plant-growth-stages/plant-stage-' + growthStage + '.png';
 
   return (
     <section className="p01-page p01-suave" aria-label="Practice hub">
