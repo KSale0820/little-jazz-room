@@ -12,7 +12,7 @@ import { MetronomePage } from './MetronomePage';
 import { TunerPage } from './TunerPage';
 import './FreePracticePage.css';
 
-type Picker = 'exercise' | 'chart' | 'routine' | 'track' | null;
+type Picker = 'goal' | 'exercise' | 'chart' | 'routine' | 'track' | null;
 type QueueKind = 'technique' | 'goal' | 'exercise' | 'chart' | 'routine';
 type PracticeTool = 'metronome' | 'tuner';
 type QueueItem = { key: string; kind: QueueKind; sourceId: string; title: string; done: boolean };
@@ -37,6 +37,9 @@ export function FreePracticePage() {
   const toolDialogRef = useRef<HTMLDivElement | null>(null);
   const [seconds, setSeconds] = useState(0);
   const [running, setRunning] = useState(false);
+  const [phase, setPhase] = useState<'intro' | 'setup' | 'active'>('intro');
+  const [targetMinutes, setTargetMinutes] = useState(25);
+  const [showChoices, setShowChoices] = useState(true);
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [picker, setPicker] = useState<Picker>(null);
   const [search, setSearch] = useState('');
@@ -79,6 +82,8 @@ export function FreePracticePage() {
     } else {
       clock.current.startedAt = Date.now();
       setRunning(true);
+      setPhase('active');
+      setShowChoices(false);
     }
     setSeconds(Math.floor(elapsedMs() / 1000));
   };
@@ -86,6 +91,7 @@ export function FreePracticePage() {
   const openPicker = (next: Exclude<Picker, null>) => {
     setPicker(current => current === next ? null : next);
     setSearch('');
+    setShowChoices(true);
   };
 
   const addItem = (kind: QueueKind, sourceId: string, title: string) => {
@@ -122,7 +128,7 @@ export function FreePracticePage() {
       setRecordingId(id);
       setAudioError('');
       setPicker(null);
-    } else {
+    } else if (picker !== 'goal') {
       addItem(picker, id, title);
     }
   };
@@ -177,6 +183,9 @@ export function FreePracticePage() {
     clock.current = { accumulatedMs: 0, startedAt: null };
     setSeconds(0);
     setRunning(false);
+    setPhase('intro');
+    setTargetMinutes(25);
+    setShowChoices(true);
     setQueue(current => current.map(item => ({ ...item, done: false })));
     setPicker(null);
     setExpandedKey(null);
@@ -199,18 +208,31 @@ export function FreePracticePage() {
     return <section className="fp-page fp-completed" aria-label="Free Practice complete">
       <header className="fp-top fp-complete-header">
         <button type="button" className="fp-back" onClick={() => navigate('/practice')}><span aria-hidden="true">‹</span> Practice</button>
-        <span className="fp-kicker">FREE PRACTICE</span><h1>Nice work today.</h1>
-        <p>A little more music in your day.</p>
       </header>
       <div className="fp-completion-card" role="status">
-        <img src={PIXEL_ART + 'practice-player/png/finish-check.png'} alt="" aria-hidden="true" />
-        <h2>{saved ? 'Session Saved' : saveError ? 'Could not save' : 'Saving your session…'}</h2>
-        <strong className="fp-time">{formatPracticeTime(finished.durationSeconds)}</strong>
-        <p>{saved ? 'Your practice has been added to Progress.' : saveError ? 'Your practice is still here. Retry saving below.' : 'Keeping your progress up to date.'}</p>
+        <h1>✦ Practice Complete! ✦</h1>
+        <div className="fp-completed-duration"><img src={PIXEL_ART + 'approved-isolated-icons/stopwatch.png'} alt="" aria-hidden="true" />
+          <span><strong>{formatPracticeTime(finished.durationSeconds)}</strong><small>Practice Time</small></span>
+        </div>
+        <div className="fp-completed-summary">
+          <h2>Session Summary</h2>
+          {queue.map(item => <div key={item.key} className="fp-summary-line">
+            <span className="fp-summary-symbol" aria-hidden="true">{item.kind === 'goal' ? '◎' : item.kind === 'chart' ? '♬' : '♫'}</span>
+            <span><strong>{item.kind === 'goal' ? 'Goal' : item.kind === 'chart' ? 'Chart' : item.kind === 'routine' ? 'Routine' : item.kind === 'exercise' ? 'Exercise' : 'Technique'}:</strong> {item.title}</span>
+          </div>)}
+          {recordingId && <div className="fp-summary-line"><span className="fp-summary-symbol" aria-hidden="true">◉</span><span><strong>Track:</strong> {recording?.title ?? 'Recorded track'}</span></div>}
+          {queue.length === 0 && !recordingId && <p>Free-form practice, at your own pace.</p>}
+        </div>
+        <div className="fp-completion-shelf" aria-hidden="true">
+          <img src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" />
+          {catMode && <DecorativeCat catId={catId} variant="sitting" size={68} className="fp-summary-cat" />}
+          <img src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
+        </div>
+        <p className="fp-save-status">{saved ? 'Session Saved ✓' : saveError ? 'Save failed. Your session can be retried.' : 'Saving your practice…'}</p>
       </div>
       {saveError && <button type="button" className="fp-primary" disabled={saving} onClick={() => void saveSession(finished)}>Retry Save</button>}
       {saved && <div className="fp-completion-actions">
-        <button type="button" className="fp-primary" onClick={() => navigate('/progress')}>View Progress</button>
+        <button type="button" className="fp-primary" onClick={() => navigate('/progress')}>✓ View Saved Session</button>
         <button type="button" className="fp-secondary" onClick={reset}>Practice Again</button>
       </div>}
     </section>;
@@ -219,31 +241,47 @@ export function FreePracticePage() {
   return <>
     <section className="fp-page" aria-label="Free Practice">
       <header className="fp-top">
-        <button type="button" className="fp-back" onClick={() => navigate('/practice')} aria-label="Back to Practice"><span aria-hidden="true">‹</span> Practice</button>
-        <span className="fp-kicker">YOUR PRACTICE STUDIO</span>
-        <h1>Free Practice</h1>
-        <p>Play what you love, at your own pace.</p>
-        {catMode && <DecorativeCat catId={catId} variant="sleeping" size={58} className="fp-header-cat" />}
+        <div className="fp-heading-row">
+          <h1>Practice</h1>
+          <img src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" aria-hidden="true" />
+        </div>
+        <div className="fp-segments" role="group" aria-label="Practice type">
+          <button type="button" className="fp-segment-current" aria-pressed="true">Free Practice</button>
+          <button type="button" onClick={() => navigate('/routines')} aria-pressed="false">Routines</button>
+        </div>
       </header>
 
-      <section className="fp-timer" aria-label="Practice time recorder">
-        <div className="fp-timer-heading">
-          <img src={PIXEL_ART + 'approved-isolated-icons/stopwatch.png'} alt="" aria-hidden="true" />
-          <h2>Practice timer</h2>
-          <span className={running ? 'fp-clock-state fp-is-running' : 'fp-clock-state'}>{running ? 'In session' : seconds ? 'Paused' : 'Ready'}</span>
-        </div>
-        <strong className="fp-time" role="timer" aria-live="off">{formatPracticeTime(seconds)}</strong>
-        <p className="fp-timer-note">{running ? 'Your practice time is counting.' : seconds ? 'Paused. Pick up whenever you’re ready.' : 'Start the clock whenever you’re ready.'}</p>
-        <button type="button" className="fp-play" aria-label={running ? 'Pause practice timer' : seconds ? 'Resume practice timer' : 'Start practice timer'} onClick={toggleClock}>
-          <img src={PIXEL_ART + (running ? 'practice-player/png/pause.png' : 'approved-isolated-icons/play.png')} alt="" aria-hidden="true" />
-          <span>{running ? 'Pause' : seconds ? 'Resume' : 'Start Practicing'}</span>
+      {phase === 'intro' ? <section className="fp-intro" aria-label="Start Free Practice">
+        <div className="fp-intro-art"><img src={PIXEL_ART + 'approved-isolated-icons/stopwatch.png'} alt="" /></div>
+        <h2>Free Practice</h2>
+        <p>A flexible practice session.<br/>Set a timer, then optionally add goals, exercises, charts, or a track.</p>
+        <button type="button" className="fp-primary fp-intro-start" onClick={() => setPhase('setup')}>
+          <img src={PIXEL_ART + 'approved-isolated-icons/play.png'} alt="" aria-hidden="true" />Start Practice
         </button>
-      </section>
-      <button type="button" className="fp-primary fp-finish" onClick={finishSession}>
-        <img src={PIXEL_ART + 'practice-player/png/finish-check.png'} alt="" aria-hidden="true" />
-        Finish Session
-      </button>
-
+        <div className="fp-intro-shelf" aria-hidden="true">
+          <img className="fp-intro-plant" src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" />
+          {catMode && <DecorativeCat catId={catId} variant="sleeping" size={82} className="fp-intro-cat" />}
+          <img className="fp-intro-note" src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
+        </div>
+      </section> : <>
+      {phase === 'setup'
+        ? <div className="fp-target-picker" aria-label="Practice time target">
+            <button type="button" aria-label="Decrease time goal by 5 minutes" disabled={targetMinutes <= 5} onClick={() => setTargetMinutes(v => Math.max(5, v - 5))}>−</button>
+            <strong>{formatPracticeTime(targetMinutes * 60)}</strong>
+            <button type="button" aria-label="Increase time goal by 5 minutes" disabled={targetMinutes >= 240} onClick={() => setTargetMinutes(v => Math.min(240, v + 5))}>+</button>
+          </div>
+        : <section className="fp-timer" aria-label="Practice time recorder">
+            <div className="fp-timer-ring" style={{ '--fp-progress': Math.min(100, seconds / (targetMinutes * 60) * 100) + '%' } as React.CSSProperties}>
+              <strong className="fp-time" role="timer" aria-live="off">{formatPracticeTime(seconds)}</strong>
+              <span>/ {formatPracticeTime(targetMinutes * 60)}</span>
+              {!running && <span className="fp-paused-pill">Ⅱ Paused</span>}
+            </div>
+            <div className="fp-timer-shelf" aria-hidden="true">
+              <img src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" />
+              {catMode && <DecorativeCat catId={catId} variant={running ? 'sitting' : 'sleeping'} size={66} className="fp-timer-cat" />}
+              <img src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
+            </div>
+          </section>}
       <section className="fp-add" aria-labelledby="fp-add-heading">
         <div className="fp-section-heading"><h2 id="fp-add-heading">Build your session <img src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" aria-hidden="true" /></h2><span>Optional</span></div>
         <p className="fp-section-lead">Add something to work on, or just play freely.</p>
