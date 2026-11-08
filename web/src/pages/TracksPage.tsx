@@ -7,8 +7,9 @@ import './DemoPages.css';
 import './TracksPage.css';
 import './CleanPixelCharts.css';
 import './CleanPixelHomeLegacy.css';
+import './TracksApproved.css';
 
-type Category = 'Recent' | 'Favorites' | 'Standards' | 'Blues' | 'Original studies';
+type Category = 'All' | 'Standards' | 'Blues' | 'Bossa' | 'Ballad' | 'Up-Tempo' | 'Bookmarked';
 type FilterField = 'instrument' | 'style' | 'key' | 'difficulty';
 type TrackFilter = { instrument: string; style: string; key: string; difficulty: string; chartOnly: boolean };
 const EMPTY_FILTER: TrackFilter = { instrument: 'All', style: 'All', key: 'All', difficulty: 'All', chartOnly: false };
@@ -50,7 +51,7 @@ const TRACK_CATALOG: Array<TrackPreview & { recordingId: string | null }> = [
   })),
 ];
 
-const CATEGORIES: Category[] = ['Recent', 'Favorites', 'Standards', 'Blues', 'Original studies'];
+const CATEGORIES: Category[] = ['All', 'Standards', 'Blues', 'Bossa', 'Ballad', 'Up-Tempo'];
 const FIELDS: { key: FilterField; title: string; options: string[] }[] = [
   { key: 'instrument', title: 'Instrument', options: ['All', 'Piano', 'Guitar', 'Bass', 'Drums', 'Trumpet', 'Alto Saxophone', 'Tenor Saxophone'] },
   { key: 'style', title: 'Style', options: ['All', 'Swing', 'Ballad', 'Bebop', 'Bossa'] },
@@ -58,8 +59,9 @@ const FIELDS: { key: FilterField; title: string; options: string[] }[] = [
   { key: 'difficulty', title: 'Difficulty', options: ['All', 'Beginner', 'Intermediate'] },
 ];
 
-function TrackIcon({ name, filled = false }: { name: 'book' | 'chevron' | 'star' | 'filter' | 'search' | 'unavailable' | 'down' | 'close'; filled?: boolean }) {
+function TrackIcon({ name, filled = false }: { name: 'book' | 'chevron' | 'star' | 'bookmark' | 'filter' | 'search' | 'unavailable' | 'down' | 'close'; filled?: boolean }) {
   const common = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true as const };
+  if (name === 'bookmark') return <svg {...common} fill={filled ? 'currentColor' : 'none'}><path d="M5 3h14v18l-7-5-7 5z" /></svg>;
   if (name === 'book') return <svg {...common}><path d="M12 5.4c-2.7-1.6-5.6-1.6-9-1v13.7c3.4-.7 6.3-.6 9 1.1 2.7-1.7 5.6-1.8 9-1.1V4.4c-3.4-.6-6.3-.6-9 1Z" /><path d="M12 5.4v13.8" /></svg>;
   if (name === 'chevron') return <svg {...common}><path d="m9 5 7 7-7 7" /></svg>;
   if (name === 'star') return <svg {...common} fill={filled ? 'currentColor' : 'none'}><path d="m12 2.5 3 6.2 6.8 1-4.9 4.8 1.2 6.8-6.1-3.2-6.1 3.2 1.2-6.8-4.9-4.8 6.8-1Z" /></svg>;
@@ -72,7 +74,7 @@ function TrackIcon({ name, filled = false }: { name: 'book' | 'chevron' | 'star'
 
 function readFavorites(key: string): string[] {
   try {
-    const value: unknown = JSON.parse(localStorage.getItem(key) ?? '["after-hours"]');
+    const value: unknown = JSON.parse(localStorage.getItem(key) ?? '[]');
     return Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string') : [];
   } catch { return []; }
 }
@@ -83,7 +85,7 @@ export function TracksPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState<Category>('Recent');
+  const [category, setCategory] = useState<Category>('All');
   const [applied, setApplied] = useState<TrackFilter>({ ...EMPTY_FILTER });
   const [draft, setDraft] = useState<TrackFilter>({ ...EMPTY_FILTER });
   const [filterOpen, setFilterOpen] = useState(false);
@@ -141,9 +143,12 @@ export function TracksPage() {
   const filtered = useMemo(() => catalog.filter(track => {
     const term = query.trim().toLowerCase();
     if (term && ![track.title, track.subtitle, track.style, track.key, track.chart?.title ?? ''].some(value => value.toLowerCase().includes(term))) return false;
-    if (category === 'Favorites' && !favorites.includes(track.id)) return false;
-    if (category === 'Standards' && !track.standard) return false;
-    if (category === 'Blues' && !track.blues) return false;
+    if (category === 'Bookmarked' && !favorites.includes(track.id)) return false;
+    if (category === 'Standards' && !track.standard && !/^(autumn leaves|blue bossa|song for my father|sandu|all the things you are|how high the moon|ornithology|oleo|tenor madness|so what)$/i.test(track.title)) return false;
+    if (category === 'Blues' && !track.blues && !/blues/i.test(track.style)) return false;
+    if (category === 'Bossa' && !/bossa/i.test(track.style + ' ' + track.subtitle)) return false;
+    if (category === 'Ballad' && !/ballad/i.test(track.style + ' ' + track.subtitle)) return false;
+    if (category === 'Up-Tempo' && (track.bpm ?? 0) < 170 && !/up.?tempo|fast/i.test(track.style + ' ' + track.subtitle)) return false;
     if (applied.chartOnly && !track.chart) return false;
     if (applied.instrument !== 'All' && !track.instruments.includes(applied.instrument)) return false;
     if (applied.style !== 'All' && track.style !== applied.style) return false;
@@ -170,88 +175,87 @@ export function TracksPage() {
       (recordingId ? (id ? '&' : '') + 'recording=' + encodeURIComponent(recordingId) : ''));
   };
   const reset = () => {
-    setCategory('Recent');
+    setCategory('All');
     setQuery('');
     setApplied({ ...EMPTY_FILTER });
     setDraft({ ...EMPTY_FILTER });
   };
 
   return (
-    <section className="t01-page" aria-label="Tracks and Charts Library">
-      <header className="t01-header">
-        <div>
-          <p className="t01-eyebrow">THE LISTENING ROOM</p>
-          <h1 className="t01-title">Tracks &amp; Charts</h1>
-        </div>
+    <section className="t01-page t01-approved" aria-label="Tracks and charts library">
+      <header className="t01-header t01-pixel-header">
+        <h1 className="t01-approved-title">
+          <span className="sr-only">Tracks and Charts</span>
+          <img src="/visuals/tracks-approved/tracks-title.svg" alt="" aria-hidden="true" />
+        </h1>
+        <img className="t01-pixel-shelf" src="/visuals/tracks-approved/jazz-study-shelf.svg" alt="" aria-hidden="true" />
       </header>
-
       <div className="t01-search-wrap">
         <TrackIcon name="search" />
-        <input aria-label="Search tracks and charts" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search tracks, charts, styles, keys..." />
-        {query && <button type="button" className="t01-search-clear" aria-label="Clear search" onClick={() => setQuery('')}><TrackIcon name="close" /></button>}
+        <input aria-label="Search tracks and charts" type="search" value={query}
+          onChange={event => setQuery(event.target.value)} placeholder={'Search tracks, e.g. “Autumn Leaves”'} />
+        {query && <button type="button" className="t01-search-clear" aria-label="Clear search"
+          onClick={() => setQuery('')}><TrackIcon name="close" /></button>}
+        <button type="button" className="t01-advanced-filter" aria-label="Advanced filters"
+          aria-haspopup="dialog" onClick={() => openFilters()}><TrackIcon name="filter" />
+          {activeFilterCount > 0 && <span aria-label={activeFilterCount + ' active filters'}>{activeFilterCount}</span>}
+        </button>
       </div>
-
-      <div className="t01-categories" aria-label="Track and chart categories">
+      <div className="t01-categories" aria-label="Browse by style">
         {CATEGORIES.map(value => (
-          <button key={value} type="button" className="t01-category" aria-pressed={category === value} onClick={() => setCategory(value)}>
-            {value === 'Favorites' && <TrackIcon name="star" />}
-            {value}
-          </button>
+          <button key={value} type="button" className="t01-category"
+            aria-pressed={category === value} onClick={() => setCategory(value)}>{value}</button>
         ))}
       </div>
-
-      <div className="t01-filter-actions">
-        <button type="button" className="t01-filter-primary" onClick={() => openFilters()} aria-haspopup="dialog">
-          <TrackIcon name="filter" /> Filters {activeFilterCount > 0 && <span className="t01-filter-count">{activeFilterCount}</span>}
-        </button>
-        <button type="button" className="t01-filter-quick" onClick={() => openFilters('instrument')} aria-haspopup="dialog">
-          Instrument <TrackIcon name="down" />
-        </button>
-        <button type="button" className="t01-filter-quick" onClick={() => openFilters('difficulty')} aria-haspopup="dialog">
-          Difficulty <TrackIcon name="down" />
-        </button>
-      </div>
-
+      <button type="button" className="t01-bookmarked-link"
+        aria-pressed={category === 'Bookmarked'} onClick={() => { setCategory(old => old === 'Bookmarked' ? 'All' : 'Bookmarked'); setQuery(''); }}>
+        <img src="/visuals/tracks-approved/bookmark-filled.svg" alt="" aria-hidden="true" />
+        <span className="t01-bookmarked-copy"><strong>Bookmarked</strong><small>Saved tracks &amp; charts{favorites.length ? ' · ' + favorites.length : ''}</small></span>
+        <TrackIcon name="chevron" />
+      </button>
+      {category === 'Bookmarked' && <div className="t01-bookmarked-caption">
+        <span>Saved for later</span><button type="button" onClick={() => setCategory('All')}>Browse all</button>
+      </div>}
       {filtered.length > 0 ? (
-        <>
-          <div className="t01-section-header">
-            <h2>Pick up a tune</h2>
-            <span>{filtered.length} {filtered.length === 1 ? 'item' : 'items'}</span>
-          </div>
-          <div className="t01-track-list">
-            {filtered.map(track => {
-              const isFavorite = favorites.includes(track.id);
-              return (
-                <article className="t01-track-card" key={track.id}>
-                  <button type="button" className="t01-card-open"
-                    disabled={Boolean(track.recordingId && !availableRecordings.includes(track.recordingId) && !track.chart)}
-                    aria-label={'Practice ' + track.title + (track.chart ? ' with its linked chart' : ' with audio') }
-                    onClick={() => openChart(track.chart?.id ?? null, track.recordingId)}>
-                    <span className="t01-card-title">{track.title}</span>
-                    <span className="t01-card-subtitle">{track.subtitle}</span>
-                    <span className="t01-card-footer">
-                      {!track.id.startsWith('chart:') && <span className="t01-status t01-audio">{track.recordingId && availableRecordings.includes(track.recordingId) ? 'Recording available' : <><TrackIcon name="unavailable" /> Audio pending</>}</span>}
-                      {track.chart && <span className="t01-status t01-chart"><TrackIcon name="book" /> Chart</span>}
-                      <span className="t01-card-spacer" />
-                      <span className="t01-card-tempo">{track.bpm === null ? '' : track.bpm + ' BPM · '}{track.key}</span>
-                      <TrackIcon name="chevron" />
-                    </span>
-                  </button>
-                  <button type="button" className={'t01-favorite' + (isFavorite ? ' is-favorite' : '')} aria-label={(isFavorite ? 'Remove ' : 'Add ') + track.title + (isFavorite ? ' from favorites' : ' to favorites')} aria-pressed={isFavorite} onClick={() => toggleFavorite(track.id)}>
-                    <TrackIcon name="star" filled={isFavorite} />
-                  </button>
-                </article>
-              );
-            })}
-          </div>
-        </>
+        <div className="t01-track-list">
+          {filtered.map(track => {
+            const isFavorite = favorites.includes(track.id);
+            const hasAudio = Boolean(track.recordingId && availableRecordings.includes(track.recordingId));
+            const isAvailable = Boolean(track.chart || hasAudio);
+            const subtitle = [
+              track.style || (track.chart ? 'Chord chart' : 'Track'),
+              track.bpm != null ? track.bpm + ' BPM' : null,
+              track.key || null
+            ].filter(Boolean).join(' · ');
+            return (
+              <article className="t01-track-card" key={track.id}>
+                <img className="t01-record-icon" src="/visuals/tracks-approved/record.svg" alt="" aria-hidden="true" />
+                <button type="button" className="t01-card-open" disabled={!isAvailable}
+                  aria-label={'Open ' + track.title + (track.chart ? ' chord chart' : ' backing track')}
+                  onClick={() => openChart(track.chart?.id ?? null, hasAudio ? track.recordingId : null)}>
+                  <strong className="t01-card-title">{track.title}</strong>
+                  <span className="t01-card-subtitle">{subtitle}</span>
+                </button>
+                <button type="button" className={'t01-favorite' + (isFavorite ? ' is-favorite' : '')}
+                  aria-label={(isFavorite ? 'Remove ' : 'Bookmark ') + track.title}
+                  aria-pressed={isFavorite} onClick={() => toggleFavorite(track.id)}>
+                  <TrackIcon name="bookmark" filled={isFavorite} />
+                </button>
+                <button type="button" className="t01-row-play" disabled={!isAvailable}
+                  aria-label={(hasAudio ? 'Open track ' : 'Practice chart for ') + track.title}
+                  onClick={() => openChart(track.chart?.id ?? null, hasAudio ? track.recordingId : null)}>
+                  <svg aria-hidden="true" width="23" height="23" viewBox="0 0 24 24" fill="currentColor"><path d="M7 3v18l14-9z"/></svg>
+                </button>
+              </article>
+            );
+          })}
+        </div>
       ) : (
         <div className="t01-empty" role="status">
-          <div className="t01-empty-symbol"><TrackIcon name="search" /></div>
-          <h2>{category === 'Favorites' && !query && !activeFilterCount ? 'No favorites yet' : 'No tracks or charts found'}</h2>
-          <p>{category === 'Favorites' && !query && !activeFilterCount ? 'Tap the star beside a track to save it here.' : query ? 'No results for “' + query + '”. Try another search or clear your filters.' : 'No tracks or charts match these filters. Try another category or reset your filters.'}</p>
-          <button type="button" className="t01-empty-clear" onClick={() => { setQuery(''); if (!query) setCategory('Recent'); }}><TrackIcon name="close" /> {query ? 'Clear search' : 'Show all items'}</button>
-          <button type="button" className="t01-empty-reset" onClick={reset}>Reset all filters</button>
+          <img src="/visuals/tracks-approved/bookmark-filled.svg" alt="" aria-hidden="true" />
+          <h2>{category === 'Bookmarked' ? 'No bookmarks yet' : 'No matching tracks or charts'}</h2>
+          <p>{category === 'Bookmarked' ? 'Use the bookmark icon on any track or chart to save it here.' : 'Try another style or search term.'}</p>
+          <button type="button" className="t01-empty-clear" onClick={reset}>Browse all tracks &amp; charts</button>
         </div>
       )}
 
