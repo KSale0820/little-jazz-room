@@ -119,6 +119,14 @@ try {
                 const root = document.querySelector('.p01-page, .g01-page');
                 return root ? getComputedStyle(root).backgroundColor : null;
               })(),
+              practiceSurface: (() => {
+                const root = document.querySelector('.p01-page.p01-suave');
+                return root ? getComputedStyle(root).backgroundImage : null;
+              })(),
+              practiceHeadingInk: (() => {
+                const heading = document.querySelector('.p01-suave-header h1');
+                return heading ? getComputedStyle(heading).color : null;
+              })(),
               chartPaperBackground: (() => {
                 const measure = document.querySelector('.practice-chart-scroll .measure:not(.chosen):not(.looped)');
                 return measure ? getComputedStyle(measure).backgroundColor : null;
@@ -173,9 +181,23 @@ try {
               'Profile must offer only the three currently approved pixel companions');
           }
           const expectedBackground = theme === 'dark' ? 'rgb(16, 17, 19)' : 'rgb(255, 248, 236)';
-          if (['Practice', 'Progress'].includes(screen)) {
+          if (screen === 'Progress') {
             assert.equal(state.screenBackground, expectedBackground,
-              screen + ' retains the old room/ivory background instead of the active theme');
+              'Progress retains the old room/ivory background instead of the active theme');
+          }
+          if (screen === 'Practice') {
+            // Approved Practice uses a theme-sensitive decorative gradient, not the
+            // old flat semantic surface. Check its actual palette and readable ink.
+            assert.ok(state.practiceSurface && state.practiceSurface.includes('gradient'),
+              'Practice theme gradient did not render');
+            const backdrop = theme === 'dark' ? 'rgb(32, 29, 41)' : 'rgb(255, 248, 236)';
+            assert.ok(state.practiceHeadingInk &&
+              contrastRatio(state.practiceHeadingInk, backdrop) >= 4.5,
+              'Practice heading lacks contrast against the ' + theme + ' surface');
+            if (theme === 'dark') {
+              assert.ok(state.practiceSurface.includes('32, 29, 41'),
+                'Practice dark mode did not apply its dark backdrop');
+            }
           }
           if (screen === 'Player') {
             assert.ok(state.chartCells >= 12, 'Chart-linked Player missing complete 12-bar grid');
