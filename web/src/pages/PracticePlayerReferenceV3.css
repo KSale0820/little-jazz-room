@@ -301,7 +301,7 @@ html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practi
   align-items: center;
   justify-content: center;
   gap: 0;
-  font: 750 clamp(13px, 4.1vw, 19px)/1.05 Georgia, serif;
+  font: 750 clamp(16px, 4.5vw, 20px)/1.05 Georgia, serif;
   letter-spacing: -.025em;
   color: var(--color-chart-chord);
 }
@@ -323,15 +323,17 @@ html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practi
 }
 html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two,
 html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .chords.two {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
   width: 100%;
   height: 100%;
-  font: 700 clamp(9px, 2.4vw, 11px)/1.1 Georgia, serif;
+  font: 700 clamp(13px, 3.6vw, 15px)/1.15 Georgia, serif;
 }
 html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two span + span {
-  border-left: 1px dashed color-mix(in srgb, var(--pp-line) 86%, var(--pp-deep-green));
+  border-left: 0;
+  border-top: 1px dashed color-mix(in srgb, var(--pp-line) 86%, var(--pp-deep-green));
 }
 html[data-theme] .practice-player.practice-unified .practice-transport {
   display: block;
@@ -487,7 +489,7 @@ html[data-theme] .practice-player.practice-unified > .practice-utility-row .prac
   min-height: 23px;
 }
 html[data-theme] .practice-player.practice-unified > .practice-utility-row button span {
-  font: 750 12px/1.1 Georgia, serif;
+  font: 750 13px/1.1 Georgia, serif;
   color: var(--pp-deep-green);
 }
 html[data-theme] .practice-player.practice-unified > .practice-utility-row button:disabled {
