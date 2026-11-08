@@ -63,6 +63,13 @@ export function FreePracticePage() {
     return () => window.clearInterval(interval);
   }, [running]);
 
+  // The app scrolls inside .viewport. Each stage should open at the top,
+  // particularly when finishing from an expanded chart or picker.
+  useEffect(() => {
+    const viewport = document.querySelector<HTMLElement>('.app-shell .viewport');
+    if (viewport) viewport.scrollTop = 0;
+  }, [phase, finished]);
+
   useEffect(() => {
     if (!tool) return;
     const frame = requestAnimationFrame(() => toolDialogRef.current?.querySelector<HTMLElement>('button:not(:disabled)')?.focus());
@@ -82,6 +89,7 @@ export function FreePracticePage() {
     } else {
       clock.current.startedAt = Date.now();
       setRunning(true);
+      if (phase === 'setup') setExpandedKey(null);
       setPhase('active');
       setShowChoices(false);
     }
