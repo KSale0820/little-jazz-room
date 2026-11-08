@@ -251,7 +251,7 @@ html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practi
   border-bottom: 1.5px solid var(--pp-deep-green);
   border-radius: 0;
   color: var(--pp-deep-green);
-  background: transparent;
+  background: var(--pp-paper);
   box-shadow: none;
 }
 html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure:nth-child(4n) {
