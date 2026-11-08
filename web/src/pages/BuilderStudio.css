@@ -489,3 +489,321 @@
   }
   .chart-builder-page.builder-studio .chart-builder-feel-field { grid-column: 1/-1; }
 }
+
+
+/* Approved November 8 visual mockup: clean chart/editor headers, no corner plant.
+   All controls below use the existing chart and exercise data models. */
+.builder-studio-visually-hidden {
+  position:absolute !important; width:1px !important; height:1px !important; padding:0 !important;
+  overflow:hidden !important; clip:rect(0,0,0,0) !important; white-space:nowrap !important; border:0 !important;
+}
+.chart-builder-page.builder-studio { padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
+.chart-builder-page.builder-studio .chart-builder-header {
+  display:flex; align-items:center; justify-content:start; gap:10px;
+  min-height:49px; padding:0 0 11px; margin:0 0 11px;
+  border-bottom:0;
+}
+.chart-builder-page.builder-studio .chart-builder-header h1 {
+  flex:1; min-width:0; margin:0; font:760 21px/1.2 system-ui,sans-serif; letter-spacing:-.04em;
+}
+.chart-builder-page.builder-studio .builder-studio-back,
+.chart-library-page .builder-library-back {
+  flex:none; display:grid; place-items:center; padding:0;
+  width:35px; height:44px; border:0; background:transparent;
+  color:var(--color-text); font:400 34px/1 system-ui,sans-serif;
+}
+.chart-builder-page.builder-studio .builder-studio-title-icon,
+.chart-library-page .builder-library-heading-icon {
+  display:grid; place-items:center; flex:none; width:29px; height:32px;
+  color:var(--color-action); font:700 24px/1 monospace;
+}
+.chart-builder-page.builder-studio .builder-studio-view-label {
+  flex:none; color:var(--color-muted); letter-spacing:.08em; font:760 10px system-ui,sans-serif;
+}
+.chart-builder-page.builder-studio .builder-studio-status { margin:0 0 10px; font-size:11px; }
+.chart-builder-page.builder-studio > .chart-builder-field:first-of-type { margin-bottom:10px; }
+.chart-builder-page.builder-studio .builder-studio-field-hint {
+  font-size:11px; color:var(--color-muted); font-weight:650;
+}
+.chart-builder-page.builder-studio > .chart-builder-field input {
+  padding:9px 13px; min-height:45px;
+  font:730 17px/1.3 system-ui,sans-serif;
+}
+.chart-builder-page.builder-studio .chart-builder-simple-meta {
+  display:grid; grid-template-columns:minmax(0,1.4fr) 73px minmax(0,1fr);
+  align-items:start; gap:8px; max-width:none; margin:0 0 10px;
+}
+.chart-builder-page.builder-studio .chart-builder-simple-meta .chart-builder-field,
+.chart-builder-page.builder-studio .chart-builder-simple-meta .chart-builder-time-field { margin:0; min-width:0; }
+.chart-builder-page.builder-studio .chart-builder-simple-meta .chart-builder-field span,
+.chart-builder-page.builder-studio .chart-builder-time-field legend { font-size:11px; }
+.chart-builder-page.builder-studio .chart-builder-simple-meta input,
+.chart-builder-page.builder-studio .chart-builder-simple-meta select { font-size:13px; }
+.chart-builder-page.builder-studio .chart-builder-simple-meta .chart-builder-inline-input { gap:3px; }
+.chart-builder-page.builder-studio .chart-builder-simple-meta .chart-builder-inline-input input { padding:5px 4px; font-size:14px; }
+.chart-builder-page.builder-studio .chart-builder-simple-meta .chart-builder-inline-input button {
+  min-width:31px; flex-basis:31px; min-height:44px;
+}
+.chart-builder-page.builder-studio .chart-meter-fraction { width:67px; }
+.chart-builder-page.builder-studio .chart-meter-fraction input { min-height:31px; height:31px; }
+.chart-builder-page.builder-studio .builder-studio-tabs {
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); margin:12px 0 0;
+  border-bottom:1px solid var(--color-border);
+}
+.chart-builder-page.builder-studio .builder-studio-tabs a {
+  display:grid; place-items:center; min-height:46px;
+  color:var(--color-muted); font:700 13px/1 system-ui,sans-serif;
+  text-decoration:none; border-bottom:3px solid transparent;
+}
+.chart-builder-page.builder-studio .builder-studio-tabs a:first-child {
+  color:var(--color-action); border-bottom-color:var(--color-action);
+}
+.chart-builder-page.builder-studio .builder-studio-tabs a:focus-visible {
+  outline:3px solid var(--color-focus); outline-offset:-3px;
+}
+.chart-builder-page.builder-studio .chart-builder-chart-heading { margin:11px 0 8px; }
+.chart-builder-page.builder-studio .chart-builder-chart-heading h2 { font-size:15px; }
+.chart-builder-page.builder-studio .chart-builder-chart-heading p { max-width:230px; font-size:10px; }
+.chart-builder-page.builder-studio .builder-studio-chart-meta span { padding:3px 7px; font-size:10px; }
+
+/* The approved chart uses four measures per row; editor controls remain in a
+   full-width row below the selected four measures. */
+.chart-builder-page.builder-studio .chart-editor-row {
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+}
+.chart-builder-page.builder-studio .chart-editor-row .chart-editor-measure {
+  min-height:100px; padding:4px 2px 5px;
+  border-right:1px solid var(--color-border);
+}
+.chart-builder-page.builder-studio .chart-editor-row .chart-editor-measure:nth-child(2) {
+  border-right:1px solid var(--color-border);
+}
+.chart-builder-page.builder-studio .chart-editor-row .chart-editor-measure:nth-child(4) { border-right:0; }
+.chart-builder-page.builder-studio .chart-editor-measure-top {
+  min-height:22px; padding:0 4px; gap:3px; align-items:start;
+}
+.chart-builder-page.builder-studio .chart-editor-measure-number {
+  font:700 10px/1.3 system-ui,sans-serif; color:var(--color-muted);
+}
+.chart-builder-page.builder-studio .chart-editor-section-label { font-size:10px; min-width:15px; min-height:16px; padding:0 3px; }
+.chart-builder-page.builder-studio .chart-editor-chords {
+  display:flex; flex-direction:column; justify-content:center; align-items:stretch;
+  min-height:52px; margin:0; padding:0 2px; gap:2px;
+}
+.chart-builder-page.builder-studio .chart-editor-chord input,
+.chart-builder-page.builder-studio .chart-editor-measure.is-selected .chart-editor-chord input {
+  width:100%; padding:7px 1px; font-size:clamp(11px,3.25vw,15px);
+  letter-spacing:-.045em; min-height:44px;
+}
+.chart-builder-page.builder-studio .chart-editor-chord input::placeholder { font-size:10px; }
+.chart-builder-page.builder-studio .chart-builder-selection { grid-column:1 / -1; padding:10px 8px 12px; }
+.chart-builder-page.builder-studio .chart-builder-toolbar {
+  grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px;
+}
+.chart-builder-page.builder-studio .chart-builder-toolbar button { min-height:44px; height:44px; }
+.chart-builder-page.builder-studio .chart-builder-add-row { margin:13px 0 0; }
+.chart-builder-page.builder-studio .chart-builder-add-row button {
+  flex:1 1 29%; padding:8px 4px; min-height:44px; font-size:11px;
+}
+.chart-builder-page.builder-studio .builder-studio-chart-details {
+  margin-top:16px; border:1px solid var(--color-border);
+  border-radius:11px; background:var(--color-surface);
+}
+.chart-builder-page.builder-studio .builder-studio-chart-details summary {
+  display:flex; justify-content:space-between; align-items:center; cursor:pointer;
+  min-height:45px; padding:10px 13px; color:var(--color-text); font:720 12px system-ui,sans-serif;
+}
+.chart-builder-page.builder-studio .builder-studio-chart-details[open] > .chart-builder-field { margin:0 13px 13px; }
+.chart-builder-page.builder-studio .chart-builder-caption { margin:12px 0; }
+.chart-builder-page.builder-studio .chart-builder-footer {
+  display:grid; grid-template-columns:1fr 1.4fr; gap:10px;
+  position:sticky; bottom:0; z-index:15;
+  margin:14px -6px -12px; padding:10px 6px calc(10px + env(safe-area-inset-bottom));
+  background:var(--color-bg); border-top:1px solid var(--color-border);
+}
+.chart-builder-page.builder-studio .chart-builder-footer .chart-builder-primary { background:var(--color-action); color:var(--color-action-text); }
+.chart-builder-page.builder-studio .chart-builder-footer .chart-builder-secondary { background:var(--color-surface); }
+
+/* The real My Charts library receives the approved list, new-chart button,
+   searchable song titles and a compact accessible per-chart actions menu. */
+.chart-library-page .chart-builder-header { min-height:47px; margin:0 0 11px; }
+.chart-library-page .builder-library-heading { display:flex; align-items:center; gap:8px; width:100%; }
+.chart-library-page .builder-library-heading h1 {
+  margin:0; font:760 21px/1.2 system-ui,sans-serif; letter-spacing:-.035em; color:var(--color-text);
+}
+.chart-library-page .chart-library-create {
+  width:100%; display:flex; align-items:center; justify-content:center; gap:9px;
+  min-height:49px; margin:14px 0 11px; border-radius:11px;
+  background:var(--color-action); color:var(--color-action-text); border-color:var(--color-action);
+  font:750 14px/1.2 system-ui,sans-serif;
+}
+.chart-library-page .chart-library-create span { font-size:21px; line-height:1; }
+.chart-library-page .chart-builder-field { margin-bottom:10px; }
+.chart-library-page .chart-builder-field input { min-height:45px; font:500 14px system-ui,sans-serif; }
+.chart-library-page .builder-library-subtitle {
+  color:var(--color-muted); font:500 12px/1.5 system-ui,sans-serif; margin:0 0 15px;
+}
+.chart-library-page .chart-builder-section-title {
+  margin:17px 0 8px; font:760 14px/1.2 system-ui,sans-serif;
+  color:var(--color-text);
+}
+.chart-library-page .chart-builder-section-title span { margin-left:4px; }
+.chart-library-page .chart-library-card {
+  position:relative; margin:6px 0; padding:0;
+  background:var(--color-surface); color:var(--color-text);
+  border:1px solid var(--color-border); border-radius:10px;
+}
+.chart-library-page .chart-library-card-main {
+  display:flex; gap:10px; align-items:center; min-height:68px; padding:10px 11px;
+}
+.chart-library-page .chart-library-card-icon {
+  flex:0 0 25px; font:750 23px/1 monospace; color:var(--color-action); text-align:center;
+}
+.chart-library-page .chart-library-card-copy { flex:1; min-width:0; }
+.chart-library-page .chart-library-card-copy h3 {
+  margin:0; color:var(--color-text); font:730 13px/1.25 system-ui,sans-serif;
+  overflow-wrap:anywhere;
+}
+.chart-library-page .chart-library-card-copy p {
+  margin:3px 0 0; font:500 11px/1.3 system-ui,sans-serif; color:var(--color-muted);
+}
+.chart-library-page .chart-library-instruction { margin:0 11px 10px 46px; font-size:10px; color:var(--color-muted); }
+.chart-library-page .chart-library-menu { position:relative; flex:none; }
+.chart-library-page .chart-library-menu > summary {
+  display:grid; place-items:center; min-width:44px; min-height:44px; cursor:pointer; list-style:none;
+  color:var(--color-text); font:800 17px/1 system-ui,sans-serif;
+  border-radius:9px;
+}
+.chart-library-page .chart-library-menu > summary::-webkit-details-marker { display:none; }
+.chart-library-page .chart-library-menu[open] > summary { background:var(--color-surface-raised); }
+.chart-library-page .chart-library-actions {
+  display:grid; gap:4px; position:absolute; z-index:30; top:calc(100% + 4px); right:0;
+  min-width:153px; padding:6px; border:1px solid var(--color-border);
+  border-radius:11px; background:var(--color-surface-raised);
+  box-shadow:0 9px 22px color-mix(in srgb, var(--color-text) 14%, transparent);
+}
+.chart-library-page .chart-library-actions button {
+  width:100%; min-height:42px; border:0; text-align:left; justify-content:start;
+  padding:9px 10px; border-radius:7px; background:transparent; color:var(--color-text);
+  font:680 12px/1 system-ui,sans-serif;
+}
+.chart-library-page .chart-library-actions button:hover,
+.chart-library-page .chart-library-actions button:focus-visible { background:var(--color-surface); }
+.chart-library-page .chart-library-actions .chart-library-delete { color:var(--color-danger); background:transparent; }
+.chart-library-page .chart-library-empty { color:var(--color-muted); }
+
+/* Exercise Builder. Inline in Create Routine so routine drafts, selection and
+   existing IDs/route contracts are preserved. No faux tempo/repeat controls. */
+.routine-builder .builder-custom-form.builder-studio {
+  padding:15px; background:var(--color-bg); box-shadow:none;
+  border-color:var(--color-border); margin:18px 0 12px;
+}
+.routine-builder .builder-exercise-header {
+  display:flex; align-items:center; gap:8px; padding:0 0 12px;
+  border-bottom:0; min-height:44px;
+}
+.routine-builder .builder-exercise-back {
+  display:grid; place-items:center; flex:none; width:28px; height:44px; padding:0;
+  background:transparent; border:0; color:var(--color-text); font:400 34px/1 system-ui,sans-serif;
+}
+.routine-builder .builder-exercise-heading-icon {
+  display:grid; place-items:center; flex:none; width:24px; height:30px;
+  font:700 24px/1 monospace; color:var(--color-action);
+}
+.routine-builder .builder-exercise-header h3 {
+  flex:1; min-width:0; margin:0; font:760 19px/1.2 system-ui,sans-serif;
+  letter-spacing:-.035em; color:var(--color-text);
+}
+.routine-builder .builder-exercise-mode {
+  flex:none; color:var(--color-muted); letter-spacing:.09em; font:760 10px system-ui,sans-serif;
+}
+.routine-builder .builder-exercise-title-hint {
+  display:block; margin:3px 0 5px !important; color:var(--color-muted) !important; font-size:11px !important;
+}
+.routine-builder .builder-exercise-title-input {
+  min-height:44px; font-weight:730 !important; background:var(--color-surface) !important;
+}
+.routine-builder .builder-exercise-section-label {
+  display:flex; align-items:center; gap:8px; margin:19px 0 9px;
+  font:760 13px/1.2 system-ui,sans-serif; letter-spacing:0; color:var(--color-text);
+}
+.routine-builder .builder-exercise-section-label > span:first-child {
+  flex:none; width:21px; text-align:center; color:var(--color-action); font:700 18px/1 monospace;
+}
+.routine-builder .builder-exercise-section-label > span:nth-child(2) { font:760 13px/1.2 system-ui,sans-serif; }
+.routine-builder .builder-exercise-section-label small { margin-left:auto; font-size:10px; color:var(--color-muted); font-weight:600; }
+.routine-builder .builder-exercise-linked-card {
+  display:flex; align-items:center; gap:10px; min-height:57px; padding:9px 10px;
+  border:1px solid var(--color-border); border-radius:10px; background:var(--color-surface);
+}
+.routine-builder .builder-exercise-linked-icon {
+  display:grid; place-items:center; flex:0 0 27px; height:30px;
+  color:var(--color-action); font:730 22px/1 monospace;
+}
+.routine-builder .builder-exercise-linked-copy { display:flex; flex-direction:column; flex:1; min-width:0; gap:3px; }
+.routine-builder .builder-exercise-linked-copy strong { font:740 12px/1.2 system-ui,sans-serif; color:var(--color-text); overflow-wrap:anywhere; }
+.routine-builder .builder-exercise-linked-copy span { font:500 10px/1.2 system-ui,sans-serif; color:var(--color-muted); }
+.routine-builder .builder-exercise-linked-card button {
+  display:grid; place-items:center; flex:none; width:35px; min-height:44px;
+  border:0; background:transparent; color:var(--color-text); font:400 24px/1 system-ui,sans-serif;
+}
+.routine-builder .builder-exercise-empty-chart {
+  color:var(--color-muted); margin:0 0 10px; font:500 11px/1.45 system-ui,sans-serif;
+}
+.routine-builder .builder-exercise-minor-label {
+  display:block; margin:10px 0 5px !important;
+  color:var(--color-muted) !important; font:650 11px/1.3 system-ui,sans-serif !important;
+}
+.routine-builder .builder-custom-form.builder-studio .builder-field { background:var(--color-surface); }
+.routine-builder .builder-exercise-chart-actions { margin:9px 0 0; }
+.routine-builder .builder-exercise-chart-actions button {
+  background:var(--color-surface-raised); color:var(--color-text);
+}
+.routine-builder .builder-exercise-settings { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+.routine-builder .builder-exercise-settings label { font-size:11px !important; color:var(--color-muted) !important; }
+.routine-builder .builder-exercise-settings > div:last-child { grid-column:1/-1; }
+.routine-builder .builder-exercise-settings #exMin { max-width:160px; }
+.routine-builder .builder-exercise-preview {
+  display:flex; gap:11px; align-items:center; margin:18px 0 11px; padding:12px;
+  border:1px solid var(--color-border); border-left:1px solid var(--color-border);
+  background:var(--color-surface-raised); border-radius:10px;
+}
+.routine-builder .builder-exercise-preview > .builder-exercise-preview-icon {
+  display:grid; place-items:center; flex:none; width:40px; height:40px; margin:0;
+  color:var(--color-action-text); background:var(--color-action);
+  border-radius:50%; font:800 23px/1 system-ui,sans-serif;
+}
+.routine-builder .builder-exercise-preview > div { flex:1; min-width:0; }
+.routine-builder .builder-exercise-preview strong { font-size:13px; }
+.routine-builder .builder-exercise-preview p { font-size:11px; }
+.routine-builder .builder-exercise-preview p:last-child { -webkit-line-clamp:2; line-clamp:2; }
+.routine-builder .builder-exercise-save-actions {
+  display:grid; grid-template-columns:1fr 1.35fr; gap:9px;
+  position:sticky; bottom:0; z-index:12;
+  padding:9px 0 calc(9px + env(safe-area-inset-bottom));
+  background:var(--color-bg); border-top:1px solid var(--color-border);
+}
+.routine-builder .builder-exercise-save-actions button:first-child {
+  color:var(--color-text); background:var(--color-surface);
+  border:1px solid var(--color-border);
+}
+.routine-builder .builder-exercise-save-actions button:last-child {
+  color:var(--color-action-text); background:var(--color-action);
+  border:1px solid var(--color-action);
+}
+@media (max-width:390px) {
+  .chart-builder-page.builder-studio .chart-builder-simple-meta {
+    grid-template-columns:minmax(0,1.25fr) 68px minmax(0,1fr); gap:6px;
+  }
+  .chart-builder-page.builder-studio .chart-builder-simple-meta .chart-builder-inline-input button {
+    flex-basis:29px; min-width:29px;
+  }
+  .chart-builder-page.builder-studio .chart-editor-chord input { font-size:12px; }
+  .chart-library-page .chart-library-card-main { gap:8px; }
+  .routine-builder .builder-custom-form.builder-studio { padding:12px; }
+}
+@media (max-width:340px) {
+  .chart-builder-page.builder-studio .chart-builder-simple-meta { grid-template-columns:minmax(0,1fr) 68px; }
+  .chart-builder-page.builder-studio .chart-builder-feel-field { grid-column:1/-1; }
+  .chart-builder-page.builder-studio .chart-builder-header h1 { font-size:19px; }
+}
