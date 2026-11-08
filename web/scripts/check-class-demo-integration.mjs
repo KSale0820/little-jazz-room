@@ -49,10 +49,10 @@ try {
     await page.getByRole('button', { name: 'Resume practice timer' }).click();
     await page.waitForTimeout(350);
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
-    await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
+    await page.getByRole('heading', { name: 'Practice complete' }).waitFor();
     await page.getByRole('button', { name: '4 stars' }).click();
-    await page.getByRole('button', { name: 'Save Session', exact: true }).click();
-    await page.getByRole('button', { name: /Session Saved/ }).waitFor();
+    await page.getByRole('button', { name: 'Save session', exact: true }).click();
+    await page.getByRole('button', { name: 'View Progress' }).waitFor();
 
     const saved = await page.evaluate(() => ({
       sessions: JSON.parse(localStorage.getItem('little-jazz-room:practice-sessions:v1:anonymous') || '[]'),
