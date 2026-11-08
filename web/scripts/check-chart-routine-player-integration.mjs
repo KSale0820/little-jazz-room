@@ -37,6 +37,7 @@ try {
     await page.getByRole('textbox', { name: 'Time signature numerator' }).fill('6');
     await page.getByRole('textbox', { name: 'Time signature denominator' }).fill('8');
     await page.getByRole('textbox', { name: 'Chart name' }).click();
+    await page.getByText('Additional chart details', { exact: false }).click();
     await page.getByRole('textbox', { name: 'Style instruction for the whole chart (optional)' })
       .fill('Play gently throughout');
     for (const [index, chord] of ['Dm7', 'G7', 'Cmaj7', 'F7'].entries()) {
@@ -60,6 +61,7 @@ try {
     assert.equal(savedChart.style_instruction, 'Play gently throughout');
     await page.reload({ waitUntil: 'networkidle' });
     const freeCard = page.locator('.chart-library-card').filter({ hasText: freeChartTitle });
+    await freeCard.locator('summary', { hasText: '•••' }).click();
     await freeCard.getByRole('button', { name: 'Practice', exact: true }).click();
     await page.waitForURL(url => url.pathname === '/player' && url.searchParams.get('chart') === savedChart.id);
     assert.equal(await page.locator('#player-chart').inputValue(), savedChart.id);
