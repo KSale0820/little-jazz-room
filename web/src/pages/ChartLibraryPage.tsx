@@ -5,6 +5,7 @@ import { createChartRepository, newLocalChartId } from '../features/charts/chart
 import type { Chart } from '../types/content';
 import './ChartBuilderPage.css';
 import './CleanPixelCharts.css';
+import './BuilderStudio.css';
 
 export function ChartLibraryPage() {
   const { repo, charts, exercises, routines, refreshLocal, setActiveRoutineId } = useApp();
@@ -43,33 +44,43 @@ export function ChartLibraryPage() {
 
   const renderChart = (chart: Chart) => (
     <article key={chart.id} className="chart-library-card">
-      <div>
-        <h3>{chart.title}</h3>
-        <p>{chart.bars.length} measures · Key {chart.concert_key.replace(/b/g, '♭')} · {chart.time_signature.join('/')}</p>
-        {chart.style_instruction && <p className="chart-library-instruction">{chart.style_instruction}</p>}
+      <div className="chart-library-card-main">
+        <span className="chart-library-card-icon" aria-hidden="true">▤</span>
+        <div className="chart-library-card-copy">
+          <h3>{chart.title}</h3>
+          <p>{chart.concert_key.replace(/b/g, '♭')} · {chart.time_signature.join('/')} · {chart.bars.length} measures</p>
+        </div>
+        <details className="chart-library-menu">
+          <summary aria-label={'Actions for ' + chart.title} title="Chart actions">•••</summary>
+          <div className="chart-library-actions">
+            <button type="button" onClick={() => { setActiveRoutineId(null); navigate('/player?chart=' + encodeURIComponent(chart.id)); }}>Practice</button>
+            {chart.is_custom && <button type="button" onClick={() => navigate('/charts/' + encodeURIComponent(chart.id) + '/edit')}>Edit</button>}
+            <button type="button" onClick={() => duplicate(chart)}>{chart.is_custom ? 'Duplicate' : 'Edit a copy'}</button>
+            {chart.is_custom && <button type="button" className="chart-library-delete" onClick={() => remove(chart)}>Delete</button>}
+          </div>
+        </details>
       </div>
-      <div className="chart-library-actions">
-        <button type="button" onClick={() => { setActiveRoutineId(null); navigate('/player?chart=' + encodeURIComponent(chart.id)); }}>Practice</button>
-        {chart.is_custom && <button type="button" onClick={() => navigate('/charts/' + encodeURIComponent(chart.id) + '/edit')}>Edit</button>}
-        <button type="button" onClick={() => duplicate(chart)}>{chart.is_custom ? 'Duplicate' : 'Edit a copy'}</button>
-        {chart.is_custom && <button type="button" className="chart-library-delete" onClick={() => remove(chart)}>Delete</button>}
-      </div>
+      {chart.style_instruction && <p className="chart-library-instruction">{chart.style_instruction}</p>}
     </article>
   );
 
   return (
     <section className="chart-builder-page chart-library-page" aria-label="My Charts">
       <header className="chart-builder-header">
-        <div><p className="chart-builder-eyebrow">THE SONGBOOK</p><h1>My Charts</h1></div>
-        <button type="button" className="chart-builder-secondary" onClick={() => navigate('/charts')}>Back</button>
+        <div className="builder-library-heading">
+          <button type="button" className="builder-library-back" aria-label="Back to Tracks" onClick={() => navigate('/tracks')}>‹</button>
+          <span className="builder-library-heading-icon" aria-hidden="true">▤</span>
+          <h1 aria-label="My Charts">Chart Builder</h1>
+        </div>
       </header>
-      <button type="button" className="chart-builder-primary chart-library-create" onClick={() => navigate('/charts/new')}>+ Create a Chart</button>
+      <button type="button" className="chart-builder-primary chart-library-create" onClick={() => navigate('/charts/new')}><span aria-hidden="true">＋</span> New Chart</button>
       <label className="chart-builder-field">
-        <span>Search charts</span>
-        <input type="search" value={query} placeholder="Search by title" onChange={e => setQuery(e.target.value)} />
+        <span className="builder-studio-visually-hidden">Search charts</span>
+        <input type="search" value={query} placeholder="Search charts…" onChange={e => setQuery(e.target.value)} />
       </label>
       {notice && <p role="status" className="chart-builder-notice">{notice}</p>}
-      <h2 className="chart-builder-section-title">My Charts <span>{mine.length}</span></h2>
+      <p className="builder-library-subtitle">Create, edit, and organize chord charts for your practice, routines, and exercises.</p>
+      <h2 className="chart-builder-section-title">Your charts <span>{mine.length}</span></h2>
       {mine.length ? mine.map(renderChart) : <p className="chart-library-empty">Your own charts will appear here. Create one to get started.</p>}
       <h2 className="chart-builder-section-title">Built-in charts <span>{builtIns.length}</span></h2>
       <p className="chart-builder-caption">Built-in charts are read-only. Choose Edit a copy to make your own version.</p>
