@@ -3,7 +3,7 @@ import { TunerPage } from '../../pages/TunerPage';
 import { MetronomePage } from '../../pages/MetronomePage';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { VISUAL_ASSETS } from '../../assets/visualManifest';
+import { SessionCompletion } from '../../components/SessionCompletion';
 import { useApp } from '../../context/AppContext';
 import { formatPracticeTime } from '../../pages/practicePlayerLogic';
 import type { RecordedBackingTrack } from './recordingCatalog';
@@ -84,6 +84,7 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
     audioRef.current?.pause();
     pauseClock();
     setPlaying(false);
+    setError(null);
     setCompletion({
       id: crypto.randomUUID(),
       durationSeconds: Math.floor(currentElapsed() / 1000),
@@ -114,25 +115,35 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
   };
 
   if (completion) {
-    return <section className="practice-complete" aria-label="Practice session complete">
-      <div className="practice-complete-hero">
-        <h1>Great practice!</h1>
-        <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
-      </div>
-      <div className="practice-complete-summary">
-        <img src={VISUAL_ASSETS.room.approved.twilight} alt="" />
-        <div><strong>{recording.title}</strong><span>Audio-only practice</span><small>Recorded backing track</small></div>
-      </div>
-      <button type="button" className="practice-primary practice-save" disabled={saveState !== 'idle'}
-        onClick={() => void save()}>
-        {saveState === 'saved' ? 'Session Saved ✓' : saveState === 'saving' ? 'Saving…' : 'Save Session'}
-      </button>
-      {error && <p role="alert" className="practice-recording-error">{error}</p>}
-      <button type="button" className="practice-secondary" onClick={() => void (async () => {
-        if (await save()) navigate('/progress');
-      })()}>View Progress</button>
-      <button type="button" className="practice-secondary" onClick={() => navigate('/tracks')}>Back to Tracks</button>
-    </section>;
+    const leave = async (destination: string) => {
+      if (await save()) navigate(destination);
+    };
+    const practiceAgain = async () => {
+      if (!(await save())) return;
+      clockRef.current = { accumulatedMs: 0, startedAtMs: null };
+      saveRef.current = null;
+      if (audioRef.current) audioRef.current.currentTime = 0;
+      setPosition(0);
+      setElapsedSeconds(0);
+      setEnded(false);
+      setError(null);
+      setPlaying(false);
+      setSaveState('idle');
+      setCompletion(null);
+    };
+    return <SessionCompletion
+      record={completion}
+      kind="free"
+      title={recording.title}
+      subtitle="Recorded backing track · Audio-only practice"
+      activities={[recording.title]}
+      activityLabel="Practiced recording"
+      status={saveState === 'idle' && error ? 'error' : saveState}
+      onSave={() => { void save(); }}
+      onProgress={() => { void leave('/progress'); }}
+      onPracticeAgain={() => { void practiceAgain(); }}
+      onPractice={() => { void leave('/tracks'); }}
+    />;
   }
 
   return <section className="practice-player practice-free practice-recording-p02 practice-unified" aria-label="Shared practice player">
