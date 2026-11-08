@@ -1,0 +1,491 @@
+/* Chart + exercise studio visual language, scoped to the two existing editors.
+   The underlying chart model, routine steps, persistence and routes are unchanged.
+   Uses the live Light/Dark semantic tokens, not standalone colors or new assets. */
+
+.chart-builder-page.builder-studio,
+.routine-builder .builder-custom-form.builder-studio {
+  --studio-radius: 14px;
+  --studio-soft-line: color-mix(in srgb, var(--color-border) 72%, transparent);
+}
+.chart-builder-page.builder-studio .chart-builder-header {
+  align-items: start;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--studio-soft-line);
+  margin-bottom: 15px;
+}
+.chart-builder-page.builder-studio .chart-builder-eyebrow,
+.routine-builder .builder-exercise-eyebrow {
+  margin: 0 0 6px;
+  font: 800 10px/1.3 system-ui, sans-serif;
+  letter-spacing: .18em;
+  color: var(--color-violet);
+}
+.chart-builder-page.builder-studio .chart-builder-header h1,
+.routine-builder .builder-custom-form.builder-studio h3 {
+  margin: 0;
+  font: 750 clamp(23px, 6vw, 29px)/1.13 system-ui, sans-serif;
+  letter-spacing: -.035em;
+  color: var(--color-text);
+}
+.chart-builder-page.builder-studio .builder-studio-subtitle {
+  margin: 6px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+.chart-builder-page.builder-studio .chart-builder-header-actions { gap: 7px; }
+.chart-builder-page.builder-studio .chart-builder-header-actions button,
+.chart-builder-page.builder-studio .chart-builder-footer button {
+  min-height: 44px;
+  border-radius: 11px;
+  font-size: 13px !important;
+}
+.chart-builder-page.builder-studio .chart-builder-primary,
+.routine-builder .builder-exercise-save-actions button:first-child {
+  background: var(--color-action);
+  color: var(--color-action-text);
+  border: 1px solid var(--color-action);
+}
+.chart-builder-page.builder-studio .chart-builder-secondary,
+.routine-builder .builder-exercise-save-actions button:last-child {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+.chart-builder-page.builder-studio .builder-studio-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 15px;
+  font: 650 11px/1.5 system-ui, sans-serif;
+  color: var(--color-muted);
+}
+.chart-builder-page.builder-studio .builder-studio-status-dot {
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-pixel-plant);
+}
+.chart-builder-page.builder-studio .chart-builder-field { gap: 7px; margin-bottom: 14px; }
+.chart-builder-page.builder-studio .chart-builder-field span,
+.chart-builder-page.builder-studio .chart-builder-time-field legend,
+.routine-builder .builder-custom-form.builder-studio > label,
+.routine-builder .builder-custom-form.builder-studio .builder-two-fields label {
+  color: var(--color-text);
+  font: 700 12px/1.4 system-ui, sans-serif;
+  letter-spacing: .005em;
+}
+.chart-builder-page.builder-studio .chart-builder-field input,
+.chart-builder-page.builder-studio .chart-builder-field select,
+.chart-builder-page.builder-studio .chart-builder-section-tools select {
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 15px;
+}
+.chart-builder-page.builder-studio .chart-builder-inline-input button {
+  flex-basis: 35px;
+  min-width: 35px;
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+.chart-builder-page.builder-studio .chart-meter-fraction {
+  width: 65px;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+.chart-builder-page.builder-studio .chart-meter-fraction input {
+  min-height: 36px;
+  height: 36px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--color-text);
+  font: 750 18px/1 system-ui, sans-serif;
+}
+.chart-builder-page.builder-studio .chart-meter-rule {
+  background: var(--color-text);
+}
+.chart-builder-page.builder-studio .chart-builder-chart-heading {
+  align-items: end;
+  margin: 19px 0 10px;
+}
+.chart-builder-page.builder-studio .chart-builder-chart-heading h2 {
+  font: 750 19px/1.2 system-ui, sans-serif;
+  color: var(--color-text);
+  margin: 0 0 5px;
+}
+.chart-builder-page.builder-studio .chart-builder-chart-heading p {
+  max-width: 240px;
+  color: var(--color-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.chart-builder-page.builder-studio .builder-studio-chart-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: end;
+  flex-shrink: 0;
+}
+.chart-builder-page.builder-studio .builder-studio-chart-meta span {
+  display: inline-flex;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  border-radius: 7px;
+  color: var(--color-text);
+  font: 750 10px/1.15 system-ui, sans-serif;
+  white-space: nowrap;
+}
+.chart-builder-page.builder-studio .chart-editor-grid {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-chart-paper);
+}
+.chart-builder-page.builder-studio .chart-editor-row {
+  background: var(--color-chart-paper);
+}
+.chart-builder-page.builder-studio .chart-editor-row + .chart-editor-row {
+  border-top: 1px solid var(--color-border);
+}
+.chart-builder-page.builder-studio .chart-editor-measure {
+  min-width: 0;
+  min-height: 92px;
+  padding: 9px 5px 6px;
+  background: var(--color-chart-paper);
+  border-right: 1px solid var(--color-border);
+  color: var(--color-chart-chord);
+}
+.chart-builder-page.builder-studio .chart-editor-row .chart-editor-measure:nth-child(2) {
+  border-right: 0;
+}
+.chart-builder-page.builder-studio .chart-editor-measure.is-selected {
+  background: var(--color-chart-selected);
+  box-shadow: inset 0 0 0 2px var(--color-chart-selected-outline);
+}
+.chart-builder-page.builder-studio .chart-editor-measure-number {
+  color: var(--color-muted);
+  font: 700 10px/1.25 system-ui, sans-serif;
+}
+.chart-builder-page.builder-studio .chart-editor-section-label {
+  background: color-mix(in srgb, var(--color-chart-section) 13%, var(--color-chart-paper));
+  color: var(--color-chart-section);
+  border: 1px solid color-mix(in srgb, var(--color-chart-section) 45%, transparent);
+  border-radius: 5px;
+  font: 800 11px/1.3 system-ui, sans-serif;
+}
+.chart-builder-page.builder-studio .chart-editor-measure .chart-editor-annotation {
+  color: var(--color-chart-section);
+  font-size: 11px;
+}
+.chart-builder-page.builder-studio .chart-editor-chords {
+  align-items: start;
+  gap: 3px;
+  padding: 7px 0 1px;
+}
+.chart-builder-page.builder-studio .chart-editor-chord input,
+.chart-builder-page.builder-studio .chart-editor-measure.is-selected .chart-editor-chord input {
+  min-height: 44px;
+  color: var(--color-chart-chord);
+  font: 760 clamp(14px, 4.2vw, 18px)/1.2 system-ui, sans-serif;
+  letter-spacing: -.025em;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  text-overflow: clip;
+}
+.chart-builder-page.builder-studio .chart-editor-chord input:focus,
+.chart-builder-page.builder-studio .chart-editor-chord input.is-selected {
+  background: var(--color-chart-selected);
+  color: var(--color-chart-chord);
+  border: 2px solid var(--color-chart-selected-outline);
+  outline-offset: -1px;
+}
+.chart-builder-page.builder-studio .chart-editor-chord small {
+  color: var(--color-muted);
+  font-size: 10px;
+}
+.chart-builder-page.builder-studio .chart-editor-chord-error {
+  color: var(--color-danger);
+  overflow-wrap: anywhere;
+}
+.chart-builder-page.builder-studio .chart-builder-selection {
+  margin: 0;
+  padding: 12px 10px 13px;
+  background: var(--color-surface-raised);
+  border: 0;
+  border-top: 2px solid var(--color-chart-selected-outline);
+  border-radius: 0;
+}
+.chart-builder-page.builder-studio .builder-studio-selection-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+.chart-builder-page.builder-studio .builder-studio-selection-heading strong {
+  color: var(--color-text);
+  font: 750 13px/1.2 system-ui, sans-serif;
+}
+.chart-builder-page.builder-studio .builder-studio-selection-heading span {
+  color: var(--color-muted);
+  font: 600 11px/1.2 system-ui, sans-serif;
+}
+.chart-builder-page.builder-studio .chart-builder-toolbar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.chart-builder-page.builder-studio .chart-builder-toolbar button {
+  min-width: 0;
+  min-height: 44px;
+  height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: 750 11px/1.1 system-ui, sans-serif;
+}
+.chart-builder-page.builder-studio .chart-builder-toolbar button:is(:first-child,:nth-child(2)) {
+  font: 750 23px/1.1 system-ui, sans-serif;
+}
+.chart-builder-page.builder-studio .chart-builder-toolbar button.is-red {
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 50%, var(--color-border));
+}
+.chart-builder-page.builder-studio .chart-builder-section-tools {
+  gap: 9px;
+  margin-top: 11px;
+  align-items: center;
+  justify-content: start;
+  font-size: 12px;
+}
+.chart-builder-page.builder-studio .chart-builder-section-tools label {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+  color: var(--color-text);
+}
+.chart-builder-page.builder-studio .chart-builder-section-tools > button {
+  min-height: 44px;
+  flex: 0 1 auto;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+}
+.chart-builder-page.builder-studio .chart-builder-section-tools select { min-width: 62px; }
+.chart-builder-page.builder-studio .chart-builder-add-row { margin-top: 15px; gap: 7px; }
+.chart-builder-page.builder-studio .chart-builder-add-row button {
+  min-height: 44px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  font-size: 12px;
+}
+.chart-builder-page.builder-studio .chart-builder-caption {
+  color: var(--color-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.chart-builder-page.builder-studio :is(button,input,select):focus-visible,
+.routine-builder .builder-custom-form.builder-studio :is(button,input,select,textarea):focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Exercise editor is an inline panel of the existing Routine Builder.
+   Keep the existing persistence, chart-return navigation and save actions. */
+.routine-builder .builder-custom-form.builder-studio {
+  margin: 18px 0 12px;
+  padding: 16px;
+  border-radius: var(--studio-radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--color-bg) 45%, transparent);
+}
+.routine-builder .builder-exercise-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 9px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+.routine-builder .builder-exercise-description {
+  margin: 6px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.routine-builder .builder-exercise-duration {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 56px;
+  border-radius: 9px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font: 750 12px/1 system-ui, sans-serif;
+}
+.routine-builder .builder-exercise-section-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 17px 0 10px;
+  color: var(--color-violet);
+  font: 800 11px/1.35 system-ui, sans-serif;
+  letter-spacing: .12em;
+}
+.routine-builder .builder-exercise-section-label span {
+  color: var(--color-text);
+  letter-spacing: .015em;
+  font-size: 12px;
+}
+.routine-builder .builder-custom-form.builder-studio > label,
+.routine-builder .builder-custom-form.builder-studio .builder-two-fields label {
+  display: block;
+  margin: 12px 0 6px;
+  color: var(--color-text);
+}
+.routine-builder .builder-custom-form.builder-studio .builder-field {
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: 500 16px/1.35 system-ui, sans-serif;
+}
+.routine-builder .builder-custom-form.builder-studio textarea.builder-field {
+  min-height: 108px;
+  line-height: 1.5;
+}
+.routine-builder .builder-custom-form.builder-studio .builder-two-fields {
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+}
+.routine-builder .builder-exercise-linked {
+  margin: 8px 0 0;
+  color: var(--color-muted);
+  font-size: 11px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.routine-builder .builder-exercise-chart-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 9px 0 0;
+}
+.routine-builder .builder-exercise-chart-actions button,
+.routine-builder .builder-exercise-chart-actions button:first-child {
+  min-height: 44px;
+  margin: 0;
+  padding: 9px 13px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+.routine-builder .builder-exercise-preview {
+  margin: 18px 0 13px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-action);
+  border-radius: 10px;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+.routine-builder .builder-exercise-preview > span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--color-violet);
+  font: 800 10px/1.2 system-ui, sans-serif;
+  letter-spacing: .14em;
+}
+.routine-builder .builder-exercise-preview strong {
+  display: block;
+  font: 750 15px/1.35 system-ui, sans-serif;
+  overflow-wrap: anywhere;
+}
+.routine-builder .builder-exercise-preview p {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.routine-builder .builder-exercise-preview p:last-child {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+.routine-builder .builder-exercise-save-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 9px;
+  margin-top: 9px;
+}
+.routine-builder .builder-exercise-save-actions button,
+.routine-builder .builder-exercise-save-actions button:first-child,
+.routine-builder .builder-exercise-save-actions button:last-child {
+  width: 100%;
+  margin: 0;
+  min-height: 46px;
+  padding: 9px;
+  font: 750 13px/1.2 system-ui, sans-serif;
+  border-radius: 10px;
+}
+.routine-builder .builder-exercise-save-actions button:first-child {
+  color: var(--color-action-text);
+  background: var(--color-action);
+  border: 1px solid var(--color-action);
+}
+.routine-builder .builder-exercise-save-actions button:last-child {
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+}
+@media (max-width: 390px) {
+  .chart-builder-page.builder-studio .chart-builder-header { gap: 7px; }
+  .chart-builder-page.builder-studio .chart-builder-header-actions { gap: 5px; }
+  .chart-builder-page.builder-studio .chart-builder-header-actions button { padding: 8px 9px; font-size: 12px !important; }
+  .chart-builder-page.builder-studio .builder-studio-subtitle { max-width: 185px; }
+  .chart-builder-page.builder-studio .chart-builder-simple-meta {
+    grid-template-columns: minmax(124px, 1.6fr) 66px minmax(80px, 1fr);
+    gap: 7px;
+  }
+  .chart-builder-page.builder-studio .chart-builder-inline-input button {
+    flex-basis: 32px; min-width: 32px;
+  }
+  .chart-builder-page.builder-studio .chart-builder-chart-heading p { max-width: 204px; }
+  .chart-builder-page.builder-studio .chart-builder-toolbar { gap: 5px; }
+  .routine-builder .builder-custom-form.builder-studio { padding: 13px; }
+}
+@media (max-width: 340px) {
+  .chart-builder-page.builder-studio .chart-builder-simple-meta {
+    grid-template-columns: minmax(0, 1fr) 67px;
+  }
+  .chart-builder-page.builder-studio .chart-builder-feel-field { grid-column: 1/-1; }
+}
