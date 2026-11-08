@@ -231,7 +231,7 @@ export function TracksPage() {
               <article className="t01-track-card" key={track.id}>
                 <img className="t01-record-icon" src="/visuals/tracks-approved/record.png" alt="" aria-hidden="true" />
                 <button type="button" className="t01-card-open" disabled={!isAvailable}
-                  aria-label={'Open ' + track.title + (track.chart ? ' chord chart' : ' backing track')}
+                  aria-label={'Practice ' + track.title + (track.chart ? ' with its linked chart' : ' with audio')}
                   onClick={() => openChart(track.chart?.id ?? null, hasAudio ? track.recordingId : null)}>
                   <strong className="t01-card-title">{track.title}</strong>
                   <span className="t01-card-subtitle">{subtitle}</span>
