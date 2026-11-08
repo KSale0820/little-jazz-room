@@ -124,7 +124,7 @@ describe('approved visual library', () => {
     // PR #84's evolving candidate pack is independent of the original locked library.
     // Validate those PNGs separately, without weakening the original SHA checks.
     const installed = new Set(walkFiles(publicVisuals).filter(file => !file.startsWith('new-assets/')));
-    const fromManifest = new Set<string>(collectVisualUrls(VISUAL_ASSETS));
+    const fromManifest = new Set<string>(collectVisualUrls(VISUAL_ASSETS).filter(url => !url.startsWith('/visuals/new-assets/')));
     // Active UI may select newly approved art; it does not delete the original
     // hash-locked library. Audit both inventories separately.
     for (const url of [...fromManifest]) {
