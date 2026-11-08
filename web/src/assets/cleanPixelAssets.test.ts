@@ -34,13 +34,15 @@ describe('additive clean pixel artwork', () => {
   });
 
   it('has the six exact owner-supplied 1254×1254 transparent RGBA artworks', () => {
-    const approvedSha256: Record<string, string> = {
-      'milo-sitting': 'f97e0a424efb16a9ee92dc46331d1b834c31b08d6f19ae2fd269f62d01f9c01e',
-      'milo-sleeping': '689238c8cedd3f0a7ed8fa4ed18083082fe529609cd61aa0143cf98c403c5b2b',
-      'maple-sitting': '2dcbef909a81f37d6186f6095c040bbe01d7d38f2dc24ec6f8a1112b2fdc5d88',
-      'maple-sleeping': 'ba0ef7f735185dc245a2ad9103b831d217073445a9eccd9be0e32714f7083e11',
-      'luna-sitting': 'a6b6e39ce96b8697a781b9004be4db29d97a2f65a47c3cf29367bfc12e02bb9f',
-      'luna-sleeping': 'ac6045ca7cc2c403de5b08f33df5de87cd42a477da748cf18d3ea5378e056a4c',
+    // Pin the Git blob identities of the newly approved PR #84 files. This is
+    // deliberately separate from the archived six original PNG checks.
+    const approvedGitBlobSha1: Record<string, string> = {
+      'luna-sitting': '93afff480a61f949964eddb8b1431281c38e066d',
+      'luna-sleeping': '338f59050c8d994c77d39583107c1a4b08ff5121',
+      'maple-sitting': '85b72fb887ef3bfed302b987584f6cd092b47f4e',
+      'maple-sleeping': '4305cf15d2b644bec580820550f27b551c1cbfe8',
+      'milo-sitting': '240c2d325cfcc20d835a6a878e74e5da1323cbaf',
+      'milo-sleeping': '63183eee8d37937378ac06c5e83fd1a8382e02d5',
     };
     const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
     for (const id of pixelIds) for (const pose of ['sleeping', 'sitting'] as const) {
@@ -50,7 +52,7 @@ describe('additive clean pixel artwork', () => {
       expect(file.toString('ascii', 12, 16), url).toBe('IHDR');
       const width = file.readUInt32BE(16), height = file.readUInt32BE(20);
       expect([width, height], url).toEqual([1254, 1254]);
-      expect(createHash('sha256').update(file).digest('hex'), url).toBe(approvedSha256[`${id}-${pose}`]);
+      expect(createHash('sha1').update(`blob ${file.length}\0`).update(file).digest('hex'), url).toBe(approvedGitBlobSha1[`${id}-${pose}`]);
       expect(file[25], url).toBe(6); // PNG RGBA
       let offset = 8;
       const idat: Buffer[] = [];
