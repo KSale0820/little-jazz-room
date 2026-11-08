@@ -29,6 +29,12 @@ import './CleanPixelPractice.css';
 import './PracticePlayerPixelV2.css';
 import './PracticePlayerReferenceV3.css';
 
+function displayChartForm(form: string): string {
+  const bluesBars = /^blues-(\d+)$/i.exec(form.trim());
+  if (bluesBars) return `${bluesBars[1]}-bar Blues`;
+  return form.replace(/[-_]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'instructions' | 'chart';
 type PracticeTool = 'tuner' | 'metronome';
@@ -676,9 +682,9 @@ export function PracticePage() {
       <div className="practice-title-group">
         <h1>{routine?.title ?? chart.title}</h1>
         <div className="practice-chart-tags" aria-label="Chart details">
-          <span>{routine ? 'Guided Practice' : chart.feel || 'Practice chart'}</span>
+          <span>{routine ? 'Guided Practice' : chart.feel ? chart.feel.charAt(0).toUpperCase() + chart.feel.slice(1) : 'Practice chart'}</span>
           <span>{routine ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length : chart.difficulty || 'All levels'}</span>
-          <span>{chart.form || chart.time_signature.join('/')}</span>
+          <span>{displayChartForm(chart.form) || chart.time_signature.join('/')}</span>
         </div>
         {chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
       </div>
