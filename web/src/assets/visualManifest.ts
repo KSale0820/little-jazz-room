@@ -120,6 +120,13 @@ export const VISUAL_ASSETS = {
     tunerBackground: '/visuals/tools/p04-tuner-background.png',
     metronomeBackground: '/visuals/tools/p05-metronome-room-2026-11-02.webp',
     metronomeFallback: '/visuals/tools/p05-metronome-background.png',
+    /** Exact approved UI control sprites, copied without image processing. */
+    pixel: {
+      tuner: '/visuals/tools/pixel/tuner.png',
+      metronome: '/visuals/tools/pixel/metronome.png',
+      play: '/visuals/tools/pixel/play.png',
+      stop: '/visuals/tools/pixel/stop.png',
+    },
   },
   approvedDecor: {
     books: '/visuals/decor/books.png',
