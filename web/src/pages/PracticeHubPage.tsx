@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
-import { PracticeSaxIcon } from './PracticeSaxIcon';
 import { timeGreeting } from '../lib/greeting';
 import { computeGentleStreak, minutesToday, minutesYesterday } from '../lib/practiceStats';
 import { readPinnedPracticeRoutine, readPracticeGoal, savePracticeGoal } from '../lib/practiceHomePreferences';
@@ -105,7 +104,7 @@ export function PracticeHubPage() {
           </span>
           <img className="p01-suave-primary-sparkle" src={ART + 'small-sparkle-cluster-sharp.png'} alt="" aria-hidden="true" />
           <img className="p01-suave-hero-note" src={ART + 'music-note-purple-sharp.png'} alt="" aria-hidden="true" />
-          <PracticeSaxIcon />
+          <img className="p01-suave-approved-sax" src={ART + 'approved-sax-freepractice.png'} alt="" aria-hidden="true" />
           <span className="p01-chevron" aria-hidden="true">›</span>
         </button>
         <div className="p01-suave-action-pair">
