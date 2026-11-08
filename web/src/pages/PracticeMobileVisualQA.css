@@ -229,6 +229,7 @@ html[data-theme] .p01-page.p01-suave img.p01-suave-coach-cat {
   margin: -28px auto 0;
   max-width: none;
   object-fit: contain;
+  transform: none;
 }
 @media (max-width: 380px), (max-height: 710px) {
   html[data-theme] .p01-page.p01-suave img.p01-suave-coach-cat {
