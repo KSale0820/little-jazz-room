@@ -32,6 +32,10 @@ import './PracticePlayerReferenceV3.css';
 function displayChartForm(form: string): string {
   const bluesBars = /^blues-(\d+)$/i.exec(form.trim());
   if (bluesBars) return `${bluesBars[1]}-bar Blues`;
+  const formBars = /^(\d+)-bar form\b/i.exec(form.trim());
+  if (formBars) return `${formBars[1]}-bar form`;
+  const namedForm = /^(aaba|abac)-(\d+)$/i.exec(form.trim());
+  if (namedForm) return `${namedForm[2]}-bar ${namedForm[1].toUpperCase()}`;
   return form.replace(/[-_]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
 }
 
@@ -673,6 +677,7 @@ export function PracticePage() {
                 <button type="button" onClick={() => stepMeasure(1)}>Next measure</button>
               </div>
               <p>{formatChartMeta(chart)} · Key {chart.concert_key.replace('b', '♭')}</p>
+              {chart.style_instruction && <p>{chart.style_instruction}</p>}
               <p>{activeRecording ? 'Recorded audio plays at its original speed and pitch.' : 'Chart-only practice follows the selected BPM; no recording is attached.'}</p>
               {activeRecording && <p>Chart selection stays linked to the recording.</p>}
             </div>
@@ -686,7 +691,7 @@ export function PracticePage() {
           <span>{routine ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length : chart.difficulty || 'All levels'}</span>
           <span>{displayChartForm(chart.form) || chart.time_signature.join('/')}</span>
         </div>
-        {chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
+
       </div>
 
       {activeRecording && <audio
