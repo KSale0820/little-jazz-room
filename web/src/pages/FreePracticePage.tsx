@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { ChordGrid } from '../components/ChordGrid';
 import { useApp } from '../context/AppContext';
+import { useAppearance } from '../context/AppearanceContext';
+import { DecorativeCat } from '../features/cats/DecorativeCat';
 import { RECORDED_BACKING_TRACKS, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
 import type { PracticeSessionRecord } from '../types/content';
 import { formatPracticeTime } from './practicePlayerLogic';
@@ -17,6 +19,7 @@ type QueueItem = { key: string; kind: QueueKind; sourceId: string; title: string
 
 const TECHNIQUES = ['Scales', 'Improvisation', 'Ear training', 'Rhythm', 'Articulation'];
 const AVAILABLE_RECORDINGS = RECORDED_BACKING_TRACKS.filter(isUsableRecordedTrack);
+const PIXEL_ART = '/visuals/new-assets/2026-11-07-sharp-pixel/';
 
 /**
  * Free Practice is an independent, timer-first session. Selecting a chart,
@@ -25,7 +28,8 @@ const AVAILABLE_RECORDINGS = RECORDED_BACKING_TRACKS.filter(isUsableRecordedTrac
  */
 export function FreePracticePage() {
   const navigate = useNavigate();
-  const { addSession, showToast, exercises, charts, routines } = useApp();
+  const { addSession, showToast, exercises, charts, routines, catId } = useApp();
+  const { catMode } = useAppearance();
   const clock = useRef({ accumulatedMs: 0, startedAt: null as number | null });
   const saveInFlight = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -189,47 +193,66 @@ export function FreePracticePage() {
 
   if (finished) {
     return <section className="fp-page fp-completed" aria-label="Free Practice complete">
-      <header className="fp-top"><button type="button" className="fp-back" onClick={() => navigate('/practice')}>‹ Practice</button></header>
-      <h1>Free Practice</h1>
-      <div className="fp-timer" role="status">
-        <h2>{saved ? 'Session Saved' : saveError ? 'Save Failed' : 'Saving Session'}</h2>
+      <header className="fp-top fp-complete-header">
+        <button type="button" className="fp-back" onClick={() => navigate('/practice')}><span aria-hidden="true">‹</span> Practice</button>
+        <span className="fp-kicker">FREE PRACTICE</span><h1>Nice work today.</h1>
+        <p>A little more music in your day.</p>
+      </header>
+      <div className="fp-completion-card" role="status">
+        <img src={PIXEL_ART + 'practice-player/png/finish-check.png'} alt="" aria-hidden="true" />
+        <h2>{saved ? 'Session saved' : saveError ? 'Could not save' : 'Saving your session…'}</h2>
         <strong className="fp-time">{formatPracticeTime(finished.durationSeconds)}</strong>
+        <p>{saved ? 'Your practice has been added to Progress.' : saveError ? 'Your practice is still here. Retry saving below.' : 'Keeping your progress up to date.'}</p>
       </div>
       {saveError && <button type="button" className="fp-primary" disabled={saving} onClick={() => void saveSession(finished)}>Retry Save</button>}
-      {saved && <>
+      {saved && <div className="fp-completion-actions">
         <button type="button" className="fp-primary" onClick={() => navigate('/progress')}>View Progress</button>
         <button type="button" className="fp-secondary" onClick={reset}>Practice Again</button>
-      </>}
+      </div>}
     </section>;
   }
 
   return <>
     <section className="fp-page" aria-label="Free Practice">
       <header className="fp-top">
-        <button type="button" className="fp-back" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹ Practice</button>
+        <button type="button" className="fp-back" onClick={() => navigate('/practice')} aria-label="Back to Practice"><span aria-hidden="true">‹</span> Practice</button>
+        <span className="fp-kicker">YOUR PRACTICE STUDIO</span>
         <h1>Free Practice</h1>
+        <p>Play what you love, at your own pace.</p>
+        {catMode && <DecorativeCat catId={catId} variant="sleeping" size={58} className="fp-header-cat" />}
       </header>
 
       <section className="fp-timer" aria-label="Practice time recorder">
-        <h2>Practice Time</h2>
+        <div className="fp-timer-heading">
+          <img src={PIXEL_ART + 'approved-isolated-icons/stopwatch.png'} alt="" aria-hidden="true" />
+          <h2>Practice timer</h2>
+          <span className={running ? 'fp-clock-state fp-is-running' : 'fp-clock-state'}>{running ? 'In session' : seconds ? 'Paused' : 'Ready'}</span>
+        </div>
         <strong className="fp-time" role="timer" aria-live="off">{formatPracticeTime(seconds)}</strong>
+        <p className="fp-timer-note">{running ? 'Your practice time is counting.' : seconds ? 'Paused. Pick up whenever you’re ready.' : 'Start the clock whenever you’re ready.'}</p>
         <button type="button" className="fp-play" aria-label={running ? 'Pause practice timer' : seconds ? 'Resume practice timer' : 'Start practice timer'} onClick={toggleClock}>
-          {running ? 'Ⅱ' : '▶'}
+          <img src={PIXEL_ART + (running ? 'practice-player/png/pause.png' : 'approved-isolated-icons/play.png')} alt="" aria-hidden="true" />
+          <span>{running ? 'Pause' : seconds ? 'Resume' : 'Start Practicing'}</span>
         </button>
       </section>
+      <button type="button" className="fp-primary fp-finish" onClick={finishSession}>
+        <img src={PIXEL_ART + 'practice-player/png/finish-check.png'} alt="" aria-hidden="true" />
+        Finish Session
+      </button>
 
       <section className="fp-add" aria-labelledby="fp-add-heading">
-        <h2 id="fp-add-heading">Add to Session</h2>
+        <div className="fp-section-heading"><h2 id="fp-add-heading">Build your session</h2><span>Optional</span></div>
+        <p className="fp-section-lead">Add something to work on, or just play freely.</p>
         <div className="fp-choice-list">
           {([
-            ['exercise', 'Exercise', '▤'],
-            ['chart', 'Chart', '♫'],
-            ['routine', 'Routine', '☷'],
-            ['track', 'Backing Track', '♪'],
-          ] as const).map(([kind, label, icon]) => (
+            ['exercise', 'Exercise', 'approved-isolated-icons/music-bubble.png', 'Skills & drills'],
+            ['chart', 'Chart', 'music-note-purple-sharp.png', 'Chord study'],
+            ['routine', 'Routine', 'refreshed-icons/routine-list.png', 'Your plan'],
+            ['track', 'Backing Track', 'refreshed-icons/record.png', 'Recorded audio'],
+          ] as const).map(([kind, label, icon, description]) => (
             <button type="button" key={kind} className="fp-choice" aria-expanded={picker === kind} onClick={() => openPicker(kind)}>
-              <span className="fp-choice-icon" aria-hidden="true">{icon}</span>
-              <span>{label}</span>
+              <span className="fp-choice-icon" aria-hidden="true"><img src={PIXEL_ART + icon} alt="" /></span>
+              <span className="fp-choice-copy"><strong>{label}</strong><small>{description}</small></span>
               <span className="fp-chevron" aria-hidden="true">{picker === kind ? '⌄' : '›'}</span>
             </button>
           ))}
@@ -257,7 +280,7 @@ export function FreePracticePage() {
       </section>
 
       {queue.length > 0 && <section className="fp-queue" aria-label="Practice queue">
-        <h2>My Session</h2>
+        <div className="fp-section-heading"><h2>Session activities</h2><span>{queue.filter(item => item.done).length} / {queue.length} done</span></div>
         {queue.map(item => <div className="fp-queue-item" key={item.key}>
           <div className="fp-queue-row">
             <input type="checkbox" aria-label={'Completed ' + item.title} checked={item.done}
@@ -293,10 +316,9 @@ export function FreePracticePage() {
       </section>}
 
       <div className="fp-tools" aria-label="Practice tools">
-        <button type="button" onClick={event => openTool('metronome', event.currentTarget)}><span aria-hidden="true">♩</span>Metronome</button>
-        <button type="button" onClick={event => openTool('tuner', event.currentTarget)}><span aria-hidden="true">≋</span>Tuner</button>
+        <button type="button" onClick={event => openTool('metronome', event.currentTarget)}><img src={PIXEL_ART + 'refreshed-icons/metronome.png'} alt="" aria-hidden="true" />Metronome</button>
+        <button type="button" onClick={event => openTool('tuner', event.currentTarget)}><img src={PIXEL_ART + 'practice-player/png/tuner.png'} alt="" aria-hidden="true" />Tuner</button>
       </div>
-      <button type="button" className="fp-primary fp-finish" onClick={finishSession}>Finish Session</button>
     </section>
 
     {tool && createPortal(<div className="fp-tool-overlay" ref={toolDialogRef} role="dialog" aria-modal="true" aria-label={tool === 'tuner' ? 'Tuner' : 'Metronome'}
