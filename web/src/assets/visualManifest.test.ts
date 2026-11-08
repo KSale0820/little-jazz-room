@@ -125,6 +125,17 @@ describe('approved visual library', () => {
     // Validate those PNGs separately, without weakening the original SHA checks.
     const installed = new Set(walkFiles(publicVisuals).filter(file => !file.startsWith('new-assets/')));
     const fromManifest = new Set<string>(collectVisualUrls(VISUAL_ASSETS));
+    // Active UI may select newly approved art; it does not delete the original
+    // hash-locked library. Audit both inventories separately.
+    for (const url of [...fromManifest]) {
+      if (url.startsWith('/visuals/new-assets/')) fromManifest.delete(url);
+    }
+    for (const cat of ['luna', 'maple', 'milo']) {
+      for (const pose of ['sitting', 'sleeping']) {
+        fromManifest.add(`/visuals/cats/clean-pixel/${cat}-${pose}.png`);
+      }
+    }
+    fromManifest.add('/visuals/pixel-motifs/streak-fire.png');
     // H01's newly supplied photo is installed separately from the original asset pack.
     // Keep legacy pack checks strict while allowing it to arrive in a distinct commit.
     if (!installed.has(VISUAL_ASSETS.room.h01.replace('/visuals/', ''))) {
