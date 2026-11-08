@@ -235,7 +235,7 @@ html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practi
   border: 0;
   padding-left: 25px;
   padding-right: 0;
-  background: transparent;
+  background: var(--pp-paper);
 }
 html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure,
 html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .measure {
