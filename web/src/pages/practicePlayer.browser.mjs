@@ -76,23 +76,14 @@ try {
     await page.getByRole('button', { name: 'Resume practice timer' }).click();
     await page.waitForTimeout(1100);
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
-    await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
-    console.log('P06_CAT_DIAG', JSON.stringify(await page.locator('.practice-playing-cat').evaluate(async img => {
-      let status = 'fetch-error';
-      try { status = String((await fetch(img.src)).status); } catch { /* preserve image diagnostic */ }
-      return { src: img.src, width: img.naturalWidth, complete: img.complete, status };
-    })));
+    await page.getByRole('heading', { name: 'Practice complete' }).waitFor();
+    check(await page.locator('.sc-trophy img').count() === 1, 'Missing approved completion trophy');
     await capture(page, folder, 'P06-free-completion');
-    await page.waitForFunction(() => {
-      const cat = document.querySelector('.practice-playing-cat');
-      return cat instanceof HTMLImageElement && cat.complete && cat.naturalWidth > 0;
-    }, null, { timeout: 10000 });
-    check(await page.locator('.practice-complete-footer').count() === 1, 'Missing selected musician on P06');
-    await page.locator('.practice-playing-cat').scrollIntoViewIfNeeded();
+    check(await page.locator('.sc-decoration .sc-sprout').count() === 1, 'Completion decoration missing');
     await capture(page, folder, 'P06-free-companion-bottom');
     await page.getByRole('textbox', { name: /Notes/ }).fill('Stayed with the changes.');
     await page.getByRole('button', { name: '4 stars' }).click();
-    await page.getByRole('button', { name: 'Save Session', exact: true }).click();
+    await page.getByRole('button', { name: 'Save session', exact: true }).click();
     check((await storageSessions(page)).length === 1, 'First session did not persist exactly once');
     await page.getByRole('button', { name: 'View Progress' }).click();
     check((await storageSessions(page)).length === 1, 'Navigation duplicated the session');
@@ -112,9 +103,9 @@ try {
     await capture(page, folder, 'P02-guided-player');
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await capture(page, folder, 'P06-guided-completion');
-    await page.locator('.practice-playing-cat').scrollIntoViewIfNeeded();
     await capture(page, folder, 'P06-guided-companion-bottom');
-    await page.getByRole('button', { name: 'Home', exact: true }).click();
+    await page.getByRole('button', { name: 'Save session', exact: true }).click();
+    await page.getByRole('button', { name: 'Practice hub' }).click();
     check((await storageSessions(page)).length === 2, 'Guided completion did not save once on exit');
     await context.close();
     console.log('PASS', viewport.width + 'x' + viewport.height, folder);
