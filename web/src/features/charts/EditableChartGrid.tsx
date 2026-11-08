@@ -16,7 +16,7 @@ export function EditableChartGrid({
   bars, selectedBarId, selectedChordId, onSelect, onChordChange, selectedInputRef, editor,
 }: EditableChartGridProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const rows = Array.from({ length: Math.ceil(bars.length / 2) }, (_, i) => bars.slice(i * 2, i * 2 + 2));
+  const rows = Array.from({ length: Math.ceil(bars.length / 4) }, (_, i) => bars.slice(i * 4, i * 4 + 4));
   return (
     <div className="chart-editor-grid" role="group" aria-label="Editable chord chart">
       {rows.map(row => (
@@ -25,7 +25,7 @@ export function EditableChartGrid({
         <div key={bar.id} className={'chart-editor-measure' + (bar.id === selectedBarId ? ' is-selected' : '')}
           onClick={() => onSelect(bar.id, bar.events[0]?.id ?? '')}>
           <div className="chart-editor-measure-top">
-            <span className="chart-editor-measure-number">Measure {bar.number}</span>
+            <span className="chart-editor-measure-number" aria-label={"Measure " + bar.number}>{bar.number}</span>
             {bar.section && <span className="chart-editor-section-label" aria-label={'Section ' + bar.section}>{bar.section}</span>}
             {bar.annotation && <span className="chart-editor-annotation">{bar.annotation}</span>}
           </div>
