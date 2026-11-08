@@ -196,6 +196,38 @@ try {
               'Light Tuner reference card is unexpectedly dark');
           }
           if (screen === 'Player') {
+            // A previous color filter turned Play into an opaque white disk and
+            // made Repeat / skip arrows illegible on Midnight Jazz.
+            // Inspect the actual mask, size and contrast at both mobile widths.
+            const controls = await page.evaluate(() => {
+              const icon = document.querySelector('.practice-timer-button .practice-play-pixel');
+              const play = document.querySelector('.practice-timer-button');
+              const labelNames = ['Configure loop', 'Repeat playback', 'Transpose concert chart key',
+                'Increase reference BPM', 'Decrease reference BPM', 'Raise concert key one semitone',
+                'Lower concert key one semitone', 'Metronome', 'Tuner', 'Finish Session'];
+              const buttonNames = [...document.querySelectorAll('.practice-player button')]
+                .map(el => el.getAttribute('aria-label') || el.textContent?.trim() || '');
+              const style = icon && getComputedStyle(icon);
+              const playStyle = play && getComputedStyle(play);
+              const rect = icon?.getBoundingClientRect();
+              return {
+                mask: style?.maskImage || style?.webkitMaskImage || '',
+                ink: style?.color || '',
+                bg: playStyle?.backgroundColor || '',
+                width: rect?.width || 0,
+                height: rect?.height || 0,
+                missing: labelNames.filter(label => !buttonNames.some(name => name.includes(label))),
+              };
+            });
+            assert.ok(controls.mask.includes('/practice-player/svg/play.svg'),
+              'Play must use the transparent pixel silhouette (not the original opaque PNG): ' + label);
+            assert.ok(controls.width >= 20 && controls.height >= 20,
+              'Play glyph is missing or collapsed in ' + label);
+            assert.ok(contrastRatio(controls.ink, controls.bg) >= 3,
+              'Play glyph contrast below 3:1 in ' + label + ': ' + JSON.stringify(controls));
+            assert.deepEqual(controls.missing, [], 'Practice Player lost visible functional controls in ' + label);
+          }
+          if (screen === 'Player') {
             // Read actual rendered chords under synthetic selection states, not just root variables.
             // Preserve the original classes immediately; no app data or playback changes.
             const notation = await page.evaluate(() => {
