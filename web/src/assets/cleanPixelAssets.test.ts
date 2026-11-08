@@ -27,7 +27,7 @@ describe('additive clean pixel artwork', () => {
     for (const pose of ['sleeping', 'sitting'] as const) {
       expect(Object.keys(VERIFIED_PIXEL_CATS[pose]).sort()).toEqual([...pixelIds].sort());
       for (const id of pixelIds) {
-        expect(VERIFIED_PIXEL_CATS[pose][id]).toBe('/visuals/cats/clean-pixel/' + id + '-' + pose + '.png');
+        expect(VERIFIED_PIXEL_CATS[pose][id]).toBe('/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/' + id + '-' + pose + '.png');
       }
     }
     expect(Object.keys(VERIFIED_PIXEL_CATS.floor)).toHaveLength(0);
@@ -35,12 +35,12 @@ describe('additive clean pixel artwork', () => {
 
   it('has the six exact owner-supplied 1254×1254 transparent RGBA artworks', () => {
     const approvedSha256: Record<string, string> = {
-      'milo-sitting': 'be33f20bded92b3205a71f5bf2ac19643953ab403e856448db57e047c468af4d',
-      'milo-sleeping': '69270ca1db4fa13f4cc871e238558accaa2eb4c42ba2ce8f3cf4770cf549e965',
-      'maple-sitting': '9ca5fedac59fdd3fca842a9ed40aa38ab6befa1ddb6c31476813af266f0b331d',
-      'maple-sleeping': '40dd8e6c669771f06a867d59494708147942b19a7c4550f68a9210c737cf7575',
-      'luna-sitting': '242347e2de9caea22c243c2e58d059b7bfc24d617aef9bd22e576199b449d3c1',
-      'luna-sleeping': '149a57c96cdc1a38895eb224aad3943b444e2ba4ae42d55e3f62fd4932eb202d',
+      'milo-sitting': 'f97e0a424efb16a9ee92dc46331d1b834c31b08d6f19ae2fd269f62d01f9c01e',
+      'milo-sleeping': '689238c8cedd3f0a7ed8fa4ed18083082fe529609cd61aa0143cf98c403c5b2b',
+      'maple-sitting': '2dcbef909a81f37d6186f6095c040bbe01d7d38f2dc24ec6f8a1112b2fdc5d88',
+      'maple-sleeping': 'ba0ef7f735185dc245a2ad9103b831d217073445a9eccd9be0e32714f7083e11',
+      'luna-sitting': 'a6b6e39ce96b8697a781b9004be4db29d97a2f65a47c3cf29367bfc12e02bb9f',
+      'luna-sleeping': 'ac6045ca7cc2c403de5b08f33df5de87cd42a477da748cf18d3ea5378e056a4c',
     };
     const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
     for (const id of pixelIds) for (const pose of ['sleeping', 'sitting'] as const) {
