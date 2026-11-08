@@ -254,8 +254,18 @@ html[data-theme] .practice-player.practice-unified .practice-control-row .practi
   width: 30px;
   height: 30px;
 }
-.practice-player.practice-unified .practice-control-row .practice-timer-button .practice-play-pixel[src$="/play.png"] {
-  filter: brightness(0) invert(1);
+/* Pixel control silhouettes inherit contrast from the live button, not the
+   original PNG paint. Avoid filter:invert, which turned Play into a white disc. */
+.practice-player.practice-unified .practice-pixel-mask {
+  background-color: currentColor;
+  -webkit-mask-image: var(--practice-pixel-mask);
+  mask-image: var(--practice-pixel-mask);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 
 /* BPM, key, original reset, and the previously available transposing instrument. */
