@@ -13,7 +13,7 @@ import { TunerPage } from './TunerPage';
 import './FreePracticePage.css';
 
 type Picker = 'exercise' | 'chart' | 'routine' | 'track' | null;
-type QueueKind = 'technique' | 'exercise' | 'chart' | 'routine';
+type QueueKind = 'technique' | 'goal' | 'exercise' | 'chart' | 'routine';
 type PracticeTool = 'metronome' | 'tuner';
 type QueueItem = { key: string; kind: QueueKind; sourceId: string; title: string; done: boolean };
 
@@ -98,6 +98,10 @@ export function FreePracticePage() {
   const addTechnique = (value: string) => {
     const title = value.trim();
     if (title) addItem('technique', title, title);
+  };
+  const addGoal = (value: string) => {
+    const title = value.trim();
+    if (title) addItem('goal', title, title);
   };
 
   const activeItem = queue.find(item => item.key === expandedKey);
@@ -241,11 +245,11 @@ export function FreePracticePage() {
       </button>
 
       <section className="fp-add" aria-labelledby="fp-add-heading">
-        <div className="fp-section-heading"><h2 id="fp-add-heading">Build your session</h2><span>Optional</span></div>
+        <div className="fp-section-heading"><h2 id="fp-add-heading">Build your session <img src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" aria-hidden="true" /></h2><span>Optional</span></div>
         <p className="fp-section-lead">Add something to work on, or just play freely.</p>
         <div className="fp-choice-list">
           {([
-            ['exercise', 'Exercise', 'approved-isolated-icons/music-bubble.png', 'Skills & drills'],
+            ['exercise', 'Exercise', 'approved-isolated-icons/music-bubble.png', 'Drills & goals'],
             ['chart', 'Chart', 'music-note-purple-sharp.png', 'Chord study'],
             ['routine', 'Routine', 'refreshed-icons/routine-list.png', 'Your plan'],
             ['track', 'Backing Track', 'refreshed-icons/record.png', 'Recorded audio'],
@@ -259,14 +263,15 @@ export function FreePracticePage() {
         </div>
 
         {picker && <div className="fp-picker" aria-label={'Choose ' + picker}>
-          <div className="fp-picker-head"><strong>{picker === 'track' ? 'Backing Tracks' : picker === 'exercise' ? 'Exercises & Techniques' : picker === 'chart' ? 'Charts' : 'Routines'}</strong>
+          <div className="fp-picker-head"><strong>{picker === 'track' ? 'Backing Tracks' : picker === 'exercise' ? 'Exercises & Goals' : picker === 'chart' ? 'Charts' : 'Routines'}</strong>
             <button type="button" onClick={() => setPicker(null)} aria-label="Close choices">×</button>
           </div>
-          {picker === 'exercise' && <div className="fp-techniques" aria-label="Quick techniques">
+          {picker === 'exercise' && <div className="fp-techniques" aria-label="Quick techniques and personal goals">
+            <p className="fp-picker-lead">Pick a technique or set a personal focus goal.</p>
             {TECHNIQUES.map(value => <button key={value} type="button" onClick={() => addTechnique(value)}>+ {value}</button>)}
-            <form onSubmit={event => { event.preventDefault(); addTechnique(customTechnique); }} className="fp-custom">
-              <input aria-label="Custom technique" value={customTechnique} onChange={event => setCustomTechnique(event.target.value)} placeholder="Custom technique" maxLength={80}/>
-              <button type="submit" disabled={!customTechnique.trim()}>Add</button>
+            <form onSubmit={event => { event.preventDefault(); addGoal(customTechnique); }} className="fp-custom">
+              <input aria-label="Custom practice goal" value={customTechnique} onChange={event => setCustomTechnique(event.target.value)} placeholder="Your focus goal" maxLength={80}/>
+              <button type="submit" disabled={!customTechnique.trim()}>Add Goal</button>
             </form>
           </div>}
           <input className="fp-search" aria-label="Search choices" type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={'Search ' + (picker === 'track' ? 'tracks' : picker === 'exercise' ? 'exercises' : picker + 's')}/>
@@ -302,6 +307,7 @@ export function FreePracticePage() {
             {activeExercise && <p>{activeExercise.instructions}</p>}
             {activeRoutine && <ol>{activeRoutine.steps.map((step, index) => <li key={index}>{exercises.find(exercise => exercise.id === step.exercise_id)?.title ?? step.snapshot?.title ?? 'Exercise'} · {step.duration_minutes} min</li>)}</ol>}
             {activeItem?.kind === 'technique' && <p>Practice at your own pace.</p>}
+            {activeItem?.kind === 'goal' && <p>Keep this goal in mind as you practice. Mark it complete when you're happy with your progress.</p>}
           </div>}
         </div>)}
       </section>}
