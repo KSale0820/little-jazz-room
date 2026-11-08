@@ -111,7 +111,13 @@ try {
         await page.screenshot({ path: screenshot, animations: 'disabled', fullPage: false });
         const full = path.join(out, 'progress-' + name + '-full.png');
         await page.screenshot({ path: full, animations: 'disabled', fullPage: true });
-        report.push({ name, ...result, screenshot: path.basename(screenshot), full: path.basename(full), passed: true });
+        // The mobile app scrolls inside .viewport, so browser fullPage alone
+        // cannot capture the weekly chart and history below the first fold.
+        await page.locator('.viewport').evaluate(el => { el.scrollTop = el.scrollHeight; });
+        await page.waitForTimeout(120);
+        const bottom = path.join(out, 'progress-' + name + '-bottom.png');
+        await page.screenshot({ path: bottom, animations: 'disabled' });
+        report.push({ name, ...result, screenshot: path.basename(screenshot), full: path.basename(full), bottom: path.basename(bottom), passed: true });
         console.log('PASS visual Progress:', name, 'content height:', result.mainHeight);
         await context.close();
       }
