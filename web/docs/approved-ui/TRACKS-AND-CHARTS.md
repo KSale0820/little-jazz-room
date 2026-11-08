@@ -1,57 +1,39 @@
-# Tracks and Charts — current approved UI
+# Tracks and Charts — approved reference UI
 
-**Status:** owner-approved visual direction, November 7, 2026. This supersedes all older Tracks/T01 screenshot variants and the former "Listening Room" layout. Do not use older T01 comps to overwrite this screen.
+**Current design authority:** `web/docs/approved-ui/TRACKS-AND-CHARTS-APPROVED-UI.png` (November 7, 2026).
+This screenshot supersedes older T01/Tracks mockups, the Listening Room header, and all recommended/cat-banner experiments. Historical QA screenshots may remain archived but are not the design authority.
 
-## Definitive reference
-The full-resolution source screenshot is **TRACKS-AND-CHARTS-APPROVED-UI.png**, included alongside the separately exported art in the conversation's `Little-Jazz-Room-Tracks-Approved-Assets.zip`. The PNG is the design authority. The exact original screenshot PNG is preserved in the local downloadable asset package, but the available GitHub file-transfer connection cannot import binary files directly from this conversation, so this particular PNG has **not yet been committed** to the repository. Upload that exact file here when binary file writing is available:
+## Exact original assets installed and active
 
-- `web/docs/approved-ui/TRACKS-AND-CHARTS-APPROVED-UI.png`
+All three assets below are the exact source PNG bytes, uploaded and verified against their Git blob SHA-1 values; they are **committed to this feature branch**.
 
-Do not treat older screenshot files as approved. Preserve historical QA captures rather than deleting them indiscriminately.
-
-## Implementation in this branch
-
-- `web/src/pages/TracksPage.tsx` replaces the prior page UI with the approved two-line pixel heading, instrument-study vignette, search, horizontal style filters, purple **Bookmarked** shortcut, and compact track/chart rows.
-- `web/src/pages/TracksApproved.css` is scoped to T01; it reuses theme variables and keeps the bottom navigation, chart/practice routing, Supabase/local storage, and audio behavior unchanged.
-- `web/public/visuals/tracks-approved/` has four handcrafted pixel-styled **SVG stand-ins** (including the title and saxophone shelf), plus three crisp original PNG icons copied by Git blob SHA from draft PR #84: `record.png`, `bookmark.png`, `chevron.png`. These are not claimed to be the exact newly generated screenshot/title/shelf artwork.
-
-## Exact PNG installation (no substitutions)
-
-The exact source PNG files have been SHA-256 verified and saved in `Little-Jazz-Room-Tracks-Approved-Assets.zip` in the current conversation. **They are not yet uploaded to GitHub.** This GitHub connector supports UTF-8 content and SHA reuse for blobs that already exist in GitHub; it cannot import new binary bytes from this conversation's local filesystem.
-
-To install and commit them to this branch from a clone, run:
-
-```sh
-python3 web/scripts/install-approved-tracks-assets.py /path/to/Little-Jazz-Room-Tracks-Approved-Assets.zip
-cd web && npm run build && npm test
-```
-
-The script verifies the **exact bytes** for the three required images and two supporting reference assets before copying, switches the title/shelf component paths from `.svg` to the approved `.png` files, and updates the asset manifest. Commit and push the resulting changed files to PR #86.
-
-SHA-256:
-- title: `e77dd6d9de718489c55f0317bce0686b85ad80e1310d8b7e185e59f6af7f4898`
-- shelf: `842c980fbf81ba618d24fc2aa977dd13a4f9e15403a8db4938ba6d4b16929d0f`
-- reference: `568f41ad378b31dcfe11924fdcfcd2a13c28030e00a9fdbe7732739873f75977`
-
-## Final PNG asset mapping
-| Original asset | Destination when binary upload is available | Usage |
+| Asset | Repository path | Git blob SHA-1 |
 | --- | --- | --- |
-| `tracks-title.png` | `web/public/visuals/tracks-approved/tracks-title.png` | Header title image |
-| `jazz-study-shelf.png` | `web/public/visuals/tracks-approved/jazz-study-shelf.png` | Header illustration |
-| `bookmark-filled.png` | `web/public/visuals/tracks-approved/bookmark-filled.png` | Optional replacement for the currently used PR #84 `bookmark.png` |
-| `bookmarked-card-reference.png` | `web/docs/approved-ui/bookmarked-card-reference.png` | Visual-only reference for the CSS bookmark shortcut |
+| Title | `web/public/visuals/tracks-approved/tracks-title.png` | `335ae69bef57590e8c7a8ed6b619174dbab1198e` |
+| Instrument-study shelf | `web/public/visuals/tracks-approved/jazz-study-shelf.png` | `d3f5db262e147080af2968be4839b6fdadce5f0c` |
+| Approved reference screenshot | `web/docs/approved-ui/TRACKS-AND-CHARTS-APPROVED-UI.png` | `f307c26a5428a4be12ea61adde4dc2e377efe689` |
 
-After uploading, switch only the title and shelf image `src` paths in `TracksPage.tsx` from `.svg` to `.png`. The bookmark and record icons already use working PR #84 PNGs. Do **not** rasterize the live card text, search, category controls, or navigation. The bookmark card is a clickable accessible DOM element.
+The live Tracks page references the exact title/shelf PNGs, **not SVG stand-ins**. The previous temporary title/shelf SVGs and one-time installer script have been retired.
 
-## Approved constraints
-- Page heading reads **Tracks and Charts** (not a second Charts tab/button).
-- No Recommended banner or decorative cat on Tracks.
-- Title has visibly crisp pixel styling, not watercolor softness.
-- Search and style chips are functional.
-- **Bookmarked** opens a saved-only view, and each row's bookmark toggles persist in the existing user-scoped localStorage key.
-- Row primary/play actions open existing charts/player rather than claiming absent recorded audio.
-- Keep the **current** app's navigation and theme system; the pictured nav is a visual reference, not permission to rewrite unrelated screens.
-- No extra asset packs or obsolete T01 variants should be incorporated into the current Tracks design.
+Also reused existing transparent pixel PNG icons from PR #84: `record.png`, `bookmark.png`, and `chevron.png`, copied by their verified Git blob identifiers. The bookmark and record SVG fallbacks remain registered only for other legacy uses or potential empty states.
 
-## QA to complete
-Run `npm run build`, `npm test`, and mobile screenshots at 390×844 and 375×667 in Light and Dark. Check horizontal overflow, keyboard search, empty bookmarks, saving/un-saving after reload, and opening a chart from the filtered list. Validate full-resolution PNG integration separately.
+## Implementation scope
+
+- `web/src/pages/TracksPage.tsx` provides the combined Tracks and Charts library: search, horizontally scrolling genre chips, compact chart/track rows, and a purple **Bookmarked** shortcut that filters saved items.
+- `web/src/pages/TracksApproved.css` implements the approved layout in the existing Light/Dark theme system.
+- `web/src/assets/visualManifest.ts` indexes the exact assets to satisfy the repository's strict visual-asset tests.
+- Existing chart-player navigation, saved favorites per account, recording availability checks, advanced filters, bottom navigation, routines, and practice data remain functional.
+- Live text, bookmarks, play controls, search and filters remain native interactive components; **do not** embed the whole screenshot as a runtime background.
+
+## Locked decisions
+
+1. Page title: **Tracks and Charts**, stacked and pixel-styled.
+2. No separate Charts button, Recommended section, or decorative companion cat on Tracks.
+3. Exact approved study-shelf illustration appears beside the title.
+4. Saved/bookmarked tunes are accessible with a dedicated shortcut.
+5. Bottom navigation stays the current application's Practice / Tracks / Routines / Progress structure; the static mockup's navigation is a visual reference, not a request to change routes.
+6. Do not reintroduce older mockups or substitute regenerated assets without approval.
+
+## Validation
+
+Run `npm run build`, `npm test`, and mobile Light/Dark screenshots at 390×844 and 375×667; verify assets render without distortion, search, bookmarks/reload, filters and chart → player. PR #86 is held for visual review. Do not deploy or merge without an explicit owner request.
