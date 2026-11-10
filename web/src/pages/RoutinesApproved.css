@@ -25,24 +25,23 @@ html[data-theme] .routine-approved .routine-intro::after { content: none; }
   min-height: 57px;
   margin-bottom: 12px;
 }
-.routine-approved-title { position: relative; display: flex; align-items: center; min-width: 0; gap: 8px; }
-html[data-theme] .routine-approved-header h1 {
-  margin: 0;
-  font: 800 clamp(28px, 8vw, 34px)/1.1 Georgia, 'Palatino Linotype', serif;
-  letter-spacing: -.035em;
-  color: var(--color-text);
+.routine-approved-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 252px;
 }
-html[data-theme="light"] .routine-approved-header h1 { color: var(--color-action); }
-.routine-approved-title::after {
-  position: absolute;
-  left: 0; bottom: -6px;
-  width: min(80%, 172px);
-  height: 2px;
-  background: var(--color-warning);
-  content: '';
+.routine-approved-wordmark {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
+  image-rendering: pixelated;
 }
-.routine-approved-flourish { color: var(--color-warning); font-size: 13px; margin-top: 24px; }
-.routine-approved-note { width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
+html[data-theme="light"] .routine-approved-wordmark.routines-header-dark,
+html[data-theme="dark"] .routine-approved-wordmark.routines-header-light {
+  display: none;
+}
 html[data-theme] .routine-approved .routine-approved-create {
   display: inline-flex;
   justify-content: center;
@@ -223,34 +222,6 @@ html[data-theme] .routine-approved .routine-approved-chevron {
   line-height: 1;
   padding-right: 2px;
   color: var(--routine-title);
-}
-html[data-theme] .routine-approved .routine-pin {
-  position: static;
-  order: 2;
-  width: 44px;
-  height: 46px;
-  min-height: 46px;
-  flex: 0 0 44px;
-  padding: 0 2px;
-  background: transparent;
-  border: 0;
-  color: var(--routine-muted);
-  font: 650 11px var(--font-ui);
-  text-decoration: none;
-}
-html[data-theme] .routine-approved .routine-pin {
-  border-left: 1px solid color-mix(in srgb, var(--routine-border) 70%, transparent);
-  color: var(--color-violet);
-}
-html[data-theme] .routine-approved .routine-pin svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-html[data-theme] .routine-approved .routine-pin.is-pinned {
-  color: var(--color-success);
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 html[data-theme] .routine-approved .routine-card:focus-within,
 html[data-theme] .routine-approved .routine-card:hover {
