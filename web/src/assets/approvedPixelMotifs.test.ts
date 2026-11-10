@@ -9,9 +9,9 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const readVisual = (url: string) => readFileSync(join(root, 'public', url.slice(1)));
 
 describe('approved full-color pixel motifs', () => {
-  it('maps 19 distinct transparent sprites and retains the three original SVG theme masks', () => {
-    expect(Object.keys(APPROVED_PIXEL_MOTIFS)).toHaveLength(19);
-    expect(new Set(Object.values(APPROVED_PIXEL_MOTIFS)).size).toBe(19);
+  it('maps 18 approved transparent sprites and retains the three original SVG theme masks', () => {
+    expect(Object.keys(APPROVED_PIXEL_MOTIFS)).toHaveLength(18);
+    expect(new Set(Object.values(APPROVED_PIXEL_MOTIFS)).size).toBe(18);
     expect(Object.keys(PIXEL_MOTIFS)).toHaveLength(3);
     for (const url of Object.values(PIXEL_MOTIFS)) {
       expect(url).toMatch(/\.svg$/);
