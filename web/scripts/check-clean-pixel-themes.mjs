@@ -319,6 +319,54 @@ try {
           })(),
         };
       });
+      // Musical notation remains horizontal and readable at the same measure
+      // height. The red section badges always have white text. Tag/End must
+      // remain wholly inside their cells, even on short phones.
+      const notation = await page.evaluate(() => {
+        const chart = document.querySelector('.practice-chart-scroll');
+        const measure = chart?.querySelector('.chord-grid .measure');
+        const two = chart?.querySelector('.chords.two');
+        const chords = two ? [...two.children] : [];
+        const first = chords[0]?.getBoundingClientRect();
+        const second = chords[1]?.getBoundingClientRect();
+        const section = chart?.querySelector('.measure-section-label');
+        const labels = [...(chart?.querySelectorAll('.measure-annotation') ?? [])].map(el => {
+          const outer = el.closest('.measure')?.getBoundingClientRect();
+          const inside = el.getBoundingClientRect();
+          return { name: el.textContent, visible: !!outer && inside.top >= outer.top + 2 &&
+            inside.bottom <= outer.bottom - 2 };
+        });
+        const font = el => el ? Number.parseFloat(getComputedStyle(el).fontSize) : 0;
+        return {
+          measureHeight: measure?.getBoundingClientRect().height ?? 0,
+          twoHorizontal: !!first && !!second && Math.abs(first.y - second.y) <= 3 &&
+            second.x > first.x + 3,
+          sectionInk: section && getComputedStyle(section).color,
+          labels,
+          fonts: {
+            chord: font(measure?.querySelector('.chords:not(.two) span')),
+            dual: font(chords[0]),
+            skip: font(document.querySelector('.practice-measure-btn span')),
+            loop: font(document.querySelector('.practice-loop-control')),
+            repeat: font(document.querySelector('.practice-repeat-control span')),
+            tool: font(document.querySelector('.practice-utility-row button span')),
+            finish: font(document.querySelector('.practice-finish-action')),
+          },
+        };
+      });
+      assert.ok(notation.measureHeight <= 48 && notation.measureHeight >= 30,
+        'Score measure height must remain compact: ' + JSON.stringify({ theme, width, height, notation }));
+      assert.ok(notation.twoHorizontal, 'Two-chord measures must read left-to-right: ' +
+        JSON.stringify({ theme, width, height, notation }));
+      assert.equal(notation.sectionInk, 'rgb(255, 255, 255)',
+        'Section A/B/C/Tag text must be white: ' + JSON.stringify({ theme, width, height, notation }));
+      assert.ok(notation.labels.every(x => x.visible),
+        'Tag/End/other annotations must fit inside each measure: ' + JSON.stringify({ theme, width, height, notation }));
+      assert.ok(notation.fonts.chord >= 14 && notation.fonts.dual >= 11 &&
+        notation.fonts.skip >= 12 && notation.fonts.loop >= 14 &&
+        notation.fonts.repeat >= 12 && notation.fonts.tool >= 12 &&
+        notation.fonts.finish >= 14,
+        'Increase type sizes despite compact controls: ' + JSON.stringify({ theme, width, height, notation }));
       assert.ok(boxes.chart && boxes.finish && boxes.nav && boxes.transport && boxes.timer,
         'Missing Practice Player elements: ' + JSON.stringify({ theme, width, height, boxes }));
       assert.ok(boxes.chart.height >= (height >= 800 ? 280 : 145),
