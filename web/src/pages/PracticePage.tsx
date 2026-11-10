@@ -28,6 +28,7 @@ import './PracticePlayerApproved.css';
 import './CleanPixelPractice.css';
 import './PracticePlayerPixelV2.css';
 import './PracticePlayerReferenceV3.css';
+import './PracticePlayerCompactV4.css';
 
 function displayChartForm(form: string): string {
   const bluesBars = /^blues-(\d+)$/i.exec(form.trim());
