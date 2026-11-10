@@ -127,16 +127,7 @@ export const VISUAL_ASSETS = {
       play: '/visuals/tools/pixel/play.png',
       stop: '/visuals/tools/pixel/stop.png',
     },
-    /** Owner-approved standalone pixel companions and botanical floor assets. */
-    mockup: {
-      sleepingCat: '/visuals/tools/mockup/cat-sleeping.svg',
-      sittingCat: '/visuals/tools/mockup/cat-sitting.svg',
-      pothos: '/visuals/tools/mockup/pothos.svg',
-      floor: '/visuals/tools/mockup/floor.svg',
-      microphone: '/visuals/tools/mockup/microphone.svg',
-      sleepingApproved: '/visuals/tools/mockup/cat-sleeping-approved.png',
-      sittingApproved: '/visuals/tools/mockup/cat-sitting-approved.png',
-    },
+
   },
   approvedDecor: {
     books: '/visuals/decor/books.png',
