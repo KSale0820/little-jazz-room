@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CatChooser, CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
+import { CatChooser, CatSprite, JAZZ_CATS, isVisibleCatId } from '../features/cats/CatCompanion';
+import { cumulativePracticeMinutes, readPreviouslySelectedCat, readSavedUnlocks, saveUnlockedCompanions, unlockedCompanions } from '../lib/companionUnlocks';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { getSupabaseClient } from '../lib/supabase/client';
@@ -54,6 +55,10 @@ export function ProfilePage() {
   const routineCount  = routines.length;
 
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
+  const practiceMinutes = cumulativePracticeMinutes(sessions);
+  const unlockedIds = unlockedCompanions(practiceMinutes, readSavedUnlocks(accountKey), readPreviouslySelectedCat(accountKey));
+  const unlockSignature = unlockedIds.join(',');
+  useEffect(() => { saveUnlockedCompanions(accountKey, unlockedIds); }, [accountKey, unlockSignature]);
 
   return (
     <section className="page profile-page" aria-label="Profile">
@@ -120,11 +125,14 @@ export function ProfilePage() {
         </div>
       </div>
 
-      {/* ── Eight-cat chooser ── */}
+      {/* ── Earned companion chooser, using existing class-demo illustrations ── */}
       <div ref={chooserRef} className="profile-section">
         <CatChooser
           catId={catId}
+          unlockedIds={unlockedIds}
+          practiceMinutes={practiceMinutes}
           onSelect={async id => {
+            if (!isVisibleCatId(id) || !unlockedIds.includes(id)) return;
             await chooseCat(id);
             showToast(`${JAZZ_CATS.find(c => c.id === id)!.name} is now your companion.`);
           }}
