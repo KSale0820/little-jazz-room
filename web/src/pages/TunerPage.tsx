@@ -58,7 +58,6 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const trail = useMemo(() => pitchTrailGeometry(
     pitchTrail, pitchTrail[pitchTrail.length - 1]?.timestamp ?? 0,
   ), [pitchTrail]);
-  const pitchTrailEnabled = showPitchTrail;
 
   const stopMicrophone = useCallback(() => {
     requestRef.current++;
