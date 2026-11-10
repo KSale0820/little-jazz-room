@@ -46,6 +46,47 @@ async function visit(page, route, heading) {
   assert.equal(await page.locator('nav.bottom-nav a').count(), 4, heading + ' lost main navigation');
 }
 
+async function assertApprovedAssetsAndAlignment(page, label) {
+  const visual = await page.evaluate(() => {
+    const rect = selector => {
+      const e = document.querySelector(selector);
+      if (!e) return null;
+      const b = e.getBoundingClientRect();
+      return {left:b.left,right:b.right,top:b.top,bottom:b.bottom,cx:(b.left+b.right)/2,cy:(b.top+b.bottom)/2};
+    };
+    const images = [...document.querySelectorAll('.jazz-tool-footer img')].map(e => e.getAttribute('src'));
+    return {
+      heading: rect('.jazz-tool-header h1'),
+      header: rect('.jazz-tool-header'),
+      main: rect('.jazz-tool-main'),
+      card: rect('.jazz-tool-main > .jazz-tuner-card, .jazz-tool-main > .jazz-metronome-card'),
+      footer: rect('.jazz-tool-footer'),
+      images,
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+    };
+  });
+  assert.ok(visual.header && visual.main && visual.card && visual.footer, label + ' missing layout region');
+  assert.ok(Math.abs(visual.heading.cx - visual.viewportWidth / 2) < 5,
+    label + ' heading not centered: ' + JSON.stringify(visual));
+  assert.ok(Math.abs(visual.card.cx - visual.viewportWidth / 2) < 5,
+    label + ' control card not centered: ' + JSON.stringify(visual));
+  assert.ok(visual.header.bottom <= visual.card.top + 2 &&
+    visual.card.bottom <= visual.footer.top + 2,
+    label + ' tools overlap heading or companion art: ' + JSON.stringify(visual));
+  // The main group consumes the flexible center region; artwork has its own
+  // footer. Do not allow the previous 200px+ blank gap beneath the controls.
+  const mainTarget = (visual.header.bottom + visual.footer.top) / 2;
+  assert.ok(Math.abs(visual.main.cy - mainTarget) < 14,
+    label + ' control stack is not vertically balanced: ' + JSON.stringify(visual));
+  assert.ok(visual.images.every(s =>
+      s?.startsWith('/visuals/cats/clean-pixel/') ||
+      s === '/visuals/pixel-motifs/approved/plant-pot.png'),
+    label + ' includes an unapproved substitute image: ' + JSON.stringify(visual.images));
+  assert.ok(visual.images.length === 2,
+    label + ' should use exactly one verified cat and one approved plant');
+}
+
 async function capture(page, name) {
   await page.screenshot({ path: join(screenshots, name + '.png'), animations: 'disabled', fullPage: false });
 }
@@ -77,6 +118,7 @@ try {
           getComputedStyle(element).visibility), catMode ? 'visible' : 'hidden');
         assert.equal(await page.locator('.tuner-reading strong').textContent(), '—',
           'Idle tuner cannot fabricate pitch');
+        await assertApprovedAssetsAndAlignment(page, 'tuner ' + suffix);
         await capture(page, 'tuner-idle-' + suffix);
         await reachable(page, 'Enable microphone');
         await page.getByRole('button', { name: 'Tuner help' }).click();
@@ -88,6 +130,7 @@ try {
         assert.equal(await page.locator('.tool-metronome .tool-scene-cat').evaluate(element =>
           getComputedStyle(element).visibility), catMode ? 'visible' : 'hidden');
         assert.equal(await page.locator('.metronome-bpm strong').textContent(), '120');
+        await assertApprovedAssetsAndAlignment(page, 'metronome ' + suffix);
         await capture(page, 'metronome-idle-' + suffix);
         await page.getByRole('button', { name: 'Increase tempo by 1 BPM' }).click();
         assert.equal(await page.locator('.metronome-bpm strong').textContent(), '121');
