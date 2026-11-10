@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { CatSprite, COMPANION_UNLOCK_MINUTES, JAZZ_CATS, isVisibleCatId } from '../features/cats/CatCompanion';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { cumulativePracticeMinutes, readPreviouslySelectedCat, readSavedUnlocks, saveUnlockedCompanions, unlockedCompanions } from '../lib/companionUnlocks';
+import { getSupabaseClient } from '../lib/supabase/client';
+import { normalizeProfileName, readProfileName, saveProfileName } from '../lib/profileName';
+import { downloadPracticeSessionsCsv } from '../lib/practiceExport';
 import './ProfilePage.css';
 
 /** One profile/settings surface. /profile and /settings both reach this screen. */
@@ -14,7 +17,11 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const chooserRef = useRef<HTMLElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [signingOut, setSigningOut] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [savingName, setSavingName] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   const accountKey = user?.id ?? 'local';
   const practiceMinutes = cumulativePracticeMinutes(sessions);
@@ -36,10 +43,66 @@ export function ProfilePage() {
     }
   }, [location.state]);
 
-  const displayNameSource: unknown = user?.user_metadata?.display_name ??
+  const authNameSource: unknown = user?.user_metadata?.display_name ??
     user?.user_metadata?.full_name ?? user?.user_metadata?.name;
-  const displayName = typeof displayNameSource === 'string' && displayNameSource.trim()
-    ? displayNameSource.trim() : (user?.email?.split('@')[0] || 'Jazz learner');
+  const authName = typeof authNameSource === 'string' ? authNameSource : '';
+  const [displayName, setDisplayName] = useState(() => readProfileName(accountKey, authName));
+  const [draftName, setDraftName] = useState(() => readProfileName(accountKey, authName));
+
+  useEffect(() => {
+    const savedName = readProfileName(accountKey, authName);
+    setDisplayName(savedName);
+    setDraftName(savedName);
+    setEditingName(false);
+    setNameError(null);
+  }, [accountKey, authName]);
+
+  useEffect(() => {
+    if (editingName) nameInputRef.current?.focus();
+  }, [editingName]);
+
+  const beginNameEdit = () => {
+    setDraftName(displayName === 'Jazz learner' ? '' : displayName);
+    setNameError(null);
+    setEditingName(true);
+  };
+
+  const onSaveName = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (savingName) return;
+    const nextName = normalizeProfileName(draftName);
+    if (!nextName) {
+      setNameError('Enter a name to continue.');
+      return;
+    }
+    setSavingName(true);
+    setNameError(null);
+    const savedOnDevice = saveProfileName(accountKey, nextName);
+    let cloudError = false;
+    if (user) {
+      const client = getSupabaseClient();
+      try {
+        if (!client) cloudError = true;
+        else {
+          const { error } = await client.auth.updateUser({ data: { display_name: nextName } });
+          cloudError = Boolean(error);
+        }
+      } catch {
+        cloudError = true;
+      }
+    }
+    if (!savedOnDevice && (cloudError || !user)) {
+      setNameError('Could not save your name. Please try again.');
+      setSavingName(false);
+      return;
+    }
+    setDisplayName(nextName);
+    setEditingName(false);
+    setSavingName(false);
+    showToast(cloudError
+      ? 'Name saved on this device. Account sync is unavailable.'
+      : 'Your name has been saved.');
+  };
 
   const onSelectCompanion = async (id: typeof JAZZ_CATS[number]['id']) => {
     if (!isVisibleCatId(id) || !unlockedIds.includes(id)) return;
@@ -81,8 +144,27 @@ export function ProfilePage() {
           <strong>{displayName}</strong>
           <span>{user ? 'Jazz learner' : 'Local jazz learner'}</span>
         </div>
-        <a className="profile-edit-link" href="#profile-account-heading">Account details <span aria-hidden="true">›</span></a>
+        <button type="button" className="profile-edit-link" onClick={beginNameEdit}
+          aria-expanded={editingName} aria-controls="profile-name-editor">
+          <img src={VISUAL_ASSETS.icons.edit} alt="" aria-hidden="true" /> Edit Profile
+        </button>
       </section>
+      {editingName ? (
+        <form id="profile-name-editor" className="profile-name-editor" onSubmit={event => void onSaveName(event)}>
+          <label htmlFor="profile-display-name">Your name</label>
+          <input id="profile-display-name" ref={nameInputRef} type="text" autoComplete="nickname"
+            maxLength={40} required placeholder="What should we call you?"
+            value={draftName} onChange={event => setDraftName(event.target.value)} />
+          <div className="profile-name-actions">
+            <button type="submit" className="profile-save-name" disabled={savingName}>
+              {savingName ? 'Saving…' : 'Save Name'}
+            </button>
+            <button type="button" className="profile-cancel-name" disabled={savingName}
+              onClick={() => { setEditingName(false); setNameError(null); }}>Cancel</button>
+          </div>
+          {nameError ? <p className="profile-name-error" role="alert">{nameError}</p> : null}
+        </form>
+      ) : null}
 
       <section className="profile-companions profile-section" ref={chooserRef} aria-labelledby="choose-cat-heading">
         <div className="profile-section-title">
@@ -108,7 +190,7 @@ export function ProfilePage() {
                 aria-label={`${cat.name}, ${selected ? 'selected' : unlocked ? 'unlocked' : `locked, ${Math.max(0, needed - practiceMinutes)} more minutes of practice to unlock`}`}
                 onClick={() => { void onSelectCompanion(cat.id); }}
               >
-                <span className="profile-cat-status" aria-hidden="true">{selected ? '✓' : !unlocked ? '🔒' : '✓'}</span>
+                <span className="profile-cat-status" aria-hidden="true">{!unlocked ? <span className="profile-lock-icon" /> : '✓'}</span>
                 <span className="profile-cat-visual">
                   <CatSprite catId={cat.id} size={86} variant={cat.id === 'luna' ? 'sleeping' : 'portrait'} decorative />
                 </span>
@@ -145,6 +227,21 @@ export function ProfilePage() {
           <h2 id="profile-account-heading">Account &amp; More</h2>
         </div>
         <div className="profile-account-list">
+          <button className="profile-account-row" type="button" onClick={beginNameEdit}>
+            <span className="profile-account-row-icon" aria-hidden="true">
+              <img src={VISUAL_ASSETS.icons.edit} alt="" />
+            </span>
+            <span><strong>Edit Profile</strong><small>Choose the name shown in your studio.</small></span>
+            <span className="profile-row-chevron" aria-hidden="true">›</span>
+          </button>
+          <button className="profile-account-row" type="button"
+            disabled={sessions.length === 0} onClick={() => downloadPracticeSessionsCsv(sessions)}>
+            <span className="profile-account-row-icon" aria-hidden="true">⇩</span>
+            <span><strong>Export Practice Data</strong>
+              <small>{sessions.length ? 'Download your practice history (CSV).' : 'Complete a session to export your history.'}</small>
+            </span>
+            <span className="profile-row-chevron" aria-hidden="true">›</span>
+          </button>
           {user && <div className="profile-account-detail">
             <span className="profile-account-detail-label">Signed in as</span>
             <strong>{user.email}</strong>
