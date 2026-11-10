@@ -63,6 +63,30 @@ try {
           const tab = [...(nav?.querySelectorAll('a') ?? [])].find(el => el.getAttribute('href') === '/progress');
           const thumb = get('.pgr-cat');
           const root = document.documentElement;
+          // Scan transparent image pixels after rendering so the test catches
+          // a visually floating cat even when the image element box overlaps.
+          const visibleBounds = img => {
+            if (!(img instanceof HTMLImageElement) || !img.naturalWidth) return null;
+            const canvas = document.createElement('canvas');
+            canvas.width = 100; canvas.height = 100;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            ctx.drawImage(img, 0, 0, 100, 100);
+            const pixels = ctx.getImageData(0, 0, 100, 100).data;
+            let top = 100, bottom = -1;
+            for (let y = 0; y < 100; y++) {
+              for (let x = 0; x < 100; x++) {
+                if (pixels[(y * 100 + x) * 4 + 3] > 48) {
+                  if (y < top) top = y;
+                  if (y > bottom) bottom = y;
+                }
+              }
+            }
+            if (bottom < 0) return null;
+            const rect = img.getBoundingClientRect();
+            return { top: rect.top + rect.height * top / 100, bottom: rect.top + rect.height * (bottom + 1) / 100 };
+          };
+          const catPixels = visibleBounds(get('.pgr-cat'));
+          const pianoPixels = visibleBounds(get('.pgr-piano'));
           const imageStates = [...document.querySelectorAll('.pgr-page img')].map(img => ({
             src: img.currentSrc, loaded: img.complete && img.naturalWidth > 0,
           }));
@@ -79,6 +103,9 @@ try {
             catSrc: thumb?.getAttribute('src'),
             catBox: thumb ? [box('.pgr-cat').x, box('.pgr-cat').y, box('.pgr-cat').width, box('.pgr-cat').height] : null,
             pianoLoaded: imageStates.find(x => x.src.includes('piano-keys-wide.png'))?.loaded,
+            // Positive separation means the visible cat is floating above the keyboard.
+            catKeyGap: catPixels && pianoPixels ? pianoPixels.top - catPixels.bottom : null,
+            streakIcons: [...document.querySelectorAll('.pgr-streak img')].map(img => ({width: img.getBoundingClientRect().width, height: img.getBoundingClientRect().height})),
             imageStates,
             navTop: nav?.getBoundingClientRect().top,
             navBottom: nav?.getBoundingClientRect().bottom,
@@ -87,6 +114,7 @@ try {
             themeButtons: [...document.querySelectorAll('.pgr-theme-choices button')].map(el => ({
               name: el.getAttribute('aria-label'), pressed: el.getAttribute('aria-pressed'),
               imageLoaded: el.querySelector('img')?.naturalWidth > 0,
+              cssOutlineWidth: getComputedStyle(el).outlineWidth,
             })),
             calendar: !!get('.practice-calendar-grid'),
             chartBars: document.querySelectorAll('.pgr-bar').length,
@@ -106,6 +134,14 @@ try {
         assert.deepEqual(result.themeButtons.map(x => x.pressed),
           theme === 'light' ? ['true', 'false', String(mode)] : ['false', 'true', String(mode)]);
         assert.ok(result.themeButtons.every(x => x.imageLoaded));
+        assert.ok(result.themeButtons.every(x => Number.parseFloat(x.cssOutlineWidth) === 0),
+          name + ' theme control has a duplicate CSS outline: ' + JSON.stringify(result.themeButtons));
+        assert.deepEqual(result.streakIcons.map(icon => Math.round(icon.width)), [40, 40],
+          name + ' streak and growth icons should be enlarged');
+        assert.ok(result.catKeyGap !== null && result.catKeyGap <= 3,
+          name + ' cat floats above piano keys by ' + result.catKeyGap + ' CSS pixels');
+        assert.ok(result.catKeyGap >= -20,
+          name + ' cat is sinking too deeply into the piano: ' + result.catKeyGap);
         assert.deepEqual(errors, [], name + ' JS errors');
         const screenshot = path.join(out, 'progress-' + name + '.png');
         await page.screenshot({ path: screenshot, animations: 'disabled', fullPage: false });
