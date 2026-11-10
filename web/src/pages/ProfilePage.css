@@ -64,6 +64,12 @@ html[data-theme="dark"] .profile-brand { filter: brightness(0) invert(1); }
 .profile-edit-link span { font-size: 18px; }
 
 .profile-edit-link img { width: 18px; height: 18px; object-fit: contain; }
+html[data-theme="dark"] .profile-edit-link img,
+html[data-theme="dark"] .profile-account-row-icon img {
+  filter: brightness(0) invert(1);
+}
+.profile-account-gear { display: grid; place-items: center; color: var(--color-action); }
+.profile-account-gear svg { overflow: visible; }
 .profile-name-editor {
   display: flex; flex-direction: column; gap: 9px; padding: 14px;
   margin: -1px 0 12px; border: 1px solid var(--color-border); border-radius: 13px;
