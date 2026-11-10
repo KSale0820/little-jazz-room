@@ -128,9 +128,8 @@ export function ProfilePage() {
     <section className="page profile-page" aria-label="Profile Settings">
       <header className="profile-top">
         <div className="profile-brand-row">
-          <img className="profile-ornament profile-ornament-left" src={VISUAL_ASSETS.approvedPixelMotifs.hangingPlant} alt="" aria-hidden="true" />
-          <img className="profile-brand" src={VISUAL_ASSETS.brand.wordmark} alt="Little Jazz Room" />
-          <img className="profile-ornament profile-ornament-right" src={VISUAL_ASSETS.approvedPixelMotifs.planterBox} alt="" aria-hidden="true" />
+          <img className="profile-shelf-art" src={VISUAL_ASSETS.profileSettings.headerShelf} alt="" aria-hidden="true" draggable={false} />
+          <img className="profile-brand" src={VISUAL_ASSETS.brand.wordmark} alt="Little Jazz Room" draggable={false} />
         </div>
         <h1 className="profile-title">Profile Settings</h1>
         <p className="profile-subtitle">Manage your profile, companion, and account.</p>
