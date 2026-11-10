@@ -24,9 +24,7 @@ try {
     page.on('pageerror', e => errors.push(e.message));
     const clock = page.locator('[data-testid="session-elapsed"]');
     const openFree = async () => {
-      await page.goto(base + '/practice', { waitUntil: 'networkidle' });
-      await page.getByRole('button', { name: /^Free Practice/ }).click();
-      await page.waitForURL(url => url.pathname === '/player');
+      await page.goto(base + '/player?chart=blues-f-12', { waitUntil: 'networkidle' });
       await page.locator('.practice-utility-row').waitFor({ state: 'attached' });
     };
     const noOverflow = async () => {
