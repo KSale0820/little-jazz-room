@@ -14,9 +14,7 @@ try {
     const page = await context.newPage();
     const errors=[];
     page.on('pageerror', err => errors.push(err.message));
-    await page.goto(url+'/practice', {waitUntil: 'networkidle'});
-    await page.getByRole('button', {name: /^Free Practice/}).click();
-    await page.waitForURL(u=>u.pathname==='/player');
+    await page.goto(url+'/player?chart=blues-f-12', {waitUntil: 'networkidle'});
     await page.getByRole('button',{name:'Start practice timer'}).click();
     await page.waitForTimeout(1100);
     const clock=page.locator('[data-testid="session-elapsed"]');
