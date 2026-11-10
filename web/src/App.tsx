@@ -1,10 +1,11 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useSearchParams } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import { CreatePage } from './pages/CreatePage';
 import { ExplorePage } from './pages/ExplorePage';
 import { PracticePage } from './pages/PracticePage';
+import { FreePracticePage } from './pages/FreePracticePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { TracksPage } from './pages/TracksPage';
 import { PracticeHubPage } from './pages/PracticeHubPage';
@@ -15,6 +16,13 @@ import { ProgressPage } from './pages/ProgressPage';
 import { SignInPage, SignUpRedirect } from './pages/SignInPage';
 import { ChartBuilderPage } from './pages/ChartBuilderPage';
 import { ChartLibraryPage } from './pages/ChartLibraryPage';
+
+// Legacy free-mode links must open a timer, not an unrelated first chart.
+function PracticePlayerEntry() {
+  const [params] = useSearchParams();
+  return params.get('mode') === 'free' && !params.has('chart') && !params.has('recording') && !params.has('routine')
+    ? <FreePracticePage /> : <PracticePage />;
+}
 
 export default function App() {
   return (
@@ -37,7 +45,8 @@ export default function App() {
               <Route path="practice" element={<PracticeHubPage />} />
               <Route path="tuner" element={<TunerPage />} />
               <Route path="metronome" element={<MetronomePage />} />
-              <Route path="player" element={<PracticePage />} />
+              <Route path="free-practice" element={<FreePracticePage />} />
+              <Route path="player" element={<PracticePlayerEntry />} />
               <Route path="progress" element={<ProgressPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
