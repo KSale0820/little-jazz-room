@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useAppearance } from '../context/AppearanceContext';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
 import {
   audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, pitchTrailGeometry,
@@ -11,6 +12,7 @@ import './ToolsPages.css';
 import './CleanPixelToolsProgress.css';
 import './CleanPixelMotifPlacements.css';
 import './ToolsPolishedPair.css';
+import './ToolsMockupApproved.css';
 
 type MicStatus = 'idle' | 'requesting' | 'listening' | 'denied' | 'unsupported' | 'error';
 type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
@@ -18,6 +20,7 @@ type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
 export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
+  const { catMode } = useAppearance();
   const [mode, setMode] = useState<TuningMode>('chromatic');
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
@@ -296,92 +299,126 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const isNearString = reading && (mode === 'chromatic' || reading.isOpenString);
   const needleAngle = reading && isNearString
     ? Math.max(-70, Math.min(70, reading.cents * 1.4)) : null;
+  const unavailable = status === 'denied' || status === 'unsupported' || status === 'error';
   const getTuningMessage = () => {
-    if (status !== 'listening') return status === 'requesting' ? 'Connecting microphone…' :
-      status === 'denied' || status === 'unsupported' || status === 'error' ? 'Microphone unavailable' : 'Ready to tune';
-    if (micSignal === 'interrupted') return 'Audio paused. Tap Resume audio.';
+    if (status !== 'listening') return status === 'requesting' ? 'Connecting microphone…' : 'Ready to tune';
+    if (micSignal === 'interrupted') return 'Audio paused. Resume audio';
     if (micSignal === 'quiet') return 'Listening for a note…';
-    if (micSignal === 'unsteady') return 'Sound heard. Hold a steady note.';
+    if (micSignal === 'unsteady') return 'Hold a steady note';
     if (!reading) return 'Listening for a note…';
     if (!isNearString) return 'Play an open string';
-    if (isTuned) return 'In tune!';
-    return reading.cents < 0 ? 'Tune up' : 'Tune down';
+    if (isTuned) return 'In Tune';
+    if (reading.cents > 0) return Math.abs(reading.cents) < 18 ? 'Slightly Sharp' : 'Too Sharp';
+    return Math.abs(reading.cents) < 18 ? 'Slightly Flat' : 'Too Flat';
   };
 
   return (
-    <section className="tool-page tool-tuner" aria-label="Chromatic instrument tuner" data-capture-path={capturePath}>
-      <header className="tool-heading">
-        <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))} aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
-        <h1>Tuner</h1>
-        <button className="tool-settings" type="button" aria-label="Tuner help" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)}>⚙</button>
+    <section className="tool-page tool-tuner jazz-tool-page" aria-label="Chromatic instrument tuner" data-capture-path={capturePath}>
+      <header className="tool-heading jazz-tool-header">
+        <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))}
+          aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
+        <h1><img src="/visuals/tools/pixel/tuner.png" alt="" aria-hidden="true" /> Tuner</h1>
+        <button type="button" className="tool-settings" aria-label="Tuner help" aria-expanded={showHelp}
+          onClick={() => setShowHelp(value => !value)}>?</button>
       </header>
-      {showHelp ? (
-        <p className="tool-help">Play or sing one sustained note at a time. Chromatic recognizes any note and can show your pitch over time. Guitar and Bass compare against standard open strings.</p>
-      ) : null}
-      <div className="tuner-modes" role="group" aria-label="Tuning mode">
-        {(['chromatic', 'guitar', 'bass'] as const).map(option => (
-          <button key={option} type="button" aria-pressed={mode === option} onClick={() => setMode(option)}>
-            {option[0].toUpperCase() + option.slice(1)}
+
+      <div className="jazz-tool-settings" hidden={!showHelp}>
+        <div className="jazz-tool-settings-heading"><strong>Tuner options</strong>
+          <button type="button" onClick={() => setShowHelp(false)} aria-label="Close tuner options">×</button>
+        </div>
+        <p className="tool-help">Play or sing one sustained note at a time. Chromatic works with any pitched instrument or voice. Guitar and Bass compare standard open strings.</p>
+        <div className="tuner-modes" role="group" aria-label="Tuning mode">
+          {(['chromatic', 'guitar', 'bass'] as const).map(option => (
+            <button key={option} type="button" aria-pressed={mode === option} onClick={() => setMode(option)}>
+              {option[0].toUpperCase() + option.slice(1)}
+            </button>
+          ))}
+        </div>
+        <div className="tuner-trail-controls">
+          <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
+            onClick={() => setShowPitchTrail(value => !value)}>
+            {showPitchTrail ? 'Hide pitch graph' : 'Show pitch graph'}
           </button>
-        ))}
+        </div>
+        <div className="tuner-reference">
+          <span className="tuner-speaker" aria-hidden="true">♫</span>
+          <span><strong>Reference Pitch</strong><small>Play A (440 Hz)</small></span>
+          <button type="button" className="tuner-reference-play" onClick={() => void toggleReference()}
+            aria-label={referencePlaying ? 'Stop A 440 hertz tone' : 'Play A 440 hertz tone'}>
+            <img src={referencePlaying ? '/visuals/tools/pixel/stop.png' : '/visuals/tools/pixel/play.png'} alt="" aria-hidden="true" />
+          </button>
+        </div>
       </div>
-      {status === 'denied' || status === 'unsupported' || status === 'error' ? (
-        <section className="tuner-unavailable" role="alert">
-          <div className="tuner-unavailable-symbol" aria-hidden="true">!</div>
-          <h2>{status === 'denied' ? 'Microphone access denied' :
-            status === 'unsupported' ? 'Microphone unavailable' : 'Tuner unavailable'}</h2>
-          <p>{message || 'Microphone input could not be started. Check your device settings and try again.'}</p>
+
+      {unavailable ? (
+        <section className="jazz-tuner-card jazz-tuner-unavailable" role="alert" aria-label="Microphone unavailable">
+          <span className="jazz-unavailable-icon" aria-hidden="true">
+            {status === 'denied' ? '♩' : status === 'unsupported' ? '×' : '!'}
+          </span>
+          <h2>{status === 'denied' ? 'Microphone Access Denied' :
+            status === 'unsupported' ? 'No Microphone Available' : 'Tuner Error'}</h2>
+          <p>{message || 'Could not start microphone audio. Check permissions and try again.'}</p>
+          <button type="button" className="jazz-unavailable-retry" onClick={() => void startMicrophone()}>
+            {status === 'denied' ? 'Try Microphone Again' : 'Try Again'}
+          </button>
+          <button type="button" className="jazz-unavailable-dismiss"
+            onClick={onClose ?? (() => navigate('/practice'))}>Not Now</button>
         </section>
       ) : (
-        <>
-          <div className="tuner-indicator">
-      <div className="tuner-gauge" aria-label={reading && isNearString
-        ? 'Deviation ' + Math.round(reading.cents) + ' cents'
-        : 'No valid tuning measurement'}>
-        <div className="tuner-gauge-labels" aria-hidden="true"><span>−50</span><span>−20</span><span>0</span><span>+20</span><span>+50</span></div>
-        <svg viewBox="0 0 320 150" role="img" aria-hidden="true">
-          {Array.from({ length: 25 }, (_, index) => {
-            const degrees = -70 + index * (140 / 24);
-            const angle = degrees * Math.PI / 180;
-            const outer = 134;
-            const inner = index === 12 ? 100 : index % 4 === 0 ? 116 : 123;
-            const color = index <= 2 || index >= 22 ? '#da5351' :
-              index >= 5 && index <= 19 ? '#285b45' : '#1c3438';
-            return <line key={index} x1={160 + Math.sin(angle) * inner}
-              y1={146 - Math.cos(angle) * inner}
-              x2={160 + Math.sin(angle) * outer}
-              y2={146 - Math.cos(angle) * outer}
-              stroke={color} strokeWidth={index === 12 ? 7 : 2.5} strokeLinecap="round" />;
-          })}
-          {needleAngle !== null ? (
-            <g transform={'rotate(' + needleAngle + ' 160 146)'}>
-              <path d="M154 141 L160 44 L166 141 Q160 152 154 141Z" fill="#17383a" />
-            </g>
-          ) : <circle cx="160" cy="141" r="5" fill="#afbaa9" />}
-        </svg>
-      </div>
-      <div className="tuner-reading" aria-live="off">
-        <strong>{reading?.note ?? '—'}</strong>
-        <span>{reading ? reading.frequency.toFixed(1) + ' Hz' : 'No pitch detected'}</span>
-        {reading && mode !== 'chromatic' && reading.isOpenString ? (
-          <small>Open string: {reading.targetLabel}</small>
-        ) : null}
-      </div>
-      <div className={`tuner-status${status === 'listening' && isNearString && isTuned ? ' is-in-tune' : ''}`} role="status">{getTuningMessage()}</div>
+        <div className="jazz-tuner-card">
+          <div className="tuner-gauge" aria-label={reading && isNearString
+            ? 'Deviation ' + Math.round(reading.cents) + ' cents' : 'No valid tuning measurement'}>
+            <svg viewBox="0 0 320 167" role="img" aria-hidden="true">
+              {Array.from({ length: 35 }, (_, index) => {
+                const from = -68 + index * (136 / 35);
+                const to = -68 + (index + .85) * (136 / 35);
+                const arcPoint = (angle: number, radius: number) => {
+                  const r = angle * Math.PI / 180;
+                  return [160 + Math.sin(r) * radius, 150 - Math.cos(r) * radius];
+                };
+                const a = arcPoint(from, 116);
+                const b = arcPoint(from, 129);
+                const c = arcPoint(to, 129);
+                const d = arcPoint(to, 116);
+                return <polygon key={index} points={[a, b, c, d].map(point => point.join(',')).join(' ')}
+                  fill={index >= 13 && index <= 21 ? '#90b966' : '#c5aed7'} />;
+              })}
+              {[-50, -20, -10, 0, 10, 20, 50].map(value => {
+                const angle = value / 50 * 68 * Math.PI / 180;
+                const radius = 146;
+                return <text key={value} x={160 + Math.sin(angle) * radius}
+                  y={153 - Math.cos(angle) * radius} textAnchor="middle" fontSize="12.5"
+                  fill="currentColor" fontWeight="650">{value > 0 ? '+' : ''}{value}</text>;
+              })}
+              <g transform={'rotate(' + (needleAngle ?? 0) + ' 160 150)'}
+                opacity={reading && isNearString ? 1 : .32}>
+                <line x1="160" y1="150" x2="160" y2="42" stroke="currentColor"
+                  strokeWidth="4.2" strokeLinecap="round" />
+              </g>
+            </svg>
           </div>
-      <div className="tuner-measurements">
-        <div><strong>{reading && isNearString ? reading.targetLabel : '—'}</strong><span>{reading && isNearString ? reading.targetFrequency.toFixed(1) + ' Hz target' : 'Target'}</span></div>
-        <div><strong>{reading && isNearString ? (reading.cents >= 0 ? '+' : '') + Math.round(reading.cents) + '¢' : '—'}</strong><span>Deviation</span></div>
-      </div>
-        </>
+          <div className="tuner-reading" aria-live="off">
+            <strong>{reading?.note ?? '—'}</strong>
+            <span>{reading ? reading.frequency.toFixed(1) + ' Hz' : 'No pitch detected'}
+              {reading && isNearString ? '  ·  ' + (reading.cents >= 0 ? '+' : '') + reading.cents.toFixed(1) + '¢' : ''}
+            </span>
+            {reading && mode !== 'chromatic' && reading.isOpenString ? (
+              <small>Open string: {reading.targetLabel}</small>
+            ) : null}
+          </div>
+          <div className={'tuner-status' + (status === 'listening' && isNearString && isTuned ? ' is-in-tune' : '') +
+            (status === 'listening' && isNearString && reading && !isTuned ? ' is-deviating' : '')}
+            role="status">{getTuningMessage()}</div>
+          <div className="tuner-measurements">
+            <div><strong>{reading && isNearString ? reading.targetLabel : '—'}</strong>
+              <span>{reading && isNearString ? reading.targetFrequency.toFixed(1) + ' Hz target' : 'Target'}</span></div>
+            <div><strong>{reading && isNearString ? (reading.cents >= 0 ? '+' : '') + Math.round(reading.cents) + '¢' : '—'}</strong>
+              <span>Deviation</span></div>
+          </div>
+        </div>
       )}
-      <div className="tuner-trail-controls">
-        <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
-          onClick={() => setShowPitchTrail(value => !value)}>
-          {showPitchTrail ? 'Hide pitch graph' : 'Show pitch graph'}
-        </button>
-      </div>
-      {pitchTrailEnabled ? (
+
+      {showPitchTrail && !unavailable ? (
         <section className="tuner-trail-panel" aria-label="Live pitch graph">
           <div className="tuner-trail-heading"><strong>Pitch over time</strong></div>
           <div className="tuner-trail-plot">
@@ -391,7 +428,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
               <line x1="0" x2="320" y1="27" y2="27" stroke="#dedecf" strokeDasharray="4 6" />
               <line x1="0" x2="320" y1="69" y2="69" stroke="#dedecf" strokeDasharray="4 6" />
               {trail.segments.map((segment, index) => (
-                <polyline key={index} points={segment.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ')}
+                <polyline key={index} points={segment.map(point => point.x.toFixed(1) + ',' + point.y.toFixed(1)).join(' ')}
                   fill="none" stroke="#397456" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               ))}
               {trail.current && <circle cx={trail.current.x} cy={trail.current.y} r="4.5" fill="#c69a52" />}
@@ -401,26 +438,32 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           <small>8 seconds ago <span>Now</span></small>
         </section>
       ) : null}
-      <button className="tuner-mic" type="button" onClick={toggleMicrophone} aria-pressed={status === 'listening'}>
-        <span aria-hidden="true">◉</span> {status === 'listening' ? 'Stop microphone' :
-          status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
-      </button>
-      {status === 'listening' && micSignal === 'interrupted' ? (
-        <button className="tuner-mic" type="button" onClick={resumeMicrophoneAudio}>Resume audio</button>
+
+      {!unavailable ? (
+        <div className="jazz-tuner-microphone-actions">
+          <button className="tuner-mic" type="button" onClick={toggleMicrophone}
+            aria-pressed={status === 'listening'}>
+            <span className="jazz-mic-symbol" aria-hidden="true">♩</span>
+            {status === 'listening' ? 'Listening…  ·  Stop' :
+              status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
+          </button>
+          {status === 'listening' && micSignal === 'interrupted' ? (
+            <button className="tuner-mic jazz-mic-resume" type="button"
+              onClick={resumeMicrophoneAudio}>Resume audio</button>
+          ) : null}
+        </div>
       ) : null}
-      {message && status !== 'denied' && status !== 'unsupported' && status !== 'error' ? (
-        <p className="tool-error" role="alert">{message}</p>
-      ) : null}
-      <div className="tuner-reference">
-        <span className="tuner-speaker" aria-hidden="true">♫</span>
-        <span><strong>Reference Pitch</strong><small>Play A (440 Hz)</small></span>
-        <button type="button" className="tuner-reference-play" onClick={() => void toggleReference()}
-          aria-label={referencePlaying ? 'Stop A 440 hertz tone' : 'Play A 440 hertz tone'}>
-          <img src={referencePlaying ? '/visuals/tools/pixel/stop.png' : '/visuals/tools/pixel/play.png'} alt="" aria-hidden="true" />
-        </button>
-      </div>
-      <div className="tool-cat-scene tool-tuner-scene" aria-hidden="true">
-        <DecorativeCat catId={catId} variant="sleeping" size={182} className="tool-scene-cat" />
+      {message && !unavailable ? <p className="tool-error" role="alert">{message}</p> : null}
+
+      <div className="jazz-tool-footer" aria-hidden="true">
+        <img className="jazz-tool-plant" src="/visuals/tools/mockup/pothos.svg" alt="" />
+        <div className="tool-cat-scene tool-tuner-scene">
+          {catId === 'luna' ? (
+            <img className="tool-scene-cat jazz-mock-cat" src="/visuals/tools/mockup/cat-sleeping.svg"
+              alt="" style={{ visibility: catMode ? 'visible' : 'hidden' }} />
+          ) : <DecorativeCat catId={catId} variant="sleeping" size={116} className="tool-scene-cat" />}
+        </div>
+        <span className="jazz-decor-note">♫</span>
       </div>
     </section>
   );
