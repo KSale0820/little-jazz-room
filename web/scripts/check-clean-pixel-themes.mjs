@@ -160,7 +160,19 @@ try {
               screen + ' cat footprint is missing');
             const footprintKey = [width, height, theme, screen].join('-');
             if (!catMode) catLayoutFootprints.set(footprintKey, state.catFootprint);
-            else assert.deepEqual(state.catFootprint, catLayoutFootprints.get(footprintKey),
+            else if (screen === 'Progress') {
+              const off = catLayoutFootprints.get(footprintKey);
+              const on = state.catFootprint;
+              // Sleeping art has extra transparent space beneath the paws. The
+              // Progress-specific 12px offset seats both poses on piano keys.
+              // Preserve the x position and sprite footprint, while accepting
+              // that intentional vertical shift. Pixel-level contact is tested
+              // separately in check-progress-redesign.mjs.
+              assert.ok(off && Math.abs(off[0] - on[0]) <= 1 &&
+                Math.abs(off[2] - on[2]) <= 1 && Math.abs(off[3] - on[3]) <= 1 &&
+                Math.abs(off[1] - on[1]) <= 16,
+                'Progress companion changed geometry beyond pose alignment');
+            } else assert.deepEqual(state.catFootprint, catLayoutFootprints.get(footprintKey),
               screen + ' must not shift or resize its cat placement when Cat Mode changes');
           }
           if (screen === 'Profile') {
