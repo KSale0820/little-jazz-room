@@ -869,3 +869,21 @@ html[data-theme] .jazz-tool-page .tool-cat-scene .jazz-mock-cat { filter: none; 
   html[data-theme] .jazz-tool-page .tool-cat-scene .tool-scene-cat { height: 83px; width: 120px; }
   html[data-theme] .jazz-tool-page .tool-metronome-scene .tool-scene-cat { width: 100px; height: 88px; }
 }
+
+/* Explicit tuning-microphone glyph. No fake activity bars or level animation. */
+html[data-theme] .jazz-tool-page .jazz-mic-symbol,
+html[data-theme] .jazz-tool-page .jazz-mic-large {
+  display: inline-block;
+  width: 21px;
+  height: 25px;
+  flex: 0 0 21px;
+  margin: 0;
+  background-color: currentColor;
+  -webkit-mask: url('/visuals/tools/mockup/microphone.svg') center / contain no-repeat;
+  mask: url('/visuals/tools/mockup/microphone.svg') center / contain no-repeat;
+}
+html[data-theme] .jazz-tool-page .jazz-mic-large {
+  width: 54px;
+  height: 59px;
+  flex-basis: 54px;
+}
