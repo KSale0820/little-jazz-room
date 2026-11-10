@@ -287,25 +287,52 @@ try {
 
   // Compare the implemented player against the approved Autumn Leaves reference
   // using the real seeded 35-bar chart, not placeholder/mockup chord data.
-  for (const theme of ['light', 'dark']) {
-    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-    await context.addInitScript(theme => localStorage.setItem('little-jazz-room:appearance:v1', theme), theme);
-    const page = await context.newPage();
-    await page.goto(base + '/player?chart=autumn-leaves-gm-video-35', { waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Autumn Leaves' }).waitFor();
-    assert.equal(await page.locator('.practice-chart-scroll .measure').count(), 35,
-      'Autumn Leaves must preserve all 35 real chord measures');
-    const finish = await page.locator('.practice-finish-action').boundingBox();
-    const navBar = await page.locator('nav.bottom-nav').boundingBox();
-    assert.ok(finish && navBar && finish.y + finish.height <= navBar.y + 1,
-      'Finish Session must stay visible above bottom navigation for Autumn Leaves: ' +
-      JSON.stringify({ theme, finish, navBar }));
-    await page.screenshot({
-      path: path.join(output, 'player-autumn-leaves-390x844-' + theme + '.png'),
-      animations: 'disabled',
-    });
-    await context.close();
-    report.push({ screen: 'Autumn Leaves Practice Player', label: '390x844-' + theme, status: 'PASS' });
+  for (const [width, height] of [[390, 844], [375, 667]]) {
+    for (const theme of ['light', 'dark']) {
+      const context = await browser.newContext({ viewport: { width, height }, isMobile: true, hasTouch: true });
+      await context.addInitScript(theme => localStorage.setItem('little-jazz-room:appearance:v1', theme), theme);
+      const page = await context.newPage();
+      await page.goto(base + '/player?chart=autumn-leaves-gm-video-35', { waitUntil: 'networkidle' });
+      await page.getByRole('heading', { name: 'Autumn Leaves' }).waitFor();
+      assert.equal(await page.locator('.practice-chart-scroll .measure').count(), 35,
+        'Autumn Leaves must preserve all 35 real chord measures');
+      const boxes = await page.evaluate(() => {
+        const box = selector => {
+          const element = document.querySelector(selector);
+          const rect = element?.getBoundingClientRect();
+          return rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height, bottom: rect.bottom } : null;
+        };
+        return {
+          chart: box('.practice-chart-scroll'),
+          seek: box('.practice-chart-seek, .practice-recording-seek'),
+          transport: box('.practice-control-row'),
+          tempo: box('.practice-player-pills'),
+          utilities: box('.practice-utility-row'),
+          timer: box('.practice-session-row .practice-time-badge'),
+          finish: box('.practice-finish-action'),
+          nav: box('nav.bottom-nav'),
+        };
+      });
+      assert.ok(boxes.chart && boxes.finish && boxes.nav && boxes.transport && boxes.timer,
+        'Missing Practice Player elements: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.ok(boxes.chart.height >= (height >= 800 ? 280 : 145),
+        'Chart should receive most spare vertical space: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.ok(boxes.transport.y >= boxes.chart.bottom - 1,
+        'Transport must follow chart and seek: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.ok(boxes.transport.height <= 49 && boxes.utilities.height <= 48 && boxes.finish.height <= 45,
+        'Controls need compact footprints: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.ok(Math.abs(boxes.timer.y - boxes.finish.y) <= 15,
+        'Time practiced and compact Finish should share the bottom row: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.ok(boxes.finish.bottom <= boxes.nav.y + 1,
+        'Finish Session must stay visible above bottom navigation: ' + JSON.stringify({ theme, width, height, boxes }));
+      await page.screenshot({
+        path: path.join(output, 'player-autumn-leaves-' + width + 'x' + height + '-' + theme + '.png'),
+        animations: 'disabled',
+      });
+      await context.close();
+      report.push({ screen: 'Autumn Leaves Practice Player', label: width + 'x' + height + '-' + theme,
+        ...boxes, status: 'PASS' });
+    }
   }
 
   // Exercise actual controls (not direct localStorage writes) and confirm reload.
