@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CatChooser, CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { useApp } from '../context/AppContext';
@@ -30,13 +30,13 @@ export function ProfilePage() {
   const [nameMessage, setNameMessage] = useState('');
   useEffect(() => { const next = readProfileName(accountKey, authName); setProfileName(next); setDraftName(next); setEditingName(false); setNameMessage(''); }, [accountKey, authName]);
 
-  const saveName = async (event: React.FormEvent<HTMLFormElement>) => {
+  const saveName = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const next = normalizeProfileName(draftName);
     if (!next) { setNameMessage('Enter a display name.'); return; }
     setSavingName(true);
     const localSaved = saveProfileName(accountKey, next);
-    let cloudSaved = !user;
+    let cloudSaved = false;
     if (user) {
       try { const client = getSupabaseClient(); if (client) { const { error } = await client.auth.updateUser({ data: { display_name: next } }); cloudSaved = !error; } }
       catch { cloudSaved = false; }
