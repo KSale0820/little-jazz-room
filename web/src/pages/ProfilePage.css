@@ -3,17 +3,33 @@
   background: var(--color-bg);
   color: var(--color-text);
   min-height: 100%;
-  padding: 13px 13px 34px;
+  padding: 6px 13px 34px;
   font-family: var(--font-ui, system-ui, sans-serif);
 }
 .profile-page *, .profile-page *::before, .profile-page *::after { box-sizing: border-box; min-width: 0; }
 .profile-top { padding: 0 8px; margin-bottom: 14px; }
-.profile-brand-row { position: relative; height: 68px; display: flex; align-items: center; justify-content: center; }
-.profile-brand { width: min(200px, 60%); height: 35px; object-fit: contain; }
+.profile-brand-row {
+  position: relative;
+  height: clamp(119px, 35vw, 165px);
+  margin: -6px -8px 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  isolation: isolate;
+}
+.profile-shelf-art {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: fill; pointer-events: none; user-select: none;
+}
+.profile-brand {
+  position: relative; z-index: 1; margin-top: 24px;
+  width: min(175px, 44%); height: clamp(35px, 11vw, 51px);
+  object-fit: contain; pointer-events: none;
+}
 html[data-theme="dark"] .profile-brand { filter: brightness(0) invert(1); }
-.profile-ornament { position: absolute; width: 51px; height: 56px; object-fit: contain; image-rendering: pixelated; pointer-events: none; }
-.profile-ornament-left { left: 0; top: 0; }
-.profile-ornament-right { right: 0; top: 5px; }
+@media (min-width: 600px) {
+  .profile-brand { margin-top: 32px; width: min(240px, 42%); }
+}
 .profile-title { color: var(--color-text); font: 800 27px/1.15 var(--font-ui); letter-spacing: -.035em; margin: 0 0 4px; }
 .profile-subtitle { color: var(--color-muted); font: 400 12px/1.45 var(--font-ui); margin: 0; }
 
@@ -186,7 +202,7 @@ html[data-theme="dark"] .profile-brand { filter: brightness(0) invert(1); }
 .profile-account-local { padding: 10px 6px 2px; font: 450 10px/1.4 var(--font-ui); color: var(--color-muted); }
 
 @media (max-width: 380px) {
-  .profile-page { padding: 12px 10px 30px; }
+  .profile-page { padding: 6px 10px 30px; }
   .profile-identity { gap: 8px; padding: 10px; }
   .profile-identity-copy strong { font-size: 18px; }
   .profile-edit-link { max-width: 94px; padding: 6px; font-size: 9px; }
