@@ -191,7 +191,6 @@ export const VISUAL_ASSETS = {
     plantPot: '/visuals/pixel-motifs/approved/plant-pot.png',
     planterBox: '/visuals/pixel-motifs/approved/planter-box.png',
     plusSparkle: '/visuals/pixel-motifs/approved/plus-sparkle.png',
-    smallPlant: '/visuals/pixel-motifs/approved/small-plant.png',
     sparkleCluster: '/visuals/pixel-motifs/approved/sparkle-cluster.png',
     sparkle: '/visuals/pixel-motifs/approved/sparkle.png',
     staffWave: '/visuals/pixel-motifs/approved/staff-wave.png',
