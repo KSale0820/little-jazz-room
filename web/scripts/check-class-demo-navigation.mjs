@@ -21,10 +21,19 @@ try {
     const open = async path => { await page.goto(base + path, { waitUntil: 'networkidle' }); };
     const requireUrl = async expected => page.waitForURL(url => url.pathname === expected);
 
-    // Free Player shortcuts must open in-session overlays; Guided also includes these approved controls.
+    // Timer-first Free Practice is separate from the chart-based shared Player.
     await open('/practice');
     await page.getByRole('button', { name: /^Free Practice/ }).click();
-    await requireUrl('/player');
+    await requireUrl('/free-practice');
+    await page.locator('.fp-page').waitFor({ state: 'visible' });
+    const freeTools = page.locator('.fp-tools');
+    await freeTools.getByRole('button', { name: 'Tuner' }).click();
+    await page.getByRole('dialog', { name: 'Tuner', exact: true }).waitFor();
+    await page.keyboard.press('Escape');
+    await freeTools.getByRole('button', { name: 'Metronome' }).click();
+    await page.getByRole('dialog', { name: 'Metronome', exact: true }).waitFor();
+    await page.keyboard.press('Escape');
+    await open('/player?chart=blues-f-12');
     const utilities = page.locator('.practice-utility-row');
     assert(await utilities.getByRole('button', { name: /Mixer/ }).isDisabled(), 'Mixer should remain a labeled preview');
     assert(await utilities.getByRole('button', { name: /Tuner/ }).isEnabled(), 'Player Tuner must be usable');
@@ -56,11 +65,11 @@ try {
     // Explore must go to the chart *library*, not a free-practice Player.
     await open('/explore');
     await page.getByRole('button', { name: 'View charts' }).click();
-    await requireUrl('/charts');
-    await page.getByRole('heading', { name: 'Charts' }).waitFor();
-    assert((await page.locator('.demo-row').count()) > 0, 'Chart browse destination has no charts');
+    await requireUrl('/tracks');
+    await page.getByRole('heading', { name: 'Tracks & Charts' }).waitFor();
+    assert((await page.locator('.t01-track-card').count()) > 0, 'Unified chart browse has no entries');
     await page.screenshot({ path: join(out, 'explore-charts-' + width + 'x' + height + '.png') });
-    await page.locator('.demo-row').first().click();
+    await page.getByRole('button', { name: 'Practice After-Hours Blues with its linked chart' }).click();
     await requireUrl('/player');
     await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).waitFor({ state: 'visible' });
 
