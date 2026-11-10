@@ -291,3 +291,7 @@ html[data-theme="dark"] .sc-secondary { background: #292d2e; color: #f1f3f0; bor
   padding-bottom: env(safe-area-inset-bottom);
   overscroll-behavior: contain;
 }
+
+/* Saving is already represented by the primary CTA. The global app toast would
+   cover the dedicated completion surface and is redundant here. */
+.app-shell:has(.sc-page) .toast-message { display: none !important; }
