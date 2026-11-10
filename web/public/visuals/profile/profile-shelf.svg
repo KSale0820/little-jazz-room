@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 280" width="960" height="280" role="img" aria-labelledby="title" shape-rendering="crispEdges">
+<title id="title">Jazz room shelf with plants, books, lamp, coffee, vinyl, and flowers</title>
+<defs>
+  <linearGradient id="wood" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#d48a46"/><stop offset=".3" stop-color="#94532d"/><stop offset=".72" stop-color="#683720"/><stop offset="1" stop-color="#3e2420"/></linearGradient>
+  <radialGradient id="glow"><stop stop-color="#ffbf5c" stop-opacity=".42"/><stop offset="1" stop-color="#ffb25c" stop-opacity="0"/></radialGradient>
+</defs>
+<!-- Wooden shelf, visible on both studio color themes -->
+<path d="M82 204H878v20H82z" fill="#3f241b"/>
+<path d="M82 204H878v9H82z" fill="url(#wood)"/>
+<path d="M86 204H873v3H86z" fill="#edac60" opacity=".8"/>
+<path d="M86 215H873v3H86z" fill="#39201c"/>
+<path d="M109 223h36v22h-7v14h-16v-14h-13z M815 223h36v22h-7v14h-16v-14h-13z" fill="#5b3021"/>
+<path d="M113 225h27v5h-27z M820 225h27v5h-27z" fill="#b46b38"/>
+<rect x="129" y="232" width="6" height="6" fill="#e9ad6d"/><rect x="829" y="232" width="6" height="6" fill="#e9ad6d"/>
+<!-- Hanging plant: rope, basket, leaves -->
+<path d="M44 31h7v8h-7z M43 39h3l-22 56h-6z M48 39h4l22 56h-6z" fill="#bb763e"/>
+<path d="M30 91h48v25H30z" fill="#984c27"/><path d="M34 91h42v5H34z" fill="#e1a15f"/><path d="M38 110h33v6H38z" fill="#723b29"/>
+<path d="M45 83h6v33h-6z M29 70h10v42H29z M56 66h9v45h-9z" fill="#2d6b2d"/>
+<path fill="#85c848" d="M28 77 l-17 -8.5 l6.800000000000001 11.899999999999999 l--13.600000000000001 10.2 z"/>
+<path fill="#85c848" d="M30 63 l-19 -9.5 l7.6000000000000005 13.299999999999999 l--15.200000000000001 11.4 z"/>
+<path fill="#85c848" d="M34 87 l-17 -8.5 l6.800000000000001 11.899999999999999 l--13.600000000000001 10.2 z"/>
+<path fill="#85c848" d="M44 63 l-15 -7.5 l6 10.5 l--12 9 z"/>
+<path fill="#85c848" d="M51 79 l19 -9.5 l7.6000000000000005 13.299999999999999 l-15.200000000000001 11.4 z"/>
+<path fill="#85c848" d="M58 60 l18 -9 l7.2 12.6 l-14.4 10.799999999999999 z"/>
+<path fill="#85c848" d="M66 83 l21 -10.5 l8.4 14.7 l-16.8 12.6 z"/>
+<path fill="#85c848" d="M72 73 l15 -7.5 l6 10.5 l-12 9 z"/>
+<path fill="#85c848" d="M33 107 l-15 -7.5 l6 10.5 l--12 9 z"/>
+<path fill="#85c848" d="M58 118 l13 -6.5 l5.2 9.1 l-10.4 7.8 z"/>
+<path fill="#85c848" d="M70 134 l18 -9 l7.2 12.6 l-14.4 10.799999999999999 z"/>
+<path fill="#85c848" d="M38 150 l-14 -7 l5.6000000000000005 9.799999999999999 l--11.200000000000001 8.4 z"/>
+<path fill="#85c848" d="M74 168 l12 -6 l4.800000000000001 8.399999999999999 l-9.600000000000001 7.199999999999999 z"/>
+<path fill="#3d9a3e" d="M25 94 l-11 -5.5 l4.4 7.699999999999999 l--8.8 6.6 z"/>
+<path fill="#3d9a3e" d="M56 74 l12 -6 l4.800000000000001 8.399999999999999 l-9.600000000000001 7.199999999999999 z"/>
+<path fill="#3d9a3e" d="M42 55 l-9 -4.5 l3.6 6.3 l--7.2 5.3999999999999995 z"/>
+<path fill="#3d9a3e" d="M74 108 l10 -5 l4 7 l-8 6 z"/>
+<path fill="#3d9a3e" d="M37 127 l-12 -6 l4.800000000000001 8.399999999999999 l--9.600000000000001 7.199999999999999 z"/>
+<path d="M23 94q-8 48 9 79 M62 105q15 36 8 80" stroke="#4c983a" stroke-width="4" fill="none"/>
+<!-- Books in a little stack -->
+<g stroke="#5c3029" stroke-width="2"><rect x="151" y="140" width="23" height="61" fill="#9c5836"/><rect x="177" y="135" width="21" height="66" fill="#96502b"/><rect x="202" y="146" width="20" height="55" fill="#a7683c"/></g>
+<path d="M157 151h11v3h-11z M157 187h11v3h-11z M182 147h10v4h-10z M182 182h10v4h-10z M207 157h10v4h-10z" fill="#e9ae62"/>
+<path d="M162 157v22 M187 152v24 M212 162v21" stroke="#6c392e" stroke-width="3"/>
+<!-- Warm brass lamp with ambient glow -->
+<ellipse cx="269" cy="149" rx="78" ry="83" fill="url(#glow)"/>
+<path d="M249 116h39l26 48-7 15h-75l-7-15z" fill="#704129"/>
+<path d="M250 120h37l24 44-10 8h-64l-7-8z" fill="#ffca67"/>
+<path d="M257 125h31l17 35h-66z" fill="#fff0bb"/>
+<path d="M259 123l-15 42 M286 123l16 42" stroke="#c27a33" stroke-width="5"/>
+<path d="M230 165h81v8h-81z M242 178h57v7h-57z" fill="#c88639"/>
+<path d="M265 183h12v12h-12z M247 195h47v8h-47z" fill="#c78d48"/>
+<path d="M254 199h35v4h-35z" fill="#f0b668"/>
+<rect x="264" y="106" width="13" height="8" fill="#de9c49"/>
+<!-- Leafy flowering vines draped from shelf -->
+<path d="M310 214q20 9 46 6t55 4t69 10 M557 219q34 18 65 5t76 0t45 5" stroke="#4d8237" stroke-width="8" fill="none" stroke-linecap="square"/>
+<path d="M316 217q25 10 46 5t47 6t63 10 M564 226q37 11 69-2t63 5t43 5" stroke="#90bb55" stroke-width="3" fill="none"/>
+<path fill="#529844" d="M329 216 l-18 -9 l7.2 12.6 l--14.4 10.799999999999999 z"/>
+<path fill="#529844" d="M340 235 l16 -8 l6.4 11.2 l-12.8 9.6 z"/>
+<path fill="#529844" d="M365 221 l-18 -9 l7.2 12.6 l--14.4 10.799999999999999 z"/>
+<path fill="#529844" d="M385 231 l21 -10.5 l8.4 14.7 l-16.8 12.6 z"/>
+<path fill="#529844" d="M413 223 l-16 -8 l6.4 11.2 l--12.8 9.6 z"/>
+<path fill="#529844" d="M436 246 l19 -9.5 l7.6000000000000005 13.299999999999999 l-15.200000000000001 11.4 z"/>
+<path fill="#529844" d="M464 230 l-18 -9 l7.2 12.6 l--14.4 10.799999999999999 z"/>
+<path fill="#529844" d="M585 230 l-15 -7.5 l6 10.5 l--12 9 z"/>
+<path fill="#529844" d="M615 238 l17 -8.5 l6.800000000000001 11.899999999999999 l-13.600000000000001 10.2 z"/>
+<path fill="#529844" d="M645 216 l-17 -8.5 l6.800000000000001 11.899999999999999 l--13.600000000000001 10.2 z"/>
+<path fill="#529844" d="M669 236 l18 -9 l7.2 12.6 l-14.4 10.799999999999999 z"/>
+<path fill="#529844" d="M699 224 l-18 -9 l7.2 12.6 l--14.4 10.799999999999999 z"/>
+<path fill="#529844" d="M731 237 l16 -8 l6.4 11.2 l-12.8 9.6 z"/>
+<path fill="#a4c65e" d="M330 236 l13 -6.5 l5.2 9.1 l-10.4 7.8 z"/>
+<path fill="#a4c65e" d="M374 238 l-12 -6 l4.800000000000001 8.399999999999999 l--9.600000000000001 7.199999999999999 z"/>
+<path fill="#a4c65e" d="M413 246 l16 -8 l6.4 11.2 l-12.8 9.6 z"/>
+<path fill="#a4c65e" d="M628 215 l-12 -6 l4.800000000000001 8.399999999999999 l--9.600000000000001 7.199999999999999 z"/>
+<path fill="#a4c65e" d="M678 215 l-12 -6 l4.800000000000001 8.399999999999999 l--9.600000000000001 7.199999999999999 z"/>
+<path fill="#a4c65e" d="M717 248 l13 -6.5 l5.2 9.1 l-10.4 7.8 z"/>
+<g transform="translate(348 219)"><rect x="-3" y="-12" width="6" height="24" fill="#fff5d9"/><rect x="-12" y="-3" width="24" height="6" fill="#fff5d9"/><rect x="-7" y="-7" width="14" height="14" fill="#fff5d9"/><rect x="-3" y="-3" width="6" height="6" fill="#e8bd60"/></g><g transform="translate(393 228)"><rect x="-3" y="-12" width="6" height="24" fill="#fff5d9"/><rect x="-12" y="-3" width="24" height="6" fill="#fff5d9"/><rect x="-7" y="-7" width="14" height="14" fill="#fff5d9"/><rect x="-3" y="-3" width="6" height="6" fill="#e8bd60"/></g><g transform="translate(650 222)"><rect x="-3" y="-12" width="6" height="24" fill="#fff5d9"/><rect x="-12" y="-3" width="24" height="6" fill="#fff5d9"/><rect x="-7" y="-7" width="14" height="14" fill="#fff5d9"/><rect x="-3" y="-3" width="6" height="6" fill="#e8bd60"/></g><g transform="translate(712 230)"><rect x="-3" y="-12" width="6" height="24" fill="#fff5d9"/><rect x="-12" y="-3" width="24" height="6" fill="#fff5d9"/><rect x="-7" y="-7" width="14" height="14" fill="#fff5d9"/><rect x="-3" y="-3" width="6" height="6" fill="#e8bd60"/></g>
+<!-- Coffee cup and curl of steam -->
+<path d="M744 167h44v36h-44z" fill="#efe1b8"/><path d="M745 170h40v7h-40z" fill="#fff6d7"/>
+<path d="M789 175h13v20h-13z" fill="none" stroke="#eee0b9" stroke-width="7"/>
+<path d="M738 201h62v6h-62z" fill="#e8c49a"/><path d="M752 151q-5-9 3-17t-2-16 M768 150q8-10 0-17t5-15" stroke="#c5aa93" stroke-width="4" fill="none" stroke-linecap="square"/>
+<!-- Leaning vinyl and stand -->
+<path d="M807 138l69-9 9 69-69 9z" fill="#352d36" stroke="#b58b5c" stroke-width="4"/>
+<circle cx="846" cy="169" r="27" fill="#20222b"/><circle cx="846" cy="169" r="17" fill="#5a3a3d"/><circle cx="846" cy="169" r="11" fill="#c96265"/><circle cx="846" cy="169" r="3" fill="#f6c2a7"/>
+<path d="M812 203h74v5h-74z" fill="#a36c3e"/>
+<!-- Right hand planter -->
+<path d="M881 132h63v47h-63z" fill="#a55d30"/><path d="M875 129h74v11h-74z" fill="#d48b4c"/><path d="M888 146h49v25h-49z" fill="#8d4b2b"/><path d="M899 151h26v16h-26z" fill="#b87242"/>
+<path d="M896 129v-40 M913 128V78 M927 128V90" stroke="#3a7a2e" stroke-width="5"/>
+<path fill="#77c33e" d="M883 111 l-16 -8 l6.4 11.2 l--12.8 9.6 z"/>
+<path fill="#77c33e" d="M887 92 l-13 -6.5 l5.2 9.1 l--10.4 7.8 z"/>
+<path fill="#77c33e" d="M892 78 l-16 -8 l6.4 11.2 l--12.8 9.6 z"/>
+<path fill="#77c33e" d="M902 104 l18 -9 l7.2 12.6 l-14.4 10.799999999999999 z"/>
+<path fill="#77c33e" d="M911 91 l16 -8 l6.4 11.2 l-12.8 9.6 z"/>
+<path fill="#77c33e" d="M918 72 l16 -8 l6.4 11.2 l-12.8 9.6 z"/>
+<path fill="#77c33e" d="M924 108 l17 -8.5 l6.800000000000001 11.899999999999999 l-13.600000000000001 10.2 z"/>
+<path fill="#77c33e" d="M933 85 l15 -7.5 l6 10.5 l-12 9 z"/>
+<path fill="#77c33e" d="M942 115 l16 -8 l6.4 11.2 l-12.8 9.6 z"/>
+<path fill="#77c33e" d="M900 141 l-15 -7.5 l6 10.5 l--12 9 z"/>
+<path fill="#77c33e" d="M931 156 l15 -7.5 l6 10.5 l-12 9 z"/>
+<path fill="#77c33e" d="M923 169 l17 -8.5 l6.800000000000001 11.899999999999999 l-13.600000000000001 10.2 z"/>
+<path fill="#3b9639" d="M890 121 l-12 -6 l4.800000000000001 8.399999999999999 l--9.600000000000001 7.199999999999999 z"/>
+<path fill="#3b9639" d="M911 107 l10 -5 l4 7 l-8 6 z"/>
+<path fill="#3b9639" d="M940 102 l12 -6 l4.800000000000001 8.399999999999999 l-9.600000000000001 7.199999999999999 z"/>
+<path d="M931 161q13 29 5 59" stroke="#3d8631" stroke-width="4" fill="none"/>
+<path fill="#76b944" d="M938 179 l14 -7 l5.6000000000000005 9.799999999999999 l-11.200000000000001 8.4 z"/>
+<path fill="#76b944" d="M932 201 l-12 -6 l4.800000000000001 8.399999999999999 l--9.600000000000001 7.199999999999999 z"/>
+<!-- Small floating gold music notes and sparkles -->
+<path d="M755 89h6v27h-6z M779 82h6v27h-6z M758 88l27-7v8l-27 7z" fill="#f3c75d"/>
+<ellipse cx="752" cy="116" rx="9" ry="6" fill="#f3c75d"/><ellipse cx="775" cy="109" rx="9" ry="6" fill="#f3c75d"/>
+<path d="M729 72h4v14h-4z M723 78h16v4h-16z M815 67h4v14h-4z M809 73h16v4h-16z" fill="#f7d88c"/>
+</svg>
