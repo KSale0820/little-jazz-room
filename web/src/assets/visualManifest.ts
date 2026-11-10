@@ -176,6 +176,10 @@ export const VISUAL_ASSETS = {
   },
   /** Approved independent full-color pixel art, for sparse Light/Dark decorations. */
   streakFlame: '/visuals/pixel-motifs/streak-fire.png',
+  profileSettings: {
+    /** Standalone transparent pixel-art shelf; wordmark stays a separate approved asset. */
+    headerShelf: '/visuals/profile/profile-shelf.svg',
+  },
   approvedPixelMotifs: {
     beamedNotes: '/visuals/pixel-motifs/approved/beamed-notes.png',
     centerDot: '/visuals/pixel-motifs/approved/center-dot.png',
