@@ -655,7 +655,7 @@ export function PracticePage() {
         <span className="practice-page-heading">Practice</span>
         <div className="practice-header-actions">
           <button className="practice-bookmark-link" type="button" aria-label="View bookmarked tracks and charts"
-            onClick={() => navigate('/tracks?category=Favorites')}>
+            onClick={() => navigate('/tracks?category=Bookmarked')}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4V3.5Z"/></svg>
           </button>
           <details className="practice-header-more">

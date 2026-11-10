@@ -15,7 +15,7 @@ const routes = [
   ['Player', '/player?chart=blues-f-12', '.practice-player'],
   ['Tracks', '/tracks', '.t01-page'],
   ['Routines', '/routines', '.routine-library'],
-  ['Progress', '/progress', '.g01-page'],
+  ['Progress', '/progress', '.pgr-page'],
   ['Profile', '/profile', '.profile-page'],
   ['Tuner', '/tuner', '.tool-tuner'],
   ['Metronome', '/metronome', '.tool-metronome'],
@@ -93,11 +93,11 @@ try {
               navTop: rect?.top ?? -1,
               navBottom: rect?.bottom ?? -1,
               catVisibility: (() => {
-                const cat = document.querySelector('.g01-cat, .tool-scene-cat');
+                const cat = document.querySelector('.pgr-cat, .tool-scene-cat');
                 return cat ? getComputedStyle(cat).visibility : null;
               })(),
               catFootprint: (() => {
-                const cat = document.querySelector('.g01-cat, .tool-scene-cat');
+                const cat = document.querySelector('.pgr-cat, .tool-scene-cat');
                 if (!cat) return null;
                 const { x, y, width, height } = cat.getBoundingClientRect();
                 return [x, y, width, height].map(value => Math.round(value * 10) / 10);
@@ -107,7 +107,7 @@ try {
                 return avatar ? getComputedStyle(avatar).visibility : null;
               })(),
               chartCells: document.querySelectorAll('.chord-grid .measure').length,
-              progressCatSrc: document.querySelector('.g01-cat')?.getAttribute('src') ?? null,
+              progressCatSrc: document.querySelector('.pgr-cat')?.getAttribute('src') ?? null,
               profileAvatarSrc: document.querySelector('.profile-companion-art .jazz-cat-sprite')?.getAttribute('src') ?? null,
               profileChooserIds: [...document.querySelectorAll('.board-cat-card')].map(button =>
                 button.getAttribute('aria-label')?.split(',')[0] ?? ''),
@@ -115,7 +115,7 @@ try {
                 img => img.getAttribute('src') ?? ''),
 
               screenBackground: (() => {
-                const root = document.querySelector('.p01-page, .g01-page');
+                const root = document.querySelector('.p01-page, .pgr-page');
                 return root ? getComputedStyle(root).backgroundColor : null;
               })(),
               chartPaperBackground: (() => {
@@ -160,7 +160,19 @@ try {
               screen + ' cat footprint is missing');
             const footprintKey = [width, height, theme, screen].join('-');
             if (!catMode) catLayoutFootprints.set(footprintKey, state.catFootprint);
-            else assert.deepEqual(state.catFootprint, catLayoutFootprints.get(footprintKey),
+            else if (screen === 'Progress') {
+              const off = catLayoutFootprints.get(footprintKey);
+              const on = state.catFootprint;
+              // Sleeping art has extra transparent space beneath the paws. The
+              // Progress-specific 12px offset seats both poses on piano keys.
+              // Preserve the x position and sprite footprint, while accepting
+              // that intentional vertical shift. Pixel-level contact is tested
+              // separately in check-progress-redesign.mjs.
+              assert.ok(off && Math.abs(off[0] - on[0]) <= 1 &&
+                Math.abs(off[2] - on[2]) <= 1 && Math.abs(off[3] - on[3]) <= 1 &&
+                Math.abs(off[1] - on[1]) <= 16,
+                'Progress companion changed geometry beyond pose alignment');
+            } else assert.deepEqual(state.catFootprint, catLayoutFootprints.get(footprintKey),
               screen + ' must not shift or resize its cat placement when Cat Mode changes');
           }
           if (screen === 'Profile') {
@@ -271,7 +283,7 @@ try {
               'Active selected measure needs a separate visible playhead indicator in ' + label);
           }
 
-          if (['Practice', 'Free Practice', 'Player', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
+          if (['Practice', 'Free Practice', 'Player', 'Tracks', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
             await page.screenshot({
               path: path.join(output, screen.toLowerCase() + '-' + label + '.png'),
               animations: 'disabled',
@@ -403,8 +415,8 @@ try {
   await page.goto(base + '/profile', { waitUntil: 'networkidle' });
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark',
     'First use should honor dark system preference');
-  assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'off',
-    'First use should disable decorative cats');
+  assert.equal(await page.locator('html').getAttribute('data-cat-mode'), 'on',
+    'First use should enable decorative cats by default');
   await page.getByRole('button', { name: 'Light', exact: true }).click();
   await page.getByRole('checkbox', { name: /Cat Mode/ }).check();
   await page.reload({ waitUntil: 'networkidle' });

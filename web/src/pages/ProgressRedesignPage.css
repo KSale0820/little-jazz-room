@@ -1,0 +1,208 @@
+/* Approved November 2026 Progress redesign. Scoped to avoid changing other screens. */
+.pgr-page {
+  --pgr-plum: #56366c;
+  --pgr-gold: #d69c26;
+  --pgr-olive: #84a55f;
+  width: 100%;
+  min-height: 100%;
+  padding: 18px 14px max(112px, env(safe-area-inset-bottom));
+  color: var(--color-text);
+  background: var(--color-bg);
+  overflow-x: clip;
+}
+.pgr-page button:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+.pgr-top { position: relative; min-height: 124px; padding: 5px 48px 0 3px; }
+.pgr-heading { position: relative; z-index: 1; max-width: 52%; }
+.pgr-heading h1 {
+  margin: 0;
+  font: 800 clamp(29px, 8vw, 42px)/1.08 Georgia, 'Times New Roman', serif;
+  letter-spacing: -.025em;
+  color: var(--color-action);
+}
+.pgr-heading p { margin: 8px 0 0; color: var(--color-muted); font-size: 13px; line-height: 1.42; }
+.pgr-cat-stage { position: absolute; width: 168px; height: 116px; right: 7px; bottom: 0; pointer-events: none; }
+.pgr-piano {
+  position: absolute; width: 100%; height: auto; bottom: 1px; left: 0;
+  object-fit: contain; image-rendering: pixelated;
+}
+.pgr-cat.jazz-cat-sprite {
+  position: absolute; width: 105px; height: 105px;
+  bottom: 10px; left: 31px; object-fit: contain; object-position: center bottom;
+  image-rendering: pixelated; filter: drop-shadow(0 2px 0 #38263d28);
+}
+/* Sleeping sprites have internal transparent padding; seat their visible paws
+   on the same keyboard surface as the sitting pose. */
+.pgr-cat.is-sleeping.jazz-cat-sprite { bottom: -2px; }
+.pgr-settings {
+  position: absolute; right: 0; top: 0; z-index: 2;
+  width: 44px; height: 44px; padding: 2px;
+  display: grid; place-items: center; background: transparent; border: 0; border-radius: 12px;
+}
+.pgr-settings img { display: block; width: 38px; height: 38px; object-fit: contain; image-rendering: pixelated; }
+
+.pgr-theme { margin: 0 2px 9px; }
+.pgr-theme h2 { margin: 0 0 4px; font-size: 14px; font-weight: 700; color: var(--color-text); }
+.pgr-theme-choices { display: grid; grid-template-columns: 1fr 1fr 1.25fr; gap: 7px; }
+.pgr-theme-choices button {
+  min-width: 0; min-height: 44px; display: grid; place-items: center;
+  border: 0; border-radius: 999px; padding: 0; background: transparent;
+}
+.pgr-theme-choices img { display: block; width: 100%; max-height: 44px; object-fit: contain; image-rendering: pixelated; }
+/* The approved active/inactive PNG pills already contain their own outlines.
+   Don't paint a second selection halo on top of the artwork. */
+.pgr-theme-choices button[aria-pressed="true"] { outline: 0; box-shadow: none; }
+
+.pgr-streak {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 22px; min-height: 66px; margin-bottom: 10px; padding: 8px 4px;
+  box-shadow: 0 2px 0 #70472312;
+}
+.pgr-streak > div { display: flex; justify-content: center; align-items: center; min-width: 0; gap: 7px; }
+.pgr-streak > div + div { border-left: 1px solid var(--color-border); }
+.pgr-streak img { flex: 0 0 40px; width: 40px; height: 40px; object-fit: contain; image-rendering: pixelated; }
+.pgr-streak strong { font: 800 25px/1 Georgia, 'Times New Roman', serif; color: var(--color-text); }
+.pgr-streak span { color: var(--color-muted); font-size: 11px; line-height: 1.18; }
+
+/* Reuse the real session-driven calendar component, not a static screenshot. */
+.pgr-page .practice-calendar {
+  margin: 0 0 11px; padding: 0 0 6px; border: 1px solid var(--color-border);
+  border-radius: 19px; background: var(--color-surface); overflow: hidden;
+  box-shadow: 0 2px 0 #70472312;
+}
+.pgr-page .practice-calendar-header {
+  display: flex; flex-direction: column; align-items: stretch; gap: 0; margin: 0 0 5px;
+  background: var(--color-action); color: var(--color-action-text);
+}
+.pgr-page .practice-calendar-header > div:first-child {
+  display: flex; justify-content: space-between; gap: 6px; align-items: center;
+  padding: 5px 12px 0;
+}
+.pgr-page .practice-calendar-header h2 { color: inherit; font: 750 14px/1.3 var(--font-ui, system-ui); }
+.pgr-page .practice-calendar-header p { margin: 0; color: inherit; opacity: .85; font-size: 11px; }
+.pgr-page .practice-calendar-month { width: 100%; justify-content: space-between; padding: 0 8px 1px; color: inherit; }
+.pgr-page .practice-calendar-month strong { width: auto; font-size: 17px; }
+.pgr-page .practice-calendar-month button {
+  width: 44px; height: 44px; flex-basis: 44px; color: inherit; font-size: 28px;
+}
+.pgr-page .practice-calendar-grid { margin: 0 10px; gap: 2px 3px; grid-auto-rows: 32px; align-items: center; }
+.pgr-page .practice-calendar-weekday { padding: 2px 0 4px; font-size: 10px; }
+.pgr-page .practice-calendar-day {
+  font-size: 12px; width: min(100%, 32px); height: 32px; margin-inline: auto; max-height: none; aspect-ratio: auto;
+  color: var(--color-text);
+}
+.pgr-page .practice-calendar-day.is-practiced {
+  background: color-mix(in srgb, var(--color-success) 25%, var(--color-surface));
+  color: var(--color-text);
+  border-radius: 50%;
+}
+.pgr-page .practice-calendar-day.is-today { outline: 2px solid var(--color-action); outline-offset: -2px; }
+.pgr-page .practice-calendar-legend { margin: 6px 13px 0; }
+
+.pgr-week {
+  display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(110px, 1fr); gap: 10px;
+  padding: 13px 10px 12px; background: var(--color-surface);
+  border: 1px solid var(--color-border); border-radius: 19px;
+  box-shadow: 0 2px 0 #70472312; margin-bottom: 16px;
+}
+.pgr-chart-panel { min-width: 0; }
+.pgr-chart-panel h2 { color: var(--color-action); font: 750 20px/1.2 Georgia, 'Times New Roman', serif; }
+.pgr-chart-panel > p { color: var(--color-muted); font-size: 11px; margin: 4px 0 10px; }
+.pgr-chart { display: flex; gap: 4px; height: 112px; }
+.pgr-axis {
+  display: flex; flex-direction: column; justify-content: space-between;
+  height: 90px; flex: 0 0 21px; color: var(--color-muted);
+  font-size: 10px; text-align: right; font-variant-numeric: tabular-nums;
+}
+.pgr-bars-and-labels { flex: 1; min-width: 0; }
+.pgr-bars {
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: end;
+  gap: 3px; height: 90px; border-bottom: 1px solid var(--color-border);
+  background: repeating-linear-gradient(to bottom, var(--color-border) 0 1px, transparent 1px 44px);
+}
+.pgr-bar-cell { height: 100%; display: flex; justify-content: center; align-items: end; }
+.pgr-bar { width: 80%; background: var(--pgr-olive); border-radius: 3px 3px 0 0; }
+.pgr-bar.is-today { background: var(--color-action); }
+.pgr-day-labels { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; margin-top: 6px; text-align: center; }
+.pgr-day-labels span { font-size: 9px; color: var(--color-muted); }
+.pgr-week-facts {
+  min-width: 0; border-left: 1px solid var(--color-border); padding-left: 9px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.pgr-week-facts h3 { font-size: 15px; color: var(--color-text); margin: 0 0 2px; }
+.pgr-week-facts > div {
+  background: var(--color-surface-raised); min-height: 27px; display: flex;
+  align-items: center; gap: 4px; padding: 4px 6px; border-radius: 999px;
+}
+.pgr-week-facts > div > span { width: 17px; text-align: center; color: var(--color-action); font-size: 15px; flex: 0 0 17px; }
+.pgr-week-facts strong { color: var(--color-text); font-size: 15px; font-variant-numeric: tabular-nums; }
+.pgr-week-facts small { min-width: 0; color: var(--color-muted); font-size: 10px; white-space: nowrap; }
+
+.pgr-history-heading { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin: 0 3px 7px; }
+.pgr-history-heading h2 { color: var(--color-action); font: 750 21px/1.2 Georgia, 'Times New Roman', serif; }
+.pgr-history-heading button { border: 0; background: none; color: var(--color-violet); min-height: 44px; padding: 4px; font-size: 12px; }
+.pgr-history-list {
+  list-style: none; margin: 0; padding: 5px 10px;
+  border: 1px solid var(--color-border); border-radius: 17px; background: var(--color-surface);
+}
+.pgr-history-list li { display: flex; align-items: center; gap: 7px; padding: 8px 0; min-width: 0; }
+.pgr-history-list li + li { border-top: 1px solid var(--color-border); }
+.pgr-note-icon {
+  flex: 0 0 29px; width: 29px; height: 29px; display: grid; place-items: center;
+  border-radius: 8px; background: var(--color-surface-raised);
+  color: var(--color-violet); font-size: 18px;
+}
+.pgr-history-name { display: flex; flex-direction: column; min-width: 0; flex: 1; gap: 2px; }
+.pgr-history-name strong {
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  color: var(--color-text); font-size: 13px;
+}
+.pgr-history-name small { font-size: 10px; color: var(--color-muted); }
+.pgr-history-minutes { flex: 0 0 43px; font-size: 11px; text-align: right; white-space: nowrap; color: var(--color-text); }
+.pgr-history-list time { flex: 0 0 43px; text-align: right; font-size: 10px; color: var(--color-muted); white-space: nowrap; }
+.pgr-history-empty { padding: 14px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 15px; color: var(--color-muted); font-size: 13px; }
+.pgr-again { width: 100%; min-height: 46px; margin-top: 13px; border: 0; border-radius: 14px; background: var(--color-action); color: var(--color-action-text); font-size: 15px; font-weight: 700; }
+
+/* Preserve the approved asset colors in both themes. */
+@media (max-width: 374px) {
+  .pgr-page { padding-left: 10px; padding-right: 10px; }
+  .pgr-cat-stage { width: 157px; }
+  .pgr-theme-choices { gap: 3px; }
+  .pgr-week { grid-template-columns: minmax(0, 1.5fr) minmax(108px, 1fr); gap: 7px; padding: 10px 7px; }
+  .pgr-week-facts { padding-left: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .pgr-page * { transition: none !important; } }
+
+
+/* Dark appearance: the theme tabs are unmistakably selected, while the
+   calendar and active Progress nav stay dark rather than using a pale header. */
+html[data-theme="dark"] .pgr-page .practice-calendar-header {
+  background: #254b39;
+  color: #f1f7ed;
+}
+html[data-theme="dark"] .pgr-page .practice-calendar-header :is(h2, strong, button, p) {
+  color: #f1f7ed;
+}
+/* Selection treatment is baked into the pixel-art pill images. Keep keyboard
+   focus visible through .pgr-page button:focus-visible only. */
+html[data-theme="dark"] .app-shell:has(.pgr-page) .bottom-nav a.current {
+  background: #2a4335;
+  color: #edf7ed;
+  box-shadow: inset 0 0 0 1px #8ab59a;
+  border-radius: 7px;
+}
+
+/* Keep the calendar's accessible heading while avoiding a duplicate visible
+   title and practice-day count already shown in the summary strip. */
+.pgr-page .practice-calendar-header { position: relative; }
+.pgr-page .practice-calendar-header > div:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  padding: 0;
+}
+.pgr-page .practice-calendar-month { min-height: 46px; }

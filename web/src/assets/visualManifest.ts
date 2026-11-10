@@ -78,10 +78,30 @@ export const VISUAL_ASSETS = {
       sitting: '/visuals/cats/clean-pixel/maple-sitting.png',
     },
   },
+  routines: {
+    /** Owner-approved transparent 8-bit title and notes in both themes. */
+    header: {
+      light: '/visuals/routines/approved-routines-pixel-light.png',
+      dark: '/visuals/routines/approved-routines-pixel-dark.png',
+    },
+  },
   progress: {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',
     sleepCushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
+    pianoPixel: {
+      wide: '/visuals/progress/piano-pixel/piano-keys-wide.png',
+      medium: '/visuals/progress/piano-pixel/piano-keys-medium.png',
+      compact: '/visuals/progress/piano-pixel/piano-keys-compact.png',
+      lightOutline: '/visuals/progress/piano-pixel/light-outline.png',
+      lightActive: '/visuals/progress/piano-pixel/light-active.png',
+      darkOutline: '/visuals/progress/piano-pixel/dark-outline.png',
+      darkActive: '/visuals/progress/piano-pixel/dark-active.png',
+      catModeOutline: '/visuals/progress/piano-pixel/cat-mode-outline.png',
+      catModeActive: '/visuals/progress/piano-pixel/cat-mode-active.png',
+      settingsOutline: '/visuals/progress/piano-pixel/settings-outline.png',
+      settingsFilled: '/visuals/progress/piano-pixel/settings-filled.png',
+    },
   },
   garden: {
     stage0: '/visuals/garden/garden-stage-0.png',
@@ -154,6 +174,16 @@ export const VISUAL_ASSETS = {
     search: '/visuals/icons/icon-search.svg',
     share: '/visuals/icons/icon-share.svg',
     skip: '/visuals/icons/icon-skip.svg',
+  },
+  /** Tracks + Charts approved November 7, 2026 UI. SVG fallbacks plus PR #84 crisp pixel icons. */
+  tracksApproved: {
+    title: '/visuals/tracks-approved/tracks-title.png',
+    studyShelf: '/visuals/tracks-approved/jazz-study-shelf.png',
+    bookmarkFilledFallback: '/visuals/tracks-approved/bookmark-filled.svg',
+    recordFallback: '/visuals/tracks-approved/record.svg',
+    bookmark: '/visuals/tracks-approved/bookmark.png',
+    record: '/visuals/tracks-approved/record.png',
+    chevron: '/visuals/tracks-approved/chevron.png',
   },
   /** Minimal geometric motifs for both clean themes, tinted via CSS mask and semantic tokens. */
   pixelMotifs: {
