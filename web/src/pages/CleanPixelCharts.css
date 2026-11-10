@@ -232,8 +232,8 @@ html[data-theme="light"] .chart-builder-page .chart-editor-row .chart-editor-mea
   background: color-mix(in srgb, var(--color-chart-paper) 92%, var(--color-violet));
 }
 html[data-theme] .chart-builder-page .chart-editor-chord input:is(:focus, .is-selected) {
-  background: color-mix(in srgb, var(--color-chart-paper) 83%, var(--color-violet));
-  border-color: var(--color-focus);
+  background: transparent;
+  border-color: transparent;
   color: var(--color-chart-chord);
 }
 html[data-theme] .chart-builder-page .chart-editor-measure.is-selected :is(.chart-editor-annotation, .chart-editor-section-label) {
@@ -248,59 +248,26 @@ html[data-theme] .chart-builder-page .chart-library-card:focus-within {
   outline-offset: 1px;
 }
 
-/* Approved polished pixel PNGs (Agent 3 PR #74) on spare header space.
-   Purely decorative, non-interactive, with unchanged chart and button geometry.
-   Assets are the same on both palettes and have transparent backgrounds. */
-html[data-theme] .t01-page .t01-header,
-html[data-theme] .chart-library-page .chart-builder-header,
-html[data-theme] .chart-builder-page .chart-builder-chart-heading {
-  position: relative;
-}
-html[data-theme] .t01-page .t01-header::before,
-html[data-theme] .chart-library-page .chart-builder-header::after,
-html[data-theme] .chart-builder-page .chart-builder-chart-heading::after {
+/* Keep the Tracks header motif only. Chart Builder and My Charts headers,
+   including “Your chord chart”, intentionally have no injected decoration. */
+html[data-theme] .t01-page .t01-header { position: relative; }
+html[data-theme] .t01-page .t01-header::before {
   content: '';
   position: absolute;
   display: block;
   pointer-events: none;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  image-rendering: pixelated;
-}
-html[data-theme] .t01-page .t01-header::before {
   top: 7px;
   right: 120px;
   width: 43px;
   height: 43px;
   opacity: .88;
-  background-image: url('/visuals/pixel-motifs/approved/beamed-notes.png');
-}
-html[data-theme] .chart-library-page .chart-builder-header::after {
-  top: 4px;
-  right: 91px;
-  width: 31px;
-  height: 31px;
-  opacity: .8;
-  background-image: url('/visuals/pixel-motifs/approved/small-plant.png');
-}
-html[data-theme] .chart-builder-page .chart-builder-chart-heading::after {
-  top: -2px;
-  left: 172px;
-  width: 24px;
-  height: 24px;
-  opacity: .67;
-  background-image: url('/visuals/pixel-motifs/approved/eighth-note.png');
+  background: url('/visuals/pixel-motifs/approved/beamed-notes.png') center / contain no-repeat;
+  image-rendering: pixelated;
 }
 @media (max-width: 380px) {
   html[data-theme] .t01-page .t01-header::before {
     right: 111px;
     width: 32px;
     height: 32px;
-  }
-  html[data-theme] .chart-builder-page .chart-builder-chart-heading::after {
-    left: 166px;
-    width: 20px;
-    height: 20px;
   }
 }
