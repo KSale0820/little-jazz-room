@@ -9,10 +9,10 @@ import type { PracticeSessionRecord } from '../types/content';
 import './SessionCompletion.css';
 
 const ICONS = '/visuals/new-assets/2026-11-07-sharp-pixel/approved-isolated-icons';
-const GOAL_PREFIX = 'little-jazz-room:daily-practice-goal:v1:';
 const PLANTS = '/visuals/new-assets/2026-11-07-sharp-pixel/plant-growth-stages';
+const GOAL_PREFIX = 'little-jazz-room:daily-practice-goal:v1:';
 
-/** Mirrors the current 30-minute Progress goal; respects the editable scoped goal when present. */
+/** Same account-scoped preference as Practice; fallback matches Progress's current 30-minute goal. */
 export function completionDailyGoal(scope: string, storage?: Pick<Storage, 'getItem'>): number {
   try {
     const value = (storage ?? window.localStorage).getItem(GOAL_PREFIX + scope);
@@ -22,7 +22,7 @@ export function completionDailyGoal(scope: string, storage?: Pick<Storage, 'getI
   } catch { return 30; }
 }
 
-/** Show only milestones actually crossed by this saved record, never speculative awards. */
+/** Show a new unlock only when this actual saved session crossed an existing threshold. */
 export function earnedCompletionCompanions(
   sessions: PracticeSessionRecord[],
   record: PracticeSessionRecord,
@@ -39,8 +39,13 @@ export function earnedCompletionCompanions(
   ).map(cat => cat.id);
 }
 
-type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+/** The approved plant stages never show a bare pot after an actual saved practice. */
+export function completionPlantStage(todayMinutes: number, goalMinutes: number, hasPractice: boolean): number {
+  if (!hasPractice) return 0;
+  return Math.max(1, Math.min(4, Math.floor(1 + 3 * Math.min(1, Math.max(0, todayMinutes / goalMinutes)))));
+}
 
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 interface SessionCompletionProps {
   record: PracticeSessionRecord;
   kind: 'free' | 'guided' | 'chart';
@@ -56,7 +61,31 @@ interface SessionCompletionProps {
   details?: ReactNode;
 }
 
-/** Shared P06 for Free Practice and the chart/routine Player; read-only until saved. */
+function PixelMusicNote() {
+  return <svg viewBox="0 0 22 22" aria-hidden="true" className="sc-music-icon" shapeRendering="crispEdges">
+    <path fill="currentColor" d="M9 3h11v3H9zm8 3h3v10h-3zm-8 0h3v12H9zM4 15h7v4H4zm9-2h7v4h-7z" />
+  </svg>;
+}
+function PixelProgressBars() {
+  return <svg className="sc-progress-icon" viewBox="0 0 20 18" aria-hidden="true" shapeRendering="crispEdges">
+    <path fill="currentColor" d="M2 11h3v5H2zm6-5h3v10H8zm6-4h3v14h-3z"/>
+  </svg>;
+}
+/** An unobtrusive leafy wreath around the *approved* pixel trophy. */
+function PixelLaurels() {
+  return <svg className="sc-laurels" viewBox="0 0 192 116" aria-hidden="true" shapeRendering="crispEdges">
+    <g fill="none" stroke="#679b57" strokeWidth="3">
+      <path d="M56 101 Q22 77 43 28"/>
+      <path d="M136 101 Q170 77 149 28"/>
+    </g>
+    <g fill="#82b96c" stroke="#376748" strokeWidth="1.5">
+      <path d="m43 30-19-6 9 18 12 2z M37 49l-20-2 11 16 12-1z M38 70l-18 5 17 10 10-7z M49 87l-11 13 19 0 7-10z"/>
+      <path d="m149 30 19-6-9 18-12 2z M155 49l20-2-11 16-12-1z M154 70l18 5-17 10-10-7z M143 87l11 13-19 0-7-10z"/>
+    </g>
+  </svg>;
+}
+
+/** One mobile-first composition for free, guided, chart and audio-only completion. */
 export function SessionCompletion({
   record, kind, title, subtitle, activities = [], activityLabel = 'Session activities',
   status, onSave, onProgress, onPracticeAgain, onPractice, details,
@@ -66,102 +95,105 @@ export function SessionCompletion({
   const { user } = useAuth();
   const savedRecord = status === 'saved' && sessions.some(session => session.id === record.id);
   const accountKey = user?.id ?? 'local';
-  const unlocked = savedRecord
-    ? earnedCompletionCompanions(sessions, record, readSavedUnlocks(accountKey))
-    : [];
-  const earnedCats = JAZZ_CATS.filter(cat => unlocked.includes(cat.id));
-  const today = savedRecord ? minutesToday(sessions) : 0;
-  const dailyGoal = completionDailyGoal(repo.scope);
-  const streak = savedRecord ? computeGentleStreak(sessions) : 0;
-  const date = new Date(record.finishedAt);
-  const minutes = Math.floor(record.durationSeconds / 60);
-  const seconds = Math.max(0, record.durationSeconds % 60);
-  const durationLabel = minutes >= 1 ? `${minutes} min ${String(seconds).padStart(2, '0')} sec` : `${seconds} sec`;
-  const goalRatio = Math.min(1, Math.max(0, today / dailyGoal));
-  const plantStage = Math.min(4, Math.floor(goalRatio * 4));
-  const plant = PLANTS + '/plant-stage-' + plantStage + '.png';
+  const earnedIds = savedRecord ? earnedCompletionCompanions(sessions, record, readSavedUnlocks(accountKey)) : [];
+  const earnedCats = JAZZ_CATS.filter(cat => earnedIds.includes(cat.id));
   const hasMilestone = earnedCats.length > 0;
-  const headline = hasMilestone || kind === 'guided' ? 'Great practice!' : 'Session Complete!';
+  const dailyGoal = completionDailyGoal(repo.scope);
+  const today = savedRecord ? minutesToday(sessions) : 0;
+  const streak = savedRecord ? computeGentleStreak(sessions) : 0;
+  const before = savedRecord ? minutesToday(sessions.filter(session => session.id !== record.id)) : 0;
+  const nowStage = completionPlantStage(today, dailyGoal, savedRecord);
+  const beforeStage = completionPlantStage(before, dailyGoal, before > 0);
+  const currentPlant = `${PLANTS}/plant-stage-${nowStage}.png`;
+  const previousPlant = `${PLANTS}/plant-stage-${beforeStage}.png`;
+  const seconds = Math.max(0, Math.floor(record.durationSeconds));
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  const displayedDuration = minutes > 0 ? `${minutes} min` : `${seconds} sec`;
+  const exactDuration = minutes > 0 ? `${minutes} min ${remainder} sec` : `${seconds} sec`;
+  const headline = kind === 'guided' || hasMilestone ? 'Great Practice!' : 'Session Complete!';
+  const subheading = kind === 'guided' ? 'You completed your routine!' : 'Nice practice today!';
+  const heroCatId = hasMilestone ? earnedCats[0].id : catId;
+  const compactActivity = kind === 'guided'
+    ? activities.length ? activities.length + ' practiced step' + (activities.length === 1 ? '' : 's') : null
+    : activities.length ? activities.length + ' completed' : kind === 'chart' ? 'Chart practiced' : null;
+  const goalProgress = Math.min(100, Math.max(0, today / dailyGoal * 100));
 
   return <section className="sc-page" aria-label="Practice session complete">
-    <header className="sc-top">
-      <span className="sc-eyebrow">{kind === 'guided' ? 'Guided routine' : kind === 'chart' ? 'Chart practice' : 'Free practice'}</span>
-      <button type="button" className="sc-back" onClick={onPractice} disabled={status !== 'saved'}>Back to Practice</button>
-    </header>
-
     <div className="sc-hero">
-      <div className="sc-hero-art" aria-hidden="true">
-        {catMode
-          ? <CatSprite catId={catId} size={106} variant={hasMilestone ? 'floor' : 'sleeping'} decorative className="sc-hero-cat" />
-          : <div className="sc-hero-trophy"><img src={ICONS + '/trophy.png'} alt="" /></div>}
-        <img src={plant} alt="" className="sc-hero-plant"/>
-        <img src={ICONS + '/star.png'} alt="" className="sc-hero-sparkle"/>
+      <div className={'sc-hero-art ' + (catMode ? 'sc-with-cat' : 'sc-without-cat')} aria-hidden="true">
+        {catMode ? <>
+          <CatSprite catId={heroCatId} variant={hasMilestone ? 'floor' : 'sleeping'} size={110} decorative className="sc-hero-cat"/>
+          {hasMilestone && <img className="sc-hero-award" src={ICONS + '/trophy.png'} alt="" />}
+          <img className="sc-hero-plant" src={currentPlant} alt="" />
+          <img className="sc-hero-sparkle" src={ICONS + '/star.png'} alt=""/>
+        </> : <>
+          <PixelLaurels/>
+          <img className="sc-hero-trophy" src={ICONS + '/trophy.png'} alt="" />
+          <img className="sc-hero-sparkle" src={ICONS + '/star.png'} alt="" />
+        </>}
       </div>
       <h1><img src={ICONS + '/trophy.png'} alt="" aria-hidden="true"/>{headline}</h1>
-      <p className="sc-subtitle">{kind === 'guided' ? 'You completed your routine!' : 'Nice practice today!'}</p>
-      <div className="sc-duration" aria-label={durationLabel + ' practiced'}>
+      <p className="sc-subtitle">{subheading}</p>
+      <div className="sc-duration" aria-label={exactDuration + ' practiced'}>
         <img src={ICONS + '/stopwatch.png'} alt="" aria-hidden="true"/>
-        <div><strong>{minutes >= 1 ? minutes + ' min' : seconds + ' sec'}</strong><span>practiced{minutes >= 1 && seconds > 0 ? ' · ' + seconds + ' sec' : ''}</span></div>
+        <div><strong>{displayedDuration}</strong><span>practiced</span></div>
       </div>
     </div>
 
     <section className="sc-summary" aria-label="Session summary">
-      <div className="sc-summary-top">
-        <div>
-          <span className="sc-section-kicker">SESSION SUMMARY</span>
-          <h2>{title}</h2>
-          {subtitle && <p className="sc-summary-subtitle">{subtitle}</p>}
+      <div className="sc-summary-line">
+        <PixelMusicNote/>
+        <div className="sc-summary-copy">
+          <strong>{title}</strong>
+          {compactActivity && <span><i aria-hidden="true">✓ </i>{compactActivity}</span>}
         </div>
-        <time dateTime={record.finishedAt}>{Number.isNaN(date.getTime()) ? 'Practice' : date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</time>
+        <span className="sc-summary-duration">{displayedDuration}</span>
       </div>
-      {activities.length > 0 && <div className="sc-activities">
-        <span className="sc-check" aria-hidden="true">✓</span>
-        <div><strong>{activities.length} {activities.length === 1 ? 'activity' : 'activities'}</strong>
-          <span>{activityLabel}: {activities.join(', ')}</span></div>
-      </div>}
     </section>
 
-    {savedRecord && !hasMilestone && <section className="sc-momentum" aria-label="Practice plant and goal progress">
-      <img src={PLANTS + '/plant-stage-1.png'} alt="" aria-hidden="true"/>
-      <div className="sc-momentum-copy">
-        <h2>Practice Plant</h2>
-        <p>+{minutes > 0 ? minutes + ' min' : seconds + ' sec'} this session</p>
-        <span>{today} / {dailyGoal} min today · {streak} day streak</span>
-        <div className="sc-goal-bar" role="progressbar" aria-label="Daily practice goal"
-          aria-valuemin={0} aria-valuemax={dailyGoal} aria-valuenow={Math.min(today, dailyGoal)}>
-          <div style={{ width: Math.min(100, today / dailyGoal * 100) + '%' }} />
-        </div>
-      </div>
-      <img src={plant} alt="" aria-hidden="true" className="sc-momentum-grown"/>
-    </section>}
-
-    {savedRecord && hasMilestone && <section className="sc-unlock" aria-label="New companion unlocked">
-      <div className="sc-unlock-art">
-        {earnedCats.map(cat => <CatSprite key={cat.id} catId={cat.id} size={76} variant="floor" />)}
-      </div>
+    {savedRecord && (hasMilestone ? <section className="sc-unlock" aria-label="New companion unlocked">
+      <div className="sc-unlock-art">{earnedCats.map(cat =>
+        <CatSprite key={cat.id} catId={cat.id} size={76} variant="floor" />)}</div>
       <div className="sc-unlock-copy">
         <h2>{earnedCats.map(cat => cat.name).join(' & ')} Unlocked!</h2>
         <p>You've reached {earnedCats.map(cat => COMPANION_UNLOCK_MINUTES[cat.id]).join(' & ')} total practice minutes!</p>
-        <span>{today} / {dailyGoal} min today · {streak} day streak</span>
       </div>
       <img src={ICONS + '/star.png'} alt="" className="sc-unlock-star" aria-hidden="true"/>
-    </section>}
+    </section> : <section className="sc-momentum" aria-label="Practice plant growth">
+      <img src={previousPlant} alt="" aria-hidden="true" className="sc-momentum-start"/>
+      <div className="sc-momentum-copy">
+        <h2>Practice Plant</h2>
+        <p>+{displayedDuration}</p>
+        <div className="sc-goal-bar" role="progressbar" aria-label="Daily practice goal"
+          aria-valuemin={0} aria-valuemax={dailyGoal} aria-valuenow={Math.min(today, dailyGoal)}
+          aria-valuetext={today + ' of ' + dailyGoal + ' minutes today, ' + streak + ' day streak'}>
+          <div style={{ width: goalProgress + '%' }} />
+        </div>
+      </div>
+      <img src={currentPlant} alt="" aria-hidden="true" className="sc-momentum-grown"/>
+    </section>)}
 
     <div className="sc-actions" aria-label="Session actions">
       {status === 'saved'
-        ? <button type="button" className="sc-primary" onClick={onProgress}>View Progress</button>
+        ? <button type="button" className="sc-primary" onClick={onProgress}><PixelProgressBars/>View Progress</button>
         : <button type="button" className="sc-primary" onClick={onSave} disabled={status === 'saving'}>
-            {status === 'saving' ? 'Saving session…' : status === 'error' ? 'Retry save' : 'Save session'}
-          </button>}
+          {status === 'saving' ? 'Saving session…' : status === 'error' ? 'Retry save' : 'Save session'}
+        </button>}
       {status === 'error' && <p className="sc-error" role="alert">Your session was not saved. Retry before leaving.</p>}
-      <button type="button" className="sc-secondary" onClick={onPractice} disabled={status !== 'saved'}>Back to Practice</button>
-      <div className="sc-small-actions">
-        <button type="button" onClick={onPracticeAgain} disabled={status !== 'saved'}>Practice again</button>
-      </div>
+      <button type="button" className="sc-secondary" onClick={onPractice} disabled={status !== 'saved'}>
+        <span aria-hidden="true">←</span> Back to Practice
+      </button>
     </div>
-    {details && <details className="sc-details">
-      <summary>Session notes and rating <span>optional</span></summary>
-      {details}
-    </details>}
+
+    <details className="sc-more">
+      <summary>{details ? 'Session notes and rating' : 'More session options'}</summary>
+      <div className="sc-more-content">
+        <p className="sc-more-meta">{subtitle ? subtitle + ' · ' : ''}{activityLabel}: {activities.length ? activities.join(', ') : 'No activities marked complete'}</p>
+        {savedRecord && <p className="sc-more-meta">{today} / {dailyGoal} min today · {streak} day streak</p>}
+        {details}
+        <button className="sc-practice-again" type="button" onClick={onPracticeAgain} disabled={status !== 'saved'}>Practice again</button>
+      </div>
+    </details>
   </section>;
 }
