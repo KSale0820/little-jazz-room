@@ -39,6 +39,23 @@ try {
 
         await page.goto(base + '/settings', { waitUntil: 'networkidle' });
         await page.locator('.profile-companion-art img').waitFor();
+        const banner = await page.locator('.profile-shelf-art').evaluate(image => ({
+          loaded: image.complete && image.naturalWidth > 0,
+          url: image.getAttribute('src'),
+          height: image.getBoundingClientRect().height,
+        }));
+        assert.ok(banner.loaded, label + ' new shelf image missing');
+        assert.equal(banner.url, '/visuals/profile/profile-shelf.svg');
+        assert.ok(banner.height >= 110, label + ' shelf art too small');
+        assert.equal(await page.locator('.profile-ornament').count(), 0,
+          'Old separate floating plants must be replaced with the new unified header');
+        assert.equal(await page.locator('.profile-account-gear svg').count(), 1,
+          'Account & More must use a gear icon');
+        if (theme === 'dark') {
+          assert.equal(await page.locator('.profile-edit-link img').evaluate(img =>
+            getComputedStyle(img).filter), 'brightness(0) invert(1)',
+          'Edit Profile icon should render white in Dark theme');
+        }
         assert.equal(await page.getByRole('heading', { name: 'Profile Settings' }).count(), 1);
         assert.equal(await page.locator('.board-cat-card').count(), 3, label + ' companion count');
         assert.deepEqual(await page.locator('.board-cat-card').evaluateAll(cards => cards.map(card =>
