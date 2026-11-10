@@ -115,8 +115,10 @@ export function SessionCompletion({
   const subheading = kind === 'guided' ? 'You completed your routine!' : 'Nice practice today!';
   const heroCatId = hasMilestone ? earnedCats[0].id : catId;
   const compactActivity = kind === 'guided'
-    ? activities.length ? activities.length + ' practiced step' + (activities.length === 1 ? '' : 's') : null
-    : activities.length ? activities.length + ' completed' : kind === 'chart' ? 'Chart practiced' : null;
+    ? activities.length ? 'Practiced ' + activities[0] : null
+    : activities.length === 1 ? activities[0] + ' practiced'
+    : activities.length > 1 ? activities.length + ' activities completed'
+    : kind === 'chart' ? 'Chart practiced' : null;
   const goalProgress = Math.min(100, Math.max(0, today / dailyGoal * 100));
 
   return <section className="sc-page" aria-label="Practice session complete">
