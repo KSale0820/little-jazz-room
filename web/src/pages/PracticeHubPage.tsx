@@ -11,6 +11,7 @@ import './CleanPixelMotifPlacements.css';
 import './PracticeSuaveStudio.css';
 import './PracticeApprovedFinish.css';
 import './PracticeMobileVisualQA.css';
+import './PracticeRefinement.css';
 
 const ART = '/visuals/new-assets/2026-11-07-sharp-pixel/';
 const ICON = ART + 'approved-isolated-icons/';
@@ -71,8 +72,9 @@ export function PracticeHubPage() {
   return (
     <section className="p01-page p01-suave" aria-label="Practice hub">
       <header className="p01-header p01-suave-header">
-        <div className="p01-suave-brand" aria-label="Little Jazz Room">
-          <img className="p01-suave-approved-wordmark" src={ART + 'approved-parts-1-2/branding/little-jazz-room-wordmark.png'} alt="Little Jazz Room" />
+        <div className="p01-suave-brand" aria-label="Little Jazz">
+          <img className="p01-suave-brand-ivy" src="/visuals/pixel-motifs/approved/ivy-trail.png" alt="" aria-hidden="true" />
+          <span className="p01-suave-brand-title">Little Jazz</span>
           <img className="p01-suave-approved-window" src={ART + 'approved-parts-1-2/vignettes/night-window-trumpet.png'} alt="" aria-hidden="true" />
         </div>
         <p className="p01-greeting">{timeGreeting().replace(/\.$/, ',')}</p>
