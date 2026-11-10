@@ -49,6 +49,10 @@ export function ChartBuilderPage() {
   };
   const [draft, setDraft] = useState<ChartDraft>(initialDraft);
   const [dirty, setDirty] = useState(false);
+  // A session-restored draft is still unsaved, even before the next keystroke.
+  const [hasRestoredDraft, setHasRestoredDraft] = useState(() => {
+    try { return Boolean(sessionStorage.getItem(storageKey)); } catch { return false; }
+  });
   const [keyInput, setKeyInput] = useState(draft.concert_key);
   const [meterTopInput, setMeterTopInput] = useState(String(draft.beats));
   const [meterBottomInput, setMeterBottomInput] = useState(String(draft.beat_unit ?? 4));
@@ -64,6 +68,8 @@ export function ChartBuilderPage() {
     const initial = initialDraft();
     setDraft(initial);
     setDirty(false);
+    try { setHasRestoredDraft(Boolean(sessionStorage.getItem(storageKey))); }
+    catch { setHasRestoredDraft(false); }
     setKeyInput(initial.concert_key);
     setMeterTopInput(String(initial.beats));
     setMeterBottomInput(String(initial.beat_unit ?? 4));
@@ -284,6 +290,12 @@ export function ChartBuilderPage() {
       </header>
       {readOnly && <p className="chart-builder-notice">This is a built-in chart. Open My Charts and choose Edit a copy to make changes.</p>}
       {error && <p role="alert" className="chart-builder-error">{error}</p>}
+      <p className="chart-builder-save-status" role="status" aria-live="polite">
+        {readOnly ? 'Reference chart · view only' :
+          dirty || hasRestoredDraft || keyInput !== draft.concert_key ||
+          meterTopInput !== String(draft.beats) || meterBottomInput !== String(draft.beat_unit ?? 4)
+            ? 'Unsaved changes' : 'No unsaved changes'}
+      </p>
 
       <label className="chart-builder-field">
         <span>Chart name</span>
@@ -342,13 +354,18 @@ export function ChartBuilderPage() {
           value={draft.feel}
           onChange={event => edit(before => ({ ...before, feel: event.target.value }))} />
       </label>}
-      <label className="chart-builder-field">
+      <nav className="chart-builder-jump-links" aria-label="Chart builder sections">
+        <a href="#builder-chart">Chart</a>
+        <a href="#builder-sections">Sections</a>
+        <a href="#builder-details">Details</a>
+      </nav>
+      <label className="chart-builder-field" id="builder-details">
         <span>Style instruction for the whole chart (optional)</span>
         <input type="text" disabled={readOnly} value={draft.style_instruction} maxLength={120}
           placeholder="e.g. Medium swing throughout" onChange={event => edit(before => ({ ...before, style_instruction: event.target.value }))} />
       </label>
 
-      <div className="chart-builder-chart-heading">
+      <div className="chart-builder-chart-heading" id="builder-chart">
         <div><h2>Your chord chart</h2><p>Tap a measure and type its chord. Use familiar symbols like Dm7 or G7.</p></div>
         <span>{draft.bars.length} measures</span>
       </div>
@@ -381,7 +398,7 @@ export function ChartBuilderPage() {
           <button type="button" className="is-red" disabled={readOnly || draft.bars.length <= 1}
             title="Delete measure" aria-label="Delete measure" onClick={remove}>−</button>
         </div>
-        <div className="chart-builder-section-tools">
+        <div className="chart-builder-section-tools" id="builder-sections">
           <label htmlFor="chart-section-label">Section starts here
             <select id="chart-section-label" value={selectedBar.section ?? ''}
               disabled={readOnly} onChange={event => markSection(event.target.value)}>
