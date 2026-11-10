@@ -441,6 +441,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       {!unavailable ? (
         <div className="jazz-tuner-microphone-actions">
           <button className="tuner-mic" type="button" onClick={toggleMicrophone}
+            aria-label={status === 'listening' ? 'Stop microphone' : status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
             aria-pressed={status === 'listening'}>
             <span className="jazz-mic-symbol" aria-hidden="true">♩</span>
             {status === 'listening' ? 'Listening…  ·  Stop' :
