@@ -4,6 +4,8 @@ import { PixelIcon, type NavRoute } from './PixelIcon';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import './AppShell.css';
+import '../styles/ThemeReview.css';
+import { ThemeReviewSwitcher } from './ThemeReviewSwitcher';
 
 const NAV: { to: string; route: NavRoute; label: string }[] = [
   { to: '/practice', route: 'practice', label: 'Practice' },
@@ -66,6 +68,7 @@ export function AppShell() {
       </aside>
       <div className="app-main">
         <main className="app-shell">
+          <ThemeReviewSwitcher />
           {configured ? (
             <div className="mobile-auth-bar">
               {user ? (
