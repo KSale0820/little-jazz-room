@@ -460,7 +460,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <img className="jazz-tool-plant" src="/visuals/tools/mockup/pothos.svg" alt="" />
         <div className="tool-cat-scene tool-tuner-scene">
           {catId === 'luna' ? (
-            <img className="tool-scene-cat jazz-mock-cat" src="/visuals/tools/mockup/cat-sleeping.svg"
+            <img className="tool-scene-cat jazz-mock-cat" src="/visuals/tools/mockup/cat-sleeping-approved.png"
               alt="" style={{ visibility: catMode ? 'visible' : 'hidden' }} />
           ) : <DecorativeCat catId={catId} variant="sleeping" size={116} className="tool-scene-cat" />}
         </div>
