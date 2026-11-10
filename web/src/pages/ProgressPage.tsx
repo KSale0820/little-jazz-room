@@ -69,7 +69,7 @@ export function ProgressPage() {
 
   const practiceAgain = () => {
     setActiveRoutineId(routineForReplay(orderedSessions[0], routines));
-    navigate('/player');
+    navigate(routineForReplay(orderedSessions[0], routines) ? '/player' : '/free-practice');
   };
 
   return (
