@@ -89,6 +89,7 @@ try {
     throw new Error('Expected A440 microphone input, got ' + frequency);
   }
   // Chromatic is also the singing mode. Its optional graph tracks the same mic.
+  await page.getByRole('button', { name: 'Tuner help' }).click();
   await page.getByRole('button', { name: 'Show pitch graph' }).click();
   await page.getByRole('region', { name: 'Live pitch graph' }).waitFor();
   if (await page.getByRole('button', { name: 'Voice', exact: true }).count()) {
