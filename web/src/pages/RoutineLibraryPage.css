@@ -271,3 +271,8 @@
   font-size: 12px;
   font-weight: 650;
 }
+
+/* Keep pinning a small secondary action below the existing bookmark. */
+.routine-pin { position: absolute; right: 3px; bottom: 3px; min-width: 38px; min-height: 36px; padding: 3px; border: 0; border-radius: 6px; background: transparent; color: #31503b; font: 600 11px system-ui, sans-serif; }
+.routine-pin[aria-pressed="true"] { text-decoration: underline; color: #9a784b; }
+.routine-card-main { padding-right: 47px; }

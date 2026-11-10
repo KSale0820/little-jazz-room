@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Routine } from '../types/content';
+import { readPinnedPracticeRoutine, savePinnedPracticeRoutine } from '../lib/practiceHomePreferences';
 import './RoutineLibraryPage.css';
 
 type RoutineTab = 'Presets' | 'My Routines' | 'Shared';
@@ -44,8 +45,9 @@ export function RoutineLibraryPage() {
   const [showAllPresets, setShowAllPresets] = useState(false);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [bookmarks, setBookmarks] = useState<string[]>(() => readBookmarks(repo.scope));
+  const [pinnedId, setPinnedId] = useState<string | null>(() => readPinnedPracticeRoutine(repo.scope));
 
-  useEffect(() => setBookmarks(readBookmarks(repo.scope)), [repo.scope]);
+  useEffect(() => { setBookmarks(readBookmarks(repo.scope)); setPinnedId(readPinnedPracticeRoutine(repo.scope)); }, [repo.scope]);
 
   const exerciseMap = useMemo(() => new Map(exercises.map(exercise => [exercise.id, exercise])), [exercises]);
 
@@ -97,6 +99,12 @@ export function RoutineLibraryPage() {
       try { localStorage.setItem(bookmarkKey(repo.scope), JSON.stringify(next)); } catch { /* optional storage */ }
       return next;
     });
+  };
+
+  const togglePin = (id: string) => {
+    const next = pinnedId === id ? null : id;
+    savePinnedPracticeRoutine(repo.scope, next);
+    setPinnedId(next);
   };
 
   const openRoutine = (id: string) => {
@@ -189,6 +197,7 @@ export function RoutineLibraryPage() {
                   </span>
                 </span>
               </button>
+              <button type="button" className="routine-pin" aria-label={(pinnedId === routine.id ? 'Unpin ' : 'Pin ') + routine.title + ' on Practice home'} aria-pressed={pinnedId === routine.id} onClick={() => togglePin(routine.id)}>{pinnedId === routine.id ? 'Pinned' : 'Pin'}</button>
               <button type="button" className={'routine-bookmark' + (isBookmarked ? ' is-saved' : '')}
                 aria-label={(isBookmarked ? 'Remove saved ' : 'Save ') + routine.title}
                 aria-pressed={isBookmarked} onClick={() => toggleBookmark(routine.id)}>

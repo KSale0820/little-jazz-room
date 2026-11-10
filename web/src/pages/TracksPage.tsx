@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { RECORDED_BACKING_TRACKS, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
@@ -80,10 +80,8 @@ export function TracksPage() {
   const [availableRecordings, setAvailableRecordings] = useState<string[]>([]);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const isCharts = useLocation().pathname === '/charts';
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category>('Recent');
-  const [chartFilter, setChartFilter] = useState<'All' | 'Blues' | 'Other'>('All');
   const [applied, setApplied] = useState<TrackFilter>({ ...EMPTY_FILTER });
   const [draft, setDraft] = useState<TrackFilter>({ ...EMPTY_FILTER });
   const [filterOpen, setFilterOpen] = useState(false);
@@ -114,16 +112,30 @@ export function TracksPage() {
     return () => window.removeEventListener('keydown', close);
   }, [filterOpen]);
 
-  const chartResults = useMemo(() => charts.filter(chart => {
-    const match = chart.title.toLowerCase().includes(query.trim().toLowerCase());
-    const isBlues = chart.title.toLowerCase().includes('blues');
-    return match && (chartFilter === 'All' || (chartFilter === 'Blues' ? isBlues : !isBlues));
-  }), [charts, query, chartFilter]);
-
-  const catalog = useMemo(() => TRACK_CATALOG.flatMap(track => {
-    const chart = track.chartId ? charts.find(candidate => candidate.id === track.chartId) ?? null : null;
-    return chart || track.recordingId ? [{ ...track, chart }] : [];
-  }), [charts]);
+  const catalog = useMemo(() => {
+    const tracks = TRACK_CATALOG.flatMap(track => {
+      const chart = track.chartId ? charts.find(candidate => candidate.id === track.chartId) ?? null : null;
+      return chart || track.recordingId ? [{ ...track, chart }] : [];
+    });
+    // Keep every chart discoverable within the same track library without duplicates.
+    const linkedChartIds = new Set(tracks.map(track => track.chart?.id).filter((id): id is string => Boolean(id)));
+    const chartsWithoutTracks = charts.filter(chart => !linkedChartIds.has(chart.id)).map(chart => ({
+      id: 'chart:' + chart.id,
+      chartId: chart.id,
+      title: chart.title,
+      subtitle: chart.bars.length + ' measures · Chord chart',
+      style: chart.feel || 'Chart',
+      key: chart.concert_key,
+      bpm: null,
+      difficulty: chart.difficulty ?? 'All',
+      instruments: [] as string[],
+      blues: /blues/i.test(chart.title),
+      standard: false,
+      recordingId: null,
+      chart,
+    }));
+    return [...tracks, ...chartsWithoutTracks];
+  }, [charts]);
   const filtered = useMemo(() => catalog.filter(track => {
     const term = query.trim().toLowerCase();
     if (term && ![track.title, track.subtitle, track.style, track.key, track.chart?.title ?? ''].some(value => value.toLowerCase().includes(term))) return false;
@@ -162,55 +174,22 @@ export function TracksPage() {
     setDraft({ ...EMPTY_FILTER });
   };
 
-  if (isCharts) {
-    return (
-      <section className="demo-page" aria-label="Charts">
-        <header className="demo-header">
-          <div><p className="demo-eyebrow">The songbook</p><h1 className="demo-heading">Charts</h1></div>
-          <button type="button" className="demo-link" onClick={() => navigate('/tracks')}>Tracks ›</button>
-        </header>
-        <input className="demo-search" aria-label="Search tracks and charts" placeholder="Search tracks, styles, keys..." value={query} onChange={event => setQuery(event.target.value)} />
-        <div className="demo-filter-group" aria-label="Chart categories">
-          {(['All', 'Blues', 'Other'] as const).map(value => (
-            <button type="button" key={value} className="demo-filter" aria-pressed={chartFilter === value} onClick={() => setChartFilter(value)}>{value === 'All' ? 'Recent' : value === 'Other' ? 'Original studies' : value}</button>
-          ))}
-        </div>
-        <div className="demo-filter-group" aria-label="Personal chart actions">
-          <button type="button" className="demo-link" onClick={() => navigate("/my-charts")}>My Charts</button>
-          <button type="button" className="demo-link" onClick={() => navigate("/charts/new")}>+ Create a Chart</button>
-        </div>
-        <h2 className="demo-section-title">Jazz harmony studies</h2>
-        <p className="demo-subtitle" style={{ marginBottom: 12 }}>Choose a chart to open a readable measure grid.</p>
-        {chartResults.map(chart => (
-          <button type="button" key={chart.id} className="demo-row" onClick={() => chart.is_custom ? navigate("/charts/" + encodeURIComponent(chart.id) + "/edit") : openChart(chart.id)}>
-            <span><span className="demo-row-title">{chart.title}</span><span className="demo-row-meta">{chart.bars.length} bars · Key {chart.concert_key} · {chart.is_custom ? "Edit custom chart" : "Open chord chart"}</span></span>
-            <span aria-hidden="true">›</span>
-          </button>
-        ))}
-        {!chartResults.length && <p className="demo-subtitle">No matching studies. Try a different search.</p>}
-      </section>
-    );
-  }
-
   return (
-    <section className="t01-page" aria-label="Tracks Library">
+    <section className="t01-page" aria-label="Tracks and Charts Library">
       <header className="t01-header">
         <div>
           <p className="t01-eyebrow">THE LISTENING ROOM</p>
-          <h1 className="t01-title">Tracks</h1>
+          <h1 className="t01-title">Tracks &amp; Charts</h1>
         </div>
-        <button className="t01-charts-link" type="button" onClick={() => navigate('/charts')}>
-          <TrackIcon name="book" /> <span>Charts</span> <TrackIcon name="chevron" />
-        </button>
       </header>
 
       <div className="t01-search-wrap">
         <TrackIcon name="search" />
-        <input aria-label="Search tracks" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search tracks, styles, keys..." />
+        <input aria-label="Search tracks and charts" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search tracks, charts, styles, keys..." />
         {query && <button type="button" className="t01-search-clear" aria-label="Clear search" onClick={() => setQuery('')}><TrackIcon name="close" /></button>}
       </div>
 
-      <div className="t01-categories" aria-label="Track categories">
+      <div className="t01-categories" aria-label="Track and chart categories">
         {CATEGORIES.map(value => (
           <button key={value} type="button" className="t01-category" aria-pressed={category === value} onClick={() => setCategory(value)}>
             {value === 'Favorites' && <TrackIcon name="star" />}
@@ -235,7 +214,7 @@ export function TracksPage() {
         <>
           <div className="t01-section-header">
             <h2>Pick up a tune</h2>
-            <span>{filtered.length} {filtered.length === 1 ? 'track' : 'tracks'}</span>
+            <span>{filtered.length} {filtered.length === 1 ? 'item' : 'items'}</span>
           </div>
           <div className="t01-track-list">
             {filtered.map(track => {
@@ -249,7 +228,7 @@ export function TracksPage() {
                     <span className="t01-card-title">{track.title}</span>
                     <span className="t01-card-subtitle">{track.subtitle}</span>
                     <span className="t01-card-footer">
-                      <span className="t01-status t01-audio">{track.recordingId && availableRecordings.includes(track.recordingId) ? 'Recording available' : <><TrackIcon name="unavailable" /> Audio pending</>}</span>
+                      {!track.id.startsWith('chart:') && <span className="t01-status t01-audio">{track.recordingId && availableRecordings.includes(track.recordingId) ? 'Recording available' : <><TrackIcon name="unavailable" /> Audio pending</>}</span>}
                       {track.chart && <span className="t01-status t01-chart"><TrackIcon name="book" /> Chart</span>}
                       <span className="t01-card-spacer" />
                       <span className="t01-card-tempo">{track.bpm === null ? '' : track.bpm + ' BPM · '}{track.key}</span>
@@ -267,9 +246,9 @@ export function TracksPage() {
       ) : (
         <div className="t01-empty" role="status">
           <div className="t01-empty-symbol"><TrackIcon name="search" /></div>
-          <h2>{category === 'Favorites' && !query && !activeFilterCount ? 'No favorite tracks yet' : 'No tracks found'}</h2>
-          <p>{category === 'Favorites' && !query && !activeFilterCount ? 'Tap the star beside a track to save it here.' : query ? 'No results for “' + query + '”. Try another search or clear your filters.' : 'No tracks match these filters. Try another category or reset your filters.'}</p>
-          <button type="button" className="t01-empty-clear" onClick={() => { setQuery(''); if (!query) setCategory('Recent'); }}><TrackIcon name="close" /> {query ? 'Clear search' : 'Show all tracks'}</button>
+          <h2>{category === 'Favorites' && !query && !activeFilterCount ? 'No favorites yet' : 'No tracks or charts found'}</h2>
+          <p>{category === 'Favorites' && !query && !activeFilterCount ? 'Tap the star beside a track to save it here.' : query ? 'No results for “' + query + '”. Try another search or clear your filters.' : 'No tracks or charts match these filters. Try another category or reset your filters.'}</p>
+          <button type="button" className="t01-empty-clear" onClick={() => { setQuery(''); if (!query) setCategory('Recent'); }}><TrackIcon name="close" /> {query ? 'Clear search' : 'Show all items'}</button>
           <button type="button" className="t01-empty-reset" onClick={reset}>Reset all filters</button>
         </div>
       )}
@@ -278,7 +257,7 @@ export function TracksPage() {
         <div className="t01-filter-overlay">
           <button type="button" className="t01-overlay-backdrop" aria-label="Close filters without applying" onClick={() => setFilterOpen(false)} />
           <div className="t01-filter-sheet" role="dialog" aria-modal="true" aria-labelledby="t01-filter-heading">
-            <div className="t01-sheet-top"><h2 id="t01-filter-heading">Filter tracks</h2><button type="button" aria-label="Close filters" onClick={() => setFilterOpen(false)}><TrackIcon name="close" /></button></div>
+            <div className="t01-sheet-top"><h2 id="t01-filter-heading">Filter library</h2><button type="button" aria-label="Close filters" onClick={() => setFilterOpen(false)}><TrackIcon name="close" /></button></div>
             <div className="t01-sheet-scroll">
               {FIELDS.map(field => (
                 <fieldset key={field.key} className={'t01-filter-field' + (focusField === field.key ? ' is-highlighted' : '')}>

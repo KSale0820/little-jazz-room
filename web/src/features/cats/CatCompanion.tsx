@@ -14,6 +14,17 @@ export const JAZZ_CATS = [
   { id: 'biscuit', instrument: 'Turntables / listening', name: 'Biscuit', coat: 'Orange tabby', personality: 'Adventurous & cozy', age: 'Adult', build: 'Large' },
 ] as const;
 export type CatId = (typeof JAZZ_CATS)[number]['id'];
+/** Approved selectable companions; archived identities remain valid for saved users. */
+export const VISIBLE_CAT_IDS = ['luna','milo','maple'] as const;
+export type VisibleCatId = typeof VISIBLE_CAT_IDS[number];
+export const COMPANION_UNLOCK_MINUTES: Readonly<Record<VisibleCatId, number>> = {
+  luna: 0, milo: 60, maple: 300,
+};
+export const isVisibleCatId = (value: unknown): value is VisibleCatId =>
+  typeof value === 'string' && VISIBLE_CAT_IDS.some(id => id === value);
+const SELECTABLE_JAZZ_CATS = JAZZ_CATS.filter(
+  (cat): cat is Extract<(typeof JAZZ_CATS)[number], { id: VisibleCatId }> => isVisibleCatId(cat.id),
+);
 const KEY = 'little-jazz-room:selected-cat:v1';
 const isCatId = (value: unknown): value is CatId =>
   typeof value === 'string' && JAZZ_CATS.some(c => c.id === value);
@@ -81,30 +92,31 @@ function CatChooserArt({ catId }: { catId: CatId }) {
   return <img className="board-cat-art" src={src} onError={onError} alt="" aria-hidden draggable={false} />;
 }
 
-export function CatChooser({ catId, onSelect }:
-  { catId: CatId; onSelect: (id: CatId) => void | Promise<void> }) {
+export function CatChooser({ catId, onSelect, unlockedIds, practiceMinutes = 0 }:
+  { catId: CatId; onSelect: (id: CatId) => void | Promise<void>;
+    unlockedIds?: readonly VisibleCatId[]; practiceMinutes?: number }) {
   return (
     <section aria-labelledby="choose-cat-heading" className="jazz-cat-section board-style">
       <h2 id="choose-cat-heading">Choose your jazz cat</h2>
-      <p className="jazz-cat-lede">All eight companions are free. Change any time.</p>
+      <p className="jazz-cat-lede">Luna starts unlocked. Practice to earn Milo and Maple.</p>
       <div className="jazz-cat-grid board-cards" role="group" aria-label="Jazz cat companions">
-        {JAZZ_CATS.map(cat => (
-          <button
-            type="button"
-            key={cat.id}
-            className="board-cat-card"
-            aria-pressed={catId === cat.id}
-            aria-label={`${cat.name}, ${cat.instrument}, ${cat.personality}`}
-            onClick={() => { void onSelect(cat.id); }}
-          >
+        {SELECTABLE_JAZZ_CATS.map(cat => {
+          const needed = COMPANION_UNLOCK_MINUTES[cat.id];
+          const locked = unlockedIds !== undefined && !unlockedIds.includes(cat.id) && catId !== cat.id;
+          const remaining = Math.max(0, needed - practiceMinutes);
+          return <button type="button" key={cat.id} className="board-cat-card"
+            aria-pressed={catId === cat.id} disabled={locked}
+            aria-label={`${cat.name}, ${cat.instrument}, ${cat.personality}${locked ? `, locked, ${remaining} more minutes to unlock` : ', unlocked'}`}
+            onClick={() => { if (!locked) void onSelect(cat.id); }}>
             <CatChooserArt catId={cat.id} />
             <div className="board-cat-meta">
               <strong>{cat.name}</strong>
               <span className="board-cat-instrument">{cat.instrument}</span>
               <span className="board-cat-personality">{cat.personality}</span>
+              {locked && <span className="board-cat-unlock">{remaining} more practice min to unlock</span>}
             </div>
-          </button>
-        ))}
+          </button>;
+        })}
       </div>
     </section>
   );

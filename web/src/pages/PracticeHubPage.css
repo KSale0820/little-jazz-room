@@ -255,3 +255,10 @@
     overflow-y: auto;
   }
 }
+
+/* Functional goal controls retain the class-demo palette. */
+.p01-daily-header { flex-wrap: wrap; }
+.p01-goal-edit { min-height: 32px; padding: 4px 8px; border: 1px solid #d4dacf; border-radius: 7px; color: var(--p01-green); background: #fffdf8; font: 600 12px system-ui, sans-serif; }
+.p01-goal-form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; font: 12px system-ui, sans-serif; }
+.p01-goal-form input { width: 76px; min-height: 40px; padding: 5px 8px; border: 1px solid #bbc7b9; border-radius: 7px; }
+.p01-goal-form button { min-height: 40px; padding: 6px 11px; border: 1px solid #cdd8cc; border-radius: 7px; background: #fffdf8; color: var(--p01-green); }

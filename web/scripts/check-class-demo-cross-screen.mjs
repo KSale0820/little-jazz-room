@@ -10,7 +10,7 @@ mkdirSync(output, { recursive: true });
 const screens = [
   ['P01-practice-root', '/', '.p01-page'],
   ['T01-tracks', '/tracks', '.t01-page'],
-  ['T02-charts', '/charts', '.demo-page'],
+  ['T02-charts-redirect', '/charts', '.t01-page'],
   ['P01-practice-direct', '/practice', '.p01-page'],
   ['R01-routine-library', '/routines', '.routine-library'],
   ['R03-routine-builder', '/create', '.routine-builder'],
@@ -83,16 +83,13 @@ try {
       }
     }
 
-    // Capture both player modes without changing PR #19's chart implementation.
+    // Free Practice now begins as an independent timer, not a seeded chart.
     await page.goto(base + '/practice', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: /^Free Practice/ }).click();
-    await page.waitForURL(url => url.pathname === '/player');
-    await page.getByRole('tabpanel', { name: 'Jazz chord chart' }).waitFor();
-    check(await page.locator('.chord-grid .measure').count() === 12,
-      'P02 Free: full 12-bar chart not present');
-    await verify('P02-free-chart', '.practice-player');
-    check(await page.locator('audio').count() === 0, 'Chart-only practice must not show audio');
-    await verify('P02-free-player', '.practice-player');
+    await page.waitForURL(url => url.pathname === '/free-practice');
+    await verify('P02-free-timer', '.fp-page');
+    check(await page.locator('.chord-grid .measure').count() === 0,
+      'Free Practice must not auto-load an unrelated chart');
 
     await page.goto(base + '/routines', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
