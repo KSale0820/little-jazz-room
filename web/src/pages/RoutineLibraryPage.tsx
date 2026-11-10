@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Exercise, Routine } from '../types/content';
-import { readPinnedPracticeRoutine, savePinnedPracticeRoutine } from '../lib/practiceHomePreferences';
 import {
   countRoutineFilters, EMPTY_ROUTINE_FILTERS, matchesRoutineFilters,
   ROUTINE_DURATIONS, ROUTINE_FOCI, ROUTINE_INSTRUMENTS, ROUTINE_LEVELS, routineFocuses,
@@ -10,7 +9,6 @@ import {
 } from './routineLibraryFilters';
 import './RoutineLibraryPage.css';
 import './CleanPixelRoutines.css';
-import './RoutinePin.css';
 import './RoutinesApproved.css';
 
 type RoutineTab = 'My Routines' | 'Community' | 'Saved';
@@ -62,10 +60,8 @@ export function RoutineLibraryPage() {
   const filterTrigger = useRef<HTMLButtonElement>(null);
   const filterClose = useRef<HTMLButtonElement>(null);
   const [bookmarks, setBookmarks] = useState<string[]>(() => readBookmarks(repo.scope));
-  const [pinnedId, setPinnedId] = useState<string | null>(() => readPinnedPracticeRoutine(repo.scope));
 
   useEffect(() => { setBookmarks(readBookmarks(repo.scope)); }, [repo.scope]);
-  useEffect(() => { setPinnedId(readPinnedPracticeRoutine(repo.scope)); }, [repo.scope]);
   useEffect(() => {
     if (!filterOpen) return;
     filterClose.current?.focus();
@@ -127,11 +123,6 @@ export function RoutineLibraryPage() {
       return next;
     });
   };
-  const togglePin = (id: string) => {
-    const next = pinnedId === id ? null : id;
-    savePinnedPracticeRoutine(repo.scope, next);
-    setPinnedId(next);
-  };
   const openRoutine = (id: string) => {
     setActiveRoutineId(id);
     navigate('/player?routine=' + encodeURIComponent(id));
@@ -151,10 +142,11 @@ export function RoutineLibraryPage() {
     <section className="routine-library routine-approved" aria-label="Routine library">
       <header className="routine-approved-header">
         <div className="routine-approved-title">
-          <h1>Routines</h1>
-          <span className="routine-approved-flourish" aria-hidden="true">✦</span>
-          <img src="/visuals/new-assets/2026-11-07-sharp-pixel/music-note-purple-sharp.png"
-            className="routine-approved-note" alt="" aria-hidden="true" />
+          <h1 className="screen-reader-only">Routines</h1>
+          <img className="routine-approved-wordmark routines-header-light"
+            src="/visuals/routines/approved-routines-pixel-light.png" alt="" aria-hidden="true" />
+          <img className="routine-approved-wordmark routines-header-dark"
+            src="/visuals/routines/approved-routines-pixel-dark.png" alt="" aria-hidden="true" />
         </div>
         <button type="button" className="routine-approved-create" onClick={() => navigate('/create')}>
           <span aria-hidden="true">+</span> Create
@@ -202,7 +194,6 @@ export function RoutineLibraryPage() {
       <div className="routine-list routine-approved-list">
         {shown.map(routine => {
           const isBookmarked = bookmarks.includes(routine.id);
-          const pinned = pinnedId === routine.id;
           const focuses = routineFocuses(routine, linkedExercises(routine));
           const description = focuses.slice(0, 3).join(' · ');
           return (
@@ -220,15 +211,6 @@ export function RoutineLibraryPage() {
                 </span>
                 <span className="routine-approved-duration">{routine.duration_minutes} min</span>
                 <span className="routine-approved-chevron" aria-hidden="true">›</span>
-              </button>
-              <button type="button" className={'routine-pin' + (pinned ? ' is-pinned' : '')}
-                aria-label={(pinned ? 'Unpin ' : 'Pin ') + routine.title + ' on Practice home'}
-                aria-pressed={pinned} onClick={() => togglePin(routine.id)}
-                title={pinned ? 'Unpin from Practice' : 'Pin to Practice'}>
-                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill={pinned ? 'currentColor' : 'none'}
-                  stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m15 3 6 6-4 1-3 4v3l-2 2-2-6-6-2 2-2h3l4-3z" /><path d="m12 18-4 4" />
-                </svg>
               </button>
             </article>
           );
