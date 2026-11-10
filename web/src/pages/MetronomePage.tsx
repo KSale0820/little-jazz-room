@@ -308,7 +308,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
         <img className="jazz-tool-plant" src="/visuals/tools/mockup/pothos.svg" alt="" />
         <div className="tool-cat-scene tool-metronome-scene">
           {catId === 'luna' ? (
-            <img className="tool-scene-cat jazz-mock-cat" src="/visuals/tools/mockup/cat-sitting.svg"
+            <img className="tool-scene-cat jazz-mock-cat" src="/visuals/tools/mockup/cat-sitting-approved.png"
               alt="" style={{ visibility: catMode ? 'visible' : 'hidden' }} />
           ) : <DecorativeCat catId={catId} variant="sitting" size={120} className="tool-scene-cat" />}
         </div>
