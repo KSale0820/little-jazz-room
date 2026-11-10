@@ -572,7 +572,7 @@
   display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
 }
 .chart-builder-page.builder-studio .chart-editor-row .chart-editor-measure {
-  min-height:100px; padding:4px 2px 5px;
+  min-height:70px; padding:2px 1px 3px;
   border-right:1px solid var(--color-border);
 }
 .chart-builder-page.builder-studio .chart-editor-row .chart-editor-measure:nth-child(2) {
@@ -580,7 +580,7 @@
 }
 .chart-builder-page.builder-studio .chart-editor-row .chart-editor-measure:nth-child(4) { border-right:0; }
 .chart-builder-page.builder-studio .chart-editor-measure-top {
-  min-height:22px; padding:0 4px; gap:3px; align-items:start;
+  min-height:17px; padding:0 3px; gap:2px; align-items:start;
 }
 .chart-builder-page.builder-studio .chart-editor-measure-number {
   font:700 10px/1.3 system-ui,sans-serif; color:var(--color-muted);
@@ -588,12 +588,12 @@
 .chart-builder-page.builder-studio .chart-editor-section-label { font-size:10px; min-width:15px; min-height:16px; padding:0 3px; }
 .chart-builder-page.builder-studio .chart-editor-chords {
   display:flex; flex-direction:column; justify-content:center; align-items:stretch;
-  min-height:52px; margin:0; padding:0 2px; gap:2px;
+  min-height:44px; margin:0; padding:0 1px; gap:0;
 }
 .chart-builder-page.builder-studio .chart-editor-chord input,
 .chart-builder-page.builder-studio .chart-editor-measure.is-selected .chart-editor-chord input {
-  width:100%; padding:7px 1px; font-size:clamp(11px,3.25vw,15px);
-  letter-spacing:-.045em; min-height:44px;
+  width:100%; padding:6px 0; font-size:clamp(17px,5vw,20px);
+  letter-spacing:-.035em; font-weight:780; line-height:1.1; min-height:44px;
 }
 .chart-builder-page.builder-studio .chart-editor-chord input::placeholder { font-size:10px; }
 .chart-builder-page.builder-studio .chart-builder-selection { grid-column:1 / -1; padding:10px 8px 12px; }
@@ -798,7 +798,6 @@
   .chart-builder-page.builder-studio .chart-builder-simple-meta .chart-builder-inline-input button {
     flex-basis:29px; min-width:29px;
   }
-  .chart-builder-page.builder-studio .chart-editor-chord input { font-size:12px; }
   .chart-library-page .chart-library-card-main { gap:8px; }
   .routine-builder .builder-custom-form.builder-studio { padding:12px; }
 }
@@ -806,4 +805,22 @@
   .chart-builder-page.builder-studio .chart-builder-simple-meta { grid-template-columns:minmax(0,1fr) 68px; }
   .chart-builder-page.builder-studio .chart-builder-feel-field { grid-column:1/-1; }
   .chart-builder-page.builder-studio .chart-builder-header h1 { font-size:19px; }
+}
+
+/* Owner review: chord names should visually lead; measure number is secondary.
+   Single-chord cells remain compact while split-chord measures grow as needed.
+   The 44px input target is preserved for keyboard/touch accessibility. */
+.chart-builder-page.builder-studio .chart-editor-chord input {
+  text-align:center;
+  font-variant-ligatures:none;
+}
+.chart-builder-page.builder-studio .chart-builder-chart-heading h2::before,
+.chart-builder-page.builder-studio .chart-builder-chart-heading h2::after,
+.chart-builder-page.builder-studio .chart-builder-chart-heading > div:first-child::before,
+.chart-builder-page.builder-studio .chart-builder-chart-heading > div:first-child::after,
+.chart-builder-page.builder-studio .chart-builder-header h1::before,
+.chart-builder-page.builder-studio .chart-builder-header h1::after,
+.chart-library-page .builder-library-heading h1::before,
+.chart-library-page .builder-library-heading h1::after {
+  content:none;
 }
