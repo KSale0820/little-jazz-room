@@ -311,12 +311,23 @@ try {
           timer: box('.practice-session-row .practice-time-badge'),
           finish: box('.practice-finish-action'),
           nav: box('nav.bottom-nav'),
+          fullChartVisible: (() => {
+            const chart = document.querySelector('.practice-chart-scroll');
+            const lastMeasure = chart?.querySelector('.chord-grid .measure:last-child');
+            if (!chart || !lastMeasure) return false;
+            return lastMeasure.getBoundingClientRect().bottom <= chart.getBoundingClientRect().bottom - 1;
+          })(),
         };
       });
       assert.ok(boxes.chart && boxes.finish && boxes.nav && boxes.transport && boxes.timer,
         'Missing Practice Player elements: ' + JSON.stringify({ theme, width, height, boxes }));
       assert.ok(boxes.chart.height >= (height >= 800 ? 280 : 145),
         'Chart should receive most spare vertical space: ' + JSON.stringify({ theme, width, height, boxes }));
+      if (height >= 800) {
+        assert.ok(boxes.fullChartVisible,
+          'All 35 measures should fit in tall-phone chart without scrolling: ' +
+          JSON.stringify({ theme, width, height, boxes }));
+      }
       assert.ok(boxes.transport.y >= boxes.chart.bottom - 1,
         'Transport must follow chart and seek: ' + JSON.stringify({ theme, width, height, boxes }));
       assert.ok(boxes.transport.height <= 49 && boxes.utilities.height <= 48 && boxes.finish.height <= 45,
