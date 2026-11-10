@@ -2,6 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CatChooser, CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
+import { getSupabaseClient } from '../lib/supabase/client';
+import { readProfileName, saveProfileName, normalizeProfileName } from '../lib/profileName';
+import { downloadPracticeSessionsCsv } from '../lib/practiceExport';
 import './ProfilePage.css';
 
 const MONTH_NAMES = [
@@ -13,9 +17,34 @@ export function ProfilePage() {
   const {
     catId, chooseCat, catSaveError,
     catMotion, setCatMotion,
-    sessions, routines,
+    sessions, routines, repo,
     showToast, setActiveRoutineId,
   } = useApp();
+  const { user } = useAuth();
+  const accountKey = repo.scope;
+  const authName = String(user?.user_metadata?.display_name ?? user?.user_metadata?.full_name ?? user?.user_metadata?.name ?? '');
+  const [profileName, setProfileName] = useState(() => readProfileName(accountKey, authName));
+  const [draftName, setDraftName] = useState(profileName);
+  const [editingName, setEditingName] = useState(false);
+  const [savingName, setSavingName] = useState(false);
+  const [nameMessage, setNameMessage] = useState('');
+  useEffect(() => { const next = readProfileName(accountKey, authName); setProfileName(next); setDraftName(next); setEditingName(false); setNameMessage(''); }, [accountKey, authName]);
+
+  const saveName = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const next = normalizeProfileName(draftName);
+    if (!next) { setNameMessage('Enter a display name.'); return; }
+    setSavingName(true);
+    const localSaved = saveProfileName(accountKey, next);
+    let cloudSaved = !user;
+    if (user) {
+      try { const client = getSupabaseClient(); if (client) { const { error } = await client.auth.updateUser({ data: { display_name: next } }); cloudSaved = !error; } }
+      catch { cloudSaved = false; }
+    }
+    if (localSaved || cloudSaved) { setProfileName(next); setEditingName(false); showToast('Display name updated.'); }
+    setNameMessage(!cloudSaved && user ? 'Saved on this device; account sync unavailable.' : !localSaved && !cloudSaved ? 'Unable to save display name.' : '');
+    setSavingName(false);
+  };
   const navigate = useNavigate();
   const location = useLocation();
   const chooserRef = useRef<HTMLDivElement>(null);
@@ -69,6 +98,24 @@ export function ProfilePage() {
           <h1 className="profile-title">Profile</h1>
           <p className="profile-subtitle">Your jazz companion and practice history.</p>
         </div>
+      </div>
+
+      {/* ── Account and export actions (original demo styling) ── */}
+      <div className="box profile-section profile-account-actions" aria-label="Profile actions">
+        <h2>Account</h2>
+        {editingName ? (
+          <form onSubmit={saveName} className="profile-name-form">
+            <label htmlFor="profile-display-name">Display name</label>
+            <input id="profile-display-name" value={draftName} maxLength={40} autoComplete="nickname" onChange={event => setDraftName(event.target.value)} required />
+            <div><button className="btn" type="submit" disabled={savingName}>Save</button> <button className="btn" type="button" disabled={savingName} onClick={() => { setEditingName(false); setNameMessage(''); }}>Cancel</button></div>
+          </form>
+        ) : (
+          <div className="profile-name-row"><span>Display name: <strong>{profileName}</strong></span><button className="btn" type="button" onClick={() => { setDraftName(profileName); setEditingName(true); }}>Edit</button></div>
+        )}
+        {nameMessage && <p role="status" className="profile-save-error">{nameMessage}</p>}
+        <button type="button" className="btn profile-export-button" disabled={!sessions.length} onClick={() => downloadPracticeSessionsCsv(sessions)}>
+          Export practice history (CSV)
+        </button>
       </div>
 
       {/* ── Active companion card ── */}
