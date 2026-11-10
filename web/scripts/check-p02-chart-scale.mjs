@@ -84,9 +84,7 @@ try {
       check(await page.getByRole('navigation',{name:'Chart sections and measure groups'}).count()===0,label+' requires paging');
       return g;
     };
-    await page.goto(url+'/practice',{waitUntil:'networkidle'});
-    await page.getByRole('button',{name:/^Free Practice/}).click();
-    await page.waitForURL(u=>u.pathname==='/player');
+    await page.goto(url+'/player?chart=blues-f-12',{waitUntil:'networkidle'});
     await page.getByRole('tabpanel',{name:'Jazz chord chart'}).waitFor();
     const blues=await assess(12,'Free blues '+width+'x'+height);
     await page.screenshot({path:join(dir,'P02-free-complete-blues-'+width+'x'+height+'.png'),animations:'disabled'});
