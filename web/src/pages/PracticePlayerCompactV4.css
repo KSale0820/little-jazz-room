@@ -1,0 +1,309 @@
+/*
+ * P02 compact reference pass (2026-11-09).
+ * The approved chart-first layout uses the available viewport for the score.
+ * Keep all existing handlers and accessibility labels; only tighten geometry.
+ * Scope to unguided chart practice to avoid disrupting guided lesson panels.
+ */
+html[data-theme] .practice-player.practice-unified.practice-free {
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 12px 8px;
+  overflow: hidden;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-player-head {
+  flex: 0 0 auto;
+  min-height: 42px;
+  margin: 0 0 5px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-page-heading {
+  font-size: clamp(24px, 6.7vw, 29px);
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-title-group {
+  flex: 0 0 auto;
+  margin: 0 0 8px;
+  padding-inline: 5px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-title-group h1 {
+  margin-bottom: 6px;
+  font-size: clamp(24px, 7.1vw, 30px);
+  line-height: 1.08;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-tags {
+  gap: 6px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-tags > span {
+  min-height: 22px;
+  padding: 3px 8px;
+  font-size: 11px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-style {
+  margin: 3px 0 0;
+  font-size: 10px;
+}
+/* The chart, not the buttons, expands to consume spare screen height. */
+html[data-theme] .practice-player.practice-unified.practice-free .practice-notation-panel {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all,
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all.chart-dense {
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  margin: 0 0 5px;
+  padding: 4px 4px 4px 3px;
+  border-radius: 8px;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet,
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet {
+  padding-left: 23px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure,
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .measure {
+  min-height: clamp(39px, 5.2dvh, 46px);
+  padding: 3px 2px;
+  border-width: 1px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords,
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords:not(.two) {
+  font-size: clamp(15px, 4.15vw, 18px);
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two,
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .chords.two {
+  gap: 1px;
+  font-size: clamp(12px, 3.3vw, 13.5px);
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .practice-sheet .measure-section-label {
+  top: 2px;
+  left: -22px;
+  width: 20px;
+  height: 19px;
+  padding: 1px;
+  font-size: 11.5px;
+  box-shadow: none;
+}
+/* Playback stack is a dock underneath the chart, with no empty filler. */
+html[data-theme] .practice-player.practice-unified.practice-free .practice-transport {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+}
+html[data-theme] .practice-player.practice-unified.practice-free :is(.practice-recording-seek, .practice-chart-seek) {
+  margin: 0 2px 3px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free :is(.practice-recording-seek, .practice-chart-seek) input[type="range"] {
+  height: 17px;
+  margin: 0;
+  padding: 0;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-recording-times {
+  margin: -1px 0 0;
+  font-size: 11px;
+  line-height: 1.15;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-control-row {
+  grid-template-columns: 1.03fr .91fr .82fr 1.07fr 1.03fr;
+  gap: 5px;
+  margin: 1px 0 5px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-control-row button {
+  height: 38px;
+  min-height: 38px;
+  padding: 2px 2px;
+  border-radius: 8px;
+  gap: 2px;
+  font-size: 11px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-control-row .practice-timer-button {
+  height: 44px;
+  min-height: 44px;
+  width: 44px;
+  border-radius: 9px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-control-row .practice-timer-button .practice-play-pixel {
+  width: 26px;
+  height: 26px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-control-row .practice-loop-control {
+  font-size: 15px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-control-row :is(.practice-repeat-control, .practice-measure-btn) span {
+  font-size: 12.5px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-control-row .practice-pixel-icon {
+  width: 17px;
+  height: 17px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-transport .practice-player-pills {
+  min-height: 37px;
+  padding: 2px 5px;
+  margin: 0 0 4px;
+  gap: 4px;
+  border-radius: 8px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-player-pills :is(.practice-bpm-field, .practice-key-field) {
+  gap: 4px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-player-pills :is(.practice-bpm-field, .practice-key-field) > label {
+  font-size: 12.5px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-player-pills :is(.bpm-stepper, .practice-key-stepper) {
+  height: 30px;
+  border-radius: 7px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-player-pills :is(.bpm-stepper input, .practice-key-stepper select) {
+  height: 28px;
+  font-size: 16px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-player-pills .practice-stepper-arrows {
+  flex-basis: 23px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-player-pills .practice-stepper-arrows button {
+  width: 23px;
+  height: 15px;
+  min-height: 15px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-player-pills .practice-original-reset {
+  min-height: 34px;
+  font-size: 13px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-utility-row {
+  flex: 0 0 auto;
+  gap: 6px;
+  margin: 0 0 5px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-utility-row button {
+  min-height: 37px;
+  padding: 2px 3px;
+  border-radius: 8px;
+  gap: 4px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-utility-row .practice-tool-glyph {
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-utility-row button span {
+  font-size: 13px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-session-row {
+  flex: 0 0 auto;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 3px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-session-row .practice-time-badge {
+  align-self: auto;
+  min-width: 0;
+  min-height: 36px;
+  margin: 0;
+  padding: 0;
+  gap: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-session-row .practice-time-badge svg {
+  width: 16px;
+  height: 16px;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-session-row .practice-finish-action {
+  flex: 0 0 auto;
+  align-self: auto;
+  width: auto;
+  min-width: 139px;
+  min-height: 38px;
+  margin: 0;
+  padding: 3px 9px;
+  gap: 5px;
+  border-width: 1px;
+  border-radius: 8px;
+  font-size: 15px;
+  box-shadow: none;
+}
+html[data-theme] .practice-player.practice-unified.practice-free > .practice-session-row .practice-finish-action .practice-pixel-icon {
+  height: 17px;
+  width: 17px;
+}
+
+/* Keep every chord event on its original beat but lay multi-chord measures
+ * side-by-side in the same measure (never vertically stacked). */
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two,
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .chords.two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: stretch;
+  gap: 0;
+  height: 100%;
+  min-width: 0;
+  line-height: 1.1;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two:has(span:nth-child(3)) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two span {
+  min-width: 0;
+  max-width: 100%;
+  padding: 0 1px;
+  border-top: 0;
+  font-size: inherit;
+  letter-spacing: -.045em;
+  white-space: nowrap;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two span + span {
+  border-top: 0;
+  border-left: 1px dashed color-mix(in srgb, var(--pp-line) 80%, var(--pp-deep-green));
+}
+/* White letters on red section badges. All labels remain visible in the
+ * same-height score cells; Tag and End are annotations, not chord symbols. */
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .practice-sheet .measure-section-label {
+  top: 3px;
+  color: #fff !important;
+  background: var(--pp-rose);
+  line-height: 1;
+  text-shadow: 0 1px 0 #742c2c;
+}
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .measure-annotation {
+  position: absolute;
+  top: 7px;
+  right: 4px;
+  bottom: auto;
+  display: block;
+  max-width: 65%;
+  overflow: visible;
+  font: 700 10px/1.1 var(--font-ui, system-ui);
+  color: var(--color-chart-section, #a7464c);
+  white-space: nowrap;
+  z-index: 2;
+}
+/* Translate the chord without changing intrinsic measure height or padding;
+   annotations stay within the fixed-height measure. */
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .measure:has(.measure-annotation) .chords {
+  transform: translateY(3px);
+}
+
+@media (max-height: 715px) {
+  html[data-theme] .practice-player.practice-unified.practice-free { padding-top: 2px; padding-bottom: 4px; }
+  html[data-theme] .practice-player.practice-unified.practice-free .practice-player-head { margin-bottom: 2px; }
+  html[data-theme] .practice-player.practice-unified.practice-free > .practice-title-group { margin-bottom: 5px; }
+  html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure {
+    min-height: 33px;
+  }
+}

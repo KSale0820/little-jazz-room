@@ -208,6 +208,41 @@ try {
               'Light Tuner reference card is unexpectedly dark');
           }
           if (screen === 'Player') {
+            // A previous color filter turned Play into an opaque white disk and
+            // made Repeat / skip arrows illegible on Midnight Jazz.
+            // Inspect the actual mask, size and contrast at both mobile widths.
+            const controls = await page.evaluate(() => {
+              const icon = document.querySelector('.practice-timer-button .practice-play-pixel');
+              const play = document.querySelector('.practice-timer-button');
+              const labelNames = ['Configure loop', 'Repeat playback',
+                'Increase reference BPM', 'Decrease reference BPM', 'Raise concert key one semitone',
+                'Lower concert key one semitone', 'Metronome', 'Tuner', 'Finish Session'];
+              const buttonNames = [...document.querySelectorAll('.practice-player button')]
+                .map(el => el.getAttribute('aria-label') || el.textContent?.trim() || '');
+              const style = icon && getComputedStyle(icon);
+              const playStyle = play && getComputedStyle(play);
+              const rect = icon?.getBoundingClientRect();
+              return {
+                mask: style?.maskImage || style?.webkitMaskImage || '',
+                ink: style?.color || '',
+                bg: playStyle?.backgroundColor || '',
+                width: rect?.width || 0,
+                height: rect?.height || 0,
+                missing: labelNames.filter(label => !buttonNames.some(name => name.includes(label))),
+                missingSelects: ['Transpose concert chart key', 'Transposing instrument'].filter(label =>
+                  !document.querySelector(`select[aria-label="${label}"]`)),
+              };
+            });
+            assert.ok(controls.mask.includes('/practice-player/svg/play.svg'),
+              'Play must use the transparent pixel silhouette (not the original opaque PNG): ' + label);
+            assert.ok(controls.width >= 20 && controls.height >= 20,
+              'Play glyph is missing or collapsed in ' + label);
+            assert.ok(contrastRatio(controls.ink, controls.bg) >= 3,
+              'Play glyph contrast below 3:1 in ' + label + ': ' + JSON.stringify(controls));
+            assert.deepEqual(controls.missing, [], 'Practice Player lost visible functional controls in ' + label);
+            assert.deepEqual(controls.missingSelects, [], 'Practice Player lost musical settings in ' + label);
+          }
+          if (screen === 'Player') {
             // Read actual rendered chords under synthetic selection states, not just root variables.
             // Preserve the original classes immediately; no app data or playback changes.
             const notation = await page.evaluate(() => {
@@ -259,6 +294,115 @@ try {
         assert.deepEqual(errors, [], label + ' browser runtime exceptions');
         await context.close();
       }
+    }
+  }
+
+  // Compare the implemented player against the approved Autumn Leaves reference
+  // using the real seeded 35-bar chart, not placeholder/mockup chord data.
+  for (const [width, height] of [[390, 844], [375, 667]]) {
+    for (const theme of ['light', 'dark']) {
+      const context = await browser.newContext({ viewport: { width, height }, isMobile: true, hasTouch: true });
+      await context.addInitScript(theme => localStorage.setItem('little-jazz-room:appearance:v1', theme), theme);
+      const page = await context.newPage();
+      await page.goto(base + '/player?chart=autumn-leaves-gm-video-35', { waitUntil: 'networkidle' });
+      await page.getByRole('heading', { name: 'Autumn Leaves' }).waitFor();
+      assert.equal(await page.locator('.practice-chart-scroll .measure').count(), 35,
+        'Autumn Leaves must preserve all 35 real chord measures');
+      const boxes = await page.evaluate(() => {
+        const box = selector => {
+          const element = document.querySelector(selector);
+          const rect = element?.getBoundingClientRect();
+          return rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height, bottom: rect.bottom } : null;
+        };
+        return {
+          chart: box('.practice-chart-scroll'),
+          seek: box('.practice-chart-seek, .practice-recording-seek'),
+          transport: box('.practice-control-row'),
+          tempo: box('.practice-player-pills'),
+          utilities: box('.practice-utility-row'),
+          timer: box('.practice-session-row .practice-time-badge'),
+          finish: box('.practice-finish-action'),
+          nav: box('nav.bottom-nav'),
+          fullChartVisible: (() => {
+            const chart = document.querySelector('.practice-chart-scroll');
+            const lastMeasure = chart?.querySelector('.chord-grid .measure:last-child');
+            if (!chart || !lastMeasure) return false;
+            return lastMeasure.getBoundingClientRect().bottom <= chart.getBoundingClientRect().bottom - 1;
+          })(),
+        };
+      });
+      // Musical notation remains horizontal and readable at the same measure
+      // height. The red section badges always have white text. Tag/End must
+      // remain wholly inside their cells, even on short phones.
+      const notation = await page.evaluate(() => {
+        const chart = document.querySelector('.practice-chart-scroll');
+        const measure = chart?.querySelector('.chord-grid .measure');
+        const two = chart?.querySelector('.chords.two');
+        const chords = two ? [...two.children] : [];
+        const first = chords[0]?.getBoundingClientRect();
+        const second = chords[1]?.getBoundingClientRect();
+        const section = chart?.querySelector('.measure-section-label');
+        const labels = [...(chart?.querySelectorAll('.measure-annotation') ?? [])].map(el => {
+          const outer = el.closest('.measure')?.getBoundingClientRect();
+          const inside = el.getBoundingClientRect();
+          return { name: el.textContent, visible: !!outer && inside.top >= outer.top + 2 &&
+            inside.bottom <= outer.bottom - 2 };
+        });
+        const font = el => el ? Number.parseFloat(getComputedStyle(el).fontSize) : 0;
+        return {
+          measureHeight: measure?.getBoundingClientRect().height ?? 0,
+          twoHorizontal: !!first && !!second && Math.abs(first.y - second.y) <= 3 &&
+            second.x > first.x + 3,
+          sectionInk: section && getComputedStyle(section).color,
+          labels,
+          fonts: {
+            chord: font(measure?.querySelector('.chords:not(.two) span')),
+            dual: font(chords[0]),
+            skip: font(document.querySelector('.practice-measure-btn span')),
+            loop: font(document.querySelector('.practice-loop-control')),
+            repeat: font(document.querySelector('.practice-repeat-control span')),
+            tool: font(document.querySelector('.practice-utility-row button span')),
+            finish: font(document.querySelector('.practice-finish-action')),
+          },
+        };
+      });
+      assert.ok(notation.measureHeight <= 48 && notation.measureHeight >= 30,
+        'Score measure height must remain compact: ' + JSON.stringify({ theme, width, height, notation }));
+      assert.ok(notation.twoHorizontal, 'Two-chord measures must read left-to-right: ' +
+        JSON.stringify({ theme, width, height, notation }));
+      assert.equal(notation.sectionInk, 'rgb(255, 255, 255)',
+        'Section A/B/C/Tag text must be white: ' + JSON.stringify({ theme, width, height, notation }));
+      assert.ok(notation.labels.every(x => x.visible),
+        'Tag/End/other annotations must fit inside each measure: ' + JSON.stringify({ theme, width, height, notation }));
+      assert.ok(notation.fonts.chord >= 14 && notation.fonts.dual >= 11 &&
+        notation.fonts.skip >= 12 && notation.fonts.loop >= 14 &&
+        notation.fonts.repeat >= 12 && notation.fonts.tool >= 12 &&
+        notation.fonts.finish >= 14,
+        'Increase type sizes despite compact controls: ' + JSON.stringify({ theme, width, height, notation }));
+      assert.ok(boxes.chart && boxes.finish && boxes.nav && boxes.transport && boxes.timer,
+        'Missing Practice Player elements: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.ok(boxes.chart.height >= (height >= 800 ? 280 : 145),
+        'Chart should receive most spare vertical space: ' + JSON.stringify({ theme, width, height, boxes }));
+      if (height >= 800) {
+        assert.ok(boxes.fullChartVisible,
+          'All 35 measures should fit in tall-phone chart without scrolling: ' +
+          JSON.stringify({ theme, width, height, boxes }));
+      }
+      assert.ok(boxes.transport.y >= boxes.chart.bottom - 1,
+        'Transport must follow chart and seek: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.ok(boxes.transport.height <= 49 && boxes.utilities.height <= 48 && boxes.finish.height <= 45,
+        'Controls need compact footprints: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.ok(Math.abs(boxes.timer.y - boxes.finish.y) <= 15,
+        'Time practiced and compact Finish should share the bottom row: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.ok(boxes.finish.bottom <= boxes.nav.y + 1,
+        'Finish Session must stay visible above bottom navigation: ' + JSON.stringify({ theme, width, height, boxes }));
+      await page.screenshot({
+        path: path.join(output, 'player-autumn-leaves-' + width + 'x' + height + '-' + theme + '.png'),
+        animations: 'disabled',
+      });
+      await context.close();
+      report.push({ screen: 'Autumn Leaves Practice Player', label: width + 'x' + height + '-' + theme,
+        ...boxes, status: 'PASS' });
     }
   }
 
