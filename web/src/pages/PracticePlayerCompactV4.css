@@ -293,8 +293,10 @@ html[data-theme] .practice-player.practice-unified.practice-free .practice-chart
   white-space: nowrap;
   z-index: 2;
 }
-html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .measure:has(.measure-annotation) {
-  padding-top: 12px;
+/* Translate the chord without changing intrinsic measure height or padding;
+   annotations stay within the fixed-height measure. */
+html[data-theme] .practice-player.practice-unified.practice-free .practice-chart-scroll.practice-chart-all .measure:has(.measure-annotation) .chords {
+  transform: translateY(3px);
 }
 
 @media (max-height: 715px) {
