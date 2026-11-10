@@ -1,0 +1,114 @@
+/* Review-only appearance experiments. No source assets, routes, state or audio modified. */
+.theme-review { position: absolute; z-index: 100; top: 8px; right: 9px; font: 12px/1.4 system-ui, sans-serif; }
+.theme-review-toggle { min-height: 35px; padding: 6px 11px; border: 1px solid #647a71; border-radius: 99px; background: #fffdf7; color: #193a2c; box-shadow: 0 2px 9px #0002; font-weight: 700; }
+.theme-review-popover { position: absolute; top: 40px; right: 0; width: min(295px, calc(100vw - 24px)); padding: 13px; border: 1px solid #abb9b0; border-radius: 15px; background: #fffefa; color: #24352e; box-shadow: 0 8px 30px #0003; }
+.theme-review-popover > strong { display: block; font-size: 14px; }
+.theme-review-popover > p { margin: 4px 0 10px; color: #5b7065; font-size: 11px; }
+.theme-review-options { display: grid; gap: 6px; }
+.theme-review-options > button { width: 100%; display: flex; align-items: center; gap: 9px; text-align: left; border: 1px solid #dbe1d9; border-radius: 9px; padding: 7px; color: #23392f; background: #fff; min-height: 48px; }
+.theme-review-options > button[aria-pressed="true"] { border: 2px solid #426d56; background: #edf3ed; }
+.theme-review-options b, .theme-review-options small { display: block; }
+.theme-review-options small { font-size: 10px; font-weight: 400; color: #607068; }
+.theme-review-swatch { display: block; flex: 0 0 29px; width: 29px; height: 29px; border-radius: 7px; border: 1px solid #0002; }
+.theme-review-swatch-classic { background: linear-gradient(140deg, #fbf8f0 50%, #28563f 50%); }
+.theme-review-swatch-midnight { background: linear-gradient(140deg, #101113 50%, #bed5b6 50%); }
+.theme-review-swatch-blue-note { background: linear-gradient(140deg, #182a40 50%, #d5ae72 50%); }
+.theme-review-note { display: block; padding-top: 9px; color: #688076; }
+
+/* The original class-demo theme is left completely untouched. */
+html[data-review-theme="midnight"] {
+  --cream: #131719; --paper: #22282a; --page-bg: #0d1012;
+  --evergreen: #d7e9dc; --ink: #eef4f0; --ink-muted: #b5c4bd;
+  --sage: #b4d0bd; --sage-soft: #34443c; --border: #415048; --peach: #ddbb89;
+  --review-bg: #121719; --review-surface: #232b2a; --review-soft: #303e38;
+  --review-text: #f2f4ee; --review-muted: #bdcfc1; --review-action: #bed5b6; --review-action-text: #15251e; --review-border: #45564f;
+}
+html[data-review-theme="blue-note"] {
+  --cream: #e9edf3; --paper: #fffdf6; --page-bg: #ccd6e2;
+  --evergreen: #17374f; --ink: #1b354a; --ink-muted: #597185;
+  --sage: #235c83; --sage-soft: #d9e7f0; --border: #c5d2df; --peach: #d6ad72;
+  --review-bg: #e5edf4; --review-surface: #fffdf6; --review-soft: #d9e7f1;
+  --review-text: #17374f; --review-muted: #567087; --review-action: #234d70; --review-action-text: #fffdf6; --review-border: #b7cad8;
+}
+html[data-review-theme]:not([data-review-theme="classic"]) body,
+html[data-review-theme]:not([data-review-theme="classic"]) .app-shell { background: var(--review-bg); color: var(--review-text); }
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-page {
+  --p01-ink: var(--review-text); --p01-green: var(--review-action); --p01-brass: #d5ae72;
+  background: var(--review-bg); color: var(--review-text);
+}
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-page,
+html[data-review-theme]:not([data-review-theme="classic"]) .routine-library,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-page,
+html[data-review-theme]:not([data-review-theme="classic"]) .fp-page,
+html[data-review-theme]:not([data-review-theme="classic"]) .profile-page {
+  background: var(--review-bg); color: var(--review-text);
+}
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-action:not(.p01-action-primary),
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-continue-button,
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-tool,
+html[data-review-theme]:not([data-review-theme="classic"]) .routine-card,
+html[data-review-theme]:not([data-review-theme="classic"]) .routine-tabs,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-track-card,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-search-wrap,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-category,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-filter-actions button,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-stats,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-daily-card,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-week-chart,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-session,
+html[data-review-theme]:not([data-review-theme="classic"]) .profile-companion-card,
+html[data-review-theme]:not([data-review-theme="classic"]) .profile-stat,
+html[data-review-theme]:not([data-review-theme="classic"]) .box {
+  background: var(--review-surface); border-color: var(--review-border); color: var(--review-text);
+}
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-action-primary,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-category[aria-pressed="true"],
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-empty-clear {
+  background: var(--review-action); border-color: var(--review-action); color: var(--review-action-text) !important;
+}
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-action-primary .p01-action-copy small { color: var(--review-action-text); }
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-action-secondary:nth-child(3),
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-filter-sheet,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-category[aria-pressed="false"] { background: var(--review-soft); }
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-header h1,
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-action-secondary .p01-action-copy strong,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-title,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-card-title,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-section-header h2,
+html[data-review-theme]:not([data-review-theme="classic"]) .routine-intro h1,
+html[data-review-theme]:not([data-review-theme="classic"]) .routine-card-title,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-header h1,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-daily-card h2,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-stat strong,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-history-heading h2,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-session-copy strong,
+html[data-review-theme]:not([data-review-theme="classic"]) .profile-title,
+html[data-review-theme]:not([data-review-theme="classic"]) .profile-companion-name,
+html[data-review-theme]:not([data-review-theme="classic"]) .profile-stat strong,
+html[data-review-theme]:not([data-review-theme="classic"]) .profile-account-actions h2,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-sheet-top h2 {
+  color: var(--review-text);
+}
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-intro,
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-action-secondary .p01-action-copy small,
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-card-subtitle,
+html[data-review-theme]:not([data-review-theme="classic"]) .routine-card-desc,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-stat span:not(.g01-stat-icon),
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-daily-card p,
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-session-copy span,
+html[data-review-theme]:not([data-review-theme="classic"]) .profile-subtitle {
+  color: var(--review-muted);
+}
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-category { color: var(--review-text) !important; }
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-filter-actions button { color: var(--review-text); }
+html[data-review-theme]:not([data-review-theme="classic"]) .t01-search-wrap input { color: var(--review-text); }
+html[data-review-theme]:not([data-review-theme="classic"]) .g01-goal-track,
+html[data-review-theme]:not([data-review-theme="classic"]) .p01-daily-track { background: var(--review-soft); }
+html[data-review-theme="midnight"] .fp-timer { background: #b8cbb8; color: #14231b; }
+html[data-review-theme="blue-note"] .fp-timer { background: #244b70; color: #fffdf6; }
+html[data-review-theme="midnight"] .bottom-nav { background: #1b2222; color: #e5f2e9; }
+html[data-review-theme="blue-note"] .bottom-nav { background: #f8f9f6; color: #17374f; }
+html[data-review-theme]:not([data-review-theme="classic"]) .theme-review-toggle { background: var(--review-surface); color: var(--review-text); border-color: var(--review-border); }
+@media (prefers-reduced-motion: reduce) {
+  .theme-review *, .theme-review *::before, .theme-review *::after { transition: none !important; }
+}
