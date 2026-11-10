@@ -110,9 +110,9 @@ export function PracticeHubPage() {
           <span className="p01-action-copy">
             <strong>Free Practice</strong><small>Start a session at your own pace.</small>
           </span>
-          <img className="p01-suave-primary-sparkle" src={ART + 'small-sparkle-cluster-sharp.png'} alt="" aria-hidden="true" />
-          <img className="p01-suave-hero-note" src={ART + 'music-note-purple-sharp.png'} alt="" aria-hidden="true" />
-          <img className="p01-suave-approved-sax" src={ART + 'approved-sax-freepractice.png'} alt="" aria-hidden="true" />
+          <span className="p01-suave-note-tile" aria-hidden="true">
+            <img className="p01-suave-note-icon" src={ART + 'music-note-purple-sharp.png'} alt="" />
+          </span>
           <span className="p01-chevron" aria-hidden="true">›</span>
         </button>
         <div className="p01-suave-action-pair">
