@@ -2,7 +2,7 @@
 
 ![Owner-approved Little Jazz Room Practice mockup](./approved-practice-home-2026-11-08.webp)
 
-**Visual authority:** [approved-practice-home-2026-11-08.webp](./approved-practice-home-2026-11-08.webp), 941 × 1670. This is the full-screen reference chosen by the owner, not a deployed-app screenshot. The existing working application is authoritative for functionality and actual dynamic state.
+**Current branding decision (November 9, 2026):** The Practice home masthead and page title must read **Little Jazz**, not “Little Jazz Room.” This newer instruction supersedes the name shown in the reference image. Preserve the window, botanical accents and layout while using the new text wordmark. Pixelify Sans is approved for prominent Practice headings/actions; retain readable sans-serif instructional text. The Free Practice card should show one pixel note rather than clustered sax/notes/sparkles. Secondary card corner waves and progress-panel waves are removed.\n\n**Visual authority:** [approved-practice-home-2026-11-08.webp](./approved-practice-home-2026-11-08.webp), 941 × 1670. This is the full-screen reference chosen by the owner, not a deployed-app screenshot. The existing working application is authoritative for functionality and actual dynamic state.
 
 ## Scope
 This reference governs the Practice landing page only (`PracticeHubPage.tsx`, `PracticeSuaveStudio.css`, `PracticeApprovedFinish.css` and its visible navigation dock). It does **not** authorize changes to the player, recorded audio, chart grid, session data, routes, cat selection, or unrelated pages.
