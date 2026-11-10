@@ -262,7 +262,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
         </div>
 
         <div className="metronome-tap-row">
-          <button type="button" className="metronome-tap" onClick={tapTempo}>♧ Tap Tempo</button>
+          <button type="button" className="metronome-tap" onClick={tapTempo}><span aria-hidden="true">☞</span> Tap Tempo</button>
           <span className="jazz-tap-status">{taps >= 2 ? 'Tempo set from your taps' : ''}</span>
         </div>
 
