@@ -22,7 +22,9 @@ export const COMPANION_UNLOCK_MINUTES: Readonly<Record<VisibleCatId, number>> = 
 };
 export const isVisibleCatId = (value: unknown): value is VisibleCatId =>
   typeof value === 'string' && VISIBLE_CAT_IDS.some(id => id === value);
-const SELECTABLE_JAZZ_CATS = JAZZ_CATS.filter(c => isVisibleCatId(c.id));
+const SELECTABLE_JAZZ_CATS = JAZZ_CATS.filter(
+  (cat): cat is Extract<(typeof JAZZ_CATS)[number], { id: VisibleCatId }> => isVisibleCatId(cat.id),
+);
 const KEY = 'little-jazz-room:selected-cat:v1';
 const isCatId = (value: unknown): value is CatId =>
   typeof value === 'string' && JAZZ_CATS.some(c => c.id === value);
