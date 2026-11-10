@@ -238,3 +238,12 @@ html[data-theme] .p01-page.p01-suave img.p01-suave-coach-cat {
     margin-top: -25px;
   }
 }
+
+/* Practice masthead alignment: the approved wordmark and night-window artwork
+   were being pulled into the top screen edge by negative positioning.
+   Move only those two images down, not the header box, so they also sit
+   closer to the greeting without expanding the page or moving controls. */
+html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand img.p01-suave-approved-wordmark,
+html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand img.p01-suave-approved-window {
+  transform: translateY(12px);
+}
