@@ -2,8 +2,9 @@
 /**
  * Real browser P06 review matrix. Start the app at APP_URL (default :5174),
  * then run: node scripts/capture-session-completion.mjs
- * Captures actual saved Free Practice sessions and a true Milo threshold crossing
- * using isolated test-only localStorage, never production/user practice data.
+ * Captures actual saved Free Practice sessions with Playwright's virtual clock:
+ * 24 minutes (standard), 36 minutes (earned Milo after a saved 24-minute history).
+ * Isolated test-only localStorage and virtual time never touch user practice data.
  */
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
@@ -27,7 +28,7 @@ try {
             const key = 'little-jazz-room:practice-sessions:v1:anonymous';
             if (reward && !localStorage.getItem(key)) {
               localStorage.setItem(key, JSON.stringify([{
-                id: 'previous-test-practice', finishedAt: new Date(Date.now() - 10000).toISOString(), durationSeconds: 3599,
+                id: 'previous-test-practice', finishedAt: new Date(Date.now() - 10000).toISOString(), durationSeconds: 1440,
               }]));
             }
           }, { theme, catMode, reward });
@@ -38,13 +39,14 @@ try {
           await page.getByRole('button', { name: 'Exercise', exact: true }).click();
           await page.getByRole('button', { name: '+ Scales' }).click();
           await page.getByRole('checkbox', { name: 'Completed Scales' }).check();
+          await page.clock.install();
           await page.getByRole('button', { name: 'Start practice timer' }).click();
-          await page.waitForTimeout(1450);
+          await page.clock.fastForward((reward ? 36 : 24) * 60 * 1000);
           await page.getByRole('button', { name: 'Finish Session' }).click();
           await page.getByRole('heading', { name: /Session Complete!|Great practice!/i }).waitFor();
           await page.getByRole('button', { name: 'View Progress' }).waitFor({ timeout: 15000 });
           assert(await page.getByText(/Scales/).count() > 0, 'Completed activity missing');
-          assert((await page.locator('.sc-duration strong').innerText()).trim() !== '0:00', 'Actual duration missing');
+          assert((await page.locator('.sc-duration strong').innerText()).trim() === (reward ? '36 min' : '24 min'), 'Actual clock duration missing');
           assert(await page.locator('.sc-unlock').count() === Number(reward), 'Incorrect reward state');
           assert((await page.locator('.sc-hero-cat').count() > 0) === catMode, 'Decorative Cat Mode mismatch');
           if (reward) assert(await page.locator('.sc-unlock-art img').count() === 1, 'Earned Milo not shown');
@@ -56,6 +58,7 @@ try {
           const before = await page.evaluate(() => JSON.parse(localStorage.getItem('little-jazz-room:practice-sessions:v1:anonymous') || '[]'));
           const newlySavedId = before.find(s => s.id !== 'previous-test-practice')?.id;
           assert(before.length === (reward ? 2 : 1), 'Session did not save exactly once');
+          assert(before.some(s => s.id === newlySavedId && s.durationSeconds >= (reward ? 2160 : 1440)), 'Saved session clock duration was not persisted');
           await page.getByRole('button', { name: 'View Progress' }).click();
           await page.waitForURL(url => url.pathname === '/progress');
           await page.reload({ waitUntil: 'networkidle' });
