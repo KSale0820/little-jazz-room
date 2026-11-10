@@ -279,7 +279,6 @@ export function ChartBuilderPage() {
     <section className="chart-builder-page builder-studio" aria-label={chartId ? "Edit Chart" : "Create Chart"}>
       <header className="chart-builder-header">
         <button type="button" className="builder-studio-back" aria-label="Back to My Charts" onClick={cancel}>‹</button>
-        <span className="builder-studio-title-icon" aria-hidden="true">▤</span>
         <h1 aria-label={chartId ? 'Edit Chart' : 'Create Chart'}>Chart Builder</h1>
         <span className="builder-studio-view-label">{chartId ? 'EDIT' : 'NEW'}</span>
       </header>
