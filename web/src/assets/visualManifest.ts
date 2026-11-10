@@ -133,6 +133,7 @@ export const VISUAL_ASSETS = {
       sittingCat: '/visuals/tools/mockup/cat-sitting.svg',
       pothos: '/visuals/tools/mockup/pothos.svg',
       floor: '/visuals/tools/mockup/floor.svg',
+      microphone: '/visuals/tools/mockup/microphone.svg',
     },
   },
   approvedDecor: {
