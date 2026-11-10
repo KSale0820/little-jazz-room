@@ -78,6 +78,13 @@ try {
 
     await page.getByRole('button', { name: 'Start practice timer' }).click();
     assert(await page.locator('.fp-chart').count() === 0, 'Starting the clock should collapse details so timer and actions remain easy to find');
+    assert(await page.locator('.fp-condensed .fp-activity-glyph').count() === 3, 'Active view should render a compact icon-led summary');
+    const layout = await page.evaluate(() => {
+      const queue = document.querySelector('.fp-queue')?.getBoundingClientRect();
+      const controls = document.querySelector('.fp-session-actions')?.getBoundingClientRect();
+      return { summaryBottom: queue?.bottom ?? Infinity, controlsTop: controls?.top ?? -1 };
+    });
+    assert(layout.summaryBottom <= layout.controlsTop + 1, 'Session list overlaps Pause/Finish on ' + shot + ': ' + JSON.stringify(layout));
     await page.waitForTimeout(1350);
     await page.locator('.fp-timer').scrollIntoViewIfNeeded();
     await page.screenshot({ path: join(output, 'active-' + shot + '.png'), fullPage: true });
