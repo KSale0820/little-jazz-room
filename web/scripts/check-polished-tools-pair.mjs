@@ -91,7 +91,7 @@ try {
         await capture(page, 'metronome-idle-' + suffix);
         await page.getByRole('button', { name: 'Increase tempo by 1 BPM' }).click();
         assert.equal(await page.locator('.metronome-bpm strong').textContent(), '121');
-        await page.getByRole('button', { name: /4\/4.*⌄/ }).click();
+        await page.locator('.jazz-signature-toggle').click();
         await page.getByRole('button', { name: '6/8' }).click();
         assert.equal(await page.locator('.metronome-beats button').count(), 6);
         await reachable(page, 'Start metronome');
