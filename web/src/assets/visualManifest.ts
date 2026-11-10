@@ -78,6 +78,13 @@ export const VISUAL_ASSETS = {
       sitting: '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/maple-sitting.png',
     },
   },
+  routines: {
+    /** Approved transparent Routines title, gold underline, and three pixel music notes. */
+    header: {
+      light: '/visuals/routines/approved-routines-pixel-light.png',
+      dark: '/visuals/routines/approved-routines-pixel-dark.png',
+    },
+  },
   progress: {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',
