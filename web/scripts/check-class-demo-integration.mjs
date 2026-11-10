@@ -27,7 +27,7 @@ try {
     await page.waitForURL(url => url.pathname === '/routines');
     await page.getByRole('button', { name: 'Practice Daily Jazz Warm-Up' }).waitFor();
 
-    await page.getByRole('button', { name: 'Create', exact: true }).click();
+    await page.locator('.routine-approved-create').click();
     await page.waitForURL(url => url.pathname === '/create');
     await page.getByLabel(/Routine title/).fill(title);
     assert(await page.locator('.builder-step').count() >= 3,
