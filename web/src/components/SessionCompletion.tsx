@@ -74,13 +74,21 @@ function PixelProgressBars() {
 /** An unobtrusive leafy wreath around the *approved* pixel trophy. */
 function PixelLaurels() {
   return <svg className="sc-laurels" viewBox="0 0 192 116" aria-hidden="true" shapeRendering="crispEdges">
-    <g fill="none" stroke="#679b57" strokeWidth="3">
-      <path d="M56 101 Q22 77 43 28"/>
-      <path d="M136 101 Q170 77 149 28"/>
+    <g fill="none" stroke="#638b53" strokeWidth="2.5" strokeLinecap="square">
+      <path d="M60 99Q35 79 44 43L53 26"/>
+      <path d="M132 99Q157 79 148 43L139 26"/>
     </g>
-    <g fill="#82b96c" stroke="#376748" strokeWidth="1.5">
-      <path d="m43 30-19-6 9 18 12 2z M37 49l-20-2 11 16 12-1z M38 70l-18 5 17 10 10-7z M49 87l-11 13 19 0 7-10z"/>
-      <path d="m149 30 19-6-9 18-12 2z M155 49l20-2-11 16-12-1z M154 70l18 5-17 10-10-7z M143 87l11 13-19 0-7-10z"/>
+    <g fill="#8eb77b" stroke="#4f8156" strokeWidth="1.25" strokeLinejoin="miter">
+      <path d="M49 32 39 21 30 23 36 34 47 37Z"/>
+      <path d="M42 48 30 38 22 43 31 53 42 54Z"/>
+      <path d="M41 65 27 59 22 66 36 74 43 70Z"/>
+      <path d="M47 82 31 80 30 88 43 92 51 88Z"/>
+      <path d="M57 96 45 98 48 105 62 102Z"/>
+      <path d="M143 32 153 21 162 23 156 34 145 37Z"/>
+      <path d="M150 48 162 38 170 43 161 53 150 54Z"/>
+      <path d="M151 65 165 59 170 66 156 74 149 70Z"/>
+      <path d="M145 82 161 80 162 88 149 92 141 88Z"/>
+      <path d="M135 96 147 98 144 105 130 102Z"/>
     </g>
   </svg>;
 }
