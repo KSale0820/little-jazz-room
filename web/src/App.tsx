@@ -29,7 +29,7 @@ export default function App() {
               <Route path="explore" element={<ExplorePage />} />
               <Route path="create" element={<CreatePage />} />
               <Route path="tracks" element={<TracksPage />} />
-              <Route path="charts" element={<TracksPage />} />
+              <Route path="charts" element={<Navigate to="/tracks" replace />} />
               <Route path="my-charts" element={<ChartLibraryPage />} />
               <Route path="charts/new" element={<ChartBuilderPage />} />
               <Route path="charts/:chartId/edit" element={<ChartBuilderPage />} />
