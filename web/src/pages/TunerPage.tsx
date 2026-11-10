@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { useAppearance } from '../context/AppearanceContext';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
 import {
   audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, pitchTrailGeometry,
@@ -20,7 +19,6 @@ type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
 export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
-  const { catMode } = useAppearance();
   const [mode, setMode] = useState<TuningMode>('chromatic');
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
@@ -349,6 +347,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         </div>
       </div>
 
+      <main className="jazz-tool-main">
       {unavailable ? (
         <section className="jazz-tuner-card jazz-tuner-unavailable" role="alert" aria-label="Microphone unavailable">
           <span className="jazz-unavailable-icon" aria-hidden="true">
@@ -456,15 +455,14 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       ) : null}
       {message && !unavailable ? <p className="tool-error" role="alert">{message}</p> : null}
 
+      </main>
       <div className="jazz-tool-footer" aria-hidden="true">
-        <img className="jazz-tool-plant" src="/visuals/tools/mockup/pothos.svg" alt="" />
+        <img className="jazz-tool-plant"
+          src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
         <div className="tool-cat-scene tool-tuner-scene">
-          {catId === 'luna' ? (
-            <img className="tool-scene-cat jazz-mock-cat" src="/visuals/tools/mockup/cat-sleeping-approved.png"
-              alt="" style={{ visibility: catMode ? 'visible' : 'hidden' }} />
-          ) : <DecorativeCat catId={catId} variant="sleeping" size={116} className="tool-scene-cat" />}
+          <DecorativeCat catId={catId} variant="sleeping" size={185}
+            className="tool-scene-cat" />
         </div>
-        <span className="jazz-decor-note">♫</span>
       </div>
     </section>
   );
