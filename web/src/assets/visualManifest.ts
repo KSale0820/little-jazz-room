@@ -78,6 +78,13 @@ export const VISUAL_ASSETS = {
       sitting: '/visuals/cats/clean-pixel/maple-sitting.png',
     },
   },
+  routines: {
+    /** Owner-approved transparent 8-bit title and notes in both themes. */
+    header: {
+      light: '/visuals/routines/approved-routines-pixel-light.png',
+      dark: '/visuals/routines/approved-routines-pixel-dark.png',
+    },
+  },
   progress: {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',
