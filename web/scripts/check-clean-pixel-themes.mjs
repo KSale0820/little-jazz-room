@@ -236,7 +236,7 @@ try {
               'Active selected measure needs a separate visible playhead indicator in ' + label);
           }
 
-          if (['Practice', 'Free Practice', 'Player', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
+          if (['Practice', 'Free Practice', 'Player', 'Tracks', 'Progress', 'Profile', 'Tuner', 'Metronome'].includes(screen)) {
             await page.screenshot({
               path: path.join(output, screen.toLowerCase() + '-' + label + '.png'),
               animations: 'disabled',
