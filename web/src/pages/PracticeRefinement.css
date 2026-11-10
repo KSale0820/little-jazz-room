@@ -1,99 +1,6 @@
-/* Little Jazz: quieter Practice home, 2026-11-09.
-   Last stylesheet wins over legacy mockup overrides. Scope to Practice only.
-   Headings/actions get pixel typography; descriptive copy stays readable sans. */
-
-/* Text-based masthead allows the visible product name to change without
-   regenerating or accidentally displaying the obsolete image wordmark. */
-html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand {
-  position: relative;
-  isolation: isolate;
-  overflow: visible;
-}
-html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand .p01-suave-brand-title {
-  position: absolute;
-  top: 18px;
-  left: 27px;
-  z-index: 5;
-  max-width: 60%;
-  color: #28634e;
-  font-family: 'Playball', 'Brush Script MT', 'Snell Roundhand', cursive;
-  font-size: clamp(35px, 10.4vw, 47px);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -.035em;
-  white-space: nowrap;
-  text-shadow: 0 1px 0 #f5e5d4;
-}
-html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand .p01-suave-brand-ivy {
-  position: absolute;
-  top: 0;
-  left: -8px;
-  z-index: 4;
-  display: block;
-  width: 49px;
-  height: 75px;
-  object-fit: contain;
-  object-position: top left;
-  image-rendering: pixelated;
-  pointer-events: none;
-}
-html[data-theme="dark"] .p01-page.p01-suave .p01-header .p01-suave-brand .p01-suave-brand-title {
-  color: #c4ecd4;
-  text-shadow: 0 2px 1px #151b19;
-}
-
-/* Pixelify Sans on headings, actions, stats, goal labels and navigation;
-   retain sans-serif for instructional copy and small captions. */
-html[data-theme] .p01-page.p01-suave :is(
-  .p01-header h1,
-  .p01-action-copy strong,
-  .p01-tools h2,
-  .p01-tool strong,
-  .p01-suave-pin-copy strong,
-  .p01-suave-start,
-  .p01-suave-goal-copy strong,
-  .p01-daily-header,
-  .p01-suave-goal-value
-),
-html[data-theme] .app-shell:has(.p01-suave) .bottom-nav a {
-  font-family: var(--font-pixel), ui-monospace, monospace;
-  font-synthesis: none;
-  letter-spacing: 0;
-}
-html[data-theme] .p01-page.p01-suave .p01-header h1 {
-  font-size: clamp(30px, 8.3vw, 37px);
-  font-weight: 700;
-  line-height: 1.08;
-}
-html[data-theme] .p01-page.p01-suave .p01-action-primary .p01-action-copy strong {
-  font-size: clamp(25px, 6.7vw, 29px);
-  font-weight: 700;
-  line-height: 1.07;
-}
-html[data-theme] .p01-page.p01-suave .p01-suave-action-pair .p01-action-copy strong {
-  font-size: clamp(14px, 3.8vw, 17px);
-  font-weight: 600;
-  line-height: 1.07;
-}
-html[data-theme] .p01-page.p01-suave :is(.p01-tools h2, .p01-daily-header) {
-  font-size: 20px;
-  font-weight: 700;
-}
-html[data-theme] .p01-page.p01-suave .p01-tool strong { font-size: 19px; font-weight: 600; }
-html[data-theme] .p01-page.p01-suave :is(.p01-suave-pin-copy strong, .p01-suave-goal-copy strong) {
-  font-size: 17px;
-  font-weight: 600;
-}
-html[data-theme] .p01-page.p01-suave :is(.p01-suave-start, .p01-suave-goal-value) {
-  font-size: 15px;
-  font-weight: 600;
-}
-html[data-theme] .p01-page.p01-suave .p01-daily-header strong { font-size: 16px; }
-html[data-theme] .app-shell:has(.p01-suave) .bottom-nav a {
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.05;
-}
+/* Practice home simplification retained after reverting the temporary pixel font.
+   The original branded header and standard typography come from the earlier
+   Practice stylesheets; this file now only removes decorative clutter. */
 
 /* Primary action: one pixel note in a small, dedicated tile. */
 html[data-theme] .p01-page.p01-suave .p01-action-primary {
@@ -202,16 +109,8 @@ html[data-theme] .p01-page.p01-suave .p01-daily-fill {
   border-radius: 999px;
 }
 
-/* Short phones: preserve card readability and a clear wordmark/window gap. */
+/* Short phones: keep the primary action and icon within the button. */
 @media (max-width: 380px) {
-  html[data-theme] .p01-page.p01-suave .p01-header .p01-suave-brand .p01-suave-brand-title {
-    top: 19px;
-    left: 22px;
-    font-size: 35px;
-  }
-  html[data-theme] .p01-page.p01-suave .p01-action-primary .p01-action-copy strong {
-    font-size: 23px;
-  }
   html[data-theme] .p01-page.p01-suave .p01-action-primary .p01-suave-note-tile {
     flex-basis: 43px;
     width: 43px;
@@ -220,8 +119,5 @@ html[data-theme] .p01-page.p01-suave .p01-daily-fill {
   html[data-theme] .p01-page.p01-suave .p01-action-primary .p01-suave-note-icon {
     width: 38px;
     height: 38px;
-  }
-  html[data-theme] .p01-page.p01-suave .p01-suave-action-pair .p01-action-copy strong {
-    font-size: 14px;
   }
 }
