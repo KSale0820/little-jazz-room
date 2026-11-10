@@ -40,6 +40,7 @@ export function FreePracticePage() {
   const [phase, setPhase] = useState<'intro' | 'setup' | 'active'>('intro');
   const [targetMinutes, setTargetMinutes] = useState(25);
   const [showChoices, setShowChoices] = useState(true);
+  const [editActivities, setEditActivities] = useState(false);
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [picker, setPicker] = useState<Picker>(null);
   const [search, setSearch] = useState('');
@@ -95,6 +96,7 @@ export function FreePracticePage() {
       }
       setPhase('active');
       setShowChoices(false);
+      setEditActivities(false);
     }
     setSeconds(Math.floor(elapsedMs() / 1000));
   };
@@ -197,6 +199,7 @@ export function FreePracticePage() {
     setPhase('intro');
     setTargetMinutes(25);
     setShowChoices(true);
+    setEditActivities(false);
     setQueue(current => current.map(item => ({ ...item, done: false })));
     setPicker(null);
     setExpandedKey(null);
@@ -236,7 +239,7 @@ export function FreePracticePage() {
         </div>
         <div className="fp-completion-shelf" aria-hidden="true">
           <img src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
-          {catMode && <DecorativeCat catId={catId} variant="sitting" size={68} className="fp-summary-cat" />}
+          {catMode && <DecorativeCat catId={catId} variant="sitting" size={110} className="fp-summary-cat" />}
           <img src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
         </div>
         <p className="fp-save-status">{saved ? 'Session Saved ✓' : saveError ? 'Save failed. Your session can be retried.' : 'Saving your practice…'}</p>
@@ -254,7 +257,7 @@ export function FreePracticePage() {
       <header className="fp-top">
         <div className="fp-heading-row">
           <h1>Practice</h1>
-          <img src={PIXEL_ART + 'approved-isolated-icons/sprout.png'} alt="" aria-hidden="true" />
+          <img src="/visuals/pixel-motifs/approved/ivy-trail.png" alt="" aria-hidden="true" />
         </div>
         <div className="fp-segments" role="group" aria-label="Practice type">
           <button type="button" className="fp-segment-current" aria-pressed="true">Free Practice</button>
@@ -271,7 +274,8 @@ export function FreePracticePage() {
         </button>
         <div className="fp-intro-shelf" aria-hidden="true">
           <img className="fp-intro-plant" src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
-          {catMode && <DecorativeCat catId={catId} variant="sleeping" size={82} className="fp-intro-cat" />}
+          {catMode && <DecorativeCat catId={catId} variant="sleeping" size={112} className="fp-intro-cat" />}
+          <span className="fp-intro-books"><i/><i/><i/></span>
           <img className="fp-intro-note" src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
         </div>
       </section> : <>
@@ -289,18 +293,19 @@ export function FreePracticePage() {
             </div>
             <div className="fp-timer-shelf" aria-hidden="true">
               <img src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
-              {catMode && <DecorativeCat catId={catId} variant={running ? 'sitting' : 'sleeping'} size={66} className="fp-timer-cat" />}
+              {catMode && <DecorativeCat catId={catId} variant={running ? 'sitting' : 'sleeping'} size={116} className="fp-timer-cat" />}
               <img src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
             </div>
           </section>}
-      {(phase === 'active' || queue.length > 0 || Boolean(recording)) && <section className="fp-queue" aria-label="Practice queue">
+      {(phase === 'active' || queue.length > 0 || Boolean(recording)) && <section className={phase === 'active' && !editActivities ? 'fp-queue fp-condensed' : 'fp-queue fp-manage'} aria-label="Practice queue">
         <div className="fp-session-head">
           <h2>{phase === 'active' ? 'This Session' : 'Selected Activities'}</h2>
-          {phase === 'active' && <button type="button" className="fp-edit" aria-expanded={showChoices} onClick={() => { setShowChoices(v => !v); setPicker(null); }}>Edit</button>}
+          {phase === 'active' && <button type="button" className="fp-edit" aria-expanded={showChoices} onClick={() => { setShowChoices(v => !v); setEditActivities(v => !v); setPicker(null); }}>{editActivities ? 'Done' : 'Edit'}</button>}
         </div>
         {queue.length === 0 && !recording && <p className="fp-queue-empty">Just you and the music. Add something whenever you like.</p>}
         {queue.map(item => <div className="fp-queue-item" key={item.key}>
           <div className="fp-queue-row">
+            <span className={'fp-activity-glyph fp-glyph-' + item.kind} aria-hidden="true">{item.kind === 'goal' ? '◎' : item.kind === 'chart' ? '♬' : item.kind === 'routine' ? '☷' : item.kind === 'exercise' ? '♮' : '♫'}</span>
             <input type="checkbox" aria-label={'Completed ' + item.title} checked={item.done}
               onChange={event => setQueue(current => current.map(entry => entry.key === item.key ? { ...entry, done: event.target.checked } : entry))}/>
             <button type="button" className="fp-queue-title" aria-expanded={expandedKey === item.key}
