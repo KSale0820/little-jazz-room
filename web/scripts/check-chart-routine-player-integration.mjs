@@ -31,7 +31,14 @@ try {
     // 1: Save a custom 6/8 chart with two events, an annotation, and a Unicode key.
     const freeChartTitle = 'Integrated Six Eight ' + size;
     await page.goto(base + '/charts/new', { waitUntil: 'networkidle' });
+    assert.equal(await page.locator('.chart-builder-save-status').innerText(), 'No unsaved changes');
+    for (const [label, anchor] of [['Chart', '#builder-chart'], ['Sections', '#builder-sections'], ['Details', '#builder-details']]) {
+      assert.equal(await page.getByRole('navigation', { name: 'Chart builder sections' })
+        .getByRole('link', { name: label }).getAttribute('href'), anchor);
+    }
     await page.getByRole('textbox', { name: 'Chart name' }).fill(freeChartTitle);
+    assert.equal(await page.locator('.chart-builder-save-status').innerText(), 'Unsaved changes');
+    assert.equal(await page.locator('.chart-builder-save-status').getAttribute('data-unsaved'), 'true');
     await page.getByRole('textbox', { name: 'Key', exact: true }).fill('Bb');
     await page.getByRole('textbox', { name: 'Time signature numerator' }).click();
     await page.getByRole('textbox', { name: 'Time signature numerator' }).fill('6');
@@ -98,6 +105,12 @@ try {
     await page.locator('#exTitle').fill(exerciseTitle);
     await page.locator('#exMin').fill('6');
     await page.locator('#exInst').fill('Practice the chords slowly in order.');
+    assert.ok((await page.getByRole('region', { name: 'Live exercise preview' }).innerText()).includes(exerciseTitle));
+    assert.ok((await page.getByRole('region', { name: 'Live exercise preview' }).innerText())
+      .includes('Practice the chords slowly in order.'));
+    await page.locator('#exMin').fill('9');
+    assert.ok((await page.getByRole('region', { name: 'Live exercise preview' }).innerText()).includes('9 min'));
+    await page.locator('#exMin').fill('6');
     await page.screenshot({ path: path.join(out, size + '-05-exercise-draft.png'), fullPage: true });
     await page.getByRole('button', { name: '+ Create Chart' }).click();
     await page.waitForURL(url => url.pathname === '/charts/new' && url.searchParams.get('returnTo') === '/create');
@@ -120,6 +133,14 @@ try {
     assert.equal(await page.locator('#exMin').inputValue(), '6');
     assert.equal(await page.locator('#exInst').inputValue(), 'Practice the chords slowly in order.');
     assert.equal(await page.locator('#exChart').inputValue(), linkedChartId);
+    const preview = page.getByRole('region', { name: 'Live exercise preview' });
+    assert.ok((await preview.innerText()).includes(linkedChartTitle));
+    await page.getByRole('button', { name: 'Remove linked chart' }).click();
+    assert.equal(await page.locator('#exChart').inputValue(), '');
+    assert.equal(await page.getByRole('button', { name: 'Remove linked chart' }).count(), 0);
+    assert.ok(!(await preview.innerText()).includes(linkedChartTitle));
+    await page.locator('#exChart').selectOption(linkedChartId);
+    assert.ok((await preview.innerText()).includes(linkedChartTitle));
     await page.screenshot({ path: path.join(out, size + '-06-chart-linked-exercise.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Save exercise' }).click();

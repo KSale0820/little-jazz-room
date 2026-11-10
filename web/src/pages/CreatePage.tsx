@@ -526,11 +526,20 @@ export function CreatePage() {
           {charts.filter(chart => chart.id === exChartId || chart.title.toLowerCase().includes(chartSearch.trim().toLowerCase()))
             .map(chart => <option key={chart.id} value={chart.id}>{chart.title}</option>)}
         </select>
+        {exChartId && <button type="button" className="builder-unlink-chart"
+          onClick={() => setExChartId('')}>Remove linked chart</button>}
         <div className="builder-panel-actions">
           <button type="button" onClick={() => openChartBuilder()}>+ Create Chart</button>
           {exChartId && charts.some(chart => chart.id === exChartId && chart.is_custom) &&
             <button type="button" onClick={() => openChartBuilder(exChartId)}>Edit Chart</button>}
         </div>
+        <section className="builder-exercise-live-preview" aria-label="Live exercise preview" aria-live="polite">
+          <strong>Exercise preview</strong>
+          <p className="builder-exercise-live-title">{exTitle.trim() || 'Untitled exercise'}</p>
+          <p>{exCategory} · {exLevel} · {Number.isInteger(exMinutes) && exMinutes > 0 ? exMinutes + ' min' : 'Set duration'}</p>
+          {exChartId && <p>Chart: {charts.find(chart => chart.id === exChartId)?.title ?? 'Chart unavailable'}</p>}
+          <p className="builder-exercise-live-instructions">{exInstructions.trim() || 'Add instructions to see them here.'}</p>
+        </section>
         <div className="builder-panel-actions">
           <button type="button" onClick={() => void saveExercise()} disabled={saving}>Save exercise</button>
           <button type="button" onClick={() => setShowExerciseForm(false)}>Cancel</button>

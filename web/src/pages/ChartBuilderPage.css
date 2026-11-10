@@ -311,3 +311,37 @@
   }
   .chart-builder-page .chart-meter-fraction { width: 60px; }
 }
+
+
+/* Functionality-only additions: preserve the original chart editor geometry and styling. */
+.chart-builder-save-status {
+  margin: -6px 0 12px;
+  color: #647669;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.chart-builder-save-status[data-unsaved="true"] { color: #936224; }
+.chart-builder-jump-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 4px 0 14px;
+}
+.chart-builder-jump-links a {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  border: 1px solid #d6d8c9;
+  border-radius: 9px;
+  background: #fffdf8;
+  color: #31503b;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.chart-builder-jump-links a:focus-visible {
+  outline: 3px solid #cda953;
+  outline-offset: 2px;
+}
+#builder-chart, #builder-details, #builder-sections { scroll-margin-top: 14px; }
