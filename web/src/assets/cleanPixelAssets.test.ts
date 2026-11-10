@@ -1,18 +1,27 @@
 /// <reference types="node" />
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { ALL_JAZZ_CATS, JAZZ_CATS } from '../features/cats/CatCompanion';
-import { approvedDecorativeCatUrl, decorativeCatUrls, PIXEL_MOTIFS, VERIFIED_PIXEL_CATS } from './cleanPixelAssets';
+import { APPROVED_PIXEL_MOTIFS, approvedDecorativeCatUrl, decorativeCatUrls, PIXEL_MOTIFS, VERIFIED_PIXEL_CATS } from './cleanPixelAssets';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const poses = ['sleeping', 'sitting', 'floor'] as const;
 const pixelIds = ['luna', 'maple', 'milo'] as const;
 
 describe('additive clean pixel artwork', () => {
+  it('excludes the rejected small plant and retains the approved polished plant pot', () => {
+    expect(Object.values(APPROVED_PIXEL_MOTIFS)).toHaveLength(18);
+    expect('smallPlant' in APPROVED_PIXEL_MOTIFS).toBe(false);
+    expect(existsSync(join(root, 'public/visuals/pixel-motifs/approved/small-plant.png'))).toBe(false);
+    expect(existsSync(join(root, 'public', APPROVED_PIXEL_MOTIFS.plantPot.slice(1)))).toBe(true);
+    expect(readFileSync(join(root, 'src/pages/ProfilePage.tsx'), 'utf8')).toContain('approvedPixelMotifs.plantPot');
+    expect(readFileSync(join(root, 'src/pages/CleanPixelMotifPlacements.css'), 'utf8')).not.toContain('small-plant.png');
+  });
+
   it('registers exactly three lightweight SVG motifs', () => {
     expect(Object.values(PIXEL_MOTIFS)).toHaveLength(3);
     for (const url of Object.values(PIXEL_MOTIFS)) {
