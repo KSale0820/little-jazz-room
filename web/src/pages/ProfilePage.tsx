@@ -217,7 +217,7 @@ export function ProfilePage() {
         <div className="profile-unlock-hint">
           <span className="profile-hint-clock" aria-hidden="true">◷</span>
           <span><strong>Practice more to unlock new companions!</strong><small>Milo at 60 min · Maple at 300 min</small></span>
-          <img src={VISUAL_ASSETS.approvedPixelMotifs.smallPlant} alt="" aria-hidden="true" />
+          <img src={VISUAL_ASSETS.approvedPixelMotifs.plantPot} alt="" aria-hidden="true" />
         </div>
       </section>
 
