@@ -68,6 +68,24 @@ try {
     await shot('chart-create');
     assert.equal(await page.locator('.chart-editor-row').first().locator('.chart-editor-measure').count(), 4,
       label + ' chart grid must show four measures per row');
+    assert.equal(await page.locator('.builder-studio-title-icon').count(), 0,
+      label + ' must not show decorative chart icon in header');
+    const chartHeadingDecor = await page.locator('.chart-builder-chart-heading h2')
+      .evaluate(node => ({ before: getComputedStyle(node, '::before').content, after: getComputedStyle(node, '::after').content }));
+    assert.ok(['none', 'normal'].includes(chartHeadingDecor.before) && ['none', 'normal'].includes(chartHeadingDecor.after),
+      label + ' unexpected decorative icon beside Your chord chart: ' + JSON.stringify(chartHeadingDecor));
+    const notationGeometry = await page.locator('.chart-editor-row').first().locator('.chart-editor-measure')
+      .first().evaluate(node => {
+        const chord = node.querySelector('.chart-editor-chord input');
+        return {
+          measureHeight: node.getBoundingClientRect().height,
+          chordFontPx: Number.parseFloat(getComputedStyle(chord).fontSize),
+          chordTargetHeight: chord.getBoundingClientRect().height,
+        };
+      });
+    assert.ok(notationGeometry.measureHeight <= 82, label + ' chord measure still too tall: ' + JSON.stringify(notationGeometry));
+    assert.ok(notationGeometry.chordFontPx >= 18, label + ' chord notation too small: ' + JSON.stringify(notationGeometry));
+    assert.ok(notationGeometry.chordTargetHeight >= 44, label + ' chord editing target under 44px');
     await page.getByRole('textbox', { name: 'Measure 2 chord 1' }).focus();
     await page.getByRole('button', { name: 'Add Annotation' }).click();
     await page.getByRole('textbox', { name: 'Red style note for this measure' }).fill('Play lightly');
@@ -81,6 +99,8 @@ try {
     await page.getByRole('button', { name: 'Save Chart' }).click();
     await page.getByRole('heading', { name: 'My Charts', exact: true }).waitFor();
     await shot('chart-library');
+    assert.equal(await page.locator('.builder-library-heading-icon').count(), 0,
+      label + ' must not show decorative chart icon in library header');
     const saved = (await page.evaluate(localList, 'little-jazz-room:charts:v1:'))
       .find(chart => chart.title === chartName);
     assert.ok(saved?.id, label + ' chart not saved');
