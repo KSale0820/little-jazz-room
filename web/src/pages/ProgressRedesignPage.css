@@ -30,7 +30,9 @@
   bottom: 10px; left: 31px; object-fit: contain; object-position: center bottom;
   image-rendering: pixelated; filter: drop-shadow(0 2px 0 #38263d28);
 }
-.pgr-cat.is-sleeping.jazz-cat-sprite { bottom: 10px; }
+/* Sleeping sprites have internal transparent padding; seat their visible paws
+   on the same keyboard surface as the sitting pose. */
+.pgr-cat.is-sleeping.jazz-cat-sprite { bottom: -2px; }
 .pgr-settings {
   position: absolute; right: 0; top: 0; z-index: 2;
   width: 44px; height: 44px; padding: 2px;
@@ -46,18 +48,20 @@
   border: 0; border-radius: 999px; padding: 0; background: transparent;
 }
 .pgr-theme-choices img { display: block; width: 100%; max-height: 44px; object-fit: contain; image-rendering: pixelated; }
-.pgr-theme-choices button[aria-pressed="true"] { outline: 1px solid transparent; }
+/* The approved active/inactive PNG pills already contain their own outlines.
+   Don't paint a second selection halo on top of the artwork. */
+.pgr-theme-choices button[aria-pressed="true"] { outline: 0; box-shadow: none; }
 
 .pgr-streak {
   display: grid; grid-template-columns: 1fr 1fr; gap: 0;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 22px; min-height: 58px; margin-bottom: 10px; padding: 7px 4px;
+  border-radius: 22px; min-height: 66px; margin-bottom: 10px; padding: 8px 4px;
   box-shadow: 0 2px 0 #70472312;
 }
-.pgr-streak > div { display: flex; justify-content: center; align-items: center; min-width: 0; gap: 5px; }
+.pgr-streak > div { display: flex; justify-content: center; align-items: center; min-width: 0; gap: 7px; }
 .pgr-streak > div + div { border-left: 1px solid var(--color-border); }
-.pgr-streak img { flex: 0 0 26px; width: 26px; height: 28px; object-fit: contain; image-rendering: pixelated; }
+.pgr-streak img { flex: 0 0 40px; width: 40px; height: 40px; object-fit: contain; image-rendering: pixelated; }
 .pgr-streak strong { font: 800 25px/1 Georgia, 'Times New Roman', serif; color: var(--color-text); }
 .pgr-streak span { color: var(--color-muted); font-size: 11px; line-height: 1.18; }
 
@@ -160,8 +164,7 @@
 .pgr-history-empty { padding: 14px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 15px; color: var(--color-muted); font-size: 13px; }
 .pgr-again { width: 100%; min-height: 46px; margin-top: 13px; border: 0; border-radius: 14px; background: var(--color-action); color: var(--color-action-text); font-size: 15px; font-weight: 700; }
 
-html[data-theme="dark"] .pgr-page .pgr-cat-stage,
-html[data-theme="dark"] .pgr-page .pgr-theme-choices { filter: brightness(.96); }
+/* Preserve the approved asset colors in both themes. */
 @media (max-width: 374px) {
   .pgr-page { padding-left: 10px; padding-right: 10px; }
   .pgr-cat-stage { width: 157px; }
@@ -181,16 +184,8 @@ html[data-theme="dark"] .pgr-page .practice-calendar-header {
 html[data-theme="dark"] .pgr-page .practice-calendar-header :is(h2, strong, button, p) {
   color: #f1f7ed;
 }
-html[data-theme="dark"] .pgr-theme-choices button[aria-pressed="false"] img {
-  filter: brightness(.88);
-}
-html[data-theme="dark"] .pgr-theme-choices button[aria-pressed="true"] {
-  outline: 2px solid color-mix(in srgb, var(--color-focus) 70%, transparent);
-  outline-offset: 1px;
-}
-html[data-theme="dark"] .pgr-theme-choices button[aria-label="Cat Mode"][aria-pressed="true"] {
-  outline-color: #93c3a1;
-}
+/* Selection treatment is baked into the pixel-art pill images. Keep keyboard
+   focus visible through .pgr-page button:focus-visible only. */
 html[data-theme="dark"] .app-shell:has(.pgr-page) .bottom-nav a.current {
   background: #2a4335;
   color: #edf7ed;
