@@ -69,7 +69,6 @@ export function ChartLibraryPage() {
       <header className="chart-builder-header">
         <div className="builder-library-heading">
           <button type="button" className="builder-library-back" aria-label="Back to Tracks" onClick={() => navigate('/tracks')}>‹</button>
-          <span className="builder-library-heading-icon" aria-hidden="true">▤</span>
           <h1 aria-label="My Charts">Chart Builder</h1>
         </div>
       </header>
