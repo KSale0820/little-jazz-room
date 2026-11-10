@@ -1,10 +1,10 @@
-# Approved Pixel Motifs: 19 independent sprites
+# Approved Pixel Motifs: 18 independent sprites
 
 Owner approval: November 5, 2026. Includes the ten second-pass polished motifs; `staff-wave` is the final corrected version with standard eighth-note flags.
 
 ## Integration contract
 
-- All 19 individually loadable, transparent PNGs are under `web/public/visuals/pixel-motifs/approved/`.
+- All 18 currently approved, individually loadable, transparent PNGs are under `web/public/visuals/pixel-motifs/approved/`.
 - `VISUAL_ASSETS.approvedPixelMotifs` and `APPROVED_PIXEL_MOTIFS` in `web/src/assets/cleanPixelAssets.ts` expose stable names.
 - Keep existing `VISUAL_ASSETS.pixelMotifs` SVG masks intact. They are needed for existing CSS mask usage and rollback.
 - All PNGs share the **same artwork** across Sunny Studio (Light) and Midnight Jazz (Dark). Use theme palette tokens only for surrounding UI, not new generated asset variants.
@@ -31,10 +31,11 @@ Owner approval: November 5, 2026. Includes the ten second-pass polished motifs; 
 | plantPot | `plant-pot.png` | polished |
 | planterBox | `planter-box.png` | polished |
 | plusSparkle | `plus-sparkle.png` | previous approved |
-| smallPlant | `small-plant.png` | previous approved |
 | sparkleCluster | `sparkle-cluster.png` | previous approved |
 | sparkle | `sparkle.png` | previous approved |
 | staffWave | `staff-wave.png` | corrected/polished |
 | trebleClef | `treble-clef.png` | polished |
 
-No deletions or changes to approved cat originals, companion logic, reward logic, global styles or page layouts.
+Owner correction (November 10, 2026): `small-plant.png` is explicitly rejected and was deleted from the repository. Use the polished `plant-pot.png` instead wherever the old small plant appeared (including the Profile Settings companion-unlock hint and Practice page decoration). The remaining 18 approved sprites are unchanged.
+
+No changes to approved cat originals, companion logic, reward logic, global styles or page layouts.
