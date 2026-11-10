@@ -222,7 +222,12 @@ export function ProfilePage() {
 
       <section className="profile-account profile-section" aria-labelledby="profile-account-heading">
         <div className="profile-section-title profile-account-title">
-          <span className="profile-section-symbol" aria-hidden="true">♙</span>
+          <span className="profile-section-symbol profile-account-gear" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 2h4l.7 2.5 1.5.7 2.3-1.2 2.8 2.8-1.2 2.3.7 1.5L23 11v4l-2.5.7-.7 1.5 1.2 2.3-2.8 2.8-2.3-1.2-1.5.7L14 23h-4l-.7-2.5-1.5-.7-2.3 1.2-2.8-2.8 1.2-2.3-.7-1.5L1 15v-4l2.5-.7.7-1.5L3 6.5l2.8-2.8 2.3 1.2 1.5-.7L10 2z" transform="translate(0 -1) scale(.96)" />
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </span>
           <h2 id="profile-account-heading">Account &amp; More</h2>
         </div>
         <div className="profile-account-list">
