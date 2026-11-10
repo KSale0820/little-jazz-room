@@ -70,10 +70,10 @@ try {
       label + ' chart grid must show four measures per row');
     assert.equal(await page.locator('.builder-studio-title-icon').count(), 0,
       label + ' must not show decorative chart icon in header');
-    const chartHeadingDecor = await page.locator('.chart-builder-chart-heading h2')
+    const chartHeadingDecor = await page.locator('.chart-builder-chart-heading')
       .evaluate(node => ({ before: getComputedStyle(node, '::before').content, after: getComputedStyle(node, '::after').content }));
     assert.ok(['none', 'normal'].includes(chartHeadingDecor.before) && ['none', 'normal'].includes(chartHeadingDecor.after),
-      label + ' unexpected decorative icon beside Your chord chart: ' + JSON.stringify(chartHeadingDecor));
+      label + ' unexpected note inserted by chart heading container: ' + JSON.stringify(chartHeadingDecor));
     const notationGeometry = await page.locator('.chart-editor-row').first().locator('.chart-editor-measure')
       .first().evaluate(node => {
         const chord = node.querySelector('.chart-editor-chord input');
@@ -87,6 +87,27 @@ try {
     assert.ok(notationGeometry.chordFontPx >= 18, label + ' chord notation too small: ' + JSON.stringify(notationGeometry));
     assert.ok(notationGeometry.chordTargetHeight >= 44, label + ' chord editing target under 44px');
     await page.getByRole('textbox', { name: 'Measure 2 chord 1' }).focus();
+    const selectedAppearance = await page.locator('.chart-editor-measure.is-selected').first().evaluate(node => {
+      const input = node.querySelector('.chart-editor-chord input.is-selected');
+      const cell = getComputedStyle(node);
+      const field = getComputedStyle(input);
+      return {
+        cellShadow: cell.boxShadow,
+        chordBackground: field.backgroundColor,
+        chordBorder: field.borderTopColor,
+        chordShadow: field.boxShadow,
+        chordOutline: field.outlineStyle,
+      };
+    });
+    assert.notEqual(selectedAppearance.cellShadow, 'none', label + ' missing primary measure highlight');
+    assert.equal(selectedAppearance.chordBackground, 'rgba(0, 0, 0, 0)',
+      label + ' selected chord should not have a second background highlight: ' + JSON.stringify(selectedAppearance));
+    assert.equal(selectedAppearance.chordBorder, 'rgba(0, 0, 0, 0)',
+      label + ' selected chord should not have a second border highlight: ' + JSON.stringify(selectedAppearance));
+    assert.equal(selectedAppearance.chordShadow, 'none',
+      label + ' selected chord should not have an additional box shadow');
+    assert.equal(selectedAppearance.chordOutline, 'none',
+      label + ' selected chord should not have an additional outline');
     await page.getByRole('button', { name: 'Add Annotation' }).click();
     await page.getByRole('textbox', { name: 'Red style note for this measure' }).fill('Play lightly');
     await shot('chart-selection');
@@ -101,6 +122,10 @@ try {
     await shot('chart-library');
     assert.equal(await page.locator('.builder-library-heading-icon').count(), 0,
       label + ' must not show decorative chart icon in library header');
+    const libraryDecor = await page.locator('.chart-library-page .chart-builder-header')
+      .evaluate(node => getComputedStyle(node, '::after').content);
+    assert.ok(['none', 'normal'].includes(libraryDecor),
+      label + ' library header still injects a decorative plant: ' + libraryDecor);
     const saved = (await page.evaluate(localList, 'little-jazz-room:charts:v1:'))
       .find(chart => chart.title === chartName);
     assert.ok(saved?.id, label + ' chart not saved');
@@ -120,6 +145,10 @@ try {
     assert.equal(revised.id, saved.id, label + ' changed chart identity on edit');
 
     await page.goto(app + '/create', { waitUntil: 'networkidle' });
+    const routineDecor = await page.locator('.routine-builder .builder-heading')
+      .evaluate(node => getComputedStyle(node, '::after').content);
+    assert.ok(['none', 'normal'].includes(routineDecor),
+      label + ' Create Routine heading still injects a treble clef: ' + routineDecor);
     await page.getByRole('button', { name: /Create your own exercise/ }).click();
     const exerciseName = 'Studio Exercise ' + label;
     await page.locator('#exTitle').fill(exerciseName);
