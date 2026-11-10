@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useAppearance } from '../context/AppearanceContext';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
 import {
   audioContextConstructor, beatIntervalSeconds, beatsPerMeasure,
@@ -10,6 +11,7 @@ import './ToolsPages.css';
 import './CleanPixelToolsProgress.css';
 import './CleanPixelMotifPlacements.css';
 import './ToolsPolishedPair.css';
+import './ToolsMockupApproved.css';
 
 type Signature = '2/4' | '3/4' | '4/4' | '6/8';
 type ScheduledBeat = { time: number; index: number; countIn: boolean };
@@ -17,7 +19,10 @@ type ScheduledBeat = { time: number; index: number; countIn: boolean };
 export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
-  const [bpm, setBpm] = useState(100);
+  const { catMode } = useAppearance();
+  const [showOptions, setShowOptions] = useState(false);
+  const [showSignaturePicker, setShowSignaturePicker] = useState(false);
+  const [bpm, setBpm] = useState(120);
   const [signature, setSignature] = useState<Signature>('4/4');
   const [accents, setAccents] = useState<boolean[]>(defaultAccents('4/4'));
   const [countIn, setCountIn] = useState(true);
@@ -29,7 +34,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
   const [taps, setTaps] = useState(0);
 
   const contextRef = useRef<AudioContext | null>(null);
-  const bpmRef = useRef(100);
+  const bpmRef = useRef(120);
   const signatureRef = useRef<Signature>('4/4');
   const accentsRef = useRef<boolean[]>(defaultAccents('4/4'));
   const beatIndexRef = useRef(0);
@@ -200,71 +205,114 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
 
   const beatCount = beatsPerMeasure(signature);
   return (
-    <section className="tool-page tool-metronome" aria-label="Metronome">
-      <header className="tool-heading">
-        <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))} aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
-        <h1>Metronome</h1>
-        <span className="tool-heading-spacer" />
+    <section className="tool-page tool-metronome jazz-tool-page" aria-label="Metronome">
+      <header className="tool-heading jazz-tool-header">
+        <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))}
+          aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
+        <h1><img src="/visuals/tools/pixel/metronome.png" alt="" aria-hidden="true" /> Metronome</h1>
+        <button className="tool-settings" type="button" aria-label="Metronome settings"
+          aria-expanded={showOptions} onClick={() => setShowOptions(value => !value)}>?</button>
       </header>
-      <div className="metronome-tempo">
-        <button type="button" className="metronome-step" onClick={() => setTempo(bpmRef.current - 1)}
-          aria-label="Decrease tempo by 1 BPM">−</button>
-        <div className="metronome-bpm"><strong aria-live="off">{bpm}</strong><span>BPM</span></div>
-        <button type="button" className="metronome-step" onClick={() => setTempo(bpmRef.current + 1)}
-          aria-label="Increase tempo by 1 BPM">+</button>
-      </div>
-      <label className="metronome-slider-label" htmlFor="metronome-tempo-range">Tempo: {bpm} beats per minute</label>
-      <input id="metronome-tempo-range" className="metronome-slider" type="range"
-        min="40" max="240" step="1" value={bpm}
-        onChange={event => setTempo(Number(event.target.value))}
-        style={{ background: 'linear-gradient(to right, var(--color-action) ' + (bpm - 40) / 2 + '%, var(--color-surface-raised) ' + (bpm - 40) / 2 + '%)' }} />
-      <div className="metronome-action-group">
-      <p className="metronome-playing-status" role="status">
-        {playing ? countingIn ? 'Counting in…' : 'Playing · ' + signature :
-          signature === '6/8' ? 'BPM counts dotted-quarter beats' : 'Ready when you are'}
-      </p>
-      <button type="button" className="metronome-play" onClick={() => playing ? stop() : void start()}
-        aria-label={playing ? 'Stop metronome' : 'Start metronome'} aria-pressed={playing}>
-        <img src={playing ? '/visuals/tools/pixel/stop.png' : '/visuals/tools/pixel/play.png'} alt="" aria-hidden="true" />
-      </button>
-      </div>
-      <div className="metronome-tap-row">
-        <button type="button" className="metronome-tap" onClick={tapTempo}>Tap Tempo</button>
-        <span>{taps >= 2 ? 'Tempo set from your taps' : 'Tap twice or more to set BPM'}</span>
-      </div>
-      <section className="metronome-field" aria-labelledby="metronome-signature-heading">
-        <h2 id="metronome-signature-heading">Time Signature</h2>
-        <div className="metronome-signatures">
-          {(['2/4', '3/4', '4/4', '6/8'] as const).map(value => (
-            <button type="button" key={value} aria-pressed={signature === value}
-              onClick={() => changeSignature(value)}>{value}</button>
-          ))}
+
+      <div className="jazz-tool-settings" hidden={!showOptions}>
+        <div className="jazz-tool-settings-heading">
+          <strong>Metronome options</strong>
+          <button type="button" aria-label="Close metronome options"
+            onClick={() => setShowOptions(false)}>×</button>
         </div>
-      </section>
-      <section className="metronome-field" aria-labelledby="metronome-accents-heading">
-        <h2 id="metronome-accents-heading">Accent Beat</h2>
-        <div className="metronome-beats" role="group" aria-label="Choose accented beats">
-          {accents.map((accent, index) => (
-            <button key={index} type="button" className={(accent ? 'is-accent ' : '') +
-              (playing && activeBeat === index ? 'is-current' : '')}
-              aria-pressed={accent} aria-label={'Beat ' + (index + 1) + (accent ? ', accented' : ', unaccented')}
-              onClick={() => toggleAccent(index)}>
-              <span>{accent ? '◆' : '●'}</span>
+        <label className="jazz-tool-field-label" htmlFor="metronome-tempo-range">Tempo · {bpm} BPM</label>
+        <input id="metronome-tempo-range" className="metronome-slider" type="range"
+          min="40" max="240" step="1" value={bpm}
+          onChange={event => setTempo(Number(event.target.value))}
+          style={{ background: 'linear-gradient(to right, var(--color-action) ' + (bpm - 40) / 2 +
+            '%, var(--color-surface-raised) ' + (bpm - 40) / 2 + '%)' }} />
+        <div className="metronome-countin">
+          <label><input type="checkbox" checked={countIn}
+            onChange={event => setCountIn(event.target.checked)} />
+            <span className="metronome-switch" aria-hidden="true" /> Count-in</label>
+          <button type="button" className="metronome-count-select"
+            onClick={() => setCountInBars(current => current === 1 ? 2 : 1)}
+            aria-label="Toggle count-in between one and two measures" disabled={!countIn}>
+            {beatCount * countInBars} beats <span aria-hidden="true">›</span>
+          </button>
+        </div>
+        <p className="jazz-tool-options-note">Accent the beats below, and use Tap Tempo to find your pulse.</p>
+      </div>
+
+      <div className="jazz-metronome-card">
+        <div className="jazz-metronome-value">
+          <span aria-hidden="true" className="jazz-metronome-note">♪</span>
+          <span aria-hidden="true" className="jazz-metronome-equals">=</span>
+          <div className="metronome-bpm">
+            <strong aria-live="off">{bpm}</strong>
+            <span>BPM</span>
+          </div>
+        </div>
+
+        <div className="metronome-tempo">
+          <button type="button" className="metronome-step"
+            onClick={() => setTempo(bpmRef.current - 1)} aria-label="Decrease tempo by 1 BPM">−</button>
+          <button type="button" className="metronome-play" aria-pressed={playing}
+            onClick={() => playing ? stop() : void start()}
+            aria-label={playing ? 'Stop metronome' : 'Start metronome'}>
+            <span aria-hidden="true">{playing ? '■' : '▶'}</span>
+          </button>
+          <button type="button" className="metronome-step"
+            onClick={() => setTempo(bpmRef.current + 1)} aria-label="Increase tempo by 1 BPM">+</button>
+        </div>
+
+        <div className="metronome-tap-row">
+          <button type="button" className="metronome-tap" onClick={tapTempo}>♧ Tap Tempo</button>
+          <span className="jazz-tap-status">{taps >= 2 ? 'Tempo set from your taps' : ''}</span>
+        </div>
+
+        <div className="jazz-metronome-settings">
+          <div className="jazz-metronome-setting-row">
+            <h2 id="metronome-signature-heading">Time Signature</h2>
+            <button type="button" className="jazz-signature-toggle"
+              aria-controls="jazz-signature-picker" aria-expanded={showSignaturePicker}
+              onClick={() => setShowSignaturePicker(value => !value)}>
+              {signature} <span aria-hidden="true">⌄</span>
             </button>
-          ))}
+          </div>
+          <div id="jazz-signature-picker" className="metronome-signatures" hidden={!showSignaturePicker}
+            role="group" aria-label="Time Signature">
+            {(['2/4', '3/4', '4/4', '6/8'] as const).map(value => (
+              <button type="button" key={value} aria-pressed={signature === value}
+                onClick={() => { changeSignature(value); setShowSignaturePicker(false); }}>{value}</button>
+            ))}
+          </div>
+          <div className="jazz-metronome-setting-row jazz-metronome-accent-row">
+            <h2 id="metronome-accents-heading">Accent</h2>
+            <div className="metronome-beats" role="group" aria-label="Choose accented beats">
+              {accents.map((accent, index) => (
+                <button type="button" key={index}
+                  className={(accent ? 'is-accent ' : '') + (playing && activeBeat === index ? 'is-current' : '')}
+                  aria-pressed={accent}
+                  aria-label={'Beat ' + (index + 1) + (accent ? ', accented' : ', unaccented')}
+                  onClick={() => toggleAccent(index)}>
+                  <span aria-hidden="true" />
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </section>
-      <div className="metronome-countin">
-        <label><input type="checkbox" checked={countIn} onChange={event => setCountIn(event.target.checked)} />
-          <span className="metronome-switch" aria-hidden="true" /> Count-in</label>
-        <button type="button" className="metronome-count-select" onClick={() => setCountInBars(current => current === 1 ? 2 : 1)}
-          aria-label="Toggle count-in between one and two measures" disabled={!countIn}>
-          {beatCount * countInBars} beats <span aria-hidden="true">›</span>
-        </button>
+        <p className="metronome-playing-status" role="status">
+          {playing ? countingIn ? 'Counting in…' : 'Playing · ' + signature :
+            signature === '6/8' ? 'BPM counts dotted-quarter beats' : 'Ready when you are'}
+        </p>
+        {error ? <p className="tool-error" role="alert">{error}</p> : null}
       </div>
-      {error ? <p className="tool-error" role="alert">{error}</p> : null}
-      <div className="tool-cat-scene tool-metronome-scene" aria-hidden="true">
-        <DecorativeCat catId={catId} variant="sitting" size={168} className="tool-scene-cat" />
+
+      <div className="jazz-tool-footer" aria-hidden="true">
+        <img className="jazz-tool-plant" src="/visuals/tools/mockup/pothos.svg" alt="" />
+        <div className="tool-cat-scene tool-metronome-scene">
+          {catId === 'luna' ? (
+            <img className="tool-scene-cat jazz-mock-cat" src="/visuals/tools/mockup/cat-sitting.svg"
+              alt="" style={{ visibility: catMode ? 'visible' : 'hidden' }} />
+          ) : <DecorativeCat catId={catId} variant="sitting" size={120} className="tool-scene-cat" />}
+        </div>
+        <span className="jazz-decor-note">♫</span>
       </div>
     </section>
   );
