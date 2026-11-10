@@ -203,12 +203,20 @@
   background: transparent;
   text-overflow: clip;
 }
+/* The measure itself owns the selection outline. Do not draw a second
+   inset highlight around the chord field when it is active. */
 .chart-builder-page.builder-studio .chart-editor-chord input:focus,
 .chart-builder-page.builder-studio .chart-editor-chord input.is-selected {
-  background: var(--color-chart-selected);
+  background: transparent;
   color: var(--color-chart-chord);
-  border: 2px solid var(--color-chart-selected-outline);
-  outline-offset: -1px;
+  border: 1px solid transparent;
+  box-shadow: none;
+  outline: none;
+}
+.chart-builder-page.builder-studio .chart-editor-chord input:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--color-chart-selected-outline);
+  text-underline-offset: 4px;
 }
 .chart-builder-page.builder-studio .chart-editor-chord small {
   color: var(--color-muted);
