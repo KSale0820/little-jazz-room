@@ -272,6 +272,9 @@ export function ChartBuilderPage() {
     }
   };
 
+  const hasUnsavedChanges = dirty || hasRestoredDraft || keyInput !== draft.concert_key ||
+    meterTopInput !== String(draft.beats) || meterBottomInput !== String(draft.beat_unit ?? 4);
+
   if (missing) {
     return <section className="chart-builder-page"><h1>Chart not found</h1>
       <p>This chart may have been deleted or belongs to another account.</p>
@@ -290,11 +293,8 @@ export function ChartBuilderPage() {
       </header>
       {readOnly && <p className="chart-builder-notice">This is a built-in chart. Open My Charts and choose Edit a copy to make changes.</p>}
       {error && <p role="alert" className="chart-builder-error">{error}</p>}
-      <p className="chart-builder-save-status" role="status" aria-live="polite">
-        {readOnly ? 'Reference chart · view only' :
-          dirty || hasRestoredDraft || keyInput !== draft.concert_key ||
-          meterTopInput !== String(draft.beats) || meterBottomInput !== String(draft.beat_unit ?? 4)
-            ? 'Unsaved changes' : 'No unsaved changes'}
+      <p className="chart-builder-save-status" role="status" data-unsaved={!readOnly && hasUnsavedChanges} aria-live="polite">
+        {readOnly ? 'Reference chart · view only' : hasUnsavedChanges ? 'Unsaved changes' : 'No unsaved changes'}
       </p>
 
       <label className="chart-builder-field">
