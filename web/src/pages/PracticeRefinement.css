@@ -156,6 +156,9 @@ html[data-theme] .p01-page.p01-suave .p01-action-primary .p01-suave-note-icon {
   height: 42px;
   object-fit: contain;
   image-rendering: pixelated;
+  /* Legacy CTA CSS hid all images; reveal only this approved note. */
+  visibility: visible !important;
+  opacity: 1;
 }
 html[data-theme] .p01-page.p01-suave .p01-action-primary .p01-chevron {
   z-index: 3;
