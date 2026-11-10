@@ -239,7 +239,7 @@ export function FreePracticePage() {
         </div>
         <div className="fp-completion-shelf" aria-hidden="true">
           <img src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
-          {catMode && <DecorativeCat catId={catId} variant="sitting" size={110} className="fp-summary-cat" />}
+          {catMode && <DecorativeCat catId={catId} variant="sitting" size={88} className="fp-summary-cat" />}
           <img src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
         </div>
         <p className="fp-save-status">{saved ? 'Session Saved ✓' : saveError ? 'Save failed. Your session can be retried.' : 'Saving your practice…'}</p>
@@ -274,7 +274,7 @@ export function FreePracticePage() {
         </button>
         <div className="fp-intro-shelf" aria-hidden="true">
           <img className="fp-intro-plant" src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
-          {catMode && <DecorativeCat catId={catId} variant="sleeping" size={112} className="fp-intro-cat" />}
+          {catMode && <DecorativeCat catId={catId} variant="sleeping" size={96} className="fp-intro-cat" />}
           <span className="fp-intro-books"><i/><i/><i/></span>
           <img className="fp-intro-note" src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
         </div>
@@ -293,7 +293,7 @@ export function FreePracticePage() {
             </div>
             <div className="fp-timer-shelf" aria-hidden="true">
               <img src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
-              {catMode && <DecorativeCat catId={catId} variant={running ? 'sitting' : 'sleeping'} size={116} className="fp-timer-cat" />}
+              {catMode && <DecorativeCat catId={catId} variant={running ? 'sitting' : 'sleeping'} size={92} className="fp-timer-cat" />}
               <img src={PIXEL_ART + 'music-note-purple-sharp.png'} alt="" />
             </div>
           </section>}
@@ -339,9 +339,9 @@ export function FreePracticePage() {
             ['exercise', 'Exercise', 'approved-isolated-icons/music-bubble.png'],
             ['chart', 'Chart', 'music-note-purple-sharp.png'],
             ['routine', 'Routine', 'refreshed-icons/routine-list.png'],
-            ['track', 'Backing Track', 'refreshed-icons/record.png'],
+            ['track', 'Track', 'refreshed-icons/record.png'],
           ] as const).map(([kind, label, icon]) => (
-            <button type="button" key={kind} className="fp-choice" aria-label={label} aria-expanded={picker === kind} onClick={() => openPicker(kind)}>
+            <button type="button" key={kind} className="fp-choice" aria-label={kind === 'track' ? 'Backing Track' : label} aria-expanded={picker === kind} onClick={() => openPicker(kind)}>
               <span className="fp-choice-icon" aria-hidden="true"><img src={PIXEL_ART + icon} alt="" /></span>
               <span className="fp-choice-copy"><strong>{label}</strong></span>
               <span className="fp-chevron" aria-hidden="true">{picker === kind ? '⌄' : '›'}</span>
@@ -386,7 +386,7 @@ export function FreePracticePage() {
           audioRef.current?.pause(); setRecordingId(null); setAudioError('');
         }} aria-label="Remove backing track">×</button></div>
         <audio key={recording.id} ref={audioRef} src={recording.src} controls preload="metadata"
-          aria-label={recording.title + ' backing track'} onError={() => setAudioError('Audio file unavailable.')} />
+          aria-label={recording.title + ' backing track'} onError={() => setAudioError('Audio playback is unavailable in this browser.')} />
         {audioError && <p role="alert">{audioError}</p>}
       </section>}
 
