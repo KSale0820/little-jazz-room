@@ -352,7 +352,8 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       {unavailable ? (
         <section className="jazz-tuner-card jazz-tuner-unavailable" role="alert" aria-label="Microphone unavailable">
           <span className="jazz-unavailable-icon" aria-hidden="true">
-            {status === 'denied' ? '♩' : status === 'unsupported' ? '×' : '!'}
+            {status === 'denied' ? <span className="jazz-mic-large" /> :
+              status === 'unsupported' ? '×' : '!'}
           </span>
           <h2>{status === 'denied' ? 'Microphone Access Denied' :
             status === 'unsupported' ? 'No Microphone Available' : 'Tuner Error'}</h2>
@@ -443,7 +444,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           <button className="tuner-mic" type="button" onClick={toggleMicrophone}
             aria-label={status === 'listening' ? 'Stop microphone' : status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
             aria-pressed={status === 'listening'}>
-            <span className="jazz-mic-symbol" aria-hidden="true">♩</span>
+            <span className="jazz-mic-symbol" aria-hidden="true" />
             {status === 'listening' ? 'Listening…  ·  Stop' :
               status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
           </button>
