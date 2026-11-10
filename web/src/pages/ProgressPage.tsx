@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { useApp } from '../context/AppContext';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
+import { PracticeCalendar } from '../components/PracticeCalendar';
 import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
 import { readPracticeGoal } from '../lib/practiceHomePreferences';
 import type { PracticeSessionRecord, Routine } from '../types/content';
@@ -130,6 +131,8 @@ export function ProgressPage() {
           </div>
         </div>
       </section>
+
+      <PracticeCalendar sessions={sessions} />
 
       <section className="g01-history" aria-labelledby="g01-history-heading">
         <div className="g01-history-heading">
