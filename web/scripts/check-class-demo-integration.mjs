@@ -25,9 +25,9 @@ try {
     assert(new URL(page.url()).pathname === '/practice', 'Root should open Practice');
     await page.getByRole('button', { name: /Follow a Routine/ }).click();
     await page.waitForURL(url => url.pathname === '/routines');
-    await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).waitFor();
+    await page.getByRole('button', { name: 'Practice Daily Jazz Warm-Up' }).waitFor();
 
-    await page.getByRole('button', { name: /Create routine/i }).click();
+    await page.getByRole('button', { name: 'Create', exact: true }).click();
     await page.waitForURL(url => url.pathname === '/create');
     await page.getByLabel(/Routine title/).fill(title);
     assert(await page.locator('.builder-step').count() >= 3,
@@ -35,10 +35,10 @@ try {
     await page.screenshot({ path: join(output, 'routine-builder-' + width + 'x' + height + '.png') });
     await page.getByRole('button', { name: /Save routine/i }).click();
     await page.waitForURL(url => url.pathname === '/routines' && url.searchParams.get('tab') === 'my');
-    await page.getByRole('button', { name: 'Open ' + title + ' in player' }).waitFor();
+    await page.getByRole('button', { name: 'Practice ' + title }).waitFor();
     await page.screenshot({ path: join(output, 'my-routines-' + width + 'x' + height + '.png') });
 
-    await page.getByRole('button', { name: 'Open ' + title + ' in player' }).click();
+    await page.getByRole('button', { name: 'Practice ' + title }).click();
     await page.waitForURL(url => url.pathname === '/player');
     await page.getByRole('heading', { name: title }).waitFor();
     await page.getByRole('button', { name: 'Start practice timer' }).click();
@@ -75,7 +75,7 @@ try {
       'Session did not persist uniquely after reload');
 
     await page.goto(base + '/routines?tab=my', { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: 'Open ' + title + ' in player' }).waitFor();
+    await page.getByRole('button', { name: 'Practice ' + title }).waitFor();
 
     await page.goto(base + '/', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: /Practice with a Track/ }).click();
