@@ -119,6 +119,27 @@ try {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     assert(overflow <= 1, 'Unexpected horizontal overflow: ' + overflow);
     assert(errors.length === 0, 'Browser errors: ' + errors.join(' | '));
+    if (width === 390 && theme === 'light' && catMode) {
+      // Real timer state after 12m34s of virtual elapsed time, matching the owner's
+      // approved illustrative ring without putting a fake duration in production.
+      const reference = await context.newPage();
+      await reference.goto(base + '/free-practice', { waitUntil: 'networkidle' });
+      await reference.getByRole('button', { name: 'Start Practice', exact: true }).click();
+      await reference.getByRole('button', { name: 'Goal', exact: true }).click();
+      await reference.getByRole('textbox', { name: 'Custom practice goal' }).fill('Work on ii-V-I');
+      await reference.getByRole('button', { name: 'Add Goal' }).click();
+      await reference.getByRole('button', { name: 'Chart', exact: true }).click();
+      await reference.locator('.fp-picker-results button').first().click();
+      await reference.getByRole('button', { name: 'Exercise', exact: true }).click();
+      await reference.locator('.fp-picker-results button').first().click();
+      await reference.clock.install();
+      await reference.getByRole('button', { name: 'Start practice timer' }).click();
+      await reference.clock.fastForward(754000);
+      assert((await reference.getByRole('timer').innerText()).trim() === '12:34',
+        'Reference capture should reflect real elapsed timer behavior');
+      await reference.screenshot({ path: join(output, 'reference-timer-12m34s-' + shot + '.png'), fullPage: true });
+      await reference.close();
+    }
     console.log('PASS Free Practice ' + shot + ': no random chart, timer, queue, real audio, unique save, Progress/reload/replay');
     await context.close();
       }
