@@ -26,7 +26,7 @@ export function PracticeHubPage() {
 
   const startFreePractice = () => {
     setActiveRoutineId(null);
-    navigate('/player?mode=free');
+    navigate('/free-practice');
   };
 
   const startPinnedRoutine = () => {
@@ -40,7 +40,7 @@ export function PracticeHubPage() {
   const continuePractice = () => {
     if (!latestSession) return;
     setActiveRoutineId(recentRoutine?.id ?? null);
-    navigate(recentRoutine ? '/player?routine=' + encodeURIComponent(recentRoutine.id) : '/player?mode=free');
+    navigate(recentRoutine ? '/player?routine=' + encodeURIComponent(recentRoutine.id) : '/free-practice');
   };
 
   return (
