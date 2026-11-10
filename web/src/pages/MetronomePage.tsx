@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { useAppearance } from '../context/AppearanceContext';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
 import {
   audioContextConstructor, beatIntervalSeconds, beatsPerMeasure,
@@ -19,7 +18,6 @@ type ScheduledBeat = { time: number; index: number; countIn: boolean };
 export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
-  const { catMode } = useAppearance();
   const [showOptions, setShowOptions] = useState(false);
   const [showSignaturePicker, setShowSignaturePicker] = useState(false);
   const [bpm, setBpm] = useState(120);
@@ -239,6 +237,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
         <p className="jazz-tool-options-note">Accent the beats below, and use Tap Tempo to find your pulse.</p>
       </div>
 
+      <main className="jazz-tool-main">
       <div className="jazz-metronome-card">
         <div className="jazz-metronome-value">
           <span aria-hidden="true" className="jazz-metronome-note">♪</span>
@@ -304,15 +303,14 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
         {error ? <p className="tool-error" role="alert">{error}</p> : null}
       </div>
 
+      </main>
       <div className="jazz-tool-footer" aria-hidden="true">
-        <img className="jazz-tool-plant" src="/visuals/tools/mockup/pothos.svg" alt="" />
+        <img className="jazz-tool-plant"
+          src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
         <div className="tool-cat-scene tool-metronome-scene">
-          {catId === 'luna' ? (
-            <img className="tool-scene-cat jazz-mock-cat" src="/visuals/tools/mockup/cat-sitting-approved.png"
-              alt="" style={{ visibility: catMode ? 'visible' : 'hidden' }} />
-          ) : <DecorativeCat catId={catId} variant="sitting" size={120} className="tool-scene-cat" />}
+          <DecorativeCat catId={catId} variant="sitting" size={185}
+            className="tool-scene-cat" />
         </div>
-        <span className="jazz-decor-note">♫</span>
       </div>
     </section>
   );
