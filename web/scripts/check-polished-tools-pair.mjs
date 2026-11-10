@@ -55,9 +55,11 @@ async function reachable(page, roleName) {
   await button.scrollIntoViewIfNeeded();
   assert.ok(await button.isVisible(), roleName + ' cannot be reached');
   const bb = await button.boundingBox();
-  const nav = await page.locator('nav.bottom-nav').boundingBox();
-  assert.ok(bb && nav && bb.y >= 0 && bb.y + bb.height <= nav.y + 2,
-    roleName + ' is obscured by bottom navigation');
+  const navLocator = page.locator('nav.bottom-nav');
+  const nav = await navLocator.boundingBox();
+  const bottomEdge = await navLocator.isVisible() ? nav?.y : page.viewportSize()?.height;
+  assert.ok(bb && bottomEdge !== undefined && bb.y >= 0 && bb.y + bb.height <= bottomEdge + 2,
+    roleName + ' is obscured or outside the phone viewport');
 }
 
 try {
@@ -77,18 +79,19 @@ try {
           'Idle tuner cannot fabricate pitch');
         await capture(page, 'tuner-idle-' + suffix);
         await reachable(page, 'Enable microphone');
-        await reachable(page, 'Play A 440 hertz tone');
         await page.getByRole('button', { name: 'Tuner help' }).click();
+        await reachable(page, 'Play A 440 hertz tone');
         assert.ok(await page.getByText(/one sustained note/).isVisible());
         await page.getByRole('button', { name: 'Tuner help' }).click();
 
         await visit(page, '/metronome', 'Metronome');
         assert.equal(await page.locator('.tool-metronome .tool-scene-cat').evaluate(element =>
           getComputedStyle(element).visibility), catMode ? 'visible' : 'hidden');
-        assert.equal(await page.locator('.metronome-bpm strong').textContent(), '100');
+        assert.equal(await page.locator('.metronome-bpm strong').textContent(), '120');
         await capture(page, 'metronome-idle-' + suffix);
         await page.getByRole('button', { name: 'Increase tempo by 1 BPM' }).click();
-        assert.equal(await page.locator('.metronome-bpm strong').textContent(), '101');
+        assert.equal(await page.locator('.metronome-bpm strong').textContent(), '121');
+        await page.getByRole('button', { name: /4\/4.*⌄/ }).click();
         await page.getByRole('button', { name: '6/8' }).click();
         assert.equal(await page.locator('.metronome-beats button').count(), 6);
         await reachable(page, 'Start metronome');
@@ -102,7 +105,9 @@ try {
         await page.waitForTimeout(330);
         await page.getByRole('button', { name: 'Tap Tempo' }).click();
         assert.ok(await page.getByText('Tempo set from your taps').isVisible());
+        await page.getByRole('button', { name: 'Metronome settings' }).click();
         await reachable(page, 'Toggle count-in between one and two measures');
+        await page.getByRole('button', { name: 'Close metronome options' }).click();
         assert.deepEqual(errors, [], 'Page errors: ' + suffix);
         await context.close();
       }
