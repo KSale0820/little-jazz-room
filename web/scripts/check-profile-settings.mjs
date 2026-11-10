@@ -65,6 +65,28 @@ try {
         await page.screenshot({ path: path.join(output, label + '-profile-alias.png'), fullPage: true });
 
         if (label === '390x844-light-cat-off') {
+          // A user can enter, save, change and cancel their display name.
+          const editButton = page.getByRole('button', { name: 'Edit Profile', exact: true });
+          await editButton.click();
+          const nameField = page.getByRole('textbox', { name: 'Your name' });
+          await nameField.fill('Avery Reed');
+          await page.getByRole('button', { name: 'Save Name' }).click();
+          assert.equal(await page.locator('.profile-identity-copy strong').textContent(), 'Avery Reed');
+          await page.reload({ waitUntil: 'networkidle' });
+          assert.equal(await page.locator('.profile-identity-copy strong').textContent(), 'Avery Reed',
+            'Saved display name must persist after reload');
+          await editButton.click();
+          assert.equal(await nameField.inputValue(), 'Avery Reed');
+          await nameField.fill('Unsaved Name');
+          await page.getByRole('button', { name: 'Cancel' }).click();
+          assert.equal(await page.locator('.profile-identity-copy strong').textContent(), 'Avery Reed',
+            'Canceling an edit must retain the saved name');
+          assert.equal(await page.getByRole('button', { name: /Export Practice Data/ }).isDisabled(), true,
+            'CSV export is unavailable until practice history exists');
+          await page.screenshot({ path: path.join(output, label + '-saved-name.png'), fullPage: true });
+        }
+
+        if (label === '390x844-light-cat-off') {
           // The persisted earned unlocks are retained even without session history.
           await page.evaluate(key => localStorage.setItem(key, JSON.stringify(['luna', 'milo'])), unlockKey);
           await page.reload({ waitUntil: 'networkidle' });
