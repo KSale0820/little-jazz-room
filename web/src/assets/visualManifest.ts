@@ -134,6 +134,8 @@ export const VISUAL_ASSETS = {
       pothos: '/visuals/tools/mockup/pothos.svg',
       floor: '/visuals/tools/mockup/floor.svg',
       microphone: '/visuals/tools/mockup/microphone.svg',
+      sleepingApproved: '/visuals/tools/mockup/cat-sleeping-approved.png',
+      sittingApproved: '/visuals/tools/mockup/cat-sitting-approved.png',
     },
   },
   approvedDecor: {
