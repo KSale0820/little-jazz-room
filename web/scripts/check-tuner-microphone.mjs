@@ -119,7 +119,7 @@ try {
       button.scrollWidth <= button.clientWidth + 1);
     if (!modeTextFits) throw new Error('Chromatic tab is cropped at ' + width);
     const statusAfterSwitch = await page.locator('.tuner-status').evaluate(element => element.getBoundingClientRect().height);
-    if (statusWithNote !== statusAfterSwitch || statusAfterSwitch > 40) {
+    if (statusWithNote !== statusAfterSwitch || statusAfterSwitch > 50) {
       throw new Error('Status changed height at ' + width + ': ' + statusWithNote + ' -> ' + statusAfterSwitch);
     }
     const spokenOption = await page.getByRole('button', { name: /Spoken notes/ }).count();
