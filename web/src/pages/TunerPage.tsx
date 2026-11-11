@@ -443,7 +443,11 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           <button className="tuner-mic" type="button" onClick={toggleMicrophone}
             aria-label={status === 'listening' ? 'Stop microphone' : status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
             aria-pressed={status === 'listening'}>
-            <span className="jazz-mic-symbol" aria-hidden="true" />
+            <svg className="jazz-tool-mic-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="9" y="2" width="6" height="13" rx="3" />
+              <path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8" />
+            </svg>
             {status === 'listening' ? 'Listening…  ·  Stop' :
               status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
           </button>
