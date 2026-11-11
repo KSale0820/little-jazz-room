@@ -1077,3 +1077,44 @@ html[data-theme] .jazz-tool-page .tool-metronome-scene .tool-scene-cat {
     width: 143px; height: 143px; bottom: -21px;
   }
 }
+
+
+/* Screenshot-to-reference alignment, round 2: target reference card top ~151,
+   metronome bottom ~710, and a legible tuner scale above its colored arc. */
+@media (min-height: 721px) {
+  html[data-theme] .jazz-tool-page .jazz-tool-main {
+    padding-top: 74px;
+    gap: 22px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-metronome-card {
+    min-height: 558px;
+  }
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  html[data-theme] .jazz-tool-page .metronome-tempo {
+    grid-template-rows: 44px 94px;
+  }
+}
+html[data-theme] .jazz-tool-page .metronome-tap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+html[data-theme] .jazz-tool-page .metronome-tap svg,
+html[data-theme] .jazz-tool-page .jazz-tool-mic-icon {
+  display: block;
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  background: none;
+  -webkit-mask: none;
+  mask: none;
+  stroke: currentColor;
+}
+html[data-theme] .jazz-tool-page .tuner-mic[aria-pressed="true"],
+html[data-theme] .jazz-tool-page .tuner-status.is-in-tune {
+  background: color-mix(in srgb, var(--color-pixel-plant) 37%, var(--jt-card));
+  color: var(--jt-ink);
+  border-color: var(--color-pixel-plant);
+}
