@@ -1,0 +1,604 @@
+/*
+ * P02: approved pixel reference layout (Nov 8).
+ * Layered after the older P02 styles because the existing playback, charts,
+ * guided panels, keyboard controls and recorded-audio logic are authoritative.
+ * No room-art decoration. Theme tokens cover both light and dark variants.
+ */
+html[data-theme] .app-shell:has(.practice-unified.practice-player) .bottom-nav {
+  display: grid;
+  z-index: 20;
+}
+html[data-theme] .app-shell:has(.practice-unified.practice-player) .viewport {
+  height: calc(100% - 73px);
+  min-height: 0;
+  padding-bottom: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+html[data-theme] .practice-player.practice-unified {
+  --pp-cream: var(--color-bg);
+  --pp-paper: var(--color-chart-paper);
+  --pp-ink: var(--color-text);
+  --pp-line: var(--color-border);
+  --pp-muted: var(--color-muted);
+  --pp-deep-green: var(--color-action);
+  --pp-moss: color-mix(in srgb, var(--color-action) 76%, var(--color-chart-paper));
+  --pp-warm-gold: #daa94d;
+  --pp-rose: #c15a55;
+  padding: 9px 13px 18px;
+  color: var(--pp-ink);
+  background: var(--pp-cream);
+  font-family: var(--font-ui, system-ui, sans-serif);
+  min-height: 100%;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 49px;
+  margin: 0 0 14px;
+  padding: 0;
+  gap: 4px;
+}
+html[data-theme] .practice-player.practice-unified .practice-back {
+  height: 44px;
+  min-height: 44px;
+  width: 40px;
+  flex: 0 0 40px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--pp-deep-green);
+  display: grid;
+  place-items: center;
+  padding: 6px;
+}
+html[data-theme] .practice-player.practice-unified .practice-back svg {
+  width: 25px;
+  height: 25px;
+}
+html[data-theme] .practice-player.practice-unified .practice-page-heading {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--pp-deep-green);
+  font: 750 clamp(25px, 7.4vw, 31px)/1.1 Georgia, serif;
+  letter-spacing: -.024em;
+  white-space: nowrap;
+}
+html[data-theme] .practice-player.practice-unified .practice-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  z-index: 4;
+}
+html[data-theme] .practice-player.practice-unified .practice-bookmark-link,
+html[data-theme] .practice-player.practice-unified .practice-header-more > summary {
+  width: 38px;
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 6px;
+  background: transparent;
+  color: var(--pp-deep-green);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+html[data-theme] .practice-player.practice-unified .practice-bookmark-link svg,
+html[data-theme] .practice-player.practice-unified .practice-header-more > summary svg {
+  width: 22px;
+  height: 22px;
+}
+html[data-theme] .practice-player.practice-unified .practice-header-more {
+  position: relative;
+}
+html[data-theme] .practice-player.practice-unified .practice-header-more > summary {
+  list-style: none;
+}
+html[data-theme] .practice-player.practice-unified .practice-header-more > summary::-webkit-details-marker {
+  display: none;
+}
+html[data-theme] .practice-player.practice-unified .practice-header-more[open] > summary {
+  background: var(--color-surface-raised);
+}
+html[data-theme] .practice-player.practice-unified .practice-more-panel {
+  position: absolute;
+  z-index: 25;
+  top: 42px;
+  right: 0;
+  width: min(285px, calc(100vw - 30px));
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--pp-line);
+  border-radius: 12px;
+  box-shadow: 0 10px 22px #0002;
+  color: var(--pp-ink);
+  font: 12px/1.35 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified .practice-more-panel label {
+  font: 750 12px/1.2 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified .practice-more-panel select {
+  width: 100%;
+  min-width: 0;
+  min-height: 43px;
+  padding: 6px 8px;
+  border: 1px solid var(--pp-line);
+  border-radius: 9px;
+  background: var(--pp-paper);
+  color: var(--pp-ink);
+  font: 600 13px/1.2 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified .practice-more-panel p {
+  margin: 0;
+  color: var(--pp-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+html[data-theme] .practice-player.practice-unified .practice-measure-jump {
+  display: flex;
+  gap: 6px;
+  margin-top: 3px;
+}
+html[data-theme] .practice-player.practice-unified .practice-measure-jump button {
+  flex: 1;
+  min-height: 42px;
+  padding: 6px;
+  border: 1px solid var(--pp-line);
+  border-radius: 8px;
+  background: var(--color-surface-raised);
+  color: var(--pp-ink);
+  font: 600 11px var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified > .practice-title-group {
+  display: block;
+  flex: none;
+  min-width: 0;
+  padding: 0 6px;
+  margin: 2px 0 14px;
+}
+html[data-theme] .practice-player.practice-unified > .practice-title-group h1 {
+  color: var(--pp-deep-green);
+  font: 750 clamp(27px, 7.9vw, 34px)/1.09 Georgia, serif;
+  letter-spacing: -.023em;
+  margin: 0 0 10px;
+  overflow-wrap: break-word;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-tags > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  max-width: 100%;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-action) 14%, var(--color-chart-paper));
+  color: var(--pp-deep-green);
+  font: 650 11px/1.2 Georgia, serif;
+  white-space: nowrap;
+}
+html[data-theme="dark"] .practice-player.practice-unified .practice-chart-tags > span {
+  background: color-mix(in srgb, var(--color-violet) 28%, var(--color-chart-paper));
+  color: var(--color-text);
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-style {
+  margin: 6px 0 0;
+  color: var(--pp-muted);
+  font: 11px/1.3 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified .practice-audio-state,
+html[data-theme] .practice-player.practice-unified .practice-transport > .practice-reference-note {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+html[data-theme] .practice-player.practice-unified .practice-guided-progress { margin: 0 2px 7px; }
+html[data-theme] .practice-player.practice-unified .practice-segments { margin: 4px 2px 8px; }
+html[data-theme] .practice-player.practice-unified .practice-notation-panel { min-width: 0; }
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all {
+  max-height: clamp(228px, 35dvh, 340px);
+  height: auto;
+  margin: 2px 0 12px;
+  padding: 9px 7px 9px 5px;
+  border: 1px solid var(--pp-deep-green);
+  border-radius: 10px;
+  background: var(--pp-paper);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet,
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 0;
+  row-gap: 0;
+  border: 0;
+  padding-left: 25px;
+  padding-right: 0;
+  background: var(--pp-paper);
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure,
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .measure {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  min-height: clamp(72px, 9.5dvh, 88px);
+  padding: 8px 3px;
+  border: 0;
+  border-left: 1.5px solid var(--pp-deep-green);
+  border-bottom: 1.5px solid var(--pp-deep-green);
+  border-radius: 0;
+  color: var(--pp-deep-green);
+  background: var(--pp-paper);
+  box-shadow: none;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure:nth-child(4n) {
+  border-right: 0;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.chosen {
+  background: color-mix(in srgb, var(--pp-paper) 70%, #f6ce7f);
+  box-shadow: inset 0 0 0 1px #e6bd63;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.playhead {
+  outline: 2px solid var(--pp-deep-green);
+  outline-offset: -2px;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.looped:not(.chosen):not(.playhead) {
+  background: color-mix(in srgb, var(--pp-paper) 85%, var(--pp-moss));
+  box-shadow: none;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.chosen.playhead {
+  outline: 2px solid var(--pp-deep-green);
+  box-shadow: inset 0 0 0 2px var(--pp-warm-gold), inset 0 -3px 0 var(--pp-deep-green);
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure-num {
+  display: none;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .practice-sheet .measure-section-label {
+  position: absolute;
+  top: 4px;
+  bottom: auto;
+  left: -24px;
+  width: 23px;
+  height: 24px;
+  padding: 2px 0;
+  border-radius: 5px;
+  display: grid;
+  place-items: center;
+  background: var(--pp-rose);
+  color: #fff;
+  font: 750 14px/1 Georgia, serif;
+  box-shadow: 0 1px 0 #8f3634;
+  z-index: 1;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords,
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords:not(.two) {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font: 750 clamp(16px, 4.5vw, 20px)/1.05 Georgia, serif;
+  letter-spacing: -.025em;
+  color: var(--color-chart-chord);
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 1px 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  color: var(--color-chart-chord);
+  font: inherit;
+  white-space: nowrap;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two,
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .chords.two {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  height: 100%;
+  font: 700 clamp(13px, 3.6vw, 15px)/1.15 Georgia, serif;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .chords.two span + span {
+  border-left: 0;
+  border-top: 1px dashed color-mix(in srgb, var(--pp-line) 86%, var(--pp-deep-green));
+}
+html[data-theme] .practice-player.practice-unified .practice-transport {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+html[data-theme] .practice-player.practice-unified :is(.practice-recording-seek,.practice-chart-seek) {
+  margin: 2px 1px 10px;
+}
+html[data-theme] .practice-player.practice-unified :is(.practice-recording-seek,.practice-chart-seek) input[type="range"] {
+  width: 100%;
+  height: 25px;
+  min-width: 0;
+  accent-color: var(--pp-deep-green);
+}
+html[data-theme] .practice-player.practice-unified .practice-recording-times {
+  font: 700 12px/1.2 Georgia, serif;
+  color: var(--pp-deep-green);
+  margin: -3px 0 0;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row,
+html[data-theme] .practice-player.practice-unified.practice-instructions .practice-control-row {
+  width: 100%;
+  max-width: none;
+  display: grid;
+  grid-template-columns: 1.06fr .95fr 1fr 1.14fr 1.06fr;
+  gap: 7px;
+  align-items: center;
+  margin: 4px 0 13px;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row button {
+  min-width: 0;
+  min-height: 49px;
+  height: 49px;
+  padding: 4px 2px;
+  border: 1px solid var(--pp-deep-green);
+  border-radius: 9px;
+  background: var(--color-surface);
+  color: var(--pp-deep-green);
+  box-shadow: none;
+  font: 750 12px/1 Georgia, serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 3px;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-loop-control {
+  font: 750 15px/1 Georgia, serif;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-repeat-control span,
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-measure-btn span {
+  font: 750 12px/1 Georgia, serif;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-timer-button {
+  width: 60px;
+  height: 60px;
+  min-height: 60px;
+  justify-self: center;
+  background: var(--pp-deep-green);
+  color: var(--color-action-text);
+  border: 2px solid color-mix(in srgb, var(--pp-deep-green) 86%, var(--pp-paper));
+  border-radius: 13px;
+  box-shadow: inset 0 0 0 2px var(--pp-warm-gold);
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-timer-button .practice-play-pixel {
+  width: 30px;
+  height: 30px;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-pixel-icon {
+  width: 19px;
+  height: 19px;
+}
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-secondary-transport[aria-pressed="true"],
+html[data-theme] .practice-player.practice-unified .practice-control-row .practice-loop-control[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--color-surface) 76%, var(--pp-deep-green));
+  box-shadow: inset 0 0 0 1px var(--pp-deep-green);
+}
+html[data-theme] .practice-player.practice-unified .practice-transport .practice-player-pills {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 62px;
+  margin: 0 0 12px;
+  padding: 9px 8px;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr) minmax(0, .76fr);
+  gap: 7px;
+  border: 1px solid var(--pp-deep-green);
+  border-radius: 11px;
+  background: var(--color-surface);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.practice-bpm-field,.practice-key-field) {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.practice-bpm-field,.practice-key-field) > label {
+  font: 750 13px/1.1 Georgia, serif;
+  color: var(--pp-deep-green);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.bpm-stepper,.practice-key-stepper) {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 41px;
+  border: 1px solid var(--pp-line);
+  border-radius: 8px;
+  background: var(--pp-paper);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills :is(.bpm-stepper input,.practice-key-stepper select) {
+  flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
+  height: 39px;
+  color: var(--pp-deep-green);
+  font: 750 17px/1 Georgia, serif;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-stepper-arrows {
+  flex: 0 0 22px;
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-stepper-arrows button {
+  width: 22px;
+  height: 20px;
+  min-height: 20px;
+  background: var(--pp-paper);
+}
+html[data-theme] .practice-player.practice-unified .practice-player-pills .practice-original-reset {
+  width: 100%;
+  min-height: 42px;
+  font: 750 12px/1.15 Georgia, serif;
+  color: var(--pp-deep-green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row {
+  width: 100%;
+  margin: 0 0 10px;
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 8px;
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row button {
+  min-height: 53px;
+  padding: 7px 4px;
+  border: 1px solid var(--pp-deep-green);
+  border-radius: 9px;
+  background: var(--color-surface);
+  flex-wrap: nowrap;
+  gap: 5px;
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row .practice-tool-glyph {
+  width: 23px;
+  height: 23px;
+  min-height: 23px;
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row button span {
+  font: 750 13px/1.1 Georgia, serif;
+  color: var(--pp-deep-green);
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row button:disabled {
+  opacity: .69;
+}
+html[data-theme] .practice-player.practice-unified > .practice-utility-row button small {
+  font-size: 8px;
+  width: auto;
+  margin: 0;
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+  padding: 0;
+  margin: 0;
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row .practice-time-badge {
+  align-self: center;
+  margin: 0;
+  min-height: 27px;
+  background: transparent;
+  color: var(--pp-deep-green);
+  font: 650 13px/1 var(--font-ui, system-ui);
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row .practice-time-badge svg {
+  width: 20px;
+  height: 20px;
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row .practice-time-badge strong {
+  color: var(--pp-deep-green);
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row .practice-finish-action {
+  min-height: 52px;
+  width: min(86%, 345px);
+  align-self: center;
+  margin: 0;
+  background: var(--pp-deep-green);
+  color: var(--color-action-text);
+  border: 2px solid var(--pp-warm-gold);
+  border-radius: 8px;
+  font: 750 clamp(16px, 4.6vw, 21px)/1.1 Georgia, serif;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--pp-deep-green) 60%, transparent);
+}
+html[data-theme] .practice-player.practice-unified > .practice-session-row .practice-finish-action .practice-pixel-icon {
+  width: 22px;
+  height: 22px;
+}
+html[data-theme] .practice-player.practice-unified button:focus-visible,
+html[data-theme] .practice-player.practice-unified summary:focus-visible,
+html[data-theme] .practice-player.practice-unified select:focus-visible,
+html[data-theme] .practice-player.practice-unified input:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+@media (max-height: 740px) {
+  html[data-theme] .practice-player.practice-unified .practice-player-head { margin-bottom: 10px; }
+  html[data-theme] .practice-player.practice-unified > .practice-title-group { margin-bottom: 9px; }
+  html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all {
+    max-height: 30dvh;
+    margin-bottom: 6px;
+  }
+  html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure {
+    min-height: 68px;
+  }
+  html[data-theme] .practice-player.practice-unified .practice-control-row { margin-bottom: 8px; }
+  html[data-theme] .practice-player.practice-unified .practice-transport .practice-player-pills { margin-bottom: 7px; }
+  html[data-theme] .practice-player.practice-unified > .practice-utility-row { margin-bottom: 7px; }
+}
+@media (max-width: 370px) {
+  html[data-theme] .practice-player.practice-unified { padding-inline: 9px; }
+  html[data-theme] .practice-player.practice-unified .practice-chart-tags { gap: 4px; }
+  html[data-theme] .practice-player.practice-unified .practice-chart-tags > span { padding-inline: 8px; font-size: 10px; }
+  html[data-theme] .practice-player.practice-unified .practice-control-row { gap: 4px; }
+  html[data-theme] .practice-player.practice-unified .practice-control-row button { font-size: 11px; }
+  html[data-theme] .practice-player.practice-unified .practice-control-row .practice-timer-button { width: 54px; height: 57px; min-height: 57px; }
+  html[data-theme] .practice-player.practice-unified .practice-transport .practice-player-pills { gap: 4px; padding-inline: 5px; }
+  html[data-theme] .practice-player.practice-unified > .practice-utility-row button span { font-size: 11px; }
+}
+
+/* Long standards keep the complete chord grid scrollable, without pushing
+   the indispensable Finish Session button underneath the fixed tab bar. */
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all.chart-dense {
+  max-height: clamp(210px, 26dvh, 235px);
+  margin-bottom: 7px;
+  padding-block: 7px;
+}
+html[data-theme] .practice-player.practice-unified .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .measure {
+  min-height: clamp(60px, 7.3dvh, 66px);
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) > .practice-title-group {
+  margin-bottom: 11px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) .practice-chart-tags > span {
+  min-height: 25px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) :is(.practice-recording-seek, .practice-chart-seek) {
+  margin-bottom: 7px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) .practice-control-row {
+  margin-bottom: 8px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) .practice-transport .practice-player-pills {
+  margin-bottom: 7px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) > .practice-utility-row {
+  margin-bottom: 6px;
+}
+html[data-theme] .practice-player.practice-unified:has(.chart-dense) > .practice-session-row {
+  gap: 6px;
+}

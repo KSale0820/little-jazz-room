@@ -206,6 +206,10 @@ export function CreatePage() {
 
   const addExistingExercise = (exercise: Exercise) => {
     setSteps(previous => appendBuilderExercise(previous, exercise));
+    setPickerSearch('');
+    setPickerLevel('');
+    setPickerGoal('');
+    closePicker();
     showToast(exercise.title + ' added.');
   };
 

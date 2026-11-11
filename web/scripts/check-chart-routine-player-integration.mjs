@@ -134,6 +134,10 @@ try {
     await page.locator('#builderPickerSearch').fill(exerciseTitle);
     await page.locator('.builder-picker-result').filter({ hasText: exerciseTitle })
       .getByRole('button', { name: 'Add', exact: true }).click();
+    // Adding an existing exercise must close the picker and reset its search.
+    await page.locator('.builder-picker-dialog').waitFor({ state: 'hidden' });
+    await page.getByRole('button', { name: '+ Add Existing' }).click();
+    assert.equal(await page.locator('#builderPickerSearch').inputValue(), '');
     await page.getByRole('button', { name: 'Close exercise library' }).click();
     assert.equal(await page.locator('.builder-step').count(), 2);
     await page.locator('.builder-step input[type="number"]').nth(0).fill('2');
@@ -150,7 +154,7 @@ try {
       [savedExercise.id, savedExercise.id], 'Repeated steps must retain both IDs');
     assert.deepEqual(savedRoutine.steps.map(step => step.duration_minutes),
       [7, 2], 'Per-occurrence durations must survive reordering and reload');
-    await page.getByRole('button', { name: 'Open ' + routineTitle + ' in player' }).click();
+    await page.getByRole('button', { name: 'Practice ' + routineTitle }).click();
     await page.waitForURL(url => url.pathname === '/player' && url.searchParams.get('routine') === savedRoutine.id);
     await page.getByRole('heading', { name: routineTitle }).waitFor();
     await page.getByRole('tab', { name: 'Chart' }).click();
