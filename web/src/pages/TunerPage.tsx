@@ -12,6 +12,7 @@ import './CleanPixelToolsProgress.css';
 import './CleanPixelMotifPlacements.css';
 import './ToolsPolishedPair.css';
 import './ToolsMockupApproved.css';
+import './ToolsFooterApproved.css';
 
 type MicStatus = 'idle' | 'requesting' | 'listening' | 'denied' | 'unsupported' | 'error';
 type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
@@ -461,10 +462,8 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
 
       </main>
       <div className="jazz-tool-footer" aria-hidden="true">
-        <img className="jazz-tool-plant"
-          src="/visuals/pixel-motifs/approved/planter-box.png" alt="" />
-        <img className="jazz-tool-plant-small"
-          src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
+        <img className="jazz-tool-footer-art"
+          src="/visuals/tools/pixel/approved-plant-floor-footer.png" alt="" />
         <div className="tool-cat-scene tool-tuner-scene">
           <DecorativeCat catId={catId} variant="sleeping" size={185}
             className="tool-scene-cat" />
