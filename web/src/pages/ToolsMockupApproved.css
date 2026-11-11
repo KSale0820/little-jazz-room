@@ -1161,3 +1161,20 @@ html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-status.is-deviating {
     width: 34px; height: 38px; flex-basis: 34px;
   }
 }
+
+
+/* Last color parity pass: reference uses soft leaf-green for the primary
+   metronome transport and a pale in-tune badge, not a dark teal slab. */
+html[data-theme="light"] .tool-page.jazz-tool-page .jazz-tuner-card .tuner-status.is-in-tune {
+  background: #d1e5bc;
+  border: 0;
+  color: #244329;
+}
+html[data-theme="light"] .tool-page.jazz-tool-page .metronome-tempo .metronome-play:not([aria-pressed="true"]) {
+  background: #72975d;
+  border-color: #72975d;
+  color: #ffffff;
+}
+html[data-theme="light"] .tool-page.jazz-tool-page .metronome-tempo .metronome-play:not([aria-pressed="true"]) span {
+  color: #ffffff;
+}
