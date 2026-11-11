@@ -373,12 +373,12 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
                 const to = -68 + (index + .92) * (136 / 27);
                 const arcPoint = (angle: number, radius: number) => {
                   const r = angle * Math.PI / 180;
-                  return [160 + Math.sin(r) * radius, 150 - Math.cos(r) * radius];
+                  return [160 + Math.sin(r) * radius, 185 - Math.cos(r) * radius];
                 };
-                const a = arcPoint(from, 115);
+                const a = arcPoint(from, 121);
                 const b = arcPoint(from, 143);
                 const c = arcPoint(to, 143);
-                const d = arcPoint(to, 115);
+                const d = arcPoint(to, 121);
                 return <polygon key={index} points={[a, b, c, d].map(point => point.join(',')).join(' ')}
                   fill={index >= 10 && index <= 16 ? '#90b966' : '#c5aed7'} />;
               })}
@@ -386,12 +386,12 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
                 const angle = value / 50 * 68 * Math.PI / 180;
                 const radius = 148;
                 return <text key={value} x={160 + Math.sin(angle) * radius}
-                  y={153 - Math.cos(angle) * radius} textAnchor="middle" fontSize="12.5"
+                  y={153 - Math.cos(angle) * radius} textAnchor="middle" fontSize="14"
                   fill="currentColor" fontWeight="650">{value > 0 ? '+' : ''}{value}</text>;
               })}
-              <g transform={'rotate(' + (needleAngle ?? 0) + ' 160 150)'}
+              <g transform={'rotate(' + (needleAngle ?? 0) + ' 160 165)'}
                 opacity={reading && isNearString ? 1 : .32}>
-                <line x1="160" y1="150" x2="160" y2="42" stroke="currentColor"
+                <line x1="160" y1="165" x2="160" y2="42" stroke="currentColor"
                   strokeWidth="4.2" strokeLinecap="round" />
               </g>
             </svg>
