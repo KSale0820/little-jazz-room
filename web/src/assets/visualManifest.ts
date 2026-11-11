@@ -126,6 +126,7 @@ export const VISUAL_ASSETS = {
       metronome: '/visuals/tools/pixel/metronome.png',
       play: '/visuals/tools/pixel/play.png',
       stop: '/visuals/tools/pixel/stop.png',
+      approvedPlantFloorFooter: '/visuals/tools/pixel/approved-plant-floor-footer.png',
     },
 
   },
