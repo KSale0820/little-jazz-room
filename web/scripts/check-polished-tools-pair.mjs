@@ -88,7 +88,7 @@ async function assertApprovedAssetsAndAlignment(page, label) {
       s?.startsWith('/visuals/cats/clean-pixel/') ||
       s?.startsWith('/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/') ||
       s === '/visuals/pixel-motifs/approved/planter-box.png' ||
-      s === '/visuals/pixel-motifs/approved/small-plant.png'),
+      s === '/visuals/pixel-motifs/approved/plant-pot.png'),
     label + ' includes an unapproved substitute image: ' + JSON.stringify(visual.images));
   assert.ok(visual.images.length === 3,
     label + ' should use exactly one verified cat and two approved plants');
