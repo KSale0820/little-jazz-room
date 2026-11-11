@@ -1118,3 +1118,46 @@ html[data-theme] .jazz-tool-page .tuner-status.is-in-tune {
   color: var(--jt-ink);
   border-color: var(--color-pixel-plant);
 }
+
+
+/* Final visual parity refinements from 1:1 reference/current screenshot
+   contact sheet: distinguish tuner needle/note from the status badge and
+   render the approved tiny header sprites at their intended visible size. */
+html[data-theme] .jazz-tool-page .jazz-tool-header h1 img {
+  width: 39px;
+  height: 43px;
+  flex: 0 0 39px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .jazz-tool-page.tool-metronome .jazz-tool-header h1 img {
+  width: 41px;
+  height: 44px;
+  flex-basis: 41px;
+}
+html[data-theme] .jazz-tool-page .jazz-tuner-card {
+  justify-content: flex-start;
+}
+html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-reading {
+  margin-top: 0;
+}
+html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-status {
+  margin: 52px auto 0;
+}
+html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-status.is-deviating {
+  background: color-mix(in srgb, var(--color-violet) 22%, var(--jt-card));
+  color: var(--jt-ink);
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-status {
+    margin-top: 49px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tool-header h1 img {
+    width: 32px;
+    height: 37px;
+    flex-basis: 32px;
+  }
+  html[data-theme] .jazz-tool-page.tool-metronome .jazz-tool-header h1 img {
+    width: 34px; height: 38px; flex-basis: 34px;
+  }
+}
