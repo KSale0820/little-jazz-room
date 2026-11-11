@@ -233,7 +233,7 @@ html[data-theme] .p01-page::before {
   opacity: .48;
 }
 html[data-theme] .p01-page .p01-daily::after {
-  background-image: url('/visuals/pixel-motifs/approved/small-plant.png');
+  background-image: url('/visuals/pixel-motifs/approved/plant-pot.png');
 }
 html[data-theme] .p01-page .p01-tools::after {
   background-image: url('/visuals/pixel-motifs/approved/center-leaf.png');

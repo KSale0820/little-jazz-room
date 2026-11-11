@@ -193,6 +193,10 @@ export const VISUAL_ASSETS = {
   },
   /** Approved independent full-color pixel art, for sparse Light/Dark decorations. */
   streakFlame: '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/progress/streak-flame.png',
+  profileSettings: {
+    /** Standalone transparent pixel-art shelf; wordmark stays a separate approved asset. */
+    headerShelf: '/visuals/profile/profile-shelf.svg',
+  },
   approvedPixelMotifs: {
     beamedNotes: '/visuals/pixel-motifs/approved/beamed-notes.png',
     centerDot: '/visuals/pixel-motifs/approved/center-dot.png',
@@ -208,7 +212,6 @@ export const VISUAL_ASSETS = {
     plantPot: '/visuals/pixel-motifs/approved/plant-pot.png',
     planterBox: '/visuals/pixel-motifs/approved/planter-box.png',
     plusSparkle: '/visuals/pixel-motifs/approved/plus-sparkle.png',
-    smallPlant: '/visuals/pixel-motifs/approved/small-plant.png',
     sparkleCluster: '/visuals/pixel-motifs/approved/sparkle-cluster.png',
     sparkle: '/visuals/pixel-motifs/approved/sparkle.png',
     staffWave: '/visuals/pixel-motifs/approved/staff-wave.png',
