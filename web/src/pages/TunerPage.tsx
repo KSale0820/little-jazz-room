@@ -368,23 +368,23 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           <div className="tuner-gauge" aria-label={reading && isNearString
             ? 'Deviation ' + Math.round(reading.cents) + ' cents' : 'No valid tuning measurement'}>
             <svg viewBox="0 0 320 167" role="img" aria-hidden="true">
-              {Array.from({ length: 35 }, (_, index) => {
-                const from = -68 + index * (136 / 35);
-                const to = -68 + (index + .85) * (136 / 35);
+              {Array.from({ length: 27 }, (_, index) => {
+                const from = -68 + index * (136 / 27);
+                const to = -68 + (index + .92) * (136 / 27);
                 const arcPoint = (angle: number, radius: number) => {
                   const r = angle * Math.PI / 180;
                   return [160 + Math.sin(r) * radius, 150 - Math.cos(r) * radius];
                 };
-                const a = arcPoint(from, 116);
-                const b = arcPoint(from, 129);
-                const c = arcPoint(to, 129);
-                const d = arcPoint(to, 116);
+                const a = arcPoint(from, 115);
+                const b = arcPoint(from, 143);
+                const c = arcPoint(to, 143);
+                const d = arcPoint(to, 115);
                 return <polygon key={index} points={[a, b, c, d].map(point => point.join(',')).join(' ')}
-                  fill={index >= 13 && index <= 21 ? '#90b966' : '#c5aed7'} />;
+                  fill={index >= 10 && index <= 16 ? '#90b966' : '#c5aed7'} />;
               })}
               {[-50, -20, -10, 0, 10, 20, 50].map(value => {
                 const angle = value / 50 * 68 * Math.PI / 180;
-                const radius = 146;
+                const radius = 148;
                 return <text key={value} x={160 + Math.sin(angle) * radius}
                   y={153 - Math.cos(angle) * radius} textAnchor="middle" fontSize="12.5"
                   fill="currentColor" fontWeight="650">{value > 0 ? '+' : ''}{value}</text>;
