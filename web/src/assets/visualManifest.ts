@@ -78,6 +78,13 @@ export const VISUAL_ASSETS = {
       sitting: '/visuals/cats/clean-pixel/maple-sitting.png',
     },
   },
+  routines: {
+    /** Owner-approved transparent 8-bit title and notes in both themes. */
+    header: {
+      light: '/visuals/routines/approved-routines-pixel-light.png',
+      dark: '/visuals/routines/approved-routines-pixel-dark.png',
+    },
+  },
   progress: {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',
@@ -167,6 +174,16 @@ export const VISUAL_ASSETS = {
     search: '/visuals/icons/icon-search.svg',
     share: '/visuals/icons/icon-share.svg',
     skip: '/visuals/icons/icon-skip.svg',
+  },
+  /** Tracks + Charts approved November 7, 2026 UI. SVG fallbacks plus PR #84 crisp pixel icons. */
+  tracksApproved: {
+    title: '/visuals/tracks-approved/tracks-title.png',
+    studyShelf: '/visuals/tracks-approved/jazz-study-shelf.png',
+    bookmarkFilledFallback: '/visuals/tracks-approved/bookmark-filled.svg',
+    recordFallback: '/visuals/tracks-approved/record.svg',
+    bookmark: '/visuals/tracks-approved/bookmark.png',
+    record: '/visuals/tracks-approved/record.png',
+    chevron: '/visuals/tracks-approved/chevron.png',
   },
   /** Minimal geometric motifs for both clean themes, tinted via CSS mask and semantic tokens. */
   pixelMotifs: {
