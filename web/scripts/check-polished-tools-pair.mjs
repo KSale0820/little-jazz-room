@@ -111,7 +111,7 @@ async function assertApprovedAssetsAndAlignment(page, label) {
   } else {
     assert.ok(visual.card.bottom - visual.card.top > (tall ? 400 : 335),
       label + ' reference comparison: tuner face too compressed');
-    assert.ok(visual.gauge && visual.gauge.height > (tall ? 170 : 120),
+    assert.ok(visual.gauge && visual.gauge.bottom - visual.gauge.top > (tall ? 170 : 120),
       label + ' reference comparison: tuner meter too small');
   }
 }
