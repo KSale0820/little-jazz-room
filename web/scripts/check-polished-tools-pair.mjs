@@ -55,12 +55,17 @@ async function assertApprovedAssetsAndAlignment(page, label) {
       return {left:b.left,right:b.right,top:b.top,bottom:b.bottom,cx:(b.left+b.right)/2,cy:(b.top+b.bottom)/2};
     };
     const images = [...document.querySelectorAll('.jazz-tool-footer img')].map(e => e.getAttribute('src'));
+    const gauge = rect('.tuner-gauge');
+    const minus = rect('.metronome-tempo .metronome-step:first-child');
+    const plus = rect('.metronome-tempo .metronome-step:last-child');
+    const play = rect('.metronome-tempo .metronome-play');
     return {
       heading: rect('.jazz-tool-header h1'),
       header: rect('.jazz-tool-header'),
       main: rect('.jazz-tool-main'),
       card: rect('.jazz-tool-main > .jazz-tuner-card, .jazz-tool-main > .jazz-metronome-card'),
       footer: rect('.jazz-tool-footer'),
+      gauge, minus, plus, play,
       images,
       viewportWidth: window.innerWidth,
       viewportHeight: window.innerHeight,
@@ -81,10 +86,33 @@ async function assertApprovedAssetsAndAlignment(page, label) {
     label + ' control stack is not vertically balanced: ' + JSON.stringify(visual));
   assert.ok(visual.images.every(s =>
       s?.startsWith('/visuals/cats/clean-pixel/') ||
-      s === '/visuals/pixel-motifs/approved/plant-pot.png'),
+      s === '/visuals/pixel-motifs/approved/planter-box.png' ||
+      s === '/visuals/pixel-motifs/approved/small-plant.png'),
     label + ' includes an unapproved substitute image: ' + JSON.stringify(visual.images));
-  assert.ok(visual.images.length === 2,
-    label + ' should use exactly one verified cat and one approved plant');
+  assert.ok(visual.images.length === 3,
+    label + ' should use exactly one verified cat and two approved plants');
+  const tall = visual.viewportHeight >= 800;
+  assert.ok(visual.card.top < (tall ? 180 : 108),
+    label + ' reference comparison: card starts too low: ' + JSON.stringify(visual));
+  assert.ok(visual.card.bottom < visual.footer.top - 3,
+    label + ' reference comparison: panel overflows into artwork');
+  if (label.startsWith('metronome')) {
+    assert.ok(visual.card.bottom - visual.card.top > (tall ? 495 : 420),
+      label + ' reference comparison: metronome panel too compressed');
+    assert.ok(visual.minus && visual.plus && visual.play,
+      label + ' missing play/tempo layout');
+    assert.ok(Math.abs(visual.minus.cy - visual.plus.cy) < 3,
+      label + ' BPM +/- buttons must be aligned horizontally');
+    assert.ok(visual.play.top >= Math.max(visual.minus.bottom, visual.plus.bottom) + 7,
+      label + ' Play must be centered BELOW +/- BPM controls, per approved mockup');
+    assert.ok(Math.abs(visual.play.cx - visual.viewportWidth / 2) < 4,
+      label + ' Play must be horizontally centered');
+  } else {
+    assert.ok(visual.card.bottom - visual.card.top > (tall ? 400 : 335),
+      label + ' reference comparison: tuner face too compressed');
+    assert.ok(visual.gauge && visual.gauge.height > (tall ? 170 : 120),
+      label + ' reference comparison: tuner meter too small');
+  }
 }
 
 async function capture(page, name) {
