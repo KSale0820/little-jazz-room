@@ -458,7 +458,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       </main>
       <div className="jazz-tool-footer" aria-hidden="true">
         <img className="jazz-tool-plant"
-          src="/visuals/pixel-motifs/approved/plant-pot.png" alt="" />
+          src="/visuals/pixel-motifs/approved/planter-box.png" alt="" />
+        <img className="jazz-tool-plant-small"
+          src="/visuals/pixel-motifs/approved/small-plant.png" alt="" />
         <div className="tool-cat-scene tool-tuner-scene">
           <DecorativeCat catId={catId} variant="sleeping" size={185}
             className="tool-scene-cat" />
