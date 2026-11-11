@@ -86,6 +86,7 @@ async function assertApprovedAssetsAndAlignment(page, label) {
     label + ' control stack is not vertically balanced: ' + JSON.stringify(visual));
   assert.ok(visual.images.every(s =>
       s?.startsWith('/visuals/cats/clean-pixel/') ||
+      s?.startsWith('/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/') ||
       s === '/visuals/pixel-motifs/approved/planter-box.png' ||
       s === '/visuals/pixel-motifs/approved/small-plant.png'),
     label + ' includes an unapproved substitute image: ' + JSON.stringify(visual.images));
