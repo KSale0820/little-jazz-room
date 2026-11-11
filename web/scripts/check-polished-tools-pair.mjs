@@ -87,11 +87,10 @@ async function assertApprovedAssetsAndAlignment(page, label) {
   assert.ok(visual.images.every(s =>
       s?.startsWith('/visuals/cats/clean-pixel/') ||
       s?.startsWith('/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/') ||
-      s === '/visuals/pixel-motifs/approved/planter-box.png' ||
-      s === '/visuals/pixel-motifs/approved/plant-pot.png'),
+      s === '/visuals/tools/pixel/approved-plant-floor-footer.png'),
     label + ' includes an unapproved substitute image: ' + JSON.stringify(visual.images));
-  assert.ok(visual.images.length === 3,
-    label + ' should use exactly one verified cat and two approved plants');
+  assert.ok(visual.images.length === 2,
+    label + ' should use exactly one selected cat and one approved plant-floor footer');
   const tall = visual.viewportHeight >= 800;
   assert.ok(visual.card.top < (tall ? 180 : 108),
     label + ' reference comparison: card starts too low: ' + JSON.stringify(visual));
