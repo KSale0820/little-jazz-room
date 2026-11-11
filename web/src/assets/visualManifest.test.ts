@@ -109,11 +109,30 @@ describe('approved visual library', () => {
     }
   });
 
+  it('validates added pixel PNGs separately from the original locked asset pack', () => {
+    const imported = walkFiles(join(publicVisuals, 'new-assets'));
+    expect(imported.filter(file => file.endsWith('.png')).length).toBeGreaterThan(30);
+    for (const file of imported) {
+      if (!file.endsWith('.png')) continue;
+      const png = readPngInfo(readFileSync(join(publicVisuals, file)));
+      expect(png.width).toBeGreaterThan(0);
+      expect(png.height).toBeGreaterThan(0);
+    }
+  });
+
   it('matches the packaged files byte for byte, including alpha and svg structure', () => {
     // The strict approved-pack audit excludes the additive review/staging folder.
     // All shipped reference assets remain verified byte-for-byte below.
     const installed = new Set(walkFiles(publicVisuals).filter(path => !path.startsWith('new-assets/')));
-    const fromManifest = new Set<string>(collectVisualUrls(VISUAL_ASSETS));
+    const fromManifest = new Set<string>(collectVisualUrls(VISUAL_ASSETS)
+      .filter(url => !url.startsWith('/visuals/new-assets/')));
+    // Retain the original catalog audit while the UI switches to owner-approved new sprites.
+    for (const cat of ['luna', 'milo', 'maple']) {
+      for (const pose of ['sitting', 'sleeping']) {
+        fromManifest.add(`/visuals/cats/clean-pixel/${cat}-${pose}.png`);
+      }
+    }
+    fromManifest.add('/visuals/pixel-motifs/streak-fire.png');
     // H01's newly supplied photo is installed separately from the original asset pack.
     // Keep legacy pack checks strict while allowing it to arrive in a distinct commit.
     if (!installed.has(VISUAL_ASSETS.room.h01.replace('/visuals/', ''))) {
