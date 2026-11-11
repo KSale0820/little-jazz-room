@@ -194,7 +194,7 @@ try {
 
   // Inject a real oscillating audio signal into the existing getUserMedia path.
   // The browser must calculate A4, deviation and in-tune itself.
-  const live = await createContext(390, 844, 'light', false);
+  const live = await createContext(390, 844, 'light', true);
   await live.addInitScript(() => {
     if (!navigator.mediaDevices) return;
     Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
@@ -221,7 +221,7 @@ try {
     document.querySelector('.tuner-reading strong')?.textContent === 'A4', null, { timeout: 15000 });
   const deviation = await livePage.locator('.tuner-gauge').getAttribute('aria-label');
   assert.match(deviation, /Deviation/, 'Live tuning needle did not receive measured cents');
-  await capture(livePage, 'tuner-live-A440-390x844-light-cat-off');
+  await capture(livePage, 'tuner-live-A440-390x844-light-cat-on');
   await livePage.getByRole('button', { name: 'Stop microphone' }).click();
   await livePage.evaluate(() => {
     window.__testOscillator.oscillator.stop();
