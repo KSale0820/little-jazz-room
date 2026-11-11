@@ -87,8 +87,8 @@ html[data-theme] .tool-page.jazz-tool-page .tool-tuner-scene .tool-scene-cat {
 }
 html[data-theme] .tool-page.jazz-tool-page .tool-metronome-scene .tool-scene-cat {
   bottom: -6px;
-  width: 183px;
-  height: 183px;
+  width: 169px;
+  height: 169px;
 }
 /* Match the reference's typography, using the existing live measurements. */
 html[data-theme] .tool-page.jazz-tool-page .jazz-tool-header h1 {
