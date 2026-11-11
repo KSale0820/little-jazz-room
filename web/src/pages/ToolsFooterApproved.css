@@ -1,0 +1,196 @@
+/* Approved Little Jazz Room footer overlay, November 2026.
+ * One owner-approved transparent pixel footer supplies the floor, potted plant,
+ * and shadow. The separate DecorativeCat supplies the selected verified sprite;
+ * Cat Mode OFF suppresses only the cat, never the floor or plant.
+ * Import after ToolsMockupApproved.css so these rules supersede old plants.
+ */
+html[data-theme] .tool-page.jazz-tool-page .jazz-tool-footer {
+  position: relative;
+  display: block;
+  align-self: center;
+  width: min(390px, calc(100% + 32px));
+  max-width: 390px;
+  height: 132px;
+  min-height: 132px;
+  flex: 0 0 132px;
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+html[data-theme] .tool-page.jazz-tool-page .jazz-tool-footer::after,
+html[data-theme] .tool-page.jazz-tool-page .jazz-tool-footer::before {
+  display: none !important;
+}
+html[data-theme] .tool-page.jazz-tool-page .jazz-tool-footer-art {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  object-position: bottom center;
+  image-rendering: pixelated;
+}
+html[data-theme="dark"] .tool-page.jazz-tool-page .jazz-tool-footer-art {
+  filter: brightness(.80) saturate(.90);
+}
+/* Align the verified cat's paws/belly with the shadow at ~74% across the
+ * approved banner. The plant remains entirely part of the supplied image. */
+html[data-theme] .tool-page.jazz-tool-page .tool-cat-scene {
+  position: absolute;
+  z-index: 2;
+  left: auto;
+  right: 13px;
+  bottom: 0;
+  width: 190px;
+  height: 126px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow: visible;
+  pointer-events: none;
+}
+html[data-theme] .tool-page.jazz-tool-page .tool-cat-scene::before,
+html[data-theme] .tool-page.jazz-tool-page .tool-cat-scene::after {
+  display: none !important;
+}
+html[data-theme] .tool-page.jazz-tool-page .tool-cat-scene .tool-scene-cat {
+  position: absolute;
+  display: block;
+  top: auto;
+  left: auto;
+  right: 5px;
+  bottom: -27px;
+  width: 186px;
+  height: 186px;
+  object-fit: contain;
+  object-position: center;
+  margin: 0;
+  transform: none;
+  image-rendering: pixelated;
+  filter: none;
+}
+html[data-theme] .tool-page.jazz-tool-page .tool-tuner-scene .tool-scene-cat {
+  bottom: -33px;
+  width: 194px;
+  height: 194px;
+}
+html[data-theme] .tool-page.jazz-tool-page .tool-metronome-scene .tool-scene-cat {
+  bottom: -6px;
+  width: 183px;
+  height: 183px;
+}
+/* Match the reference's typography, using the existing live measurements. */
+html[data-theme] .tool-page.jazz-tool-page .jazz-tool-header h1 {
+  font-size: 26px;
+  font-weight: 740;
+  letter-spacing: -.035em;
+  gap: 8px;
+}
+html[data-theme] .tool-page.jazz-tool-page .jazz-tuner-card .tuner-reading strong {
+  font-size: clamp(76px, 22vw, 89px);
+  font-weight: 760;
+  line-height: 1.01;
+  letter-spacing: -.045em;
+}
+html[data-theme] .tool-page.jazz-tool-page .jazz-tuner-card .tuner-reading > span {
+  font-size: 19px;
+  font-weight: 560;
+  line-height: 1.4;
+}
+html[data-theme] .tool-page.jazz-tool-page .jazz-tuner-card .tuner-status {
+  font-size: 17px;
+  font-weight: 650;
+  min-height: 43px;
+  padding: 9px 17px;
+}
+html[data-theme] .tool-page.jazz-tool-page .jazz-tuner-card .tuner-status.is-in-tune::before {
+  content: '✓';
+  font-size: 18px;
+  line-height: 1;
+  margin-right: 8px;
+}
+html[data-theme] .tool-page.jazz-tool-page .metronome-bpm strong {
+  font-size: clamp(73px, 21vw, 84px);
+  font-weight: 765;
+  letter-spacing: -.045em;
+}
+html[data-theme] .tool-page.jazz-tool-page .metronome-bpm span {
+  font-size: 16px;
+  font-weight: 700;
+}
+html[data-theme] .tool-page.jazz-tool-page .jazz-metronome-setting-row h2 {
+  font-size: 15px;
+  font-weight: 630;
+}
+html[data-theme] .tool-page.jazz-tool-page .jazz-signature-toggle {
+  font-size: 16px;
+}
+html[data-theme] .tool-page.jazz-tool-page .metronome-tap {
+  font-size: 16px;
+}
+@media (min-height: 721px) and (max-width: 899px) {
+  html[data-theme] .tool-page.jazz-tool-page .jazz-tool-main {
+    padding-top: 65px;
+  }
+}
+@media (max-width: 380px) {
+  html[data-theme] .tool-page.jazz-tool-page .jazz-tool-footer {
+    width: calc(100% + 26px);
+  }
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  html[data-theme] .tool-page.jazz-tool-page .jazz-tool-header h1 {
+    font-size: 23px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .jazz-tool-main {
+    padding-top: 7px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .jazz-tool-footer {
+    height: 99px;
+    min-height: 99px;
+    flex-basis: 99px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .tool-cat-scene {
+    right: 10px;
+    height: 97px;
+    width: 169px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .tool-tuner-scene .tool-scene-cat {
+    width: 159px;
+    height: 159px;
+    bottom: -26px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .tool-metronome-scene .tool-scene-cat {
+    width: 149px;
+    height: 149px;
+    bottom: -5px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .jazz-tuner-card .tuner-reading strong {
+    font-size: 68px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .jazz-tuner-card .tuner-reading > span {
+    font-size: 16px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .jazz-tuner-card .tuner-status {
+    min-height: 37px;
+    font-size: 14px;
+    padding: 7px 12px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .metronome-bpm strong {
+    font-size: 65px;
+  }
+  html[data-theme] .tool-page.jazz-tool-page .metronome-bpm span {
+    font-size: 14px;
+  }
+}
