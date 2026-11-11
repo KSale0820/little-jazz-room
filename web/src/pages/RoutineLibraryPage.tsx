@@ -2,26 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Routine } from '../types/content';
-import { readPinnedPracticeRoutine, savePinnedPracticeRoutine } from '../lib/practiceHomePreferences';
+import { readRoutineBookmarks, saveRoutineBookmarks } from '../lib/routineBookmarks';
 import './RoutineLibraryPage.css';
 
-type RoutineTab = 'Presets' | 'My Routines' | 'Shared';
+type RoutineTab = 'Presets' | 'My Routines' | 'Saved' | 'Shared';
 type Filters = { instrument: string; goal: string; duration: string; level: string };
 
 const initialFilters: Filters = { instrument: '', goal: '', duration: '', level: '' };
-
-function bookmarkKey(scope: string): string {
-  return 'little-jazz-room:routine-bookmarks:v1:' + scope;
-}
-
-function readBookmarks(scope: string): string[] {
-  try {
-    const value: unknown = JSON.parse(localStorage.getItem(bookmarkKey(scope)) ?? '[]');
-    return Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string') : [];
-  } catch {
-    return [];
-  }
-}
 
 function routineCategory(routine: Routine, exerciseCategories: string[]): string {
   const storedGoal = (routine as Routine & { goal?: string }).goal ?? '';
@@ -40,19 +27,23 @@ export function RoutineLibraryPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const { repo, routines, publicRoutines, exercises, setActiveRoutineId } = useApp();
-  const [tab, setTab] = useState<RoutineTab>(() => params.get('tab') === 'my' ? 'My Routines' : 'Presets');
+  const [tab, setTab] = useState<RoutineTab>(() => params.get('tab') === 'my' ? 'My Routines' : params.get('tab') === 'saved' ? 'Saved' : params.get('tab') === 'shared' ? 'Shared' : 'Presets');
   const [query, setQuery] = useState('');
   const [showAllPresets, setShowAllPresets] = useState(false);
   const [filters, setFilters] = useState<Filters>(initialFilters);
-  const [bookmarks, setBookmarks] = useState<string[]>(() => readBookmarks(repo.scope));
-  const [pinnedId, setPinnedId] = useState<string | null>(() => readPinnedPracticeRoutine(repo.scope));
+  const [bookmarks, setBookmarks] = useState<string[]>(() => readRoutineBookmarks(repo.scope));
 
-  useEffect(() => { setBookmarks(readBookmarks(repo.scope)); setPinnedId(readPinnedPracticeRoutine(repo.scope)); }, [repo.scope]);
+  useEffect(() => { setBookmarks(readRoutineBookmarks(repo.scope)); }, [repo.scope]);
 
   const exerciseMap = useMemo(() => new Map(exercises.map(exercise => [exercise.id, exercise])), [exercises]);
 
   const available = useMemo(() => {
     if (tab === 'Shared') return publicRoutines.filter(routine => routine.visibility === 'public');
+    if (tab === 'Saved') {
+      return [...new Map([...routines, ...publicRoutines]
+        .filter(routine => bookmarks.includes(routine.id))
+        .map(routine => [routine.id, routine] as const)).values()];
+    }
     if (tab === 'My Routines') {
       return routines.filter(routine => routine.is_seed === false || bookmarks.includes(routine.id));
     }
@@ -96,15 +87,9 @@ export function RoutineLibraryPage() {
   const toggleBookmark = (id: string) => {
     setBookmarks(previous => {
       const next = previous.includes(id) ? previous.filter(value => value !== id) : [...previous, id];
-      try { localStorage.setItem(bookmarkKey(repo.scope), JSON.stringify(next)); } catch { /* optional storage */ }
+      saveRoutineBookmarks(repo.scope, next);
       return next;
     });
-  };
-
-  const togglePin = (id: string) => {
-    const next = pinnedId === id ? null : id;
-    savePinnedPracticeRoutine(repo.scope, next);
-    setPinnedId(next);
   };
 
   const openRoutine = (id: string) => {
@@ -132,7 +117,7 @@ export function RoutineLibraryPage() {
       </div>
 
       <div className="routine-tabs" role="tablist" aria-label="Routine sections">
-        {(['Presets', 'My Routines', 'Shared'] as const).map(value => (
+        {(['Presets', 'My Routines', 'Saved', 'Shared'] as const).map(value => (
           <button key={value} type="button" role="tab" aria-selected={tab === value}
             className={tab === value ? 'is-selected' : ''}
             onClick={() => setTab(value)}>{value}</button>
@@ -172,7 +157,7 @@ export function RoutineLibraryPage() {
       </div>
 
       <div className="routine-list-header">
-        <h2>{tab === 'Presets' ? 'Start with a preset' : tab === 'Shared' ? 'Shared routines' : 'Your routines'}</h2>
+        <h2>{tab === 'Presets' ? 'Start with a preset' : tab === 'Saved' ? 'Saved routines' : tab === 'Shared' ? 'Shared routines' : 'Your routines'}</h2>
         <span>{displayed.length} {displayed.length === 1 ? 'routine' : 'routines'}</span>
       </div>
 
@@ -197,7 +182,6 @@ export function RoutineLibraryPage() {
                   </span>
                 </span>
               </button>
-              <button type="button" className="routine-pin" aria-label={(pinnedId === routine.id ? 'Unpin ' : 'Pin ') + routine.title + ' on Practice home'} aria-pressed={pinnedId === routine.id} onClick={() => togglePin(routine.id)}>{pinnedId === routine.id ? 'Pinned' : 'Pin'}</button>
               <button type="button" className={'routine-bookmark' + (isBookmarked ? ' is-saved' : '')}
                 aria-label={(isBookmarked ? 'Remove saved ' : 'Save ') + routine.title}
                 aria-pressed={isBookmarked} onClick={() => toggleBookmark(routine.id)}>
@@ -209,11 +193,13 @@ export function RoutineLibraryPage() {
         })}
         {shown.length === 0 && (
           <div className="routine-empty">
-            <strong>{tab === 'Shared' && publicRoutines.length === 0 ? 'Sharing is Preview' : 'No routines found'}</strong>
+            <strong>{tab === 'Shared' && publicRoutines.length === 0 ? 'Sharing is Preview' : tab === 'Saved' && bookmarks.length === 0 ? 'No saved routines yet' : 'No routines found'}</strong>
             <p>{tab === 'Shared' && publicRoutines.length === 0
               ? 'Public community discovery is not available in the local class demo.'
-              : tab === 'My Routines' && available.length === 0
-                ? 'Create a routine or bookmark a preset to see it here.'
+              : tab === 'Saved' && bookmarks.length === 0
+                ? 'Bookmark a routine to find it here.'
+                : tab === 'My Routines' && available.length === 0
+                  ? 'Create a routine or bookmark a preset to see it here.'
                 : 'Try clearing your search or filters.'}</p>
             {(query || Object.values(filters).some(Boolean)) && <button type="button" onClick={() => {
               setQuery(''); setFilters(initialFilters);
@@ -227,7 +213,7 @@ export function RoutineLibraryPage() {
       </button>
       {featuredOnly && shown.length > displayed.length && <button type="button" className="routine-show-all" onClick={() => setShowAllPresets(true)}>See all {shown.length} preset routines</button>}
       <p className="routine-tip"><span aria-hidden="true">i</span>
-        Tap a routine to practice its steps. Bookmark a preset or make your own.
+        Tap a routine to practice its steps. Bookmark a routine to find it under Saved.
       </p>
     </section>
   );
