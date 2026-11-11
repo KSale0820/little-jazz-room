@@ -20,8 +20,13 @@ const NAV_FILES = {
   practice: VISUAL_ASSETS.icons.nav.practice,
 } as const;
 
+const REFRESHED_NAV = '/visuals/new-assets/2026-11-07-sharp-pixel/refreshed-icons/';
+
 export function PixelIcon({ route }: { route: NavRoute }) {
-  if (route === 'explore' || route === 'practice') {
+  if (route === 'practice' || route === 'tracks' || route === 'routines' || route === 'progress') {
+    return <img className="pix pix-image" src={REFRESHED_NAV + 'nav-' + route + '.png'} alt="" aria-hidden="true" />;
+  }
+  if (route === 'explore') {
     return (
       <span
         className="pix pix-mask"

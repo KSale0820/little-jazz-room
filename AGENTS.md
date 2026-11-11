@@ -13,3 +13,6 @@ For theme work, **read `web/docs/CLEAN-PIXEL-THEMES.md` first**. It defines:
 Do not revive obsolete October Home artwork, navigation or placeholder audio. No new animations, features, frameworks, paid services or unrelated PR merges.
 
 Changes should be small PRs targeting the rolling integration branch. Keep avatar, companion choice, rewards, achievements and saved progress independent of Cat Mode. Build and test from `web/`; record regression vs known baseline failures.
+
+## Approved Practice landing-page reference (2026-11-08)
+For any Practice hub visual work, read [web/docs/ui-reference/PRACTICE-APPROVED-DESIGN.md](web/docs/ui-reference/PRACTICE-APPROVED-DESIGN.md) and view its full-screen image **before editing**. The owner's mockup is authoritative for this page's look; keep current working behavior, Cat Mode and both themes. Do not substitute unrelated stock artwork, regenerate approved pixel images, or restore a water/potion progress bar.

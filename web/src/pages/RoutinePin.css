@@ -1,0 +1,24 @@
+/* Preserve the newer compact routines list while offering the Practice-home pin action. */
+html[data-theme] .routine-approved .routine-pin {
+  display: grid;
+  place-items: center;
+  flex: 0 0 45px;
+  width: 45px;
+  height: 52px;
+  border: 0;
+  padding: 0 3px;
+  background: transparent;
+  color: var(--color-muted);
+  font: 700 10px/1.1 var(--font-ui);
+  white-space: nowrap;
+}
+html[data-theme] .routine-approved .routine-pin.is-pinned {
+  color: var(--color-action);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+html[data-theme] .routine-approved .routine-pin:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -3px;
+  border-radius: 8px;
+}
