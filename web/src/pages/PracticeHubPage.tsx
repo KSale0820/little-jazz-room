@@ -5,18 +5,21 @@ import { useApp } from '../context/AppContext';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { timeGreeting } from '../lib/greeting';
 import { minutesToday } from '../lib/practiceStats';
-import { readPinnedPracticeRoutine, readPracticeGoal, savePracticeGoal } from '../lib/practiceHomePreferences';
+import { readPracticeGoal, savePracticeGoal } from '../lib/practiceHomePreferences';
+import { readRoutineBookmarks } from '../lib/routineBookmarks';
 import './PracticeHubPage.css';
 
 export function PracticeHubPage() {
   const navigate = useNavigate();
-  const { repo, sessions, routines, setActiveRoutineId } = useApp();
+  const { repo, sessions, routines, publicRoutines, setActiveRoutineId } = useApp();
   const [dailyGoal, setDailyGoal] = useState(() => readPracticeGoal(repo.scope));
   const [goalDraft, setGoalDraft] = useState(String(dailyGoal));
   const [editingGoal, setEditingGoal] = useState(false);
   useEffect(() => { const current = readPracticeGoal(repo.scope); setDailyGoal(current); setGoalDraft(String(current)); setEditingGoal(false); }, [repo.scope]);
-  const pinnedId = readPinnedPracticeRoutine(repo.scope);
-  const pinnedRoutine = routines.find(routine => routine.id === pinnedId);
+  const savedIds = readRoutineBookmarks(repo.scope);
+  const savedRoutines = [...routines, ...publicRoutines];
+  const savedRoutineId = [...savedIds].reverse().find(id => savedRoutines.some(routine => routine.id === id));
+  const savedRoutine = savedRoutines.find(routine => routine.id === savedRoutineId);
   const latestSession = [...sessions].sort((a, b) => b.finishedAt.localeCompare(a.finishedAt))[0];
   const recentRoutine = latestSession?.routineId
     ? routines.find(routine => routine.id === latestSession.routineId)
@@ -29,10 +32,10 @@ export function PracticeHubPage() {
     navigate('/free-practice');
   };
 
-  const startPinnedRoutine = () => {
-    if (!pinnedRoutine) return;
-    setActiveRoutineId(pinnedRoutine.id);
-    navigate('/player?routine=' + encodeURIComponent(pinnedRoutine.id));
+  const startSavedRoutine = () => {
+    if (!savedRoutine) return;
+    setActiveRoutineId(savedRoutine.id);
+    navigate('/player?routine=' + encodeURIComponent(savedRoutine.id));
   };
 
   // A saved session has finished. This starts another session with the same
@@ -51,11 +54,11 @@ export function PracticeHubPage() {
         <p className="p01-intro">How would you like to practice today?</p>
       </header>
 
-      {pinnedRoutine && (
-        <section className="p01-continue" aria-label="Pinned routine">
-          <button type="button" className="p01-continue-button" onClick={startPinnedRoutine}>
+      {savedRoutine && (
+        <section className="p01-continue" aria-label="Saved routine">
+          <button type="button" className="p01-continue-button" onClick={startSavedRoutine}>
             <span className="p01-continue-icon" aria-hidden="true">▶</span>
-            <span className="p01-continue-copy"><strong>Pinned Routine</strong><small>{pinnedRoutine.title}</small></span>
+            <span className="p01-continue-copy"><strong>Saved Routine</strong><small>{savedRoutine.title}</small></span>
             <span className="p01-chevron" aria-hidden="true">›</span>
           </button>
         </section>
