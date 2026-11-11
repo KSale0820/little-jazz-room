@@ -67,4 +67,7 @@ jobs:
             web/docs/screenshots/free-practice/
             web/docs/screenshots/class-demo-integration/
             web/docs/screenshots/chart-routine-player-integration/
+            web/docs/approved-ui/TRACKS-AND-CHARTS-APPROVED-UI.png
+            web/public/visuals/tracks-approved/tracks-title.png
+            web/public/visuals/tracks-approved/jazz-study-shelf.png
           if-no-files-found: warn
