@@ -7,8 +7,8 @@ const THEMES: { id: Theme; label: string; description: string }[] = [
   { id: 'blue-note', label: 'Blue Note', description: 'Deep navy, paper, brass' },
 ];
 // This preview is the full integrated pixel app, not an approximation made from CSS.
- // Pin to the verified Vercel deployment for integration/clean-pixel-themes (87e5148).
-const PIXEL_STUDIO_PREVIEW = 'https://little-jazz-room-ibi4v6x3e-ksale0820.vercel.app';
+// Use the stable branch preview alias so Pixel Studio follows future successful integration builds.
+const PIXEL_STUDIO_PREVIEW = 'https://little-jazz-room-git-integration-clean-pixel-themes-ksale0820.vercel.app';
 const KEY = 'little-jazz-room:theme-review:v1';
 
 export function ThemeReviewSwitcher() {
