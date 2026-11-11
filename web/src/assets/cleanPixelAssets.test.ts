@@ -27,20 +27,22 @@ describe('additive clean pixel artwork', () => {
     for (const pose of ['sleeping', 'sitting'] as const) {
       expect(Object.keys(VERIFIED_PIXEL_CATS[pose]).sort()).toEqual([...pixelIds].sort());
       for (const id of pixelIds) {
-        expect(VERIFIED_PIXEL_CATS[pose][id]).toBe('/visuals/cats/clean-pixel/' + id + '-' + pose + '.png');
+        expect(VERIFIED_PIXEL_CATS[pose][id]).toBe('/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/' + id + '-' + pose + '.png');
       }
     }
     expect(Object.keys(VERIFIED_PIXEL_CATS.floor)).toHaveLength(0);
   });
 
   it('has the six exact owner-supplied 1254×1254 transparent RGBA artworks', () => {
-    const approvedSha256: Record<string, string> = {
-      'milo-sitting': 'be33f20bded92b3205a71f5bf2ac19643953ab403e856448db57e047c468af4d',
-      'milo-sleeping': '69270ca1db4fa13f4cc871e238558accaa2eb4c42ba2ce8f3cf4770cf549e965',
-      'maple-sitting': '9ca5fedac59fdd3fca842a9ed40aa38ab6befa1ddb6c31476813af266f0b331d',
-      'maple-sleeping': '40dd8e6c669771f06a867d59494708147942b19a7c4550f68a9210c737cf7575',
-      'luna-sitting': '242347e2de9caea22c243c2e58d059b7bfc24d617aef9bd22e576199b449d3c1',
-      'luna-sleeping': '149a57c96cdc1a38895eb224aad3943b444e2ba4ae42d55e3f62fd4932eb202d',
+    // Pin the Git blob identities of the newly approved PR #84 files. This is
+    // deliberately separate from the archived six original PNG checks.
+    const approvedGitBlobSha1: Record<string, string> = {
+      'luna-sitting': '93afff480a61f949964eddb8b1431281c38e066d',
+      'luna-sleeping': '338f59050c8d994c77d39583107c1a4b08ff5121',
+      'maple-sitting': '85b72fb887ef3bfed302b987584f6cd092b47f4e',
+      'maple-sleeping': '4305cf15d2b644bec580820550f27b551c1cbfe8',
+      'milo-sitting': '240c2d325cfcc20d835a6a878e74e5da1323cbaf',
+      'milo-sleeping': '63183eee8d37937378ac06c5e83fd1a8382e02d5',
     };
     const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
     for (const id of pixelIds) for (const pose of ['sleeping', 'sitting'] as const) {
@@ -50,7 +52,7 @@ describe('additive clean pixel artwork', () => {
       expect(file.toString('ascii', 12, 16), url).toBe('IHDR');
       const width = file.readUInt32BE(16), height = file.readUInt32BE(20);
       expect([width, height], url).toEqual([1254, 1254]);
-      expect(createHash('sha256').update(file).digest('hex'), url).toBe(approvedSha256[`${id}-${pose}`]);
+      expect(createHash('sha1').update(`blob ${file.length}\0`).update(file).digest('hex'), url).toBe(approvedGitBlobSha1[`${id}-${pose}`]);
       expect(file[25], url).toBe(6); // PNG RGBA
       let offset = 8;
       const idat: Buffer[] = [];

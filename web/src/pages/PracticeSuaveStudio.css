@@ -1,0 +1,1027 @@
+/* Practice / Suave Studio mobile redesign.
+   Scope all overrides to P01. Charts, player, other themes and interactions are unchanged. */
+html[data-theme] .p01-page.p01-suave {
+  --p01-ink: var(--color-text);
+  --p01-green: var(--color-action);
+  --p01-brass: #cda55e;
+  padding: 15px 18px 28px;
+  background-color: var(--color-bg);
+  background-image: radial-gradient(ellipse at 52% 0%, color-mix(in srgb, var(--color-surface) 78%, #f0d1be), transparent 80%);
+  color: var(--color-text);
+  min-height: 100%;
+}
+html[data-theme] .p01-suave::before { display: none; }
+html[data-theme] .p01-suave .p01-header {
+  position: relative;
+  padding: 0;
+  margin: 0 0 16px;
+  min-height: 215px;
+}
+.p01-suave-brand {
+  height: 57px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  width: 66%;
+}
+.p01-suave-brand > img:first-child {
+  display: block;
+  width: min(100%, 250px);
+  height: 47px;
+  object-fit: contain;
+  object-position: left center;
+}
+.p01-suave-brand .p01-suave-floating-note {
+  position: absolute;
+  width: 27px;
+  height: 27px;
+  right: -17px;
+  top: 5px;
+  image-rendering: pixelated;
+}
+.p01-suave-vignette {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: -18px;
+  width: 134px;
+  height: 91px;
+  overflow: hidden;
+  border-radius: 0 0 0 28px;
+  opacity: .94;
+  pointer-events: none;
+}
+.p01-suave-vignette > img:first-child {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.p01-suave-vignette .p01-suave-vine {
+  position: absolute;
+  width: 42px;
+  height: 56px;
+  bottom: -4px;
+  left: 2px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .p01-suave .p01-greeting {
+  margin-top: 17px;
+  font: 700 15px/1.2 var(--font-ui);
+  color: var(--color-action);
+  letter-spacing: 0;
+}
+html[data-theme] .p01-suave .p01-header h1 {
+  margin: 4px 0 5px;
+  font: 750 clamp(30px, 9vw, 37px)/1.12 var(--font-ui);
+  letter-spacing: -.05em;
+  color: var(--color-text);
+}
+html[data-theme] .p01-suave .p01-intro {
+  max-width: min(68%, 250px);
+  font-size: 12px;
+  line-height: 1.43;
+  margin-top: 6px;
+  color: var(--color-muted);
+}
+.p01-suave-coach {
+  position: absolute;
+  right: 0;
+  top: 107px;
+  width: 115px;
+  height: 110px;
+  text-align: center;
+  pointer-events: none;
+}
+.p01-suave-bubble {
+  display: block;
+  position: relative;
+  margin: 0 auto;
+  max-width: 116px;
+  padding: 7px 9px;
+  border: 1.5px dashed var(--color-violet);
+  border-radius: 11px;
+  font: 500 11px/1.23 var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+.p01-suave-bubble strong { display: block; color: var(--color-action); font-style: italic; }
+.p01-suave-bubble::after {
+  content: '';
+  position: absolute;
+  left: 48px;
+  bottom: -6px;
+  width: 9px;
+  height: 9px;
+  background: var(--color-surface);
+  transform: rotate(45deg);
+  border-right: 1px dashed var(--color-violet);
+  border-bottom: 1px dashed var(--color-violet);
+}
+.p01-suave .p01-suave-coach-cat {
+  width: 65px;
+  height: 65px;
+  display: block;
+  margin: -5px auto 0;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .p01-suave .p01-momentum {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  gap: 9px;
+  padding: 6px 10px;
+  margin-top: 14px;
+  border: 1px solid color-mix(in srgb, var(--color-warning) 32%, var(--color-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-surface) 94%, var(--color-warning));
+  color: var(--color-text);
+  font-size: 11px;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+.p01-suave .p01-momentum-item { display: inline-flex; align-items: center; gap: 5px; }
+.p01-suave .p01-momentum-item strong { font-size: 14px; color: var(--color-text); }
+.p01-suave .p01-momentum-divider { opacity: .35; }
+.p01-suave .p01-momentum-clock { color: var(--color-action); }
+html[data-theme] .p01-suave .p01-continue { margin-bottom: 12px; }
+html[data-theme] .p01-suave .p01-actions { gap: 9px; }
+html[data-theme] .p01-suave .p01-action-primary {
+  min-height: 90px;
+  padding: 12px 17px;
+  border: 2px solid #c9a15b;
+  border-radius: 15px;
+  background: linear-gradient(125deg, #1e5542, #173f33);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--color-violet) 35%, transparent), 0 7px 14px #251b271c;
+  color: #fff9ed;
+}
+html[data-theme] .p01-suave .p01-action-primary::after { content: none; }
+html[data-theme] .p01-suave .p01-action-primary .p01-action-copy strong {
+  font: 700 25px/1.15 Georgia, 'Palatino Linotype', serif;
+  color: #fff9ed;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-action-copy small {
+  font: 400 12px/1.35 var(--font-ui);
+  color: #fcf5e9;
+}
+html[data-theme] .p01-suave .p01-action-primary img.p01-suave-sax {
+  width: 73px;
+  height: 72px;
+  flex: 0 0 73px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  visibility: visible;
+  opacity: 1;
+  filter: none;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-chevron { font-size: 30px; color: #fff9ed; }
+.p01-suave-action-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary {
+  min-width: 0;
+  min-height: 83px;
+  padding: 11px 10px;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid color-mix(in srgb, var(--color-violet) 39%, var(--color-border));
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--color-violet) 14%, transparent);
+  border-radius: 13px;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-icon {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: color-mix(in srgb, var(--color-action) 9%, var(--color-surface));
+}
+.p01-suave-action-pair .p01-action-copy { gap: 6px; }
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy strong {
+  font: 750 13px/1.2 var(--font-ui);
+  color: var(--color-text);
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy small {
+  font: 400 10px/1.33 var(--font-ui);
+  color: var(--color-muted);
+}
+.p01-suave-action-pair .p01-chevron { font: 400 20px/1 var(--font-ui); }
+html[data-theme] .p01-suave .p01-suave-pinned {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 10px;
+  padding: 8px 11px;
+  border: 1px solid color-mix(in srgb, var(--color-violet) 55%, var(--color-border));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-violet) 8%, var(--color-surface));
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--color-violet) 14%, transparent);
+}
+.p01-suave-pin-symbol {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  color: var(--color-violet);
+  font-size: 28px;
+  flex: 0 0 22px;
+  height: 29px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.p01-suave-pin-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; gap: 3px; }
+.p01-suave-pin-copy strong { color: var(--color-text); font: 750 14px/1.1 var(--font-ui); }
+.p01-suave-pin-copy span { color: var(--color-muted); font: 400 11px/1.2 var(--font-ui); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+html[data-theme] .p01-suave .p01-suave-start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  gap: 4px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 999px;
+  font: 700 12px var(--font-ui);
+  color: #fffdf4;
+  background: #1b5a44;
+}
+.p01-suave-start img { display: block; width: 17px; height: 17px; object-fit: contain; image-rendering: pixelated; }
+html[data-theme] .p01-suave .p01-suave-pin-browse {
+  min-width: 27px; min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: 400 28px var(--font-ui);
+  color: var(--color-text);
+}
+html[data-theme] .p01-suave .p01-tools { margin-top: 17px; }
+html[data-theme] .p01-suave .p01-tools::after { content: none; }
+html[data-theme] .p01-suave .p01-tools h2 {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 0 9px;
+  color: var(--color-text);
+  font: 750 19px/1.2 var(--font-ui);
+}
+.p01-suave .p01-tools h2::after {
+  content: ''; height: 1px; flex: 1;
+  background: color-mix(in srgb, var(--color-warning) 62%, transparent);
+}
+.p01-suave .p01-tools h2 > span { color: #cc9e55; font-size: 17px; order: 1; }
+html[data-theme] .p01-suave .p01-tool {
+  min-height: 53px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 24%, var(--color-border));
+  background: var(--color-surface);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--color-text) 10%, transparent);
+  color: var(--color-action);
+}
+html[data-theme] .p01-suave .p01-tool strong { font: 750 14px var(--font-ui); }
+html[data-theme] .p01-suave .p01-daily {
+  margin-top: 19px;
+  padding: 11px 12px 15px;
+  border: 1.5px solid color-mix(in srgb, var(--color-success) 50%, var(--color-border));
+  border-radius: 16px;
+  background: var(--color-surface);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--color-success) 20%, transparent);
+}
+html[data-theme] .p01-suave .p01-daily::after { content: none; }
+.p01-suave .p01-suave-goal-row {
+  display: flex; gap: 10px; align-items: center;
+  min-height: 46px; width: 100%; padding: 0;
+  text-align: left; border: 0;
+  background: transparent; color: var(--color-text);
+}
+.p01-suave-target { display: grid; place-items: center; width: 31px; height: 31px; flex: 0 0 31px; font-size: 35px; color: var(--color-violet); }
+.p01-suave-goal-copy { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.p01-suave-goal-copy strong { font: 750 14px/1.2 var(--font-ui); }
+.p01-suave-goal-copy small { font: 400 10px/1.15 var(--font-ui); color: var(--color-muted); }
+.p01-suave-goal-value { padding: 7px 10px; border-radius: 20px; font: 750 11px var(--font-ui); color: var(--color-action); background: color-mix(in srgb, var(--color-action) 10%, var(--color-surface)); white-space: nowrap; }
+.p01-suave .p01-suave-goal-row .p01-chevron { font-size: 22px; }
+.p01-suave-rule { height: 1px; margin: 9px 0 12px; background: var(--color-border); }
+html[data-theme] .p01-suave .p01-daily-header {
+  margin-bottom: 9px;
+  font: 750 15px/1.1 var(--font-ui);
+  color: var(--color-text);
+}
+html[data-theme] .p01-suave .p01-daily-header strong { font-size: 13px; }
+.p01-suave-progress-layout { display: flex; gap: 10px; align-items: center; }
+html[data-theme] .p01-suave .p01-daily-track {
+  height: 14px; flex: 1; min-width: 0;
+  background: color-mix(in srgb, var(--color-action) 8%, var(--color-surface-raised));
+  border: 1.5px solid var(--color-action);
+  border-radius: 999px;
+  overflow: hidden;
+}
+html[data-theme] .p01-suave .p01-daily-fill {
+  background: #4d9870;
+  height: 100%;
+  border-radius: 999px;
+  transition: width .25s ease;
+}
+.p01-suave-growing-plant { width: 46px; height: 44px; flex: 0 0 46px; object-fit: contain; image-rendering: pixelated; }
+.p01-suave-modal {
+  position: fixed; inset: 0; z-index: 3000;
+  background: #181225a8; display: grid; place-items: center; padding: 20px;
+}
+.p01-suave-goal-editor {
+  width: min(100%, 380px); padding: 24px; border-radius: 18px;
+  background: var(--color-surface); color: var(--color-text); box-shadow: 0 20px 55px #0003;
+}
+.p01-suave-goal-editor h2 { margin: 0 0 8px; font-size: 21px; }
+.p01-suave-goal-editor p { margin: 0 0 18px; font-size: 13px; color: var(--color-muted); }
+.p01-suave-goal-editor label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 7px; }
+.p01-suave-goal-editor input { width: 100%; min-height: 48px; padding: 10px; font-size: 18px; border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-text); background: var(--color-bg); }
+.p01-suave-goal-buttons { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
+.p01-suave-goal-buttons button { min-height: 44px; padding: 0 16px; border-radius: 9px; color: var(--color-text); background: var(--color-surface-raised); border: 1px solid var(--color-border); }
+.p01-suave-goal-buttons button[type="submit"] { background: var(--color-action); color: var(--color-action-text); }
+@media (max-width: 380px) {
+  html[data-theme] .p01-page.p01-suave { padding-left: 13px; padding-right: 13px; }
+  .p01-suave-brand { width: 64%; }
+  .p01-suave-vignette { right: -13px; width: 121px; }
+  .p01-suave-action-pair { gap: 7px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary { gap: 5px; padding: 9px 7px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy strong { font-size: 12px; }
+  .p01-suave .p01-momentum { font-size: 10px; gap: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] .p01-suave .p01-daily-fill { transition: none; }
+}
+
+/* Refreshed approved PR #84 UI icons: transparent PNG pixels, no blur. */
+html[data-theme] .p01-suave .p01-action-icon img { width: 28px; height: 28px; display: block; object-fit: contain; image-rendering: pixelated; }
+html[data-theme] .p01-suave .p01-suave-metronome-art { width: 30px; height: 32px; object-fit: contain; image-rendering: pixelated; }
+html[data-theme] .p01-suave .p01-momentum-clock { width: 17px; height: 17px; object-fit: contain; image-rendering: pixelated; }
+
+
+/* Approved November 7 screenshot fidelity pass: restores the layered botanical
+   header, softer cards, balanced vertical rhythm, and the compact goal panel.
+   These overrides affect P01 only and intentionally retain real controls. */
+html[data-theme] .p01-page.p01-suave {
+  padding: 10px 16px 27px;
+  background-image:
+    radial-gradient(ellipse 90% 42% at 44% 2%, #f8e0d5 0%, transparent 100%),
+    linear-gradient(180deg, #fff2eb 0%, #fff9ef 49%, #fbf5ed 100%);
+}
+html[data-theme] .p01-suave .p01-header {
+  min-height: 0;
+  padding: 0;
+  margin-bottom: 12px;
+  isolation: isolate;
+}
+html[data-theme] .p01-suave .p01-suave-brand {
+  position: relative;
+  z-index: 2;
+  height: 93px;
+  width: min(74%, 265px);
+  margin-left: 21px;
+  display: flex;
+  align-items: center;
+}
+html[data-theme] .p01-suave .p01-suave-brand img:first-child {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 76px;
+  object-fit: contain;
+  object-position: left center;
+}
+.p01-suave-art-strip {
+  position: absolute;
+  z-index: 1;
+  inset: 0 -16px auto -16px;
+  height: 111px;
+  pointer-events: none;
+  overflow: visible;
+}
+.p01-suave-art-strip::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 77px;
+  height: 33px;
+  background: linear-gradient(180deg, #edd1cb84, #f5e4db00);
+  clip-path: polygon(0 20%, 12% 12%, 28% 18%, 43% 37%, 60% 73%, 77% 87%, 100% 49%, 100% 100%, 0 100%);
+}
+.p01-suave-art-strip .p01-suave-top-ivy {
+  position: absolute;
+  z-index: 3;
+  top: 7px;
+  left: 0;
+  display: block;
+  width: 47px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.p01-suave-art-strip .p01-suave-floating-note {
+  position: absolute;
+  z-index: 3;
+  top: 15px;
+  left: 60%;
+  width: 24px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.p01-suave-art-strip .p01-suave-window-art {
+  position: absolute;
+  z-index: 2;
+  width: 194px;
+  height: 118px;
+  top: -8px;
+  right: 0;
+  overflow: visible;
+}
+html[data-theme] .p01-suave .p01-greeting {
+  position: relative;
+  z-index: 2;
+  margin: 3px 0 0;
+  color: #205a46;
+  font: 750 15px/1.2 var(--font-ui);
+}
+html[data-theme] .p01-suave .p01-header h1 {
+  position: relative;
+  z-index: 2;
+  margin: 4px 0 3px;
+  font: 790 clamp(32px, 8.7vw, 38px)/1.13 var(--font-ui);
+  color: #222034;
+  letter-spacing: -.05em;
+}
+html[data-theme] .p01-suave .p01-intro {
+  max-width: min(67%, 262px);
+  min-height: 32px;
+  margin: 6px 0 0;
+  font: 400 12px/1.35 var(--font-ui);
+  color: #696179;
+}
+html[data-theme] .p01-suave .p01-suave-coach {
+  top: 128px;
+  right: 0;
+  width: 108px;
+  height: 97px;
+}
+html[data-theme] .p01-suave .p01-suave-bubble {
+  padding: 7px 6px;
+  background: #fff3f5;
+  border: 1.5px solid #9b80ae;
+  box-shadow: 0 1px 0 #ab8db5;
+  color: #4e4161;
+  line-height: 1.18;
+  font-size: 11px;
+}
+html[data-theme] .p01-suave .p01-suave-bubble strong { color: #1e5c43; }
+html[data-theme] .p01-suave .p01-suave-bubble::after {
+  background: #fff3f5;
+  border-color: #9b80ae;
+}
+html[data-theme] .p01-suave .p01-suave-coach-cat {
+  width: 63px;
+  height: 60px;
+  margin: -2px auto 0;
+}
+html[data-theme] .p01-suave .p01-momentum {
+  margin-top: 11px;
+  margin-bottom: 0;
+  padding: 6px 10px;
+  color: #31283a;
+  background: #fff0e8;
+  border: 1px solid #efcfc2;
+  font: 400 11px/1.2 var(--font-ui);
+}
+html[data-theme] .p01-suave .p01-momentum-item strong {
+  color: #262135;
+  font-size: 13px;
+}
+html[data-theme] .p01-suave .p01-actions { gap: 8px; }
+html[data-theme] .p01-suave .p01-action-primary {
+  min-height: 72px;
+  padding: 9px 13px 9px 17px;
+  border-radius: 13px;
+  border-color: #e7be6a;
+  background:
+    radial-gradient(ellipse 53% 100% at 97% -25%, #396e5a82, transparent),
+    radial-gradient(ellipse 70% 100% at 75% 135%, #204536aa, transparent),
+    linear-gradient(108deg, #204e3d 0%, #0e4936 100%);
+  box-shadow: 0 3px 0 #b99fbd, 0 5px 11px #56464d1f;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-action-copy strong {
+  font: 700 24px/1.1 Georgia, 'Palatino Linotype', serif;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-action-copy small {
+  font-size: 11.5px;
+}
+html[data-theme] .p01-suave .p01-action-primary img.p01-suave-sax {
+  width: 69px;
+  height: 62px;
+  flex-basis: 69px;
+  image-rendering: pixelated;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-chevron {
+  font-size: 25px;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair { gap: 10px; }
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary {
+  position: relative;
+  min-height: 62px;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 13px;
+  border-color: #bda2c5;
+  background: linear-gradient(145deg, #fff9f3, #f5e7ee 85%);
+  box-shadow: 0 3px 0 #d8c1d8;
+  overflow: hidden;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary::after {
+  content: '';
+  position: absolute;
+  width: 62px;
+  height: 37px;
+  right: -9px;
+  bottom: -13px;
+  border-radius: 100% 0 0 0;
+  background: #c9b3d234;
+  pointer-events: none;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-icon {
+  flex: 0 0 35px;
+  width: 35px;
+  height: 35px;
+  background: transparent;
+  border: 0;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-icon img {
+  width: 34px;
+  height: 34px;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy strong {
+  font-size: 13px;
+  color: #28243a;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy small {
+  font-size: 10px;
+  color: #655c73;
+}
+html[data-theme] .p01-suave .p01-suave-pinned {
+  min-height: 43px;
+  margin-top: 8px;
+  padding: 6px 9px;
+  border-color: #ac8fb8;
+  background: linear-gradient(120deg, #fff5f6, #f3e1ef);
+  box-shadow: 0 2px 0 #c9b3d0;
+}
+html[data-theme] .p01-suave .p01-suave-pin-copy strong {
+  color: #2c263b;
+  font-size: 13px;
+}
+html[data-theme] .p01-suave .p01-suave-pin-copy span { color: #65547b; font-size: 10px; }
+html[data-theme] .p01-suave .p01-suave-start { min-height: 34px; }
+html[data-theme] .p01-suave .p01-tools { margin-top: 12px; }
+html[data-theme] .p01-suave .p01-tools h2 {
+  font: 780 18px/1.2 var(--font-ui);
+  color: #2a2538;
+  margin-bottom: 7px;
+}
+html[data-theme] .p01-suave .p01-tool {
+  min-height: 40px;
+  padding: 7px 8px;
+  gap: 8px;
+  border-radius: 11px;
+  background: #fff8f2;
+  border-color: #c8bcb8;
+  box-shadow: 0 2px 0 #e2cfcb;
+}
+html[data-theme] .p01-suave .p01-tool strong {
+  font: 740 14px var(--font-ui);
+  color: #225541;
+}
+html[data-theme] .p01-suave .p01-tuning-fork { transform: scale(.78); }
+html[data-theme] .p01-suave .p01-suave-metronome-art { width: 25px; height: 29px; }
+html[data-theme] .p01-suave .p01-daily {
+  position: relative;
+  overflow: hidden;
+  margin-top: 15px;
+  padding: 9px 12px 13px;
+  border: 1.5px solid #91af83;
+  border-radius: 15px;
+  background:
+    radial-gradient(ellipse 68% 37px at 22% 112%, #b7cea36b 4%, transparent 95%),
+    radial-gradient(ellipse 75% 40px at 98% 121%, #94ba835e 7%, transparent 95%),
+    linear-gradient(150deg, #fff9ee 0%, #f7f0e5 100%);
+  box-shadow: 0 3px 0 #b9cfa4, 0 5px 12px #877a6421;
+}
+html[data-theme] .p01-suave .p01-suave-goal-row { min-height: 41px; gap: 9px; }
+html[data-theme] .p01-suave .p01-suave-target {
+  color: #635078;
+  width: 38px; height: 38px; flex-basis: 38px;
+}
+html[data-theme] .p01-suave .p01-suave-goal-copy strong {
+  font-size: 15px;
+  color: #2c283d;
+}
+html[data-theme] .p01-suave .p01-suave-goal-copy small { color: #685f72; font-size: 10px; }
+html[data-theme] .p01-suave .p01-suave-goal-value {
+  padding: 7px 10px;
+  border: 1px solid #d1d2b3;
+  background: #e9e8cf;
+  color: #1d5644;
+  font-size: 12px;
+}
+html[data-theme] .p01-suave .p01-suave-rule {
+  margin: 6px 0 9px;
+  background: #e3c8cc;
+}
+html[data-theme] .p01-suave .p01-daily-header {
+  font: 800 15px/1.1 var(--font-ui);
+  margin-bottom: 8px;
+  color: #282339;
+}
+html[data-theme] .p01-suave .p01-daily-header strong { font-size: 13px; }
+html[data-theme] .p01-suave .p01-daily-track {
+  height: 20px;
+  border: 1.5px solid #195e48;
+  background: #fff4e3;
+  box-shadow: inset 0 1px 3px #cbbfa67d;
+}
+html[data-theme] .p01-suave .p01-daily-fill { background: #428c66; }
+html[data-theme] .p01-suave .p01-suave-growing-plant {
+  width: 46px;
+  height: 42px;
+  flex-basis: 46px;
+}
+html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav {
+  left: 9px;
+  right: 9px;
+  bottom: max(7px, env(safe-area-inset-bottom));
+  border: 1px solid #d9c8bf;
+  border-radius: 20px;
+  background: #fff7f2;
+  padding: 6px 5px;
+  box-shadow: 0 3px 0 #dcc5c1, 0 4px 15px #39242f12;
+}
+html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav a {
+  min-height: 48px;
+  padding: 5px 2px;
+  color: #6b5b79;
+}
+html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav a.current {
+  background: #e2e9d8;
+  color: #20583e;
+  box-shadow: none;
+  border-radius: 14px;
+}
+html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav a.current::before { content: none; }
+/* The approved color treatment belongs to light mode only.
+   Dark mode uses accessible semantic palette and maintains all controls. */
+html[data-theme="dark"] .p01-page.p01-suave {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+html[data-theme="dark"] .p01-suave :is(.p01-greeting, .p01-header h1, .p01-intro, .p01-momentum,
+  .p01-momentum-item strong, .p01-action-secondary .p01-action-copy strong, .p01-action-secondary .p01-action-copy small,
+  .p01-suave-pin-copy strong, .p01-suave-pin-copy span, .p01-tools h2, .p01-tool strong,
+  .p01-suave-goal-copy strong, .p01-suave-goal-copy small, .p01-daily-header) {
+  color: var(--color-text);
+}
+html[data-theme="dark"] .p01-suave :is(.p01-momentum, .p01-suave-pinned, .p01-daily, .p01-action-secondary,
+  .p01-tool, .p01-suave-bubble) {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+html[data-theme="dark"] .p01-suave :is(.p01-suave-goal-value, .p01-suave-bubble::after) {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+@media (max-width: 380px) {
+  html[data-theme] .p01-page.p01-suave { padding-left: 12px; padding-right: 12px; }
+  html[data-theme] .p01-suave .p01-suave-brand { width: 70%; margin-left: 18px; height: 89px; }
+  .p01-suave-art-strip { left: -12px; right: -12px; }
+  .p01-suave-art-strip .p01-suave-window-art { width: 179px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary { gap: 5px; padding: 7px 6px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-icon { width: 30px; flex-basis: 30px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-icon img { width: 29px; height: 29px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy strong { font-size: 12px; }
+}
+@media (max-height: 710px) {
+  html[data-theme] .p01-suave .p01-suave-brand { height: 81px; }
+  html[data-theme] .p01-suave .p01-suave-brand img:first-child { height: 65px; }
+  html[data-theme] .p01-suave .p01-suave-window-art { height: 103px; }
+  html[data-theme] .p01-suave .p01-suave-coach { top: 115px; }
+  html[data-theme] .p01-suave .p01-action-primary { min-height: 68px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary { min-height: 60px; }
+  html[data-theme] .p01-suave .p01-tools { margin-top: 10px; }
+  html[data-theme] .p01-suave .p01-daily { margin-top: 11px; }
+}
+
+
+/* PR #84 decorative accents retain their original pixel edges. */
+html[data-theme] .p01-suave .p01-action-primary {
+  position: relative;
+  overflow: hidden;
+}
+html[data-theme] .p01-suave .p01-action-primary img.p01-suave-primary-sparkle {
+  position: absolute;
+  right: 78px;
+  top: 14px;
+  width: 32px;
+  height: 34px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  visibility: visible;
+  opacity: .85;
+  filter: none;
+  pointer-events: none;
+}
+html[data-theme] .p01-suave .p01-tools h2::before {
+  content: '';
+  height: 1px;
+  order: 1;
+  flex: 1;
+  min-width: 18px;
+  background: #d7ad65;
+}
+html[data-theme] .p01-suave .p01-tools h2::after {
+  order: 3;
+  min-width: 20px;
+}
+html[data-theme] .p01-suave .p01-tools h2 .p01-suave-divider-sparkle {
+  order: 2;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .p01-suave .p01-daily::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 31px;
+  opacity: .36;
+  pointer-events: none;
+  background: url('/visuals/new-assets/2026-11-07-sharp-pixel/soft-green-waves-sharp.png') center bottom / 100% 100% no-repeat;
+  image-rendering: pixelated;
+}
+html[data-theme] .p01-suave .p01-daily > * {
+  position: relative;
+  z-index: 1;
+}
+html[data-theme] .p01-suave .p01-suave-bubble {
+  background-image: linear-gradient(#fff4f6df,#fff4f6df),
+    url('/visuals/new-assets/2026-11-07-sharp-pixel/pixel-speech-bubble-sharp.png');
+  background-size: cover, contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+html[data-theme="dark"] .p01-suave .p01-suave-bubble {
+  background-image: none;
+}
+
+
+/* Exact approved illustrated brand banner, as a real image rather than overlapping
+   duplicate SVG window, logo, and plant motifs. */
+html[data-theme] .p01-suave .p01-suave-brand {
+  display: block;
+  width: calc(100% + 32px);
+  max-width: none;
+  height: auto;
+  aspect-ratio: 941 / 208;
+  margin: -10px -16px 5px;
+  position: relative;
+  overflow: hidden;
+}
+html[data-theme] .p01-suave .p01-suave-brand img:first-child {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  image-rendering: auto;
+}
+html[data-theme] .p01-suave .p01-suave-brand::after {
+  content: none;
+}
+/* Keep the entire goal editor reachable on short iPhones. */
+@media (max-height: 710px) {
+  html[data-theme] .p01-page.p01-suave {
+    padding-top: 4px;
+    padding-bottom: 10px;
+  }
+  html[data-theme] .p01-suave .p01-suave-brand {
+    width: calc(100% + 24px);
+    margin: -4px -12px 2px;
+  }
+  html[data-theme] .p01-suave .p01-header {
+    margin-bottom: 8px;
+  }
+  html[data-theme] .p01-suave .p01-greeting {
+    margin-top: 0;
+    font-size: 14px;
+  }
+  html[data-theme] .p01-suave .p01-header h1 {
+    margin: 2px 0;
+    font-size: 29px;
+  }
+  html[data-theme] .p01-suave .p01-intro {
+    margin: 2px 0 0;
+    font-size: 10.5px;
+    min-height: 0;
+    line-height: 1.2;
+  }
+  html[data-theme] .p01-suave .p01-suave-coach {
+    top: 102px;
+    height: 76px;
+    width: 102px;
+  }
+  html[data-theme] .p01-suave .p01-suave-bubble { padding: 5px 6px; font-size: 10px; }
+  html[data-theme] .p01-suave .p01-suave-coach-cat { width: 50px; height: 48px; }
+  html[data-theme] .p01-suave .p01-momentum {
+    margin-top: 6px;
+    padding: 4px 8px;
+  }
+  html[data-theme] .p01-suave .p01-action-primary { min-height: 60px; padding: 5px 12px; }
+  html[data-theme] .p01-suave .p01-action-primary .p01-action-copy strong { font-size: 21px; }
+  html[data-theme] .p01-suave .p01-action-primary .p01-action-copy small { font-size: 10px; }
+  html[data-theme] .p01-suave .p01-actions { gap: 5px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary { min-height: 57px; padding: 5px 7px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy small { font-size: 9px; }
+  html[data-theme] .p01-suave .p01-suave-pinned { min-height: 38px; margin-top: 5px; padding: 4px 7px; }
+  html[data-theme] .p01-suave .p01-suave-start { min-height: 29px; }
+  html[data-theme] .p01-suave .p01-tools { margin-top: 8px; }
+  html[data-theme] .p01-suave .p01-tools h2 { margin-bottom: 4px; font-size: 16px; }
+  html[data-theme] .p01-suave .p01-tool { min-height: 35px; padding: 4px 7px; }
+  html[data-theme] .p01-suave .p01-daily { margin-top: 9px; padding: 7px 10px 9px; }
+  html[data-theme] .p01-suave .p01-suave-goal-row { min-height: 34px; }
+  html[data-theme] .p01-suave .p01-suave-target { width: 30px; height: 30px; flex-basis: 30px; }
+  html[data-theme] .p01-suave .p01-suave-rule { margin: 4px 0 7px; }
+  html[data-theme] .p01-suave .p01-daily-header { margin-bottom: 6px; font-size: 14px; }
+  html[data-theme] .p01-suave .p01-daily-track { height: 15px; }
+  html[data-theme] .p01-suave .p01-suave-growing-plant { width: 35px; height: 33px; flex-basis: 35px; }
+  html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav {
+    bottom: max(4px, env(safe-area-inset-bottom));
+    padding: 4px;
+  }
+  html[data-theme="light"] .app-shell:has(.p01-suave) .bottom-nav a {
+    min-height: 43px;
+    padding: 3px 2px;
+    font-size: 9px;
+  }
+}
+/* The approved hero artwork is a warm-light illustration. Avoid an unreadable
+   exposed light banner in dark mode by matching the surrounding surface. */
+html[data-theme="dark"] .p01-suave .p01-suave-brand {
+  border-radius: 0 0 12px 12px;
+  background: var(--color-surface);
+}
+html[data-theme="dark"] .p01-suave .p01-suave-brand img:first-child {
+  filter: brightness(.88) saturate(.85);
+}
+
+
+/* Free Practice is an instrument-led action, never the framed music-poster
+   placeholder. The approved PNG note/sparkle accent the golden sax SVG. */
+html[data-theme] .p01-suave .p01-action-primary .p01-suave-sax-illustration {
+  display: block;
+  flex: 0 0 71px;
+  width: 71px;
+  height: 69px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 2px #11282065);
+  pointer-events: none;
+}
+html[data-theme] .p01-suave .p01-action-primary img.p01-suave-hero-note {
+  position: absolute;
+  right: 103px;
+  top: 11px;
+  width: 19px;
+  height: 22px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  visibility: visible;
+  filter: none;
+  opacity: .94;
+  pointer-events: none;
+}
+@media (max-height: 710px) {
+  html[data-theme] .p01-suave .p01-action-primary .p01-suave-sax-illustration {
+    flex-basis: 59px;
+    width: 59px;
+    height: 56px;
+  }
+  html[data-theme] .p01-suave .p01-action-primary img.p01-suave-hero-note {
+    width: 15px;
+    height: 17px;
+    right: 85px;
+    top: 8px;
+  }
+}
+
+/* Final screenshot-fidelity pass: match the approved banner and instrument artwork.
+   Keep the compact actions usable, preserve existing session logic, and never use a water-fill bar. */
+html[data-theme] .p01-suave .p01-action-primary {
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-height: 80px;
+  padding: 10px 18px 10px 17px;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-action-copy {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-right: 96px;
+}
+html[data-theme] .p01-suave .p01-action-primary img.p01-suave-approved-sax {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  width: 106px;
+  height: 69px;
+  object-fit: contain;
+  object-position: center;
+  right: 29px;
+  top: 50%;
+  transform: translateY(-50%);
+  image-rendering: pixelated;
+  visibility: visible;
+  opacity: 1;
+  filter: drop-shadow(0 2px 1px #0b2e2070);
+  pointer-events: none;
+}
+html[data-theme] .p01-suave .p01-action-primary img.p01-suave-hero-note {
+  display: none;
+}
+html[data-theme] .p01-suave .p01-action-primary .p01-chevron {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+}
+html[data-theme] .p01-suave .p01-suave-brand {
+  width: calc(100% + 32px);
+  margin: -10px -16px 9px;
+  aspect-ratio: 941 / 208;
+  border: 0;
+}
+html[data-theme] .p01-suave .p01-suave-brand img:first-child {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+html[data-theme] .p01-suave .p01-header h1 { letter-spacing: -.045em; }
+html[data-theme] .p01-suave .p01-intro { max-width: 66%; }
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary {
+  min-height: 76px;
+  align-items: center;
+}
+html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-copy {
+  gap: 5px;
+}
+html[data-theme] .p01-suave .p01-suave-pinned {
+  min-height: 53px;
+}
+html[data-theme] .p01-suave .p01-daily-track {
+  background: #eee9dc;
+  border: 1px solid #96a88e;
+  height: 16px;
+}
+html[data-theme] .p01-suave .p01-daily-fill {
+  background: #4c9169;
+  border-radius: 999px;
+  box-shadow: none;
+}
+html[data-theme] .p01-suave .p01-suave-growing-plant {
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme="dark"] .p01-suave .p01-daily-track {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+}
+@media (max-width: 380px) {
+  html[data-theme] .p01-suave .p01-action-primary img.p01-suave-approved-sax {
+    width: 87px; height: 61px; right: 23px;
+  }
+  html[data-theme] .p01-suave .p01-action-primary .p01-action-copy { padding-right: 71px; }
+}
+@media (max-height: 710px) {
+  html[data-theme] .p01-suave .p01-suave-brand {
+    width: calc(100% + 24px);
+    margin: -4px -12px 5px;
+  }
+  html[data-theme] .p01-suave .p01-action-primary {
+    min-height: 65px;
+    padding: 7px 12px;
+  }
+  html[data-theme] .p01-suave .p01-action-primary img.p01-suave-approved-sax {
+    width: 81px; height: 55px; right: 25px;
+  }
+  html[data-theme] .p01-suave .p01-action-primary .p01-action-copy { padding-right: 70px; }
+  html[data-theme] .p01-suave .p01-suave-action-pair .p01-action-secondary { min-height: 60px; }
+  html[data-theme] .p01-suave .p01-suave-pinned { min-height: 42px; }
+}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Exercise, Routine } from '../types/content';
+import { readPinnedPracticeRoutine, savePinnedPracticeRoutine } from '../lib/practiceHomePreferences';
 import {
   countRoutineFilters, EMPTY_ROUTINE_FILTERS, matchesRoutineFilters,
   ROUTINE_DURATIONS, ROUTINE_FOCI, ROUTINE_INSTRUMENTS, ROUTINE_LEVELS, routineFocuses,
@@ -10,6 +11,7 @@ import {
 import './RoutineLibraryPage.css';
 import './CleanPixelRoutines.css';
 import './RoutinesApproved.css';
+import './RoutinePin.css';
 
 type RoutineTab = 'My Routines' | 'Community' | 'Saved';
 
@@ -60,8 +62,10 @@ export function RoutineLibraryPage() {
   const filterTrigger = useRef<HTMLButtonElement>(null);
   const filterClose = useRef<HTMLButtonElement>(null);
   const [bookmarks, setBookmarks] = useState<string[]>(() => readBookmarks(repo.scope));
+  const [pinnedId, setPinnedId] = useState<string | null>(() => readPinnedPracticeRoutine(repo.scope));
 
   useEffect(() => { setBookmarks(readBookmarks(repo.scope)); }, [repo.scope]);
+  useEffect(() => { setPinnedId(readPinnedPracticeRoutine(repo.scope)); }, [repo.scope]);
   useEffect(() => {
     if (!filterOpen) return;
     filterClose.current?.focus();
@@ -122,6 +126,11 @@ export function RoutineLibraryPage() {
       try { localStorage.setItem(bookmarkKey(repo.scope), JSON.stringify(next)); } catch { /* optional storage */ }
       return next;
     });
+  };
+  const togglePin = (id: string) => {
+    const next = pinnedId === id ? null : id;
+    savePinnedPracticeRoutine(repo.scope, next);
+    setPinnedId(next);
   };
   const openRoutine = (id: string) => {
     setActiveRoutineId(id);
@@ -202,6 +211,11 @@ export function RoutineLibraryPage() {
                 aria-label={(isBookmarked ? 'Remove saved ' : 'Save ') + routine.title}
                 aria-pressed={isBookmarked} onClick={() => toggleBookmark(routine.id)}>
                 <BookmarkIcon filled={isBookmarked} />
+              </button>
+              <button type="button" className={'routine-pin' + (pinnedId === routine.id ? ' is-pinned' : '')}
+                aria-label={(pinnedId === routine.id ? 'Unpin ' : 'Pin ') + routine.title + ' on Practice home'}
+                aria-pressed={pinnedId === routine.id} onClick={() => togglePin(routine.id)}>
+                {pinnedId === routine.id ? 'Pinned' : 'Pin'}
               </button>
               <button type="button" className="routine-card-main"
                 aria-label={'Practice ' + routine.title} onClick={() => openRoutine(routine.id)}>

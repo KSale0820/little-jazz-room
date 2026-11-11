@@ -7,6 +7,7 @@ import path from 'node:path';
 
 const base = process.env.APP_URL ?? 'http://127.0.0.1:5174';
 const output = path.resolve('docs/screenshots/clean-pixel-qa');
+const approvedCatPrefix = '/visuals/new-assets/2026-11-07-sharp-pixel/approved-parts-1-2/cats/';
 await mkdir(output, { recursive: true });
 
 const routes = [
@@ -118,6 +119,14 @@ try {
                 const root = document.querySelector('.p01-page, .pgr-page');
                 return root ? getComputedStyle(root).backgroundColor : null;
               })(),
+              practiceSurface: (() => {
+                const root = document.querySelector('.p01-page.p01-suave');
+                return root ? getComputedStyle(root).backgroundImage : null;
+              })(),
+              practiceHeadingInk: (() => {
+                const heading = document.querySelector('.p01-suave-header h1');
+                return heading ? getComputedStyle(heading).color : null;
+              })(),
               chartPaperBackground: (() => {
                 const measure = document.querySelector('.practice-chart-scroll .measure:not(.chosen):not(.looped)');
                 return measure ? getComputedStyle(measure).backgroundColor : null;
@@ -136,7 +145,7 @@ try {
           assert.equal(state.catMode, catMode ? 'on' : 'off', screen + ' wrong Cat Mode');
           assertWithinViewport(state, label + '-' + screen, height);
           assert.ok(state.visibleCompanionAssetSources.every(src =>
-            src.startsWith('/visuals/cats/clean-pixel/')),
+            src.startsWith(approvedCatPrefix)),
             screen + ' revived outdated October companion art: ' +
             JSON.stringify(state.visibleCompanionAssetSources));
           if (['Progress', 'Tuner', 'Metronome'].includes(screen)) {
@@ -146,13 +155,13 @@ try {
               assert.ok(state.progressCatSrc, 'Progress companion must load in both modes');
               const spriteKey = [width, height, theme].join('-');
               if (!catMode) {
-                assert.ok(state.progressCatSrc.endsWith('/visuals/cats/clean-pixel/luna-sleeping.png'),
+                assert.ok(state.progressCatSrc.endsWith(approvedCatPrefix + 'luna-sleeping.png'),
                   'Cat Mode OFF must use the new Luna pixel sleeping design, not retired art');
                 progressSpriteSources.set(spriteKey, state.progressCatSrc);
               } else {
                 assert.notEqual(state.progressCatSrc, progressSpriteSources.get(spriteKey),
                   'Cat Mode ON must switch the default Luna companion to its verified pixel sprite');
-                assert.ok(state.progressCatSrc.endsWith('/visuals/cats/clean-pixel/luna-sitting.png'),
+                assert.ok(state.progressCatSrc.endsWith(approvedCatPrefix + 'luna-sitting.png'),
                   'Cat Mode ON must use the new Luna sitting pixel variant');
               }
             }
@@ -178,15 +187,25 @@ try {
           if (screen === 'Profile') {
             assert.equal(state.profileAvatarVisibility, 'visible',
               'Profile companion avatar must remain visible independently of Cat Mode');
-            assert.ok(state.profileAvatarSrc.endsWith('/visuals/cats/clean-pixel/luna-sitting.png'),
+            assert.ok(state.profileAvatarSrc.endsWith(approvedCatPrefix + 'luna-sitting.png'),
               'Profile avatar must use the owner-approved new pixel art, regardless of Cat Mode');
             assert.deepEqual(state.profileChooserIds, ['Luna', 'Milo', 'Maple'],
               'Profile must offer only the three currently approved pixel companions');
           }
           const expectedBackground = theme === 'dark' ? 'rgb(16, 17, 19)' : 'rgb(255, 248, 236)';
-          if (['Practice', 'Progress'].includes(screen)) {
+          if (screen === 'Progress') {
             assert.equal(state.screenBackground, expectedBackground,
-              screen + ' retains the old room/ivory background instead of the active theme');
+              'Progress retains the old room/ivory background instead of the active theme');
+          }
+          if (screen === 'Practice') {
+            assert.ok(state.practiceSurface?.includes('gradient'), 'Practice gradient did not render');
+            const backdrop = theme === 'dark' ? 'rgb(32, 29, 41)' : 'rgb(255, 248, 236)';
+            assert.ok(state.practiceHeadingInk && contrastRatio(state.practiceHeadingInk, backdrop) >= 4.5,
+              'Practice heading lacks contrast against the ' + theme + ' surface');
+            if (theme === 'dark') {
+              assert.ok(state.practiceSurface.includes('32, 29, 41'),
+                'Practice dark mode backdrop was lost');
+            }
           }
           if (screen === 'Player') {
             assert.ok(state.chartCells >= 12, 'Chart-linked Player missing complete 12-bar grid');

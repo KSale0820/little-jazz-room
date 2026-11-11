@@ -7,13 +7,13 @@ import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { DecorativeCat } from '../features/cats/DecorativeCat';
 import { PracticeCalendar } from '../components/PracticeCalendar';
 import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
+import { readPracticeGoal } from '../lib/practiceHomePreferences';
 import type { PracticeSessionRecord, Routine } from '../types/content';
 import './ProgressPage.css';
 import './CleanPixelToolsProgress.css';
 import './CleanPixelMotifPlacements.css';
 
 // The same daily target as H01 Home. This is a goal, not seeded progress.
-const DAILY_GOAL_MINUTES = 30;
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
 
 /** Derive current local calendar-week totals from saved sessions (Monday–Sunday). */
@@ -58,7 +58,8 @@ function sessionDateLabel(value: string, now: Date): string {
 }
 
 export function ProgressPage() {
-  const { sessions, catId, routines, exercises, setActiveRoutineId } = useApp();
+  const { repo, sessions, catId, routines, exercises, setActiveRoutineId } = useApp();
+  const dailyGoal = readPracticeGoal(repo.scope);
   const { catMode } = useAppearance();
   const navigate = useNavigate();
   const [showAllHistory, setShowAllHistory] = useState(false);
@@ -69,7 +70,7 @@ export function ProgressPage() {
   ), [sessions]);
   const recentSessions = showAllHistory ? orderedSessions : orderedSessions.slice(0, 2);
   const cat = JAZZ_CATS.find(c => c.id === catId);
-  const goalPercent = Math.min(100, (summary.todayMinutes / DAILY_GOAL_MINUTES) * 100);
+  const goalPercent = Math.min(100, (summary.todayMinutes / dailyGoal) * 100);
   const maxChartMinutes = Math.max(30, ...summary.weekDays.map(day => day.minutes));
   const chartCeiling = Math.ceil(maxChartMinutes / 15) * 15;
 
@@ -117,8 +118,8 @@ export function ProgressPage() {
       <section className="g01-daily-card" aria-labelledby="g01-goal-heading">
         <img src={VISUAL_ASSETS.progress.goalLeaves} alt="" className="g01-goal-plant" aria-hidden="true" onError={event => { event.currentTarget.style.display = "none"; }} />
         <h2 id="g01-goal-heading">Daily Goal</h2>
-        <p>{summary.todayMinutes} / {DAILY_GOAL_MINUTES} min</p>
-        <div className="g01-goal-track" role="progressbar" aria-label="Daily practice goal" aria-valuemin={0} aria-valuemax={DAILY_GOAL_MINUTES} aria-valuenow={Math.min(summary.todayMinutes, DAILY_GOAL_MINUTES)} aria-valuetext={summary.todayMinutes + ' of ' + DAILY_GOAL_MINUTES + ' minutes practiced today'}>
+        <p>{summary.todayMinutes} / {dailyGoal} min</p>
+        <div className="g01-goal-track" role="progressbar" aria-label="Daily practice goal" aria-valuemin={0} aria-valuemax={dailyGoal} aria-valuenow={Math.min(summary.todayMinutes, dailyGoal)} aria-valuetext={summary.todayMinutes + ' of ' + dailyGoal + ' minutes practiced today'}>
           <div className="g01-goal-fill" style={{ width: goalPercent + '%' }} />
         </div>
       </section>
