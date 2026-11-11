@@ -261,7 +261,10 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
         </div>
 
         <div className="metronome-tap-row">
-          <button type="button" className="metronome-tap" onClick={tapTempo}><span aria-hidden="true">☞</span> Tap Tempo</button>
+          <button type="button" className="metronome-tap" onClick={tapTempo}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+                strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M9 12V5a2 2 0 1 1 4 0v6M13 8a2 2 0 0 1 4 0v4M17 10a2 2 0 0 1 4 0v4c0 5-3 8-8 8h-1c-3 0-5-1-7-4L3 15c-1-2 2-4 4-2l2 2"/>
+              </svg> Tap Tempo</button>
           <span className="jazz-tap-status">{taps >= 2 ? 'Tempo set from your taps' : ''}</span>
         </div>
 
