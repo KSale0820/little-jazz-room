@@ -743,3 +743,337 @@ html[data-theme] .jazz-tool-page .tool-metronome-scene .tool-scene-cat {
     width: 148px; height: 148px; bottom: -20px;
   }
 }
+
+
+/* Reference-fidelity pass, 2026-11-10.
+   Original APPROVED collage: a_detailed_mockup_collage_for_the_little_jazz_roo.png.
+   Deliberately targets the card + transport hierarchy, not just center-line math.
+   Keep user-supplied cat art and approved pixel botanical assets unchanged. */
+@media (min-height: 721px) {
+  html[data-theme] .tool-page.jazz-tool-page {
+    padding-top: max(23px, env(safe-area-inset-top));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  html[data-theme] .jazz-tool-page .jazz-tool-main {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    padding: 67px 0 0;
+    gap: 17px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tool-footer {
+    height: 122px;
+    min-height: 122px;
+    flex-basis: 122px;
+  }
+}
+/* More than a border and centered text: the reference has a large,
+   vertically organized instrument face. */
+html[data-theme] .jazz-tool-page .jazz-tuner-card {
+  min-height: 458px;
+  justify-content: space-between;
+  padding: 16px 14px 18px;
+  border-radius: 18px;
+}
+html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-gauge {
+  height: 187px;
+  min-height: 187px;
+  max-width: 345px;
+}
+html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-reading {
+  min-height: 126px;
+}
+html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-reading strong {
+  font-size: clamp(68px, 19vw, 79px);
+  line-height: 1.04;
+  font-weight: 750;
+}
+html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-reading > span {
+  margin-top: 7px;
+  font-size: 18px;
+  font-weight: 570;
+}
+html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-status {
+  min-height: 43px;
+  min-width: 148px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 640;
+}
+html[data-theme] .jazz-tool-page .tuner-mic {
+  min-width: 258px;
+  min-height: 54px;
+  padding: 11px 17px;
+  font-size: 16px;
+  font-weight: 590;
+  border-radius: 14px;
+}
+html[data-theme] .jazz-tool-page .jazz-metronome-card {
+  min-height: 548px;
+  justify-content: space-between;
+  padding: 16px 18px 13px;
+  border-radius: 18px;
+}
+html[data-theme] .jazz-tool-page .jazz-metronome-value {
+  min-height: 111px;
+  align-items: baseline;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+}
+html[data-theme] .jazz-tool-page .jazz-metronome-note {
+  font-size: 57px;
+  font-weight: 620;
+}
+html[data-theme] .jazz-tool-page .jazz-metronome-equals {
+  font-size: 33px;
+  font-weight: 570;
+}
+html[data-theme] .jazz-tool-page .metronome-bpm strong {
+  font-size: clamp(74px, 20.5vw, 84px);
+  font-weight: 760;
+  letter-spacing: -.045em;
+}
+html[data-theme] .jazz-tool-page .metronome-bpm span {
+  margin-top: 7px;
+  font-size: 16px;
+  font-weight: 680;
+}
+/* Crucial visual correction: the +/- buttons form their OWN row ABOVE
+   the centered Play button. The old 3-column same-row grid was wrong. */
+html[data-theme] .jazz-tool-page .metronome-tempo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: 52px 119px;
+  justify-content: stretch;
+  align-items: center;
+  justify-items: center;
+  column-gap: 0;
+  row-gap: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+html[data-theme] .jazz-tool-page .metronome-tempo .metronome-step:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+}
+html[data-theme] .jazz-tool-page .metronome-tempo .metronome-step:last-child {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+html[data-theme] .jazz-tool-page .metronome-tempo .metronome-play {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-self: center;
+  align-self: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  box-shadow: none;
+}
+html[data-theme] .jazz-tool-page .metronome-tempo .metronome-step {
+  width: 57px;
+  height: 51px;
+  min-height: 51px;
+  font-size: 34px;
+  border-radius: 12px;
+}
+html[data-theme] .jazz-tool-page .metronome-play span {
+  font-size: 42px;
+}
+html[data-theme] .jazz-tool-page .metronome-play[aria-pressed="true"] span {
+  font-size: 35px;
+}
+html[data-theme] .jazz-tool-page .metronome-tap-row {
+  justify-content: center;
+  width: 100%;
+  min-height: 57px;
+  padding: 3px 0 14px;
+  margin: 0;
+  border-bottom: 1px solid var(--jt-border);
+}
+html[data-theme] .jazz-tool-page .metronome-tap {
+  min-width: 186px;
+  min-height: 43px;
+  font-size: 16px;
+  font-weight: 570;
+}
+html[data-theme] .jazz-tool-page .jazz-metronome-setting-row {
+  min-height: 63px;
+  gap: 9px;
+}
+html[data-theme] .jazz-tool-page .jazz-metronome-setting-row h2 {
+  font-size: 15px;
+  font-weight: 590;
+}
+html[data-theme] .jazz-tool-page .jazz-signature-toggle {
+  min-width: 105px;
+  min-height: 43px;
+  font-size: 17px;
+  font-weight: 610;
+}
+html[data-theme] .jazz-tool-page .metronome-beats button {
+  width: 41px;
+  min-width: 41px;
+  height: 41px;
+  min-height: 41px;
+  border-radius: 5px;
+}
+/* Botany: the actual owner's approved pixel planter and small flower-like
+   plant, with a verified sleeping/sitting companion between them. */
+html[data-theme] .jazz-tool-page .jazz-tool-footer {
+  max-width: 390px;
+  width: calc(100% + 32px);
+  padding: 0;
+  overflow: hidden;
+}
+html[data-theme] .jazz-tool-page .jazz-tool-footer::after {
+  left: 0;
+  right: 0;
+  bottom: 7px;
+  background: var(--jt-border);
+  opacity: .8;
+}
+html[data-theme] .jazz-tool-page .jazz-tool-plant {
+  left: 13px;
+  width: 117px;
+  height: 110px;
+  bottom: 8px;
+}
+html[data-theme] .jazz-tool-page .jazz-tool-plant-small {
+  position: absolute;
+  z-index: 2;
+  right: 14px;
+  bottom: 8px;
+  width: 43px;
+  height: 72px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .jazz-tool-page .tool-cat-scene {
+  z-index: 2;
+  right: 32px;
+  width: 178px;
+  height: 117px;
+}
+html[data-theme] .jazz-tool-page .tool-cat-scene .tool-scene-cat {
+  width: 193px;
+  height: 193px;
+  right: 0;
+  bottom: -49px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+html[data-theme] .jazz-tool-page .tool-metronome-scene .tool-scene-cat {
+  width: 177px;
+  height: 177px;
+  right: 2px;
+  bottom: -25px;
+}
+/* 375x667: compress the white space and control typography WITHOUT returning
+   Play to the +/- row, covering any button, or cropping an approved cat. */
+@media (max-height: 720px) and (max-width: 899px) {
+  html[data-theme] .tool-page.jazz-tool-page {
+    padding: max(5px, env(safe-area-inset-top)) 13px 2px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tool-main {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    padding: 10px 0 0;
+    gap: 10px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tuner-card {
+    min-height: 361px;
+    padding: 8px 10px 12px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-gauge {
+    height: 138px;
+    min-height: 138px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-reading {
+    min-height: 105px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-reading strong {
+    font-size: 65px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-reading > span {
+    font-size: 16px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tuner-card .tuner-status {
+    min-height: 37px;
+    padding: 7px 13px;
+    font-size: 14px;
+  }
+  html[data-theme] .jazz-tool-page .tuner-mic {
+    min-height: 48px;
+    font-size: 14px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-metronome-card {
+    min-height: 467px;
+    padding: 8px 13px 8px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-metronome-value {
+    min-height: 91px;
+  }
+  html[data-theme] .jazz-tool-page .metronome-bpm strong {
+    font-size: 64px;
+  }
+  html[data-theme] .jazz-tool-page .metronome-bpm span {
+    font-size: 13px;
+    margin-top: 3px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-metronome-note {
+    font-size: 45px;
+  }
+  html[data-theme] .jazz-tool-page .metronome-tempo {
+    grid-template-rows: 44px 82px;
+  }
+  html[data-theme] .jazz-tool-page .metronome-tempo .metronome-play {
+    width: 72px; height: 72px;
+  }
+  html[data-theme] .jazz-tool-page .metronome-tempo .metronome-step {
+    width: 48px; height: 44px; min-height: 44px;
+  }
+  html[data-theme] .jazz-tool-page .metronome-tap-row {
+    min-height: 45px;
+    padding: 1px 0 5px;
+  }
+  html[data-theme] .jazz-tool-page .metronome-tap {
+    min-height: 39px;
+    font-size: 14px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-metronome-setting-row {
+    min-height: 49px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-signature-toggle {
+    min-height: 38px;
+    font-size: 14px;
+  }
+  html[data-theme] .jazz-tool-page .metronome-beats button {
+    width: 35px; min-width: 35px; height: 36px; min-height: 36px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tool-footer {
+    width: calc(100% + 26px);
+    max-width: none;
+    height: 90px; min-height: 90px; flex-basis: 90px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tool-plant {
+    left: 12px; width: 97px; height: 87px; bottom: 5px;
+  }
+  html[data-theme] .jazz-tool-page .jazz-tool-plant-small {
+    right: 12px; width: 35px; height: 55px; bottom: 5px;
+  }
+  html[data-theme] .jazz-tool-page .tool-cat-scene { height: 87px; right: 29px; }
+  html[data-theme] .jazz-tool-page .tool-cat-scene .tool-scene-cat {
+    width: 156px; height: 156px; bottom: -43px;
+  }
+  html[data-theme] .jazz-tool-page .tool-metronome-scene .tool-scene-cat {
+    width: 143px; height: 143px; bottom: -21px;
+  }
+}
