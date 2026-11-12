@@ -81,7 +81,7 @@ try {
         lowerTops: [timer.top,finish.top,journal.top],
         lowerRights: [timer.right,finish.right,journal.right],
         lowerLefts: [timer.left,finish.left,journal.left],
-        green: getComputedStyle(top).backgroundColor,
+        green: getComputedStyle(dock.querySelector('.routine-dock-top')).backgroundColor,
       };
     });
     assert.ok(dockLayout.top.bottom <= dockLayout.bottom.top + 2, 'Status and navigation must sit above Finish Session');
