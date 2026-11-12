@@ -46,7 +46,8 @@ async function verifyCompletion(page, viewport, label) {
 
 try {
   for (const viewport of [{ width: 390, height: 844 }, { width: 375, height: 667 }]) {
-    const context = await browser.newContext({ viewport, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+    const context = await browser.newContext({ viewport, isMobile: true, hasTouch: true, deviceScaleFactor: 2,
+      timezoneId: 'America/Los_Angeles' });
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
