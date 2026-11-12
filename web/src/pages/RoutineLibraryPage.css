@@ -1,4 +1,4 @@
-/* Routines landing: compact three-across shelves from the approved Library mockup. */
+/* Routines landing: compact shelves with mockup typography and consistent insets. */
 .app-shell:has(.routine-library) .viewport {
   height: calc(100% - 76px) !important;
   min-height: 0 !important;
@@ -32,8 +32,8 @@
 .routine-intro { margin: 0 0 15px; }
 .routine-intro h1 {
   margin: 0;
-  font: 400 clamp(31px, 8vw, 36px)/1.08 Georgia, "Times New Roman", serif;
-  letter-spacing: -.045em;
+  font: 700 clamp(30px, 7.5vw, 34px)/1.08 Georgia, "Times New Roman", serif;
+  letter-spacing: -.035em;
   color: #154e3e;
 }
 .routine-intro p {
@@ -140,7 +140,7 @@
 .routine-shelf-heading h2 {
   min-width: 0;
   margin: 0;
-  font: 600 clamp(19px, 5vw, 22px)/1.12 Georgia, "Times New Roman", serif;
+  font: 700 clamp(18px, 4.55vw, 19.5px)/1.18 Georgia, "Times New Roman", serif;
   letter-spacing: -.028em;
   color: #185443;
 }
@@ -169,8 +169,10 @@
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  margin: 0 -18px;
-  padding: 1px 18px 4px;
+  width: 100%;
+  margin: 0;
+  padding: 1px 0 5px;
+  scroll-padding-inline: 0;
 }
 .routine-shelf-scroll::-webkit-scrollbar { display: none; }
 .routine-card {
@@ -222,7 +224,7 @@
   overflow-wrap: anywhere;
   min-width: 0;
   color: #18493c;
-  font: 600 11.8px/1.1 Georgia, "Times New Roman", serif;
+  font: 700 11.8px/1.14 Georgia, "Times New Roman", serif;
   letter-spacing: -.016em;
 }
 .routine-card-tags {
@@ -336,7 +338,6 @@
 
 @media (max-width: 375px) {
   .routine-library { padding-inline: 14px; }
-  .routine-shelf-scroll { margin-inline: -14px; padding-inline: 14px; }
   .routine-card { flex-basis: clamp(106px, calc((100vw - 42px) / 3), 116px); width: clamp(106px, calc((100vw - 42px) / 3), 116px); }
   .routine-card-main { padding-right: 14px; padding-left: 6px; gap: 3px; }
   .routine-card-title { font-size: 11px; }
