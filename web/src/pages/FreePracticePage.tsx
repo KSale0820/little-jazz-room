@@ -113,6 +113,15 @@ export function FreePracticePage() {
     setNow(instant);
   };
 
+  // Leaving practice is different from temporarily visiting a creator:
+  // freeze the elapsed clock and store it before the route unmounts.
+  const leave = () => {
+    const paused = { ...session, elapsedMs: elapsed(session, Date.now()), runningSince: null };
+    try { sessionStorage.setItem(storageKey, JSON.stringify(paused)); } catch { /* Optional. */ }
+    setSession(paused);
+    navigate('/practice');
+  };
+
   function bookmark(kind: PracticeKind, id: string) {
     if (kind === 'routine') {
       const bookmarks = readRoutineBookmarks(repo.scope);
@@ -267,7 +276,7 @@ export function FreePracticePage() {
     onPause: pauseClock, onFinish: finish, onAdd: () => setPicker(true),
     canPrevious: session.activeIndex > 0,
     canNext: session.activeIndex < session.items.length - 1,
-    onPrevious: () => goTo(session.activeIndex - 1),
+    onBack: leave, onPrevious: () => goTo(session.activeIndex - 1),
     onNext: () => goTo(session.activeIndex + 1),
   } : null;
 
@@ -275,7 +284,7 @@ export function FreePracticePage() {
     {freePlayer ? <PracticePage key={active!.id} freeSession={freePlayer} /> :
       <section className="practice-player practice-demo-refresh fp-redesign" aria-label="Free Practice">
         <header className="practice-player-head">
-          <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
+          <button className="practice-back" type="button" onClick={leave} aria-label="Back to Practice">‹</button>
           <div className="practice-title-group"><h1>Free Practice</h1></div>
           <button className="fp-header-add" type="button" onClick={() => setPicker(true)}>+ Add...</button>
         </header>
