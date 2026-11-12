@@ -3,6 +3,8 @@ export interface ChartNote { bar: number; text: string; updatedAt: string }
 export interface PracticeJournalEntry {
   id: string; sessionId: string; chartId: string; chartTitle: string; text: string;
   createdAt: string; updatedAt: string; durationSeconds: number;
+  /** Optional device-local tuner graphs linked to this session reflection. */
+  pitchCaptureIds?: string[];
 }
 export const INLINE_ANNOTATION_LIMIT = 12;
 export function notesKey(scope: string, chartId: string) {
