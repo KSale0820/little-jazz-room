@@ -73,14 +73,6 @@
   line-height: 1.45;
 }
 
-/* In chartless Free Practice the switch remains, but no invented playback
-   synchronization message occupies the metronome panel. */
-.practice-metronome-status.is-toggle-only {
-  justify-content: flex-start;
-  background: transparent;
-  padding: 0;
-  margin-bottom: 4px;
-}
 
 /* The same transport actions now appear in all metronome contexts.
    The upper status area is informational only, with no duplicate On/Off. */
