@@ -22,6 +22,16 @@ import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { TunerPage } from './TunerPage';
 import { MetronomePage } from './MetronomePage';
+import { useAuth } from '../context/AuthContext';
+import { localStorageScopeForUser } from '../repository/localRepository';
+import { ChartAnnotationSheet, SessionJournalSheet, AddPracticeSectionSheet } from '../components/PracticePlayerSheets';
+import { PracticeMetronomeSheet } from '../components/PracticeMetronomeSheet';
+import { PracticeInlineLoop } from '../components/PracticeInlineLoop';
+import { usePracticeMetronome } from '../lib/usePracticeMetronome';
+import { readLocalList, persistLocalList, notesKey, journalKey, chartAnnotationDisplay } from '../lib/practicePlayerNotes';
+import type { ChartNote, PracticeJournalEntry } from '../lib/practicePlayerNotes';
+import { getPlayerLoopOptions, sectionRepeatProgram, programPlays } from '../lib/practiceLoopProgram';
+import type { CustomPracticeSection } from '../lib/practiceLoopProgram';
 import './PracticePage.css';
 import './PracticePlayerApproved.css';
 import './PracticePlayerDemoRefresh.css';
@@ -136,6 +146,25 @@ export function PracticePage() {
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [recordingPlaying, setRecordingPlaying] = useState(false);
   const [recordingError, setRecordingError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const userScope = localStorageScopeForUser(user?.id);
+  const sessionDraftId = useRef(crypto.randomUUID());
+  const [chartNotes, setChartNotes] = useState<ChartNote[]>([]);
+  const [journalEntries, setJournalEntries] = useState<PracticeJournalEntry[]>([]);
+  const [annotationOpen, setAnnotationOpen] = useState(false);
+  const [journalOpen, setJournalOpen] = useState(false);
+  const [addSectionOpen, setAddSectionOpen] = useState(false);
+  const [customLoopSections, setCustomLoopSections] = useState<CustomPracticeSection[]>([]);
+  const [loopCounts, setLoopCounts] = useState<Record<string, number>>({});
+  const [wholeCount, setWholeCount] = useState(1);
+  const [wholeSelected, setWholeSelected] = useState(true);
+  const [showMeasureNumbers, setShowMeasureNumbers] = useState(() => {
+    try { return localStorage.getItem('little-jazz-room:number-measures:v1:' + userScope) !== 'false'; }
+    catch { return true; }
+  });
+  const metronome = usePracticeMetronome();
+  useEffect(() => { setChartNotes(readLocalList<ChartNote>(notesKey(userScope, chartId))); }, [userScope, chartId]);
+  useEffect(() => { setJournalEntries(readLocalList<PracticeJournalEntry>(journalKey(userScope))); }, [userScope]);
 
   const openTool = (tool: PracticeTool, trigger: HTMLButtonElement) => {
     toolTriggerRef.current = trigger;
@@ -278,8 +307,8 @@ export function PracticePage() {
   );
   const currentSection = activeSections && playhead.sectionIndex !== null ? activeSections[playhead.sectionIndex] : null;
   const loopRange: [number, number] | null = currentSection ? [currentSection.startBar, currentSection.endBar] : null;
-  const demoSections = chart.bars.flatMap((bar, index) => bar.section ? [{ label: bar.section, startBar: index + 1 }] : [])
-    .filter((item, index, all) => all.findIndex(candidate => candidate.label === item.label) === index);
+  const demoOptions = getPlayerLoopOptions(chart, customLoopSections);
+  const userNoteMap: Record<number, string> = Object.fromEntries(chartNotes.map(item => [item.bar, item.text]));
   const planStatus = activeRecording ? 'Recording plays at its original key and tempo' : playhead.ended ? 'Chart finished' : currentSection
     ? 'Section ' + ((playhead.sectionIndex ?? 0) + 1) + ' of ' + activeSections!.length + ' · Pass ' + playhead.pass + ' of ' + currentSection.plays
     : 'Chart once';
@@ -340,6 +369,74 @@ export function PracticePage() {
     setMusicalClock({ chartBeat: 0, startedAtMs: isRunning ? now : null });
     setNowMs(now);
     closeLoop();
+  }
+
+
+  function saveChartAnnotation(bar: number, text: string) {
+    const date = new Date().toISOString();
+    const updated = [...chartNotes.filter(item => item.bar !== bar), { bar, text, updatedAt: date }]
+      .sort((a, b) => a.bar - b.bar);
+    setChartNotes(updated);
+    if (!persistLocalList(notesKey(userScope, chart.id), updated)) showToast('Could not save chart annotation on this device.');
+    else showToast('Chart annotation saved.');
+  }
+  function deleteChartAnnotation(bar: number) {
+    const updated = chartNotes.filter(item => item.bar !== bar);
+    setChartNotes(updated);
+    if (!persistLocalList(notesKey(userScope, chart.id), updated)) showToast('Could not update chart annotations on this device.');
+  }
+  function saveJournalEntry(text: string) {
+    const now = new Date().toISOString();
+    const existing = journalEntries.find(entry => entry.sessionId === sessionDraftId.current);
+    const entry: PracticeJournalEntry = {
+      id: existing?.id ?? crypto.randomUUID(), sessionId: sessionDraftId.current,
+      chartId: chart.id, chartTitle: chart.title, text,
+      createdAt: existing?.createdAt ?? now, updatedAt: now, durationSeconds: elapsedSeconds,
+    };
+    const updated = [...journalEntries.filter(item => item.sessionId !== sessionDraftId.current), entry];
+    if (!persistLocalList(journalKey(userScope), updated)) { showToast('Could not save journal entry on this device.'); return; }
+    setJournalEntries(updated);
+    setNotes(text);
+    setJournalOpen(false);
+    showToast('Journal entry saved.');
+  }
+  function deleteJournalEntry(id: string) {
+    const updated = journalEntries.filter(item => item.id !== id);
+    if (!persistLocalList(journalKey(userScope), updated)) { showToast('Could not delete this entry.'); return; }
+    setJournalEntries(updated);
+  }
+  function updateInlineLoop(nextCounts: Record<string, number>, nextWhole: number, useWhole: boolean,
+    custom: CustomPracticeSection[] = customLoopSections) {
+    const whole = useWhole && nextWhole !== 0;
+    setLoopCounts(nextCounts);
+    setWholeCount(nextWhole);
+    setWholeSelected(whole);
+    if (whole) {
+      if (nextWhole === 1) applyLoop(false, [], false);
+      else applyLoop(true, [{ startBar: 1, endBar: chart.bars.length, plays: programPlays(nextWhole) }], false);
+      return;
+    }
+    const sections = sectionRepeatProgram(getPlayerLoopOptions(chart, custom), nextCounts);
+    if (!sections.length) {
+      audioRef.current?.pause();
+      applyLoop(false, [], false);
+      showToast('All sections are set to 0×. Increase a repeat count to play a section.');
+      return;
+    }
+    applyLoop(true, sections, false);
+  }
+  function addInlineSection(name: string, startBar: number, endBar: number) {
+    const item: CustomPracticeSection = { id: crypto.randomUUID(), label: name, startBar, endBar };
+    const updated = [...customLoopSections, item];
+    setCustomLoopSections(updated);
+    updateInlineLoop({ ...loopCounts, [item.id]: 1 }, wholeCount, false, updated);
+    showToast('Section added to your loop.');
+  }
+  function toggleMeasureNumbers() {
+    const next = !showMeasureNumbers;
+    setShowMeasureNumbers(next);
+    try { localStorage.setItem('little-jazz-room:number-measures:v1:' + userScope, String(next)); }
+    catch { /* display preference still works this session */ }
   }
 
   function seekRecording(seconds: number) {
@@ -442,7 +539,7 @@ export function PracticePage() {
     setNowMs(now);
     setCompletion({
       // One stable UUID per finished session, reused across failed save retries.
-      id: crypto.randomUUID(),
+      id: sessionDraftId.current,
       finishedAt: new Date(finishedStamp).toISOString(),
       durationSeconds,
       routineId: routine?.id,
@@ -453,6 +550,13 @@ export function PracticePage() {
     });
     setSaveState('idle');
     savePromiseRef.current = null;
+    metronome.stop();
+    if (journalEntries.some(entry => entry.sessionId === sessionDraftId.current)) {
+      const updated = journalEntries.map(entry => entry.sessionId === sessionDraftId.current
+        ? { ...entry, durationSeconds } : entry);
+      setJournalEntries(updated);
+      persistLocalList(journalKey(userScope), updated);
+    }
   }
 
   function saveSession(): Promise<boolean> {
@@ -511,6 +615,7 @@ export function PracticePage() {
     setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setCompletion(null);
     setNotes('');
+    sessionDraftId.current = crypto.randomUUID();
     setRating(0);
     setSaveState('idle');
     setPanel(routine ? 'instructions' : 'chart');
