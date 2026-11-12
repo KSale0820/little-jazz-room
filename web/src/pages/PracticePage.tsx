@@ -149,7 +149,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
 
   // Prior steps are committed as milliseconds; the current step retains its
   // fractional second when paused or advanced.
-  const [priorMs, setPriorMs] = useState(0);
+  const [, setPriorMs] = useState(0);
   const [stepMs, setStepMs] = useState(0);
   const [startedAtMs, setStartedAtMs] = useState<number | null>(null);
   const [nowMs, setNowMs] = useState(() => performance.now());
@@ -378,11 +378,6 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     setTempo(bpm);
     setTempoInput(String(bpm));
     setNowMs(now);
-  }
-
-  function openLoop(trigger: HTMLButtonElement) {
-    loopTriggerRef.current = trigger;
-    setLoopOpen(true);
   }
 
   function closeLoop() {
