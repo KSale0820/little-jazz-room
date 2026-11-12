@@ -23,8 +23,17 @@ export function PracticeInlineLoop({ options, counts, wholeCount, wholeSelected,
       <button type="button" className="practice-demo-add-section" disabled={disabled} onClick={onAdd}>+ Section</button>
     </div>
     <div className="practice-demo-loop-items">
-      {picker('whole','Whole',wholeCount,onWhole,wholeSelected)}
-      {options.map(option=>picker(option.id,option.label,counts[option.id]??1,v=>onCount(option.id,v),!wholeSelected))}
+      {(() => {
+        const items = [
+          picker('whole','Whole',wholeCount,onWhole,wholeSelected),
+          ...options.map(option=>picker(option.id,option.label,counts[option.id]??1,v=>onCount(option.id,v),!wholeSelected)),
+        ];
+        // Column-first DOM order yields a readable two-row, left-to-right layout.
+        // Additional custom sections scroll horizontally without creating a third row.
+        const columns = Math.max(4, Math.ceil(items.length / 2));
+        return Array.from({ length: columns }, (_, index) => [items[index],items[index+columns]])
+          .flat().filter(item => item !== undefined);
+      })()}
     </div>
   </section>;
 }
