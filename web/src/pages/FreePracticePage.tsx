@@ -131,6 +131,7 @@ export function FreePracticePage() {
   }
 
   function addItem(kind: PracticeKind, id: string, title: string) {
+    metronome.stop();
     bookmark(kind, id);
     setSession(previous => ({
       ...previous,
@@ -234,7 +235,7 @@ export function FreePracticePage() {
     const existing = journalEntries.find(entry => entry.sessionId === session.id);
     const entry: PracticeJournalEntry = {
       id: existing?.id ?? crypto.randomUUID(), sessionId: session.id,
-      chartId: null, chartTitle: active?.title ?? 'Free Practice',
+      chartId: '', chartTitle: active?.title ?? 'Free Practice',
       text: value, createdAt: existing?.createdAt ?? stamp, updatedAt: stamp,
       durationSeconds: seconds,
     };
