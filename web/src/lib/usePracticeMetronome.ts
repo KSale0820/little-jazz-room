@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { audioContextConstructor, clampBpm } from '../pages/toolsAudio';
-import { metronomeClickOptions, playbackClickTimes, secondsBetweenClicks } from './metronomeSync';
+import { metronomeClickOptions, metronomeClickSound, playbackClickTimes, secondsBetweenClicks } from './metronomeSync';
 import type { PlaybackClockSample } from './metronomeSync';
 
 export type MetronomeMeter = [number, number];
@@ -62,11 +62,13 @@ export function usePracticeMetronome() {
 
   const playClick = useCallback((ctx: AudioContext, at: number, index: number, counting: boolean) => {
     const osc = ctx.createOscillator(), gain = ctx.createGain();
-    const accent = accentsRef.current[index] ?? index === 0;
+    // UI Click 1 is audio index 0. Count-in uses the same accent mapping
+    // instead of masking it with the old identical count-in tone.
+    const sound = metronomeClickSound(index, accentsRef.current, counting);
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(counting ? 760 : accent ? 1420 : 970, at);
+    osc.frequency.setValueAtTime(sound.frequency, at);
     gain.gain.setValueAtTime(.0001, at);
-    gain.gain.exponentialRampToValueAtTime(counting ? .08 : accent ? .15 : .1, at + .002);
+    gain.gain.exponentialRampToValueAtTime(sound.volume, at + .002);
     gain.gain.exponentialRampToValueAtTime(.0001, at + .044);
     osc.connect(gain);
     gain.connect(ctx.destination);
@@ -79,9 +81,17 @@ export function usePracticeMetronome() {
     visualQueue.current.push({ time: at, index });
   }, []);
 
-  const flushVisualBeat = useCallback((now: number) => {
+  const flushVisualBeat = useCallback((ctx: AudioContext) => {
+    // ctx.currentTime is the RENDER clock, ahead of audio reaching a phone's
+    // speaker/Bluetooth device. Use the OUTPUT timestamp for the gold beat
+    // highlight, otherwise beat 2 can light while beat 1 is still audible.
+    const output = ctx.getOutputTimestamp?.();
+    const outputTime = output && Number.isFinite(output.contextTime) && output.contextTime > 0
+      ? Math.min(ctx.currentTime, output.contextTime)
+      : Math.max(0, ctx.currentTime -
+          Math.max(0, (ctx.baseLatency || .04) + (ctx.outputLatency || 0)));
     let current: number | null = null;
-    while (visualQueue.current.length && visualQueue.current[0].time <= now + .004) {
+    while (visualQueue.current.length && visualQueue.current[0].time <= outputTime + .004) {
       current = visualQueue.current.shift()!.index;
     }
     if (current !== null) setActiveBeat(current);
@@ -117,7 +127,7 @@ export function usePracticeMetronome() {
         playClick(ctx, ctx.currentTime + delay, tick % clickCount, false);
         latestScheduledTick.current = tick;
       });
-      flushVisualBeat(ctx.currentTime);
+      flushVisualBeat(ctx);
       return;
     }
 
@@ -141,7 +151,7 @@ export function usePracticeMetronome() {
       beat.current = (beat.current + 1) % clickCount;
       next.current += seconds;
     }
-    flushVisualBeat(ctx.currentTime);
+    flushVisualBeat(ctx);
   }, [flushVisualBeat, playClick]);
 
   const start = useCallback(async () => {
@@ -160,7 +170,8 @@ export function usePracticeMetronome() {
       setActiveBeat(-1);
       // Do not play a count-in over the already-running backing track.
       countLeft.current = playbackSource.current().playing ? 0 : countIn ? clicksRef.current * countInBars : 0;
-      next.current = ctx.currentTime + .04;
+      // Leave enough lead-in for the first beat to reach mobile audio hardware.
+      next.current = ctx.currentTime + .095;
       ticking.current = true;
       setError('');
       setPlaying(true);
