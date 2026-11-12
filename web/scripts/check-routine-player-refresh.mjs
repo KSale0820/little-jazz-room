@@ -28,6 +28,12 @@ try {
     assert.equal(await page.getByRole('button', { name: 'Metronome' }).count(), 1);
     assert.equal(await page.getByText('Mixer', { exact: true }).count(), 0);
 
+    await page.getByRole('button', { name: 'Metronome' }).click();
+    const metronome = page.getByRole('dialog', { name: 'Metronome within practice' });
+    await metronome.waitFor();
+    await metronome.getByText('Tempo: 70 beats per minute').waitFor();
+    await metronome.getByRole('button', { name: 'Close tool and return to session' }).click();
+
     await page.getByRole('button', { name: 'Session journal' }).click();
     await page.getByRole('dialog', { name: 'Session journal' }).getByRole('textbox', { name: 'Session notes' }).fill('Counted the swing beats.');
     await page.getByRole('dialog', { name: 'Session journal' }).getByRole('button', { name: 'Done' }).click();
