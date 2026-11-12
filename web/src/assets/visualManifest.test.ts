@@ -115,6 +115,7 @@ describe('approved visual library', () => {
       ...['trophy', 'stopwatch', 'star', 'calendar-reward', 'sprout']
         .map(name => base + 'approved-isolated-icons/' + name + '.png'),
       ...[0, 1, 2, 3, 4].map(stage => base + 'plant-growth-stages/plant-stage-' + stage + '.png'),
+      base + 'sleep-zzz-sharp.png',
     ];
     for (const name of names) {
       const file = join(publicVisuals, name);
