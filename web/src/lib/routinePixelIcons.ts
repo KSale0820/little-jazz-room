@@ -3,7 +3,7 @@
  *
  * Atlas: 6 columns x 4 rows, each cell 32 x 32 pixels.
  * Asset: /assets/routines/routine-icons-sprite.png
- * Display the background using 192 x 128 CSS pixels and image-rendering: pixelated.
+ * Display the background using 120 x 80 CSS pixels and image-rendering: pixelated.
  */
 export const ROUTINE_ICON_KEYS = [
   'warm-ups', 'arpeggios', 'rhythm', 'scales', 'tempo', 'chords',
@@ -16,7 +16,7 @@ export type RoutineIconKey = (typeof ROUTINE_ICON_KEYS)[number];
 
 export function routineIconPosition(key: RoutineIconKey): string {
   const index = ROUTINE_ICON_KEYS.indexOf(key);
-  return `${-(index % 6) * 32}px ${-Math.floor(index / 6) * 32}px`;
+  return `${-(index % 6) * 20}px ${-Math.floor(index / 6) * 20}px`;
 }
 
 /** Use the most specific supported skill before falling back to a shelf's broader focus. */
