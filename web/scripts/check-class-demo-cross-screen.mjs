@@ -87,9 +87,11 @@ try {
     await page.goto(base + '/practice', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: /^Free Practice/ }).click();
     await page.waitForURL(url => url.pathname === '/free-practice');
-    await verify('P02-free-timer', '.fp-page');
+    await verify('P02-free-timer', '.fp-redesign');
     check(await page.locator('.chord-grid .measure').count() === 0,
       'Free Practice must not auto-load an unrelated chart');
+    check(await page.getByRole('button', { name: /Mixer/ }).count() === 0,
+      'Mixer must be hidden until music content is added');
 
     await page.goto(base + '/routines', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
