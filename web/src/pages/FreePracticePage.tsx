@@ -273,7 +273,7 @@ export function FreePracticePage() {
   if (finished) return <GreatPracticeCompletion key={finished.id}
     record={finished}
     title={session.items.length === 1 ? session.items[0].title : 'Free Practice'}
-    subtitle={'Free Practice · ' + (session.items.length === 1 ? '1 item' : session.items.length + ' items')}
+    subtitle={session.items.length ? 'Free Practice · ' + (session.items.length === 1 ? '1 item' : session.items.length + ' items') : 'Open practice · no materials added'}
     activities={recapActivities}
     status={saveStatus}
     onRetry={() => void saveSession(finished)}
