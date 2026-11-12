@@ -108,7 +108,7 @@ export function GreatPracticeCompletion({
     } catch { setJournalError(true); }
   }
 
-  return <section className="practice-complete gj-screen" aria-label="Practice session complete">
+  return <section className={"practice-complete gj-screen" + (activities.length === 0 ? " gj-empty" : "")} aria-label="Practice session complete">
     <button type="button" className="gj-close" onClick={onDone}
       disabled={status !== 'saved'} aria-label="Done, return to Practice">×</button>
     <header className="gj-hero">
