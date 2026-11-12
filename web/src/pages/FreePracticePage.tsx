@@ -210,8 +210,8 @@ export function FreePracticePage() {
         }));
       } catch { /* Session record is still saved. */ }
       try { sessionStorage.removeItem(storageKey); } catch { /* Optional. */ }
+      // The completion recap is the save confirmation; keep its primary action visible.
       setSaveStatus('saved');
-      showToast('Free Practice session saved.');
     } catch {
       saveInFlight.current = false;
       setSaveStatus('error');
