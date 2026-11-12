@@ -34,8 +34,9 @@ export function ProgressDetailsPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const { repo, sessions, routines, exercises, charts, catId } = useApp();
-  const [monthDate, setMonthDate] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-  const [selectedDate, setSelectedDate] = useState(() => localDay(new Date()));
+  const initialDate = params.get('date') && /^\\d{4}-\\d{2}-\\d{2}$/.test(params.get('date')!) ? new Date(params.get('date')! + 'T12:00:00') : new Date();
+  const [monthDate, setMonthDate] = useState(() => new Date(initialDate.getFullYear(), initialDate.getMonth(), 1));
+  const [selectedDate, setSelectedDate] = useState(() => localDay(initialDate));
   const [expandedJournal, setExpandedJournal] = useState<string | null>(null);
   const journalEntries = useMemo(() => readLocalList<PracticeJournalEntry>(journalKey(repo.scope))
     .filter(item => item && typeof item.text === 'string')
