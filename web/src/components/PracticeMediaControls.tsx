@@ -21,7 +21,9 @@ export function PracticeTimeBadge({ seconds, running, onTogglePause }: {
     <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
       <circle cx="16" cy="16" r="11"/><path d="M16 9v7l5 3"/>
     </svg>
-    <span>Time practiced · <strong data-testid="session-elapsed">{formatPracticeTime(seconds)}</strong>{!running && seconds > 0 ? ' · Paused' : ''}</span>
+    <span className="practice-time-caption">Time practiced</span>
+    <strong data-testid="session-elapsed">{formatPracticeTime(seconds)}</strong>
+    {!running && seconds > 0 && <span className="practice-time-paused">Paused</span>}
     {onTogglePause && <button type="button" className="practice-time-toggle" onClick={onTogglePause}
       aria-label={running ? 'Pause practice timer' : 'Resume practice timer'} title={running ? 'Pause practice time' : 'Resume practice time'}>
       {running ? 'Ⅱ' : '▶'}
