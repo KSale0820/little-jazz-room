@@ -15,8 +15,11 @@ const browser = await chromium.launch({ headless: true });
 async function verifyCompletion(page, viewport, label) {
   await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
   await page.getByRole('heading', { name: "Rate today's session" }).waitFor();
-  assert(await page.locator('.gj-title::before').count().catch(() => 0) === 0 || true,
-    'Header decoration is CSS only');
+  const rays = await page.locator('.gj-title').evaluate(element => ({
+    left: getComputedStyle(element, '::before').content,
+    right: getComputedStyle(element, '::after').content,
+  }));
+  assert(rays.left !== 'none' && rays.right !== 'none', 'Great practice emphasis rays missing');
   assert(await page.locator('.practice-confetti, .practice-celebrate, .practice-playing-cat, .practice-complete-footer').count() === 0,
     'Obsolete clock / cat / confetti was restored');
   assert(await page.locator('.gj-journal-card').isVisible(), 'Default journal preview is missing');
