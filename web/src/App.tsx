@@ -13,6 +13,7 @@ import { TunerPage } from './pages/TunerPage';
 import { MetronomePage } from './pages/MetronomePage';
 import { RoutineLibraryPage } from './pages/RoutineLibraryPage';
 import { ProgressPage } from './pages/ProgressPage';
+import { ProgressDetailsPage } from './pages/ProgressDetailsPage';
 import { SignInPage, SignUpRedirect } from './pages/SignInPage';
 import { ChartBuilderPage } from './pages/ChartBuilderPage';
 import { ChartLibraryPage } from './pages/ChartLibraryPage';
@@ -48,6 +49,7 @@ export default function App() {
               <Route path="free-practice" element={<FreePracticePage />} />
               <Route path="player" element={<PracticePlayerEntry />} />
               <Route path="progress" element={<ProgressPage />} />
+              <Route path="progress/:view" element={<ProgressDetailsPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
