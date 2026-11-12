@@ -370,6 +370,18 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         <div><strong>{reading && isNearString ? (reading.cents >= 0 ? '+' : '') + Math.round(reading.cents) + '¢' : '—'}</strong><span>Deviation</span></div>
       </div>
       </section>
+      <div className="tuner-reference">
+        <svg className="tuner-speaker" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 18V5l11-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="17" cy="16" r="3" />
+        </svg>
+        <span><strong>Reference Pitch</strong><small>Play A (440 Hz)</small></span>
+        <button type="button" className="tuner-reference-play" onClick={() => void toggleReference()}
+          aria-label={referencePlaying ? 'Stop A 440 hertz tone' : 'Play A 440 hertz tone'}>
+          {referencePlaying
+            ? <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="7" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+            : <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="m8 4 12 8-12 8z" /></svg>}
+        </button>
+      </div>
       <div className="tuner-trail-controls">
         <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
           onClick={() => setShowPitchTrail(value => !value)}>
@@ -396,18 +408,6 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           <small>8 seconds ago <span>Now</span></small>
         </section>
       ) : null}
-      <div className="tuner-reference">
-        <svg className="tuner-speaker" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 18V5l11-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="17" cy="16" r="3" />
-        </svg>
-        <span><strong>Reference Pitch</strong><small>Play A (440 Hz)</small></span>
-        <button type="button" className="tuner-reference-play" onClick={() => void toggleReference()}
-          aria-label={referencePlaying ? 'Stop A 440 hertz tone' : 'Play A 440 hertz tone'}>
-          {referencePlaying
-            ? <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="7" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
-            : <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="m8 4 12 8-12 8z" /></svg>}
-        </button>
-      </div>
 
     </section>
   );
