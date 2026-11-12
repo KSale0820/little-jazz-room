@@ -331,3 +331,19 @@ html[data-theme="dark"] .sc-secondary { background: #292d2e; color: #f1f3f0; bor
 @media (max-height: 759px) {
   .sc-hero-art { margin-bottom: 1px; }
 }
+
+/* Tiny approved sleep motif occupies the left empty corner of the cat/plant
+   vignette. It disappears for unlocks and whenever decorative Cat Mode is off. */
+.sc-sleep-zzz {
+  position: absolute;
+  top: 8px;
+  left: 2px;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+@media (min-height: 760px) {
+  .sc-sleep-zzz { top: 16px; left: 2px; width: 35px; height: 35px; }
+}
