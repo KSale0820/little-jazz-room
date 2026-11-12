@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { defaultPlayerSettings, makeSavedExercise, settingsChanged } from './routinePlayerSettings';
+import { defaultPlayerSettings, makeSavedExercise, overlayLocalRoutinePresets, settingsChanged } from './routinePlayerSettings';
+import type { Routine } from '../types/content';
 
 describe('routine player step settings', () => {
   it('loads a step preset over the exercise suggestion without mutating it', () => {
@@ -42,5 +43,24 @@ describe('routine player step settings', () => {
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+
+  it('keeps local step presets when cloud routine steps still match', () => {
+    const base: Routine = {
+      id: 'r', title: 'Test', level: 'Beginner', duration_minutes: 7,
+      visibility: 'private', applicable_instruments: ['All'],
+      steps: [{ exercise_id: 'same', duration_minutes: 3 }, { exercise_id: 'same', duration_minutes: 4 }],
+    };
+    const local: Routine = {
+      ...base, steps: [
+        { ...base.steps[0]!, player_settings: { reference_bpm: 70 } },
+        { ...base.steps[1]!, player_settings: { reference_bpm: 92 } },
+      ],
+    };
+    const merged = overlayLocalRoutinePresets(base, local);
+    expect(merged.steps.map(s => s.player_settings?.reference_bpm)).toEqual([70, 92]);
+    expect(base.steps[0]?.player_settings).toBeUndefined();
+    const reordered: Routine = { ...base, steps: [...base.steps].reverse() };
+    expect(overlayLocalRoutinePresets(reordered, local).steps[0]?.player_settings).toBeUndefined();
   });
 });
