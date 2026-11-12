@@ -75,8 +75,8 @@ export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes,
   </Sheet>;
 }
 
-export function SessionJournalSheet({ chartId, chartTitle, sessionId, seconds, entries, onSave, onDelete, onClose }: {
-  chartId: string; chartTitle: string; sessionId: string; seconds: number; entries: PracticeJournalEntry[];
+export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, onSave, onDelete, onClose }: {
+  chartTitle: string; sessionId: string; seconds: number; entries: PracticeJournalEntry[];
   onSave: (text: string) => void; onDelete: (id: string) => void; onClose: () => void;
 }) {
   const existing = entries.find(e => e.sessionId === sessionId);
