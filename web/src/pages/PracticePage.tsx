@@ -817,13 +817,13 @@ export function PracticePage() {
           <>
           <div className="practice-chart-controls practice-player-pills" id="practice-inline-settings">
             <label>{activeRecording ? 'Key · chart only' : 'Key'}<select value={CHROMA[pitchClass(chartKey) ?? 0]} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
-            <div className="practice-bpm-field"><span>BPM · <button type="button" className="bpm-reset" onClick={() => changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100)}>original</button></span>
+            <div className="practice-bpm-field"><span>BPM · <button type="button" className="bpm-reset" onClick={() => changeTempo(chosenExercise?.suggested_bpm ?? 100)}>original</button></span>
               <div className="bpm-stepper"><input aria-label="Reference tempo in beats per minute" type="number" min={40} max={240} value={tempoInput} onChange={event => { setTempoInput(event.target.value); if (+event.target.value >= 40 && +event.target.value <= 240) changeTempo(+event.target.value); }} onBlur={() => changeTempo(+tempoInput || tempo)} />
               <div><button type="button" aria-label="Increase reference BPM" onClick={() => changeTempo(tempo + 1)}>⌃</button><button type="button" aria-label="Decrease reference BPM" onClick={() => changeTempo(tempo - 1)}>⌄</button></div></div>
             </div>
             <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
           </div>
-          <p className="practice-reference-note">{activeRecording ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.' : 'Play follows the chart visually at the selected BPM; recorded audio is not available.'}</p>
+          <p className="practice-reference-note">Play follows the chart visually at the selected BPM; recorded audio is not available.</p>
           <div className="practice-session-row"><button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button><PracticeTimeBadge seconds={elapsedSeconds} running={isRunning} /></div>
   
           </>
