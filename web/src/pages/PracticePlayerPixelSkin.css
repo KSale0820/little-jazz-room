@@ -1,0 +1,227 @@
+/* Little Jazz Room: restrained pixel skin for the latest class-demo recorded
+   Practice Player. Color, border and icon treatment ONLY. Keep the demo
+   layout, controls, text, timing, audio, sections and touch targets intact.
+   The decorative pixel notes occupy no layout space. No floor or trumpet. */
+
+.practice-player.practice-demo-refresh {
+  --pixel-ink: #123c38;
+  --pixel-green: #175942;
+  --pixel-stroke: #285a50;
+  --pixel-paper: #fffbf3;
+  --pixel-cream: #fff8ed;
+  --pixel-lilac: #b49bbb;
+  --pixel-soft-lilac: #e9ddec;
+  --pixel-gold: #c58f37;
+  --pixel-focus: #a476b2;
+  --demo-green: var(--pixel-green);
+  --demo-stroke: var(--pixel-stroke);
+  --demo-pale: #edf3e6;
+  background: var(--pixel-cream);
+  color: var(--pixel-ink);
+  box-shadow: inset 0 0 0 2px var(--pixel-lilac);
+  position: relative;
+}
+
+/* Small approved pixel-note motif in the existing top-right whitespace.
+   Absolutely positioned: it cannot push the chart or any button downward. */
+.practice-player.practice-demo-refresh::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 7px;
+  width: 25px;
+  height: 25px;
+  background: #93689b;
+  -webkit-mask: url('/visuals/pixel-motifs/music-notes.svg') center / contain no-repeat;
+  mask: url('/visuals/pixel-motifs/music-notes.svg') center / contain no-repeat;
+  image-rendering: pixelated;
+  opacity: .8;
+  pointer-events: none;
+}
+.practice-player.practice-demo-refresh .practice-title-group h1 {
+  color: var(--pixel-green);
+  text-shadow: 1px 0 0 rgba(18,60,56,.17);
+}
+.practice-player.practice-demo-refresh .practice-player-head .practice-back,
+.practice-player.practice-demo-refresh .practice-audio-state strong {
+  color: var(--pixel-green);
+}
+.practice-player.practice-demo-refresh .practice-title-group > p {
+  color: #777282;
+}
+.practice-player.practice-demo-refresh .practice-title-group .practice-chart-style {
+  color: #b24739;
+}
+.practice-player.practice-demo-refresh .practice-audio-state {
+  color: #81768a;
+}
+.practice-player.practice-demo-refresh .practice-demo-chart-pencil {
+  background: #fff5ee;
+  border-color: #bc514a;
+  color: #b7473b;
+  box-shadow: 2px 2px 0 #e4c9c7;
+  border-radius: 7px;
+}
+
+/* Chart stays entirely readable and retains its full measure geometry. */
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure {
+  background: var(--pixel-paper);
+  border-left-color: var(--pixel-stroke);
+  border-bottom-color: var(--pixel-stroke);
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure:nth-child(4n) {
+  border-right-color: var(--pixel-stroke);
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure:nth-child(-n+4) {
+  border-top-color: var(--pixel-stroke);
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all.chart-dense .chord-grid.practice-sheet .measure:is(:nth-child(8n + 1), :nth-child(8n + 2), :nth-child(8n + 3), :nth-child(8n + 4)) {
+  border-top-color: #185741;
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .practice-sheet .measure-section-label {
+  color: var(--pixel-green);
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .practice-sheet .chords span {
+  color: #14373b;
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .practice-sheet .chords.two span + span {
+  border-left-color: #a5b9ad;
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.chosen {
+  background: #fbefc9;
+  box-shadow: inset 0 0 0 1.5px var(--pixel-gold);
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.looped:not(.chosen) {
+  background: #e9f3e7;
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet .measure.playhead:not(.chosen) {
+  box-shadow: inset 0 -2px 0 #8d719d;
+}
+
+/* Pixel-like outlines and gentle hard shadows; dimensions do not change. */
+.practice-player.practice-demo-refresh .practice-recording-seek input[type="range"] {
+  accent-color: var(--pixel-green);
+}
+.practice-player.practice-demo-refresh .practice-control-row .practice-timer-button {
+  background: #176347;
+  color: #fffef6;
+  box-shadow: inset 0 0 0 2px #124534, 3px 3px 0 #b9cfba;
+}
+.practice-player.practice-demo-refresh .practice-control-row .practice-measure-btn,
+.practice-player.practice-demo-refresh .practice-control-row .practice-secondary-transport {
+  color: #185b46;
+}
+.practice-player.practice-demo-refresh .practice-control-row .practice-secondary-transport[aria-pressed="true"] {
+  color: #765a97;
+}
+.practice-player.practice-demo-refresh .practice-demo-setting,
+.practice-player.practice-demo-refresh .practice-demo-original {
+  background: var(--pixel-paper);
+  border-color: var(--pixel-stroke);
+  box-shadow: 2px 2px 0 #e5d6e6;
+  color: var(--pixel-green);
+  border-radius: 8px;
+}
+.practice-player.practice-demo-refresh .practice-demo-setting > label,
+.practice-player.practice-demo-refresh .practice-demo-instrument > span {
+  color: var(--pixel-green);
+}
+.practice-player.practice-demo-refresh .practice-demo-input-stepper,
+.practice-player.practice-demo-refresh .practice-demo-instrument select {
+  background: #faf5eb;
+  border-color: #d3c6ce;
+  border-radius: 7px;
+}
+.practice-player.practice-demo-refresh .practice-demo-input-stepper input,
+.practice-player.practice-demo-refresh .practice-demo-input-stepper select,
+.practice-player.practice-demo-refresh .practice-demo-instrument select {
+  color: var(--pixel-ink);
+}
+.practice-player.practice-demo-refresh .practice-demo-updown {
+  border-left-color: #d3c6ce;
+}
+.practice-player.practice-demo-refresh .practice-demo-updown button {
+  background: #fdf9f1;
+  border-bottom-color: #d3c6ce;
+  color: var(--pixel-green);
+}
+.practice-player.practice-demo-refresh .practice-demo-audio-note {
+  color: #77707c;
+}
+.practice-player.practice-demo-refresh .practice-demo-loop {
+  background: #fbf8ef;
+  border-color: #e0d6d9;
+  box-shadow: inset 0 0 0 1px #f5ebe9;
+  border-radius: 12px;
+}
+.practice-player.practice-demo-refresh .practice-demo-loop-title,
+.practice-player.practice-demo-refresh .practice-demo-loop-part,
+.practice-player.practice-demo-refresh .practice-demo-add-section {
+  color: var(--pixel-green);
+}
+.practice-player.practice-demo-refresh .practice-demo-loop-part {
+  background: var(--pixel-paper);
+  border-color: #dfd6d0;
+  border-radius: 7px;
+}
+.practice-player.practice-demo-refresh .practice-demo-loop-part.selected > span:first-child {
+  background: #1a6048;
+  color: #fffcf6;
+  border-radius: 5px;
+}
+.practice-player.practice-demo-refresh .practice-demo-count {
+  background: #faf7ef;
+  border-color: #e0d5d5;
+  border-radius: 5px;
+}
+.practice-player.practice-demo-refresh .practice-demo-add-section {
+  border-color: #4f9580;
+  background: #f4f8ef;
+  border-radius: 8px;
+}
+.practice-player.practice-demo-refresh .practice-demo-tools > button,
+.practice-player.practice-demo-refresh .practice-demo-metronome-wrap {
+  background: var(--pixel-paper);
+  border-color: var(--pixel-stroke);
+  border-radius: 8px;
+  color: var(--pixel-green);
+  box-shadow: 2px 2px 0 #e7d8e8;
+}
+.practice-player.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-tool-main {
+  color: var(--pixel-green);
+}
+.practice-player.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-metronome-switch {
+  background: #e5f0e3;
+  color: #245c45;
+  border-color: #b2cbb5;
+}
+.practice-player.practice-demo-refresh .practice-demo-tools > button:disabled {
+  background: #f6f3ee;
+  color: #789084;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row {
+  background: #edf2e6;
+  border-color: #c5d7c0;
+  border-radius: 12px;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge,
+.practice-player.practice-demo-refresh .practice-demo-journal {
+  color: var(--pixel-green);
+}
+.practice-player.practice-demo-refresh .practice-demo-session-actions .practice-finish-action {
+  background: #166047;
+  color: #fffdf6;
+  box-shadow: inset 0 0 0 2px #1d4d3d;
+  border-radius: 8px 0 0 8px;
+}
+.practice-player.practice-demo-refresh .practice-demo-journal {
+  background: #edf2e6;
+  border-left-color: #a8c4b0;
+}
+.practice-player.practice-demo-refresh :is(button,input,select):focus-visible {
+  outline: 3px solid var(--pixel-focus);
+  outline-offset: 2px;
+}
+
+/* Do not introduce a decorative footer or any extra vertical height.
+   The existing responsive layout rules from the demo remain authoritative. */
