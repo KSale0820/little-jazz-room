@@ -32,8 +32,8 @@
 .routine-intro { margin: 0 0 15px; }
 .routine-intro h1 {
   margin: 0;
-  font: 700 clamp(30px, 7.5vw, 34px)/1.08 Georgia, "Times New Roman", serif;
-  letter-spacing: -.035em;
+  font: 400 clamp(28px, 7vw, 30px)/1.13 Georgia, "Times New Roman", serif;
+  letter-spacing: -.045em;
   color: #154e3e;
 }
 .routine-intro p {
@@ -140,8 +140,8 @@
 .routine-shelf-heading h2 {
   min-width: 0;
   margin: 0;
-  font: 700 clamp(18px, 4.55vw, 19.5px)/1.18 Georgia, "Times New Roman", serif;
-  letter-spacing: -.028em;
+  font: 400 clamp(20px, 5.2vw, 22px)/1.12 Georgia, "Times New Roman", serif;
+  letter-spacing: -.025em;
   color: #185443;
 }
 .routine-see-all {
@@ -224,7 +224,7 @@
   overflow-wrap: anywhere;
   min-width: 0;
   color: #18493c;
-  font: 700 11.8px/1.14 Georgia, "Times New Roman", serif;
+  font: 400 12.5px/1.13 Georgia, "Times New Roman", serif;
   letter-spacing: -.016em;
 }
 .routine-card-tags {
@@ -340,7 +340,7 @@
   .routine-library { padding-inline: 14px; }
   .routine-card { flex-basis: clamp(106px, calc((100vw - 42px) / 3), 116px); width: clamp(106px, calc((100vw - 42px) / 3), 116px); }
   .routine-card-main { padding-right: 14px; padding-left: 6px; gap: 3px; }
-  .routine-card-title { font-size: 11px; }
+  .routine-card-title { font-size: 11.8px; }
   .routine-card-tags { left: 6px; gap: 3px; }
   .routine-card-tags > span { font-size: 8px; }
   .routine-filters { gap: 5px; }
