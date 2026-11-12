@@ -328,7 +328,8 @@ export function PracticeJournalPage() {
         ? <button type="button" className="pj-card pj-day-summary" onClick={() => openDay(activeDate)}>
           <JournalRoutineIcon
             iconKey={journalEntryForDate(activeDate)?.iconKey}
-            title={journalEntryForDate(activeDate)?.title || journalEntryForDate(activeDate)?.chartTitle || sessionTitle(sessionsForDate[0] ?? { id: '', finishedAt: '', durationSeconds: 0 })}
+            title={journalEntryForDate(activeDate)?.title || journalEntryForDate(activeDate)?.chartTitle ||
+              (sessionsForDate[0] ? sessionTitle(sessionsForDate[0]) : 'Practice')}
             tags={entriesForDate.flatMap(e => e.tags ?? [])} />
           <span><strong>View practice sheet</strong><small>{sessionsForDate.length} sessions · {entriesForDate.length} reflections · {annotationsForDate.length} chart notes</small>
             <TagChips palette={tagDefinitions} tags={uniqueTags([...entriesForDate.flatMap(e => e.tags ?? []), ...annotationsForDate.flatMap(n => n.tags ?? [])])} /></span>
