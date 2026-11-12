@@ -78,7 +78,7 @@ export function ProfilePage() {
           <p><strong>Want to see a filled-in profile?</strong> Explore a sample musician with sessions, an 8-day streak, journals, chart notes and their own routine.</p>
           <button type="button" className="btn" onClick={() => navigate('/demo')}>Explore sample profile</button>
         </div>}
-        {demoActive && <p className="profile-sample-preview">Sample profile: edits stay on this browser and never sync to an account.</p>
+        {demoActive && <p className="profile-sample-preview">Sample profile: edits stay on this browser and never sync to an account.</p>}
         {editingName ? (
           <form onSubmit={saveName} className="profile-name-form">
             <label htmlFor="profile-display-name">Display name</label>
