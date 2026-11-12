@@ -45,12 +45,11 @@ it.skipIf(process.env.RUN_ROUTINE_BROWSER_QA !== '1')('visually captures R01/R03
       await page.getByRole('heading', { name: 'Routines', exact: true }).waitFor();
       await expect.poll(async () => page.getByRole('tab').count()).toBe(3);
       await expect.poll(async () => page.locator('.routine-card-icon-slot').count()).toBe(14);
-      await expect(page.locator('.routine-card-icon-slot').first()).toHaveCSS(
-        'background-image', /routine-icons-sprite\.png/
-      );
-      await expect(page.locator('.routine-card-icon-slot').first()).toHaveAttribute(
-        'data-icon-key', 'warm-ups'
-      );
+      await expect.poll(async () => page.locator('.routine-card-icon-slot').first()
+        .evaluate(element => getComputedStyle(element).backgroundImage))
+        .toContain('routine-icons-sprite.png');
+      await expect.poll(async () => page.locator('.routine-card-icon-slot').first()
+        .getAttribute('data-icon-key')).toBe('warm-ups');
       await expect.poll(async () => page.locator('.routine-shelf').count()).toBeGreaterThan(3);
       await page.locator('.routine-card').first().waitFor();
       recordImage('R01-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
