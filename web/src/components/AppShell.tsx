@@ -15,6 +15,7 @@ const NAV: { to: string; route: NavRoute; label: string }[] = [
 export function AppShell() {
   const { pathname } = useLocation();
   const isPracticeSession = pathname === '/free-practice' || pathname === '/player';
+  const isProgressDetail = pathname.startsWith('/progress/');
   const { toast, showToast } = useApp();
   const { configured, user, signOut, authError } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
@@ -57,7 +58,7 @@ export function AppShell() {
         ) : null}
         <nav className="sidebar-nav">
           {NAV.map(({ to, route, label }) => (
-            <NavLink key={to} to={to} end className={({ isActive }) => (isActive || (route === 'practice' && isPracticeSession) ? 'current' : undefined)}>
+            <NavLink key={to} to={to} end className={({ isActive }) => (isActive || (route === 'practice' && isPracticeSession) || (route === 'progress' && isProgressDetail) ? 'current' : undefined)}>
               <PixelIcon route={route} />
               {label}
             </NavLink>
@@ -84,7 +85,7 @@ export function AppShell() {
           </div>
           <nav className="bottom-nav" aria-label="Main navigation">
             {NAV.map(({ to, route, label }) => (
-              <NavLink key={to} to={to} end className={({ isActive }) => (isActive || (route === 'practice' && isPracticeSession) ? 'current' : undefined)}>
+              <NavLink key={to} to={to} end className={({ isActive }) => (isActive || (route === 'practice' && isPracticeSession) || (route === 'progress' && isProgressDetail) ? 'current' : undefined)}>
                 <PixelIcon route={route} />
                 {label}
               </NavLink>
