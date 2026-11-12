@@ -272,7 +272,7 @@ export function ProgressPage() {
         <strong>Journal</strong>
       </button>
       <button type="button" className="pr-shortcut" onClick={() => navigate('/progress/notes')}>
-        <span className="pr-shortcut-icon" aria-hidden="true"><img src="/visuals/progress/practice-notes.png" alt="" /></span>
+        <span className="pr-shortcut-icon" aria-hidden="true"><img src="/journal/practice-notes.png" alt="" /></span>
         <strong>Notes</strong>
       </button>
     </nav>

@@ -262,10 +262,10 @@ export function PracticeJournalPage() {
         onClick={() => navigate('/progress/activity?session=' + encodeURIComponent(s.id))}>
         <span>♫</span><div><strong>{sessionTitle(s)}</strong><small>{formatMinutes(s.durationSeconds)} min · Session</small></div><b>›</b></button>)}
       {entriesForDate.map(entry => <button type="button" className="pj-card pj-row" key={entry.id} onClick={() => openEntry(entry)}>
-        <img src={entry.kind === 'note' ? '/visuals/progress/practice-notes.png' : '/visuals/progress/practice-journal.png'} alt="" />
+        <img src={entry.kind === 'note' ? '/journal/practice-notes.png' : '/visuals/progress/practice-journal.png'} alt="" />
         <div><strong>{noteLabel(entry)}</strong><TagChips tags={entry.tags ?? []} /><p>{entry.text || entry.nextTime || entry.takeaways || 'Open entry'}</p></div><b>›</b></button>)}
       {annotationsForDate.map(note => <button type="button" className="pj-card pj-row" key={note.chartId + note.bar} onClick={() => openAnnotation(note)}>
-        <img src="/visuals/progress/practice-notes.png" alt="" /><div><strong>{note.chartTitle} · Bar {note.bar}</strong>
+        <img src="/journal/practice-notes.png" alt="" /><div><strong>{note.chartTitle} · Bar {note.bar}</strong>
           <TagChips tags={note.tags ?? []} /><p>{note.text}</p></div><b>›</b></button>)}
       {!sessionsForDate.length && !entriesForDate.length && !annotationsForDate.length && <p className="pj-empty">Nothing saved for this day. Add a note to remember what you practiced.</p>}
       <button type="button" className="pj-primary" onClick={() => makeEntry('journal')}>+ Add entry</button>
@@ -287,7 +287,7 @@ export function PracticeJournalPage() {
       <div className="pj-list-heading"><h2>Saved notes</h2><span>{noteRows.length} notes</span></div>
       {noteRows.map(row => <button type="button" className="pj-card pj-row" key={row.type === 'entry' ? row.entry.id : row.note.chartId + ':' + row.note.bar}
         onClick={() => row.type === 'entry' ? openEntry(row.entry) : openAnnotation(row.note)}>
-        <img src="/visuals/progress/practice-notes.png" alt="" />
+        <img src="/journal/practice-notes.png" alt="" />
         <div><small>{formatDate(row.date)}</small><strong>{row.type === 'entry' ? noteLabel(row.entry) : row.note.chartTitle + ' · Bar ' + row.note.bar}</strong>
           <TagChips tags={row.type === 'entry' ? row.entry.tags ?? [] : row.note.tags ?? []} />
           <p>{row.type === 'entry' ? row.entry.text : row.note.text}</p></div><b>›</b>
