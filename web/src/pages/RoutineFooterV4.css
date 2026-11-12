@@ -224,3 +224,25 @@ section.practice-player.practice-demo-refresh .practice-unavailable-tools-toggle
 section.practice-player.practice-demo-refresh .practice-unavailable-tools-toggle:focus-visible {
   outline: 2px solid #235a45;
 }
+
+/* Guided routines keep the compact dock in reach on short phone screens,
+   even when the full lesson is longer than the viewport. The lesson itself
+   remains scrollable and reserves space beneath its final content. */
+@media (max-width: 899px) {
+  section.practice-player.practice-guided.practice-demo-refresh {
+    padding-bottom: calc(132px + env(safe-area-inset-bottom)) !important;
+  }
+  section.practice-player.practice-guided.practice-demo-refresh .routine-session-dock {
+    position: fixed;
+    bottom: max(4px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(calc(100vw - 28px), 460px);
+    z-index: 90;
+    margin: 0;
+  }
+}
+/* Informational-only toasts must never block the primary Finish control. */
+body:has(.practice-player.practice-guided) .toast-message {
+  pointer-events: none;
+}
