@@ -126,8 +126,8 @@
 }
 .routine-shelves {
   display: grid;
-  gap: 21px;
-  padding-top: 15px;
+  gap: 10px;
+  padding-top: 11px;
 }
 .routine-shelf { min-width: 0; }
 .routine-shelf-heading {
@@ -135,7 +135,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 7px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 .routine-shelf-heading h2 {
   min-width: 0;
@@ -180,8 +180,8 @@
   flex: 0 0 clamp(110px, calc((100vw - 54px) / 3), 124px);
   width: clamp(110px, calc((100vw - 54px) / 3), 124px);
   min-width: 0;
-  height: 88px;
-  min-height: 88px;
+  height: 78px;
+  min-height: 78px;
   overflow: hidden;
   border-radius: 11px;
   border: 1px solid #e0ddd1;
