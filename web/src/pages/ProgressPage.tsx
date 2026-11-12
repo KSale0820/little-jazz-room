@@ -178,8 +178,8 @@ export function ProgressPage() {
         <span className="pr-milestone-text"><strong>{scheduledStreak}-day streak</strong><small>{scheduledStreak > 0 ? 'Keep it going!' : 'Start your streak!'}</small></span><span aria-hidden="true" className="pr-chevron">›</span>
       </button>
       <button type="button" className="pr-milestone pr-achievement" onClick={() => navigate('/progress/achievements')}>
-        <span className="pr-milestone-icon" aria-hidden="true"><img src="/visuals/progress/pixel-trophy.svg" alt="" /></span>
-        <span className="pr-milestone-text"><strong>{achievementsCount} achievements</strong><small>View milestones</small></span><span aria-hidden="true" className="pr-chevron">›</span>
+        <span className="pr-milestone-icon" aria-hidden="true"><img src="/visuals/progress/pixel-trophy-new.png" alt="" /></span>
+        <span className="pr-milestone-text"><strong>{achievementsCount} achievements</strong><small>View my room</small></span><span aria-hidden="true" className="pr-chevron">›</span>
       </button>
     </div>
 
