@@ -25,6 +25,35 @@ try {
         animations: 'disabled' });
     };
     const elapsed = () => page.getByTestId('session-elapsed').innerText();
+    const checkChartlessTools = async selector => {
+      const geometry = await page.locator(selector).evaluate(row => {
+        const cells = [...row.children].map(el => el.getBoundingClientRect());
+        const parent = row.getBoundingClientRect();
+        return { widths: cells.map(rect => rect.width), rowWidth: parent.width,
+          topDiff: Math.abs(cells[0].top - cells[1].top) };
+      });
+      check(geometry.widths.length === 2, 'Chartless tools must show only Metronome and Tuner');
+      check(geometry.topDiff <= 1, 'Chartless tools must share the same row');
+      check(geometry.widths.every(w => w >= geometry.rowWidth * .43),
+        'Tuner must expand to fill its half of the row');
+    };
+    const checkPickerTabs = async () => {
+      const geometry = await page.locator('.fp-picker-tabs').evaluate(el => {
+        const outer = el.getBoundingClientRect();
+        return [...el.querySelectorAll('button')].map(button => {
+          const rect = button.getBoundingClientRect();
+          return {
+            top: rect.top - outer.top, bottom: outer.bottom - rect.bottom,
+            height: rect.height,
+            overflow: button.scrollHeight - button.clientHeight,
+            label: button.textContent?.trim(),
+          };
+        });
+      });
+      check(geometry.length === 2, 'Add dialog needs both content tabs');
+      check(geometry.every(tab => tab.height >= 40 && tab.top >= -1 && tab.bottom >= -1 && tab.overflow <= 1),
+        'Chart/Track and Routine tabs are clipped or collapsed: ' + JSON.stringify(geometry));
+    };
     const checkFooter = async name => {
       const footer = page.locator('.fp-session-footer');
       check(await footer.count() === 1, name + ': missing single session footer');
@@ -56,6 +85,19 @@ try {
     check(await page.getByRole('button', { name: /Metronome/ }).isVisible(), 'Metronome missing in empty state');
     check(await page.locator('.fp-simple-tools .practice-tool-glyph').count() === 2,
       'Empty-state Metronome and Tuner must use the approved player icon components');
+    await checkChartlessTools('.fp-simple-tools');
+    await page.locator('.fp-simple-tools .practice-demo-tool-main').click();
+    const emptyMetronome = page.getByRole('dialog', { name: 'Metronome settings' });
+    await emptyMetronome.waitFor();
+    check(await emptyMetronome.getByRole('group', { name: 'Metronome time signature' }).isVisible(),
+      'Without a chart, time signature must be selectable');
+    check(await emptyMetronome.getByText(/Running independently/).count() === 0,
+      'Chartless metronome should not display playback synchronization blurb');
+    await emptyMetronome.getByRole('button', { name: '3/4' }).click();
+    check(await emptyMetronome.getByRole('button', { name: '3/4' }).getAttribute('aria-pressed') === 'true',
+      'Standalone Free Practice time signature cannot change');
+    await screenshot('01a-empty-metronome');
+    await emptyMetronome.getByRole('button', { name: 'Close Metronome settings' }).click();
     await page.waitForTimeout(1250);
     check((await elapsed()) === '00:00', 'Free Practice timer must NOT start automatically');
     check(await page.getByRole('button', { name: 'Start practice timer' }).count() >= 1,
@@ -75,6 +117,8 @@ try {
 
     await page.getByRole('button', { name: /Chart \/ Track/ }).click();
     await page.getByRole('dialog', { name: 'Add to Session' }).waitFor();
+    await checkPickerTabs();
+    await screenshot('01d-picker');
     const autumn = page.locator('.fp-picker-list button').filter({ hasText: 'Autumn Leaves' })
       .filter({ hasText: 'Recording' });
     await autumn.click();
@@ -89,9 +133,18 @@ try {
     const beforeAdd = await elapsed();
     check(beforeAdd !== '00:00', 'Queue selection reset the independent session timer');
     await checkFooter('recording');
+    await page.locator('.practice-free-session .practice-demo-tool-main').click();
+    const recordedMetronome = page.getByRole('dialog', { name: 'Metronome settings' });
+    await recordedMetronome.waitFor();
+    check(await recordedMetronome.getByRole('group', { name: 'Metronome time signature' }).count() === 0,
+      'Recorded charts should continue using the chart time signature');
+    check(await recordedMetronome.getByText('from the chart').count() === 1,
+      'Recorded charts should display their meter source');
+    await recordedMetronome.getByRole('button', { name: 'Close Metronome settings' }).click();
     await screenshot('02-recording');
 
     await page.getByRole('button', { name: /\+ Add/ }).click();
+    await checkPickerTabs();
     await page.getByRole('tab', { name: 'Routine' }).click();
     await page.locator('.fp-picker-list button').filter({ hasText: 'Daily Jazz Warm-Up' }).click();
     await page.getByRole('heading', { name: 'Daily Jazz Warm-Up' }).waitFor();
@@ -104,6 +157,21 @@ try {
     check(await page.locator('.practice-lesson-scroll').count() === 1,
       'Routine must reuse the actual guided lesson component');
     check(await page.locator('.practice-coach-dock').count() === 0, 'Free Practice must omit companion illustrations');
+    await checkChartlessTools('.practice-free-session.practice-no-chart .practice-demo-tools');
+    await page.locator('.practice-free-session .practice-demo-tool-main').click();
+    const routineMetronome = page.getByRole('dialog', { name: 'Metronome settings' });
+    await routineMetronome.waitFor();
+    check(await routineMetronome.getByRole('group', { name: 'Metronome time signature' }).isVisible(),
+      'Routine without a chart must allow time signature selection');
+    check(await routineMetronome.getByText('from the chart').count() === 0,
+      'Routine without a chart should not claim a chart meter');
+    check(await routineMetronome.getByText(/Running independently/).count() === 0,
+      'Routine without a chart must omit playback synchronization blurb');
+    await routineMetronome.getByRole('button', { name: '6/8' }).click();
+    check(await routineMetronome.getByRole('button', { name: '6/8' }).getAttribute('aria-pressed') === 'true',
+      'Routine-only time signature cannot change');
+    await screenshot('03a-routine-metronome');
+    await routineMetronome.getByRole('button', { name: 'Close Metronome settings' }).click();
     await checkFooter('routine');
     await screenshot('03-routine-instructions');
 
