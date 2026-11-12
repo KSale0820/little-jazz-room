@@ -7,6 +7,7 @@ import { cumulativePracticeMinutes, readPreviouslySelectedCat, readSavedUnlocks,
 import { isVisibleCatId } from '../features/cats/CatCompanion';
 import { readLocalList, journalKey, type PracticeJournalEntry } from '../lib/practicePlayerNotes';
 import type { PracticeSessionRecord, Routine } from '../types/content';
+import { ProgressIcon } from '../components/ProgressIcon';
 import './ProgressPage.css';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
@@ -165,11 +166,11 @@ export function ProgressPage() {
 
     <div className="pr-milestones">
       <button type="button" className="pr-milestone pr-streak" onClick={() => navigate('/free-practice')}>
-        <span className="pr-milestone-icon" aria-hidden="true">🔥</span>
+        <span className="pr-milestone-icon" aria-hidden="true"><img src="/visuals/pixel-motifs/streak-fire.png" alt="" /></span>
         <span className="pr-milestone-text"><strong>{scheduledStreak}-day streak</strong><small>{scheduledStreak > 0 ? 'Keep it going!' : 'Start your streak!'}</small></span><span aria-hidden="true" className="pr-chevron">›</span>
       </button>
       <button type="button" className="pr-milestone pr-achievement" onClick={() => navigate('/progress/achievements')}>
-        <span className="pr-milestone-icon" aria-hidden="true">🏆</span>
+        <span className="pr-milestone-icon" aria-hidden="true"><img src="/visuals/progress/pixel-trophy.svg" alt="" /></span>
         <span className="pr-milestone-text"><strong>{achievementsCount} achievements</strong><small>View milestones</small></span><span aria-hidden="true" className="pr-chevron">›</span>
       </button>
     </div>
@@ -226,7 +227,7 @@ export function ProgressPage() {
     <section className="pr-card pr-recent" aria-labelledby="pr-recent-title">
       <div className="pr-section-head"><h2 id="pr-recent-title">Recent Practice</h2><button type="button" className="pr-view-all" onClick={() => navigate('/progress/activity')}>View All ›</button></div>
       {recentSessions.length ? <div className="pr-session-list">{recentSessions.map(session => <button type="button" className="pr-session" key={session.id} onClick={() => navigate('/progress/activity?session=' + encodeURIComponent(session.id))}>
-        <span className="pr-session-icon" aria-hidden="true">{session.routineId ? '☷' : session.exerciseId ? '♬' : '♫'}</span>
+        <span className="pr-session-icon" aria-hidden="true"><ProgressIcon name={session.routineId ? 'routine' : session.exerciseId ? 'exercise' : 'music'} /></span>
         <span className="pr-session-detail"><strong>{sessionName(session)}</strong><small>{sessionType(session)} · {Math.round(Math.max(0, session.durationSeconds) / 60)} min · {dateLabel(session.finishedAt, now)}</small></span>
         <span className="pr-chevron" aria-hidden="true">›</span>
       </button>)}</div> : <p className="pr-empty">No sessions yet. Your completed practice will appear here.</p>}
@@ -234,13 +235,13 @@ export function ProgressPage() {
 
     <nav className="pr-quick-links" aria-label="Saved practice information">
       <button type="button" className="pr-shortcut pr-shortcut-calendar" onClick={() => navigate('/progress/calendar')}>
-        <span className="pr-shortcut-icon" aria-hidden="true">▦</span><strong>Practice Calendar</strong><span className="pr-chevron" aria-hidden="true">›</span>
+        <span className="pr-shortcut-icon" aria-hidden="true"><ProgressIcon name="calendar" /></span><strong>Practice Calendar</strong><span className="pr-chevron" aria-hidden="true">›</span>
       </button>
       <button type="button" className="pr-shortcut pr-shortcut-journal" onClick={() => navigate('/progress/journal')}>
-        <span className="pr-shortcut-icon" aria-hidden="true">▤</span><strong>Journal</strong><span className="pr-chevron" aria-hidden="true">›</span>
+        <span className="pr-shortcut-icon" aria-hidden="true"><ProgressIcon name="journal" /></span><strong>Journal</strong><span className="pr-chevron" aria-hidden="true">›</span>
       </button>
       <button type="button" className="pr-shortcut pr-shortcut-notes" onClick={() => navigate('/progress/notes')}>
-        <span className="pr-shortcut-icon" aria-hidden="true">♬</span><strong>Notes</strong><span className="pr-chevron" aria-hidden="true">›</span>
+        <span className="pr-shortcut-icon" aria-hidden="true"><ProgressIcon name="notes" /></span><strong>Notes</strong><span className="pr-chevron" aria-hidden="true">›</span>
       </button>
     </nav>
   </section>;
