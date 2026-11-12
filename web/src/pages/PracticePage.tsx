@@ -906,7 +906,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
                 <span className="routine-step-trigger-icon" aria-hidden="true">⌄</span>
               </button>
             : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
-          {hasMusicContent && chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
+          {showPlayerControls && chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
         </div>
         {freeSession && <button type="button" className="fp-header-add" onClick={freeSession.onAdd}>+ Add...</button>}
       </header>
@@ -928,7 +928,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
         onEnded={() => setRecordingPlaying(false)}
         onError={() => setRecordingError('Recording could not be loaded. Check the audio file and format.')}
         aria-label={activeRecording.title + ' backing track'} />}
-      {hasMusicContent && <div className="practice-demo-status-row">
+      {showPlayerControls && <div className="practice-demo-status-row">
         <p className="practice-audio-state" data-testid="chart-playhead" title={planStatus}>
           <strong>{activeRecording ? 'Recorded Track' : 'Chart Only'}</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · {activeRecording ? activeRecording.recordedBpm + ' BPM audio' : 'No recording'}
         </p>
