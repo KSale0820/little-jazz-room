@@ -251,7 +251,7 @@ export function FreePracticePage() {
     const stamp = new Date().toISOString();
     const existing = journalEntries.find(entry => entry.sessionId === session.id);
     const entry: PracticeJournalEntry = {
-      id: existing?.id ?? crypto.randomUUID(), sessionId: session.id,
+      ...existing, id: existing?.id ?? crypto.randomUUID(), sessionId: session.id,
       chartId: '', chartTitle: active?.title ?? 'Free Practice',
       text: value, createdAt: existing?.createdAt ?? stamp, updatedAt: stamp,
       durationSeconds: seconds,

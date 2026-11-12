@@ -1,8 +1,15 @@
 /** Local first notes for class demo. User scope prevents cross-account leakage on a shared browser. */
-export interface ChartNote { bar: number; text: string; updatedAt: string }
+export interface ChartNote { bar: number; text: string; updatedAt: string; tags?: string[] }
 export interface PracticeJournalEntry {
   id: string; sessionId: string; chartId: string; chartTitle: string; text: string;
   createdAt: string; updatedAt: string; durationSeconds: number;
+  /** Optional structured reflections. Old text-only entries remain valid. */
+  kind?: 'journal' | 'note';
+  title?: string;
+  tags?: string[];
+  whatPracticed?: string;
+  takeaways?: string;
+  nextTime?: string;
 }
 export const INLINE_ANNOTATION_LIMIT = 12;
 export function notesKey(scope: string, chartId: string) {

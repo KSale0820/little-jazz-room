@@ -153,3 +153,12 @@
   .pr-off-days button { height: 28px; font-size: 9.5px; }
 }
 @media (min-width: 900px) { .pr-page { padding-bottom: 20px; } }
+
+/* Three compact entry points open one unified journal with a different focus. */
+.pr-quick-links { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.pr-quick-links .pr-shortcut { flex-direction:column; justify-content:center; gap:3px; min-width:0; min-height:84px; padding:8px 4px; background:#f3eee7; border-color:#e5ddd2; text-align:center; }
+.pr-quick-links .pr-shortcut:nth-child(2) { background:#eaf0e6; }
+.pr-quick-links .pr-shortcut:nth-child(3) { background:#eee8f0; }
+.pr-quick-links .pr-shortcut-icon { width:40px; height:40px; flex:none; color:#426c50; }
+.pr-quick-links .pr-shortcut-icon img { width:40px; height:40px; }
+.pr-quick-links .pr-shortcut strong { flex:none; font-size:12px; }

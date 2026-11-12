@@ -14,6 +14,7 @@ import { MetronomePage } from './pages/MetronomePage';
 import { RoutineLibraryPage } from './pages/RoutineLibraryPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { ProgressDetailsPage } from './pages/ProgressDetailsPage';
+import { PracticeJournalPage } from './pages/PracticeJournalPage';
 import { SignInPage, SignUpRedirect } from './pages/SignInPage';
 import { ChartBuilderPage } from './pages/ChartBuilderPage';
 import { ChartLibraryPage } from './pages/ChartLibraryPage';
@@ -53,6 +54,10 @@ export default function App() {
               <Route path="progress" element={<ProgressPage />} />
               <Route path="progress/achievements" element={<AchievementsPage />} />
               <Route path="achievements" element={<AchievementsPage />} />
+              <Route path="progress/practice-journal" element={<PracticeJournalPage />} />
+              <Route path="progress/calendar" element={<PracticeJournalPage />} />
+              <Route path="progress/journal" element={<PracticeJournalPage />} />
+              <Route path="progress/notes" element={<PracticeJournalPage />} />
               <Route path="progress/:view" element={<ProgressDetailsPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="demo" element={<DemoProfileEntryPage />} />
