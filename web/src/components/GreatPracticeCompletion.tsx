@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
+import { ProgressIcon } from './ProgressIcon';
+import { computeScheduledStreak, minutesToday } from '../lib/practiceStats';
+import { readPracticeOffDays } from '../lib/practiceHomePreferences';
 import { journalKey, persistLocalList, readLocalList } from '../lib/practicePlayerNotes';
 import type { PracticeJournalEntry } from '../lib/practicePlayerNotes';
 import type { PracticeSessionRecord } from '../types/content';
@@ -67,8 +69,9 @@ export function GreatPracticeCompletion({
     ? sessions : [...sessions, record];
   const goal = readGoal(repo.scope);
   const today = minutesToday(effectiveSessions);
-  const streak = computeGentleStreak(effectiveSessions);
+  const streak = computeScheduledStreak(effectiveSessions, readPracticeOffDays(repo.scope));
   const progress = Math.min(100, Math.max(0, today / goal * 100));
+  const summaryImage = summaryArt ?? '/visuals/room/home-hero-twilight.png';
   const completed = activities.filter(item => item.status === 'complete').length;
   const hasChecks = activities.some(item => item.status !== 'practiced');
   const activitySummary = hasChecks
@@ -109,27 +112,35 @@ export function GreatPracticeCompletion({
     <button type="button" className="gj-close" onClick={onDone}
       disabled={status !== 'saved'} aria-label="Done, return to Practice">×</button>
     <header className="gj-hero">
-      <h1 className="gj-title">Great practice!</h1>
+      <div className="gj-headline">
+        <svg className="gj-rays gj-rays-left" viewBox="0 0 32 62" aria-hidden="true" fill="none">
+          <path d="M27 16 14 4M26 31H4M27 46 14 58" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" />
+        </svg>
+        <h1 className="gj-title">Great practice!</h1>
+        <svg className="gj-rays" viewBox="0 0 32 62" aria-hidden="true" fill="none">
+          <path d="M5 16 18 4M6 31h22M5 46l13 12" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" />
+        </svg>
+      </div>
       <p className="gj-time">{displayDuration(record.durationSeconds)}</p>
       <p className="gj-date">{title} · {new Date(record.finishedAt).toLocaleDateString(undefined,
         { month: 'short', day: 'numeric', year: 'numeric' })}</p>
     </header>
 
     <section className="gj-summary" aria-label="Session summary">
-      {summaryArt && <img className="gj-summary-art" src={summaryArt} alt="" />}
+      <img className="gj-summary-art" src={summaryImage} alt="" />
       <div>
         <h2>{title}</h2>
         <p>{subtitle}</p>
       </div>
     </section>
 
-    <section className="gj-block" aria-label="What you practiced">
+    {activities.length > 0 && <section className="gj-block" aria-label="What you practiced">
       <div className="gj-heading">
         <h2>What you practiced</h2>
         <span>{activitySummary}</span>
       </div>
       <div className="gj-activity-list">
-        {activities.length ? activities.map(item => <div className="gj-activity" key={item.id}>
+        {activities.map(item => <div className="gj-activity" key={item.id}>
           <span className={'gj-activity-icon gj-status-' + item.status} aria-hidden="true">
             {item.status === 'complete' ? '✓' : item.status === 'partial' ? '◐' : item.status === 'unmarked' ? '○' : '♪'}
           </span>
@@ -139,13 +150,13 @@ export function GreatPracticeCompletion({
               item.status === 'partial' ? 'Partially completed' :
               item.detail || (item.status === 'complete' ? 'Completed' : 'Practiced')}</span>
           </div>
-        </div>) : <p className="gj-no-activities">Free practice, no materials added.</p>}
+        </div>)}
       </div>
-    </section>
+    </section>}
 
     <section className="gj-block gj-journal" aria-label="Practice journal">
       <div className="gj-heading">
-        <h2><span className="gj-book-icon" aria-hidden="true">▤</span> Practice journal</h2>
+        <h2><ProgressIcon name="journal" className="gj-book-icon" /> Practice journal</h2>
         <button type="button" onClick={() => setJournalExpanded(expanded => !expanded)}
           aria-expanded={journalExpanded} aria-controls="gj-journal-content">
           {journalExpanded ? 'Show less' : journalText ? 'View full entry ›' : 'Add reflection ›'}
@@ -168,19 +179,22 @@ export function GreatPracticeCompletion({
         {[1, 2, 3, 4, 5].map(star => <button key={star} type="button"
           aria-label={star + (star === 1 ? ' star' : ' stars')}
           aria-pressed={rating === star} onClick={() => updateRating(star)}
-          className={star <= rating ? 'gj-star selected' : 'gj-star'}>{star <= rating ? '★' : '☆'}</button>)}
+          className={star <= rating ? 'gj-star selected' : 'gj-star'}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75"
+            strokeLinejoin="round"><path d="m12 2.8 2.9 6 6.6.9-4.8 4.7 1.1 6.7-5.8-3.1-5.8 3.1 1.1-6.7-4.8-4.7 6.6-.9z" /></svg>
+        </button>)}
       </div>
     </div>
 
     <div className="gj-progress" aria-label="Today's progress">
-      <div className="gj-goal"><span className="gj-progress-icon" aria-hidden="true">▂▅▇</span>
+      <div className="gj-goal"><svg className="gj-progress-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="15" width="5" height="7" rx="1" /><rect x="10" y="9" width="5" height="13" rx="1" /><rect x="18" y="3" width="5" height="19" rx="1" /></svg>
         <span>Daily goal: <strong>{today} / {goal} min</strong></span>
         <div className="gj-goal-bar" role="progressbar" aria-label="Daily practice goal"
           aria-valuemin={0} aria-valuemax={goal} aria-valuenow={Math.min(today, goal)}>
           <span style={{ width: progress + '%' }} />
         </div>
       </div>
-      <div className="gj-streak"><span aria-hidden="true">♨</span> {streak}-day streak</div>
+      <div className="gj-streak"><img src="/visuals/pixel-motifs/streak-fire.png" alt="" aria-hidden="true" /> <strong>{streak}-day streak</strong></div>
     </div>
 
     {status !== 'saved' && <p className={status === 'error' ? 'gj-save-state gj-error' : 'gj-save-state'} role="status">
@@ -189,7 +203,7 @@ export function GreatPracticeCompletion({
     {status === 'error' && <button className="gj-retry" type="button" onClick={onRetry}>Retry save</button>}
     <div className="gj-actions">
       <button type="button" className="gj-again" onClick={onPracticeAgain} disabled={status !== 'saved'}>
-        <span aria-hidden="true">↻</span> Practice Again
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10a8 8 0 1 0 1 5M20 4v6h-6" /></svg> Practice Again
       </button>
       <button type="button" className="gj-done" onClick={onDone} disabled={status !== 'saved'}>
         Done
