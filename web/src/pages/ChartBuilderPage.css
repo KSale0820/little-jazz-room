@@ -11,7 +11,7 @@
 .chart-builder-page button:focus-visible, .chart-builder-page input:focus-visible,
 .chart-builder-page select:focus-visible { outline: 3px solid #cda953; outline-offset: 2px; }
 .chart-builder-header { display:flex; align-items:center; justify-content:space-between; gap:9px; margin-bottom:18px; }
-.chart-builder-header h1 { color:#31503b; font:700 29px/1.1 Georgia,serif; margin:2px 0; }
+.chart-builder-header h1 { color:#31503b; font:700 29px/1.1 var(--font-ui-heading); margin:2px 0; }
 .chart-builder-eyebrow { color:#8d866c; font-size:10px; font-weight:750; letter-spacing:.1em; margin:0 0 5px; }
 .chart-builder-header-actions { display:flex; flex:0 0 auto; gap:6px; align-items:center; }
 .chart-builder-primary, .chart-builder-secondary {
@@ -53,7 +53,7 @@
   border:1px solid #d8d8c8; border-radius:9px; font-size:12px; }
 .chart-builder-meter button[aria-pressed="true"] { background:#31503b; color:white; }
 .chart-builder-chart-heading { display:flex; align-items:end; justify-content:space-between; gap:7px; margin:15px 0 10px; }
-.chart-builder-chart-heading h2,.chart-builder-section-title { margin:0 0 5px; font:700 20px Georgia,serif; color:#31503b; }
+.chart-builder-chart-heading h2,.chart-builder-section-title { margin:0 0 5px; font:700 20px var(--font-ui-heading); color:#31503b; }
 .chart-builder-chart-heading p { margin:0; color:#667467; font-size:12px; line-height:1.4; max-width:265px; }
 .chart-builder-chart-heading > span { color:#738173; white-space:nowrap; font-size:11px; padding-bottom:3px; }
 .chart-editor-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); background:#fffdf7;
@@ -77,7 +77,7 @@
 .chart-editor-chord-error { display:block; font-size:10px; line-height:1.25; color:#a84640; }
 .chart-builder-selection { margin:16px 0 0; padding:14px 12px; border:1px solid #d8dfcf; background:#f5f6ed; border-radius:13px; }
 .chart-builder-selection h3 { display:flex; justify-content:space-between; align-items:center;
-  font:700 16px Georgia,serif; color:#31503b; margin:0 0 13px; }
+  font:700 16px var(--font-ui-heading); color:#31503b; margin:0 0 13px; }
 .chart-builder-selection h3 span { font:500 11px system-ui,sans-serif; color:#718275; }
 .chart-builder-tools { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
 .chart-builder-tools button,.chart-builder-measure-actions button,.chart-builder-add-row button {
@@ -105,7 +105,7 @@
 .chart-builder-section-title { display:flex; gap:9px; align-items:center; margin-top:25px; }
 .chart-builder-section-title span { font:600 11px system-ui,sans-serif; padding:3px 7px; border-radius:30px; background:#e8eddf; }
 .chart-library-card { padding:14px; margin:11px 0; border:1px solid #dfe0d2; border-radius:12px; background:#fffdf7; }
-.chart-library-card h3 { margin:0; font:700 17px Georgia,serif; color:#31503b; }
+.chart-library-card h3 { margin:0; font:700 17px var(--font-ui-heading); color:#31503b; }
 .chart-library-card p { margin:6px 0 0; color:#6c7b71; font-size:12px; }
 .chart-library-card .chart-library-instruction { color:#a54b45; font-style:italic; }
 .chart-library-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:13px; }

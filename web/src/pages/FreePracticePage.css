@@ -44,7 +44,7 @@
   max-width: 300px;
   margin: 0 0 8px;
   color: #123e31;
-  font: 700 clamp(18px, 5.2vw, 22px)/1.2 Georgia, serif;
+  font: 700 clamp(18px, 5.2vw, 22px)/1.2 var(--font-ui-heading);
 }
 .fp-blank-content p {
   max-width: 260px;
@@ -157,7 +157,7 @@
   border-radius: 8px;
   color: #fffdf8;
   background: #1e563e;
-  font: 700 clamp(9px, 2.75vw, 11px)/1.08 Georgia, serif;
+  font: 700 clamp(9px, 2.75vw, 11px)/1.08 var(--font-ui-heading);
   white-space: nowrap;
 }
 .fp-session-finish svg { display: block; width: 14px; height: 14px; flex: 0 0 14px; }
@@ -216,7 +216,7 @@
   gap: 8px;
   margin-bottom: 15px;
 }
-.fp-picker-heading h2 { margin: 0; font: 700 23px/1.2 Georgia, serif; }
+.fp-picker-heading h2 { margin: 0; font: 700 23px/1.2 var(--font-ui-heading); }
 .fp-picker-heading button {
   flex: 0 0 42px;
   min-height: 42px;
@@ -322,7 +322,7 @@
   color: #174936;
 }
 .fp-redesign-complete header { text-align: left; }
-.fp-redesign-complete h1 { font: 700 27px Georgia,serif; }
+.fp-redesign-complete h1 { font: 700 27px var(--font-ui-heading); }
 .fp-redesign-complete strong { font: 700 44px Georgia,serif; }
 .fp-redesign-complete button {
   min-height: 44px;

@@ -22,7 +22,7 @@
 .pr-heading { min-width: 0; }
 .pr-brand { margin: 0 0 3px; color: #805148; font: 700 13px/1.2 var(--pr-serif); letter-spacing: .005em; }
 .pr-brand span { margin-left: 3px; color: #5e955e; font: 600 16px/1 var(--pr-sans); }
-.pr-heading h1 { margin: 0; color: #192e24; font: 700 29px/1.05 var(--pr-serif); letter-spacing: -.025em; }
+.pr-heading h1 { margin: 0; color: #192e24; font: 700 29px/1.05 var(--font-ui-heading); letter-spacing: -.025em; }
 .pr-subtitle { margin: 5px 0 0; color: #626e66; font: 400 11px/1.35 var(--pr-sans); }
 .pr-settings { width: 38px; height: 38px; flex: none; display: grid; place-items: center; padding: 6px; color: #286147; border: 0; border-radius: 50%; background: transparent; }
 .pr-settings svg { width: 24px; height: 24px; }
@@ -43,7 +43,7 @@
 
 .pr-card { margin: 0 0 10px; padding: 11px 12px; border: 1px solid var(--pr-border); border-radius: 17px; background: #fffcf7; box-shadow: none; }
 .pr-section-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.pr-section-head h2, .pr-goal h2 { margin: 0; color: #223c2d; font: 700 17px/1.16 var(--pr-serif); letter-spacing: -.025em; }
+.pr-section-head h2, .pr-goal h2 { margin: 0; color: #223c2d; font: 700 17px/1.16 var(--font-ui-heading); letter-spacing: -.025em; }
 .pr-periods { display: flex; flex: none; gap: 0; padding: 2px; border-radius: 20px; background: #f3efe9; }
 .pr-periods button { width: 30px; height: 25px; min-height: 0; padding: 0; border: 0; border-radius: 17px; background: transparent; color: #4f5b50; font: 500 11px/1 var(--pr-sans); }
 .pr-periods button.active { color: white; background: #276044; font-weight: 700; }

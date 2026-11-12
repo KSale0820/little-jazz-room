@@ -32,7 +32,7 @@
 .routine-intro { margin: 0 0 15px; }
 .routine-intro h1 {
   margin: 0;
-  font: 400 clamp(28px, 7vw, 30px)/1.13 Georgia, "Times New Roman", serif;
+  font: 600 clamp(28px, 7vw, 30px)/1.13 var(--font-ui-heading);
   letter-spacing: -.045em;
   color: #154e3e;
 }
@@ -140,7 +140,7 @@
 .routine-shelf-heading h2 {
   min-width: 0;
   margin: 0;
-  font: 400 clamp(16px, 4.2vw, 18px)/1.12 Georgia, "Times New Roman", serif;
+  font: 600 clamp(16px, 4.2vw, 18px)/1.12 var(--font-ui-heading);
   letter-spacing: -.025em;
   color: #185443;
 }
@@ -224,7 +224,7 @@
   overflow-wrap: anywhere;
   min-width: 0;
   color: #18493c;
-  font: 400 12.5px/1.13 Georgia, "Times New Roman", serif;
+  font: 600 12.5px/1.13 var(--font-ui-heading);
   letter-spacing: -.016em;
 }
 .routine-card-tags {

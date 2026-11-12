@@ -9,7 +9,7 @@
   margin-bottom: 14px;
 }
 .profile-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-ui-heading);
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--evergreen);
@@ -187,7 +187,7 @@
 
 /* Minimal functional account actions, unchanged demo design language. */
 .profile-account-actions { display: grid; gap: 10px; }
-.profile-account-actions h2 { margin: 0; color: var(--evergreen); font: 700 18px var(--font-serif); }
+.profile-account-actions h2 { margin: 0; color: var(--evergreen); font: 700 18px var(--font-ui-heading); }
 .profile-name-row { display: flex; align-items: center; justify-content: space-between; gap: 9px; flex-wrap: wrap; color: var(--ink); font-size: 13px; }
 .profile-name-form { display: grid; gap: 8px; font-size: 13px; color: var(--ink); }
 .profile-name-form input { min-height: 44px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--paper); color: var(--ink); }
