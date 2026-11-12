@@ -16,7 +16,7 @@ import { formatChartMeta } from '../lib/chords';
 import { beatsPerMeasure, locateSequencePlayhead, rawChartBeat, sequenceBeatForBar, sequenceDuration } from '../lib/practiceChartClock';
 import type { LoopSection } from '../lib/practiceChartClock';
 import { resolvePlayableStep } from '../lib/routinePlayback';
-import { defaultPlayerSettings, makeSavedExercise, settingsChanged, toggleRoutineCheck, type RoutineStepOutcome, type RoutineStepOutcomes } from '../lib/routinePlayerSettings';
+import { defaultPlayerSettings, makeSavedExercise, settingsChanged, toggleRoutineCheck, type RoutineStepOutcomes } from '../lib/routinePlayerSettings';
 import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
 import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
