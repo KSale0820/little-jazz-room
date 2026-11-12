@@ -17,7 +17,7 @@ import {
 import './CreatePage.css';
 import './RoutineStepPresets.css';
 
-interface BuilderStep { exerciseId: string; minutes: number; }
+interface BuilderStep { exerciseId: string; minutes: number; playerSettings?: RoutinePlayerSettings; }
 interface ChartReturnDraft {
   title: string;
   description: string;
