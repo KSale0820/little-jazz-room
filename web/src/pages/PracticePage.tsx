@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { PracticeTimeBadge, SkipTenIcon, RepeatIcon } from '../components/PracticeMediaControls';
+import { FreePracticeSessionBar } from '../components/FreePracticeSessionBar';
 import { ChordGrid } from '../components/ChordGrid';
 import { LoopPlanSettings } from '../components/LoopPlanSettings';
 import { GuidedCatCoach, GuidedLesson } from '../components/GuidedLesson';
@@ -56,7 +57,7 @@ type Completion = {
  * audio time, while session time remains a separate elapsed-time record.
  */
 type PracticeToolIcon = 'mixer' | 'tempo' | 'loop' | 'tuner' | 'metronome';
-function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
+export function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
   // Approved P02: thin rounded evergreen outlines, matching five tool tiles.
   const paths: Record<PracticeToolIcon, React.ReactNode> = {
     mixer: <>
@@ -980,23 +981,25 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
                 <PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small>
               </button>}
             </div>
-            <div className="practice-session-row practice-demo-session-row">
-              <PracticeTimeBadge seconds={elapsedSeconds} running={freeSession ? freeSession.clockRunning : sessionStartedAtMs !== null}
-                onTogglePause={freeSession ? freeSession.onPause : toggleSessionTime} />
-              <div className="practice-demo-session-actions">
-                {freeSession && <div className="fp-player-navigation" aria-label="Session queue navigation">
-                  <button type="button" disabled={!freeSession.canPrevious} onClick={freeSession.onPrevious} aria-label="Previous practice item">‹</button>
-                  <button type="button" disabled={!freeSession.canNext} onClick={freeSession.onNext} aria-label="Next practice item">›</button>
+            {freeSession
+              ? <FreePracticeSessionBar seconds={elapsedSeconds} running={freeSession.clockRunning}
+                  onToggleTimer={freeSession.onPause}
+                  canPrevious={freeSession.canPrevious} canNext={freeSession.canNext}
+                  onPrevious={freeSession.onPrevious} onNext={freeSession.onNext}
+                  onFinish={freeSession.onFinish} onJournal={() => setJournalOpen(true)} />
+              : <div className="practice-session-row practice-demo-session-row">
+                  <PracticeTimeBadge seconds={elapsedSeconds} running={sessionStartedAtMs !== null}
+                    onTogglePause={toggleSessionTime} />
+                  <div className="practice-demo-session-actions">
+                    <button className="practice-finish-action" type="button" onClick={finishSession}><span aria-hidden="true">✓</span> Finish Session</button>
+                    <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
+                      onClick={() => setJournalOpen(true)}>
+                      <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>}
-                <button className="practice-finish-action" type="button" onClick={freeSession ? freeSession.onFinish : finishSession}><span aria-hidden="true">✓</span> Finish Session</button>
-                <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
-                  onClick={() => setJournalOpen(true)}>
-                  <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
       {routine && !freeSession && panel === 'instructions' && lesson && (
         <div className="practice-coach-dock"><GuidedCatCoach key={stepIndex} lesson={lesson} catId={catId} /></div>
       )}
