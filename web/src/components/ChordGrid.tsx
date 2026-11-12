@@ -2,6 +2,7 @@ import type { Chart } from '../types/content';
 import { chartTransposeSemitones, spellChord } from '../lib/chords';
 import type { WrittenPitch } from '../types/content';
 import './ChordGrid.css';
+import { chartAnnotationDisplay } from '../lib/practicePlayerNotes';
 
 interface ChordGridProps {
   chart: Chart;
@@ -19,6 +20,10 @@ interface ChordGridProps {
   practiceSheet?: boolean;
   /** Zero-based [start, end) slice displayed on a mobile chart page. */
   displayRange?: [number, number];
+  /** Number each measure in the upper-right when toggled in the Player. */
+  showMeasureNumbers?: boolean;
+  /** Per-account user annotations; never overwrite the chart's existing source instructions. */
+  userAnnotations?: Record<number, string>;
 }
 
 export function ChordGrid({
@@ -33,6 +38,8 @@ export function ChordGrid({
   showSectionLabels = true,
   practiceSheet = false,
   displayRange,
+  showMeasureNumbers = true,
+  userAnnotations = {},
 }: ChordGridProps) {
   const trans = chartTransposeSemitones(chart, chartKey, writtenPitch);
   const visibleBars = displayRange ? chart.bars.slice(displayRange[0], displayRange[1]) : chart.bars;
@@ -44,7 +51,9 @@ export function ChordGrid({
         const items = bar.events.map(e => spellChord(e, trans));
         const looped =
           loopRange && bar.number >= loopRange[0] && bar.number <= loopRange[1];
-        const label = `Measure ${bar.number}: ${items.join(' then ')}`;
+        const userNote = userAnnotations[bar.number]?.trim() ?? '';
+        const userBubble = Boolean(userNote) && chartAnnotationDisplay(userNote) === 'bubble';
+        const label = `Measure ${bar.number}: ${items.join(' then ')}${userNote ? '. Annotation: ' + userNote : ''}`;
         return (
           <button
             type="button"
@@ -58,11 +67,15 @@ export function ChordGrid({
             {showSectionLabels && practiceSheet && bar.section && (
               <span className="measure-section-label" aria-label={`Section ${bar.section}`}>{bar.section}</span>
             )}
-            <span className="measure-num">
+            {showMeasureNumbers && <span className="measure-num">
               {bar.number}
               {showSectionLabels && !practiceSheet && bar.section ? ` · ${bar.section}` : ''}
-            </span>
+            </span>}
             {bar.annotation && <span className="measure-annotation">{bar.annotation}</span>}
+            {userNote && <span className={userBubble ? 'measure-user-annotation practice-chart-note-bubble' : 'measure-user-annotation'}
+              title={userNote} aria-label={userBubble ? 'Long note: ' + userNote : undefined}>
+              {userBubble ? '▤' : userNote}
+            </span>}
             <span className={`chords ${items.length > 1 ? 'two' : ''}`}>
               {items.map((c, eventIndex) => {
                 const event = bar.events[eventIndex];
