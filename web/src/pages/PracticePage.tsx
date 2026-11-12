@@ -768,8 +768,8 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
             routineStepOutcomes: routine ? stepOutcomes : undefined,
           }));
         } catch { /* optional local feedback */ }
+        // Completion itself confirms the saved state; avoid a toast obscuring Done.
         setSaveState('saved');
-        showToast('Practice session saved.');
         return true;
       } catch {
         setSaveState('error');
