@@ -86,8 +86,10 @@ export function usePracticeMetronome() {
     // speaker/Bluetooth device. Use the OUTPUT timestamp for the gold beat
     // highlight, otherwise beat 2 can light while beat 1 is still audible.
     const output = ctx.getOutputTimestamp?.();
-    const outputTime = output && Number.isFinite(output.contextTime) && output.contextTime > 0
-      ? Math.min(ctx.currentTime, output.contextTime)
+    const outputContextTime = output?.contextTime;
+    const outputTime = typeof outputContextTime === 'number' &&
+      Number.isFinite(outputContextTime) && outputContextTime > 0
+      ? Math.min(ctx.currentTime, outputContextTime)
       : Math.max(0, ctx.currentTime -
           Math.max(0, (ctx.baseLatency || .04) + (ctx.outputLatency || 0)));
     let current: number | null = null;
