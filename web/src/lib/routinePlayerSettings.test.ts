@@ -1,8 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
-import { defaultPlayerSettings, makeSavedExercise, overlayLocalRoutinePresets, settingsChanged } from './routinePlayerSettings';
+import { defaultPlayerSettings, makeSavedExercise, overlayLocalRoutinePresets, settingsChanged, toggleRoutineCheck } from './routinePlayerSettings';
 import type { Routine } from '../types/content';
 
 describe('routine player step settings', () => {
+  it('enforces incomplete / partial / complete with linked Started and Complete checks', () => {
+    expect(toggleRoutineCheck(undefined, 'started', true)).toBe('partial');
+    expect(toggleRoutineCheck('partial', 'complete', true)).toBe('complete');
+    expect(toggleRoutineCheck('complete', 'complete', false)).toBe('partial');
+    expect(toggleRoutineCheck('complete', 'started', false)).toBeUndefined();
+    expect(toggleRoutineCheck(undefined, 'complete', true)).toBe('complete');
+    expect(toggleRoutineCheck('complete', 'started', true)).toBe('complete');
+  });
+
   it('loads a step preset over the exercise suggestion without mutating it', () => {
     const loop_sections = [{ startBar: 2, endBar: 5, plays: 3 }];
     const settings = defaultPlayerSettings('F', 70, {
