@@ -1,0 +1,56 @@
+name: Great Practice completion review
+
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/src/components/GreatPracticeCompletion*'
+      - 'web/src/pages/PracticePage.tsx'
+      - 'web/src/pages/FreePracticePage.tsx'
+      - 'web/src/features/recordings/RecordingOnlyPractice.tsx'
+      - 'web/scripts/capture-great-practice.mjs'
+      - '.github/workflows/great-practice-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  completion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Build and typecheck
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start app
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/great-practice-vite.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+          curl -f http://127.0.0.1:5174/ > /dev/null
+      - name: Test session persistence, journal and approved mobile layout
+        run: node scripts/capture-great-practice.mjs
+      - name: Attach screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: great-practice-review-${{ github.run_number }}
+          path: web/docs/screenshots/great-practice-review/
+          if-no-files-found: warn
+      - name: Browser logs on failure
+        if: failure()
+        run: cat /tmp/great-practice-vite.log || true
