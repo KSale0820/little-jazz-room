@@ -20,8 +20,13 @@ describe('routine player step settings', () => {
     for (const patch of [
       { reference_bpm: 71 }, { chart_key: 'G' }, { written_pitch: 'Eb' as const },
       { repeat: true }, { loop_enabled: true },
-      { loop_sections: [{ startBar: 1, endBar: 4, plays: 2 }] },
     ]) expect(settingsChanged({ ...original, ...patch }, original)).toBe(true);
+    // A dormant loop plan is not a user-visible change until looping is enabled.
+    expect(settingsChanged({ ...original, loop_sections: [{ startBar: 1, endBar: 4, plays: 2 }] }, original)).toBe(false);
+    expect(settingsChanged(
+      { ...original, loop_enabled: true, loop_sections: [{ startBar: 1, endBar: 4, plays: 2 }] },
+      { ...original, loop_enabled: true, loop_sections: [{ startBar: 2, endBar: 5, plays: 2 }] },
+    )).toBe(true);
   });
 
   it('saves a separate private exercise with its own player configuration', () => {
