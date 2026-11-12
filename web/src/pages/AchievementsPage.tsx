@@ -107,6 +107,12 @@ function RoomSprite({ item, plantStage }: { item: RoomItem; plantStage: number }
     onError={() => { if (item.fallback && src !== item.fallback) setSrc(item.fallback); }} />;
 }
 
+function ItemThumbnail({ item, plantStage }: { item: RoomItem; plantStage: number }) {
+  return item.cat
+    ? <CatSprite catId={item.cat} variant="closeup" size={48} decorative className="ajr-cat-sprite" />
+    : <RoomSprite item={item} plantStage={plantStage} />;
+}
+
 function AchievementCard({ achievement, evidence, cats, done }: {
   achievement: Achievement;
   evidence: PracticeEvidence;
@@ -117,7 +123,7 @@ function AchievementCard({ achievement, evidence, cats, done }: {
   const progress = achievementProgress(achievement.id as AchievementId, evidence, cats);
   return <article className={'ajr-achievement ' + (done ? 'is-earned' : '')} key={achievement.id}>
     <div className="ajr-achievement-icon" aria-hidden="true">
-      {item ? <RoomSprite item={item} plantStage={1} /> : <MedalIcon />}
+      {item ? <ItemThumbnail item={item} plantStage={1} /> : <MedalIcon />}
     </div>
     <div className="ajr-achievement-info">
       <strong>{achievement.name}</strong>
@@ -289,7 +295,7 @@ export function AchievementsPage() {
         const chosen = preferences.placements?.[item.id] === 1 ? 1 : 0;
         return <div className={'ajr-collection-item ' + (!unlocked ? 'locked' : '')} key={item.id}>
           <span className="ajr-collection-icon" aria-hidden="true">
-            <RoomSprite item={item} plantStage={item.id === 'plant' ? plantStage : 1} />
+            <ItemThumbnail item={item} plantStage={item.id === 'plant' ? plantStage : 1} />
           </span>
           <div className="ajr-collection-content">
             <strong>{item.label}</strong>
