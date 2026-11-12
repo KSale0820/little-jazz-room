@@ -42,6 +42,7 @@ import './RoutineCompactV2.css';
 import './RoutineFooterV3.css';
 import './RoutineStepChords.css';
 import './RoutineFooterV4.css';
+import './RoutineFooterVisible.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'instructions' | 'chart';
@@ -191,19 +192,9 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const [loopCounts, setLoopCounts] = useState<Record<string, number>>({});
   const [wholeCount, setWholeCount] = useState(1);
   const [wholeSelected, setWholeSelected] = useState(true);
-  const [showUnavailableTools, setShowUnavailableTools] = useState(() => {
-    try { return localStorage.getItem('little-jazz-room:show-unavailable-tools:v1:' + userScope) === 'true'; }
-    catch { return false; }
-  });
-  const toggleUnavailableTools = () => setShowUnavailableTools(previous => {
-    const next = !previous;
-    try { localStorage.setItem('little-jazz-room:show-unavailable-tools:v1:' + userScope, String(next)); }
-    catch { /* Optional browser preference */ }
-    return next;
-  });
-  // Keep existing non-routine/free practice behavior intact; routine players
-  // default to a cleaner view and can reveal unavailable controls if desired.
-  const displayUnavailableTools = !routine || showUnavailableTools;
+  // The routine player never displays disabled Loop or Mixer. Standalone
+  // chart practice and Free Practice retain their existing controls.
+  const displayUnavailableTools = !routine;
   const [showMeasureNumbers, setShowMeasureNumbers] = useState(() => {
     try { return localStorage.getItem('little-jazz-room:number-measures:v1:' + userScope) !== 'false'; }
     catch { return true; }
@@ -1151,12 +1142,10 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
                 <PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small>
               </button>}
             </div>
-            {routine && showPlayerControls && <button type="button" className="practice-unavailable-tools-toggle"
-              aria-pressed={showUnavailableTools} onClick={toggleUnavailableTools}>
-              {showUnavailableTools ? 'Hide unavailable tools' : 'Show unavailable tools'}
-            </button>}
-      {routine && !freeSession ? (
-        <div className="routine-session-dock" aria-label="Routine session controls">
+      {routine && !freeSession ? createPortal(
+        <section className="routine-dock-host practice-player practice-guided practice-demo-refresh"
+          aria-label="Routine session controls container">
+          <div className="routine-session-dock" aria-label="Routine session controls">
           <div className="routine-dock-top">
             <div className="routine-compact-status" role="group" aria-label="Exercise status">
               <div className="routine-compact-checks">
@@ -1199,6 +1188,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
             </div>
           </div>
         </div>
+        </section>, document.querySelector('.app-shell') ?? document.body
       ) : freeSession
         ? <FreePracticeSessionBar seconds={elapsedSeconds} running={freeSession.clockRunning}
             onToggleTimer={freeSession.onPause} canPrevious={freeSession.canPrevious}
