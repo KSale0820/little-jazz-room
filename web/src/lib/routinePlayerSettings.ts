@@ -1,4 +1,4 @@
-import type { Exercise, RoutinePlayerSettings, WrittenPitch } from '../types/content';
+import type { Exercise, LocalExercise, RoutinePlayerSettings, WrittenPitch } from '../types/content';
 import type { LoopSection } from './practiceChartClock';
 
 export type RoutineStepOutcome = 'complete' | 'needs-work' | 'skipped';
@@ -30,7 +30,8 @@ export function defaultPlayerSettings(
 }
 
 export function settingsChanged(current: ActivePlayerSettings, original: ActivePlayerSettings): boolean {
-  return JSON.stringify(current) !== JSON.stringify(original);
+  const normalized = (value: ActivePlayerSettings) => ({ ...value, loop_sections: value.loop_enabled ? value.loop_sections : [] });
+  return JSON.stringify(normalized(current)) !== JSON.stringify(normalized(original));
 }
 
 export function makeSavedExercise(
@@ -40,7 +41,7 @@ export function makeSavedExercise(
   chartId: string | null,
   durationMinutes: number,
   settings: ActivePlayerSettings,
-): Exercise {
+): LocalExercise {
   return {
     id: crypto.randomUUID(),
     title: title.trim(),
