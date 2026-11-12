@@ -24,6 +24,7 @@ import { TunerPage } from './TunerPage';
 import { MetronomePage } from './MetronomePage';
 import './PracticePage.css';
 import './PracticePlayerApproved.css';
+import './PracticePlayerDemoRefresh.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'instructions' | 'chart';
@@ -277,6 +278,8 @@ export function PracticePage() {
   );
   const currentSection = activeSections && playhead.sectionIndex !== null ? activeSections[playhead.sectionIndex] : null;
   const loopRange: [number, number] | null = currentSection ? [currentSection.startBar, currentSection.endBar] : null;
+  const demoSections = chart.bars.flatMap((bar, index) => bar.section ? [{ label: bar.section, startBar: index + 1 }] : [])
+    .filter((item, index, all) => all.findIndex(candidate => candidate.label === item.label) === index);
   const planStatus = activeRecording ? 'Recording plays at its original key and tempo' : playhead.ended ? 'Chart finished' : currentSection
     ? 'Section ' + ((playhead.sectionIndex ?? 0) + 1) + ' of ' + activeSections!.length + ' · Pass ' + playhead.pass + ' of ' + currentSection.plays
     : 'Chart once';
@@ -607,11 +610,10 @@ export function PracticePage() {
 
   return (
     <>
-    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${activeRecording ? 'practice-has-recording' : ''} ${routine && panel === 'instructions' ? 'practice-instructions' : ''} practice-unified`} aria-label="Shared practice player">
+    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${activeRecording ? 'practice-has-recording' : ''} ${routine && panel === 'instructions' ? 'practice-instructions' : ''} practice-unified ${activeRecording ? 'practice-demo-refresh' : ''}`} aria-label="Shared practice player">
       <header className="practice-player-head">
         <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
         <div className="practice-title-group">
-          <span className="practice-overline">{routine ? 'Guided Practice' : 'Free Practice'}</span>
           <h1>{routine?.title ?? chart.title}</h1>
           <p>{routine
             ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length + ' · ' + (playableStep?.title ?? 'Exercise')
@@ -664,6 +666,12 @@ export function PracticePage() {
               {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
             </select>
           </div>
+          {activeRecording && <div className="practice-demo-annotation-row">
+            <button type="button" className="practice-demo-chart-pencil" aria-label="Chart notes (planned)" title="Chart notes: coming later"
+              onClick={() => showToast("Chart annotations are planned. Your chart has not been changed.")}>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m4 16 11-11 4 4-11 11-5 1 1-5Z"/><path d="m13.5 6.5 4 4"/></svg>
+            </button>
+          </div>}
           <div className={`practice-chart-scroll practice-chart-all ${chart.bars.length > 16 ? 'chart-dense' : 'chart-standard'}`}
             aria-label={`Complete chord chart, all ${chart.bars.length} measures visible`}>
             <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
@@ -719,26 +727,117 @@ export function PracticePage() {
             <RepeatIcon />
           </button>
         </div>
-        <div className="practice-chart-controls practice-player-pills" id="practice-inline-settings">
-          <label>{activeRecording ? 'Key · chart only' : 'Key'}<select value={CHROMA[pitchClass(chartKey) ?? 0]} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
-          <div className="practice-bpm-field"><span>BPM · <button type="button" className="bpm-reset" onClick={() => changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100)}>original</button></span>
-            <div className="bpm-stepper"><input aria-label="Reference tempo in beats per minute" type="number" min={40} max={240} value={tempoInput} onChange={event => { setTempoInput(event.target.value); if (+event.target.value >= 40 && +event.target.value <= 240) changeTempo(+event.target.value); }} onBlur={() => changeTempo(+tempoInput || tempo)} />
-            <div><button type="button" aria-label="Increase reference BPM" onClick={() => changeTempo(tempo + 1)}>⌃</button><button type="button" aria-label="Decrease reference BPM" onClick={() => changeTempo(tempo - 1)}>⌄</button></div></div>
+        {activeRecording ? (
+          <>
+            <div className="practice-demo-settings" id="practice-inline-settings" aria-label="Playback settings">
+              <div className="practice-demo-setting practice-demo-bpm">
+                <label htmlFor="practice-demo-bpm">BPM</label>
+                <div className="practice-demo-input-stepper">
+                  <input id="practice-demo-bpm" aria-label="Reference tempo in beats per minute" type="number" min={40} max={240}
+                    value={tempoInput} onChange={event => { setTempoInput(event.target.value); if (+event.target.value >= 40 && +event.target.value <= 240) changeTempo(+event.target.value); }}
+                    onBlur={() => changeTempo(+tempoInput || tempo)} />
+                  <div className="practice-demo-updown">
+                    <button type="button" aria-label="Increase reference BPM" onClick={() => changeTempo(tempo + 1)}>⌃</button>
+                    <button type="button" aria-label="Decrease reference BPM" onClick={() => changeTempo(tempo - 1)}>⌄</button>
+                  </div>
+                </div>
+              </div>
+              <div className="practice-demo-setting practice-demo-key">
+                <label htmlFor="practice-demo-key">Key</label>
+                <div className="practice-demo-input-stepper">
+                  <select id="practice-demo-key" value={CHROMA[pitchClass(chartKey) ?? 0]} onChange={event => setChartKey(event.target.value)}
+                    aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select>
+                  <div className="practice-demo-updown">
+                    <button type="button" aria-label="Increase chart key by semitone" onClick={() => setChartKey(CHROMA[((pitchClass(chartKey) ?? 0) + 1) % 12])}>⌃</button>
+                    <button type="button" aria-label="Decrease chart key by semitone" onClick={() => setChartKey(CHROMA[((pitchClass(chartKey) ?? 0) + 11) % 12])}>⌄</button>
+                  </div>
+                </div>
+              </div>
+              <label className="practice-demo-setting practice-demo-instrument" htmlFor="practice-demo-instrument">
+                <span>Instrument</span>
+                <select id="practice-demo-instrument" value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)}
+                  aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select>
+              </label>
+              <button type="button" className="practice-demo-original"
+                aria-label="Reset reference BPM to original recording tempo"
+                onClick={() => changeTempo(activeRecording.recordedBpm)}>Original</button>
+            </div>
+            <p className="practice-reference-note practice-demo-audio-note">Reference BPM and chart key only; audio stays at its original speed and pitch.</p>
+            <section className="practice-demo-loop" aria-label="Loop sections preview">
+              <strong className="practice-demo-loop-title">Loop</strong>
+              <div className="practice-demo-loop-items">
+                <button type="button" className={`practice-demo-loop-part ${!loopEnabled ? 'selected' : ''}`}
+                  aria-label="Edit whole-tune loop settings" title="Configure in loop settings"
+                  onClick={event => openLoop(event.currentTarget)}>
+                  <span>Whole</span><span className="practice-demo-count"><b>{repeatWholePlan && loopEnabled ? '∞' : '1×'}</b><i aria-hidden="true">⌃<em>⌄</em></i></span>
+                </button>
+                {demoSections.map(section => {
+                  const configured = loopEnabled ? loopSections.find(item => item.startBar === section.startBar) : null;
+                  return <button key={section.label} type="button" className="practice-demo-loop-part"
+                    aria-label={`Edit ${section.label} repeat count in loop settings`} title="Configure in loop settings"
+                    onClick={event => openLoop(event.currentTarget)}>
+                    <span>{section.label}</span><span className="practice-demo-count"><b>{configured?.plays ?? 1}×</b><i aria-hidden="true">⌃<em>⌄</em></i></span>
+                  </button>;
+                })}
+                <button type="button" className="practice-demo-add-section" title="Open existing loop plan editor to add a section"
+                  onClick={event => openLoop(event.currentTarget)}>+ Section</button>
+              </div>
+            </section>
+            <div className="practice-utility-row practice-demo-tools" aria-label="Practice tools">
+              <div className="practice-demo-metronome-wrap">
+                <button className="practice-demo-tool-main" type="button" onClick={event => openTool('metronome', event.currentTarget)}>
+                  <PracticeToolGlyph name="metronome" /><span>Metronome</span>
+                </button>
+                <button className="practice-demo-metronome-switch" type="button"
+                  aria-label="Open Metronome to start or stop it. Chart quick toggle is not implemented yet."
+                  title="Quick on/off is planned. Use Metronome settings for now."
+                  onClick={event => openTool('metronome', event.currentTarget)}>Off <span aria-hidden="true" className="practice-demo-switch-knob" /></button>
+              </div>
+              <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>
+                <PracticeToolGlyph name="tuner" /><span>Tuner</span>
+              </button>
+              <button type="button" disabled title="Mixer is Preview only">
+                <PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small>
+              </button>
+            </div>
+            <div className="practice-session-row practice-demo-session-row">
+              <PracticeTimeBadge seconds={elapsedSeconds} running={isRunning} />
+              <div className="practice-demo-session-actions">
+                <button className="practice-finish-action" type="button" onClick={finishSession}><span aria-hidden="true">✓</span> Finish Session</button>
+                <button className="practice-demo-journal" type="button" aria-label="Session journal (planned)" title="Session journal: coming later"
+                  onClick={() => showToast("In-session journal is planned. You can add notes after finishing the session.")}>
+                  <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+          <div className="practice-chart-controls practice-player-pills" id="practice-inline-settings">
+            <label>{activeRecording ? 'Key · chart only' : 'Key'}<select value={CHROMA[pitchClass(chartKey) ?? 0]} onChange={event => setChartKey(event.target.value)} aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select></label>
+            <div className="practice-bpm-field"><span>BPM · <button type="button" className="bpm-reset" onClick={() => changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100)}>original</button></span>
+              <div className="bpm-stepper"><input aria-label="Reference tempo in beats per minute" type="number" min={40} max={240} value={tempoInput} onChange={event => { setTempoInput(event.target.value); if (+event.target.value >= 40 && +event.target.value <= 240) changeTempo(+event.target.value); }} onBlur={() => changeTempo(+tempoInput || tempo)} />
+              <div><button type="button" aria-label="Increase reference BPM" onClick={() => changeTempo(tempo + 1)}>⌃</button><button type="button" aria-label="Decrease reference BPM" onClick={() => changeTempo(tempo - 1)}>⌄</button></div></div>
+            </div>
+            <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
           </div>
-          <label>Instrument<select value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)} aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select></label>
-        </div>
-        <p className="practice-reference-note">{activeRecording ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.' : 'Play follows the chart visually at the selected BPM; recorded audio is not available.'}</p>
-        <div className="practice-session-row"><button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button><PracticeTimeBadge seconds={elapsedSeconds} running={isRunning} /></div>
+          <p className="practice-reference-note">{activeRecording ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.' : 'Play follows the chart visually at the selected BPM; recorded audio is not available.'}</p>
+          <div className="practice-session-row"><button className="practice-finish-action" type="button" onClick={finishSession}>Finish Session</button><PracticeTimeBadge seconds={elapsedSeconds} running={isRunning} /></div>
+  
+          </>
+        )}
       </div>
       {routine && panel === 'instructions' && lesson && (
         <div className="practice-coach-dock"><GuidedCatCoach key={stepIndex} lesson={lesson} catId={catId} /></div>
       )}
-      <div className="practice-utility-row" aria-label="Practice tools">
+      {!activeRecording && <div className="practice-utility-row" aria-label="Practice tools">
         <button type="button" onClick={event => openLoop(event.currentTarget)} aria-pressed={loopEnabled}><PracticeToolGlyph name="loop" /><span>Loop</span></button>
         <button type="button" disabled title="Mixer is Preview only"><PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small></button>
         <button type="button" onClick={event => openTool('tuner', event.currentTarget)}><PracticeToolGlyph name="tuner" /><span>Tuner</span></button>
         <button type="button" onClick={event => openTool('metronome', event.currentTarget)}><PracticeToolGlyph name="metronome" /><span>Metronome</span></button>
-      </div>
+      </div>}
     </section>
     {loopOpen && createPortal(
       <LoopPlanSettings totalBars={chart.bars.length} enabled={loopEnabled} sections={loopSections}
