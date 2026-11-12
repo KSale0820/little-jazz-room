@@ -50,6 +50,8 @@ export interface ExerciseLesson {
   listenFor: string;
   success: string;
   terminologyHelp?: string;
+  /** Optional 1-based, inclusive chart ranges aligned to individual instruction steps. */
+  stepChordRanges?: Array<[number, number] | null>;
   catPrompts: string[];
   /** Suggested beginner learning order, not a prerequisite. */
   learningOrder: number;
