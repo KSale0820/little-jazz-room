@@ -210,7 +210,7 @@ export function PracticePage() {
     reference_bpm: tempo, chart_key: chartKey, written_pitch: writtenPitch,
     loop_enabled: loopEnabled, loop_sections: loopSections, repeat: repeatWholePlan,
   };
-  const editedStepSettings = Boolean(routine && stepHasChart && settingsChanged(currentSettings, stepDefaults));
+  const editedStepSettings = Boolean(routine && settingsChanged(currentSettings, stepDefaults));
   const completeCount = Object.values(stepOutcomes).filter(status => status === 'complete').length;
   const isRunning = startedAtMs !== null;
   const currentStepMs = elapsedMilliseconds(stepMs, startedAtMs, nowMs);
@@ -1233,7 +1233,7 @@ export function PracticePage() {
           }
         }}
       >
-        {activeTool === 'tuner' ? <TunerPage onClose={closeTool} /> : <MetronomePage onClose={closeTool} initialBpm={routine ? tempo : undefined} />}
+        {activeTool === 'tuner' ? <TunerPage onClose={closeTool} /> : <MetronomePage onClose={closeTool} initialBpm={routine ? tempo : undefined} onBpmChange={routine ? changeTempo : undefined} />}
       </div>,
       document.querySelector('.app-shell') ?? document.body
     )}
