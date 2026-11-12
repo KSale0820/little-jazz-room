@@ -11,6 +11,7 @@ import { ProgressIcon } from '../components/ProgressIcon';
 import './ProgressPage.css';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
+const GOAL_OPTIONS = [10, 15, 20, 25, 30, 40, 45, 60, 75, 90, 120, 180, 240] as const;
 type Period = 'W' | 'M' | 'Y';
 type ChartBucket = { label: string; minutes: number; date?: string };
 
@@ -102,13 +103,13 @@ export function ProgressPage() {
   const [dailyGoal, setDailyGoal] = useState(() => readPracticeGoal(repo.scope));
   const [goalDraft, setGoalDraft] = useState(() => String(readPracticeGoal(repo.scope)));
   const [offDays, setOffDays] = useState(() => readPracticeOffDays(repo.scope));
-  const [goalSaved, setGoalSaved] = useState(false);
+  const [customGoalOpen, setCustomGoalOpen] = useState(false);
   useEffect(() => {
     const goal = readPracticeGoal(repo.scope);
     setDailyGoal(goal);
     setGoalDraft(String(goal));
     setOffDays(readPracticeOffDays(repo.scope));
-    setGoalSaved(false);
+    setCustomGoalOpen(false);
   }, [repo.scope]);
   const now = new Date();
   const summary = useMemo(() => summarizeProgress(sessions), [sessions]);
@@ -144,7 +145,14 @@ export function ProgressPage() {
     const saved = savePracticeGoal(repo.scope, Number(goalDraft));
     setDailyGoal(saved);
     setGoalDraft(String(saved));
-    setGoalSaved(true);
+    setCustomGoalOpen(false);
+  };
+  const chooseGoal = (selected: string) => {
+    if (selected === 'custom') { setGoalDraft(String(dailyGoal)); setCustomGoalOpen(true); return; }
+    const saved = savePracticeGoal(repo.scope, Number(selected));
+    setDailyGoal(saved);
+    setGoalDraft(String(saved));
+    setCustomGoalOpen(false);
   };
   const toggleOffDay = (day: number) => setOffDays(current =>
     savePracticeOffDays(repo.scope, current.includes(day) ? current.filter(d => d !== day) : [...current, day]));
@@ -185,7 +193,10 @@ export function ProgressPage() {
       <div className="pr-overview-info">
         <div><strong>{chartTotal >= 60 ? Math.floor(chartTotal / 60) + ' h ' + (chartTotal % 60) + ' min' : chartTotal + ' min'}</strong><small>{periodLabel}</small></div>
         <div className="pr-overview-sessions"><strong>{sessionsInPeriod}</strong><small>sessions</small></div>
-        {period === 'W' && <p className="pr-target-label">Goal: {dailyGoal} min / day</p>}
+        {period === 'W' && <p className="pr-target-label">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="12" r="8" /><circle cx="11" cy="12" r="4.5" /><path d="M11 12l8-8M16 4h3v3" /></svg>
+          <span>Goal: {dailyGoal} min / day</span>
+        </p>}
       </div>
       <div className="pr-chart">
         <div className="pr-y-axis" aria-hidden="true"><span>{chartCeiling}m</span><span>{Math.round(chartCeiling / 2)}m</span><span>0</span></div>
@@ -203,8 +214,8 @@ export function ProgressPage() {
             {chart.map((bucket, i) => period === 'W' && bucket.date
               ? <button type="button" key={bucket.label} className="pr-day-label" onClick={() => navigate('/progress/calendar?date=' + bucket.date)}>
                   <span>{bucket.label}</span>
-                  <span className={'pr-day-check ' + (offDays.includes(i) ? 'is-rest' : bucket.minutes >= dailyGoal ? 'is-met' : '')} aria-label={offDays.includes(i) ? 'Rest day' : bucket.minutes >= dailyGoal ? 'Goal met' : 'Goal not met'}>
-                    {offDays.includes(i) ? '–' : bucket.minutes >= dailyGoal ? '✓' : '○'}
+                  <span className={'pr-day-check ' + (bucket.minutes >= dailyGoal ? 'is-met' : offDays.includes(i) ? 'is-rest' : '')} aria-label={bucket.minutes >= dailyGoal ? 'Goal met' : offDays.includes(i) ? 'Rest day' : 'Goal not met'}>
+                    {bucket.minutes >= dailyGoal ? '✓' : offDays.includes(i) ? '–' : '○'}
                   </span>
                 </button>
               : <span className="pr-day-label" key={bucket.label}><span>{bucket.label}</span></span>)}
@@ -214,14 +225,32 @@ export function ProgressPage() {
     </section>
 
     <section className="pr-card pr-goal" aria-labelledby="pr-goal-title">
-      <div className="pr-goal-intro"><h2 id="pr-goal-title">Practice Goal</h2><p>Set your daily goal and rest days.</p></div>
-      <form className="pr-goal-input" onSubmit={event => { event.preventDefault(); saveGoal(); }}>
+      <div className="pr-goal-intro">
+        <h2 id="pr-goal-title">Practice Goal</h2>
+        <p>Set your daily goal and rest days.</p>
+      </div>
+      <div className="pr-goal-input">
         <label htmlFor="pr-goal-minutes">Daily practice time</label>
-        <div><input id="pr-goal-minutes" type="number" min={5} max={240} step={5} value={goalDraft} onChange={event => { setGoalDraft(event.target.value); setGoalSaved(false); }} aria-label="Daily practice goal in minutes" required /><span>min</span><button type="submit">{goalSaved ? 'Saved ✓' : 'Save'}</button></div>
-      </form>
+        <div className="pr-goal-select-wrap">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><circle cx="12" cy="13" r="8" /><path d="M12 13V8M12 13l3 2M9 2h6" /></svg>
+          <select id="pr-goal-minutes" aria-label="Daily practice time" value={dailyGoal}
+            onChange={event => chooseGoal(event.target.value)}>
+            {!GOAL_OPTIONS.includes(dailyGoal as typeof GOAL_OPTIONS[number]) && <option value={dailyGoal}>{dailyGoal} min</option>}
+            {GOAL_OPTIONS.map(value => <option key={value} value={value}>{value} min</option>)}
+            <option value="custom">Custom…</option>
+          </select>
+        </div>
+      </div>
       <fieldset className="pr-off-days"><legend>Off days (optional)</legend>
         <div>{WEEKDAYS.map((day, i) => <button type="button" key={day} className={offDays.includes(i) ? 'is-off' : ''} aria-label={day + (offDays.includes(i) ? ', off day' : ', practice day')} aria-pressed={offDays.includes(i)} onClick={() => toggleOffDay(i)}>{day[0]}</button>)}</div>
       </fieldset>
+      {customGoalOpen && <form className="pr-custom-goal" onSubmit={event => { event.preventDefault(); saveGoal(); }}>
+        <label htmlFor="pr-custom-goal-minutes">Custom goal (5–240 minutes)</label>
+        <input id="pr-custom-goal-minutes" type="number" min={5} max={240} step={5} value={goalDraft} required
+          onChange={event => setGoalDraft(event.target.value)} />
+        <button type="submit">Save</button>
+        <button type="button" onClick={() => setCustomGoalOpen(false)}>Cancel</button>
+      </form>}
     </section>
 
     <section className="pr-card pr-recent" aria-labelledby="pr-recent-title">
