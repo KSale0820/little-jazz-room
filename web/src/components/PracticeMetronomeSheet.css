@@ -39,3 +39,36 @@
 .practice-metronome-done { width:100%; min-height:45px; margin-top:7px; border:0; border-radius:12px; background:#20583f; color:#fff; font:700 15px Georgia,serif; }
 .practice-metronome-error { color:#ab3e35; font-size:12px; }
 @media(min-width:720px) {.practice-metronome-backdrop { align-items:center; padding:20px; } .practice-metronome-sheet { border-radius:18px; }}
+
+/* Source-meter subdivision controls: stay readable on iPhone-width sheets. */
+.practice-metronome-piece-meter {
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid #d5e2d3;
+  border-radius: 9px;
+  background: #eef3e9;
+  color: #20543f;
+  font: 700 18px Georgia, serif;
+}
+.practice-metronome-piece-meter span {
+  margin-left: 8px;
+  color: #637a6b;
+  font: 600 11px system-ui,sans-serif;
+}
+.practice-metronome-help {
+  margin: 0 0 10px;
+  color: #617668;
+  font: 12px/1.45 system-ui,sans-serif;
+}
+.practice-metronome-pills button {
+  min-width: 37px;
+  min-height: 39px;
+}
+.practice-metronome-tempo button:disabled,
+.practice-metronome-tempo input:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+.practice-metronome-sheet .practice-metronome-status[aria-live] {
+  line-height: 1.45;
+}
