@@ -1,21 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
-import { VISUAL_ASSETS } from '../assets/visualManifest';
 import {
   audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, pitchTrailGeometry,
   readingFromFrequency, retainMeasuredPitch,
   type PitchReading, type PitchTrailSample, type TuningMode, type RecentPitch,
 } from './toolsAudio';
 import './ToolsPages.css';
+import './TunerClean.css';
 
 type MicStatus = 'idle' | 'requesting' | 'listening' | 'denied' | 'unsupported' | 'error';
 type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
 
 export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
-  const { catId } = useApp();
-  const [roomArtLoaded, setRoomArtLoaded] = useState(false);
   const [mode, setMode] = useState<TuningMode>('chromatic');
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
@@ -306,15 +303,11 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   };
 
   return (
-    <section className={`tool-page tool-tuner${roomArtLoaded ? ' tool-has-background' : ''}`} aria-label="Chromatic instrument tuner" data-capture-path={capturePath}>
-      <img className="tool-bottom-art" src={VISUAL_ASSETS.tools.tunerBackground} alt="" aria-hidden="true"
-        onLoad={() => setRoomArtLoaded(true)} onError={() => setRoomArtLoaded(false)} />
-      <img className="tool-vine tool-vine-left" src={VISUAL_ASSETS.sharedMvp.botanicals.topLeft} alt="" aria-hidden="true" />
-      <img className="tool-vine tool-vine-right" src={VISUAL_ASSETS.sharedMvp.botanicals.topRight} alt="" aria-hidden="true" />
+    <section className="tool-page tool-tuner" aria-label="Chromatic instrument tuner" data-capture-path={capturePath}>
       <header className="tool-heading">
         <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))} aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
         <h1>Tuner</h1>
-        <button className="tool-settings" type="button" aria-label="Tuner help" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)}>⚙</button>
+        <button className="tool-settings" type="button" aria-label="Tuner help" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)}>?</button>
       </header>
       {showHelp ? (
         <p className="tool-help">Play or sing one sustained note at a time. Chromatic recognizes any note and can show your pitch over time. Guitar and Bass compare against standard open strings.</p>
@@ -326,6 +319,20 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           </button>
         ))}
       </div>
+      <button className="tuner-mic" type="button" onClick={toggleMicrophone} aria-pressed={status === 'listening'}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="9" y="2" width="6" height="13" rx="3" /><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8" />
+        </svg>
+        {status === 'listening' ? 'Stop microphone' :
+          status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
+      </button>
+      {status === 'listening' && micSignal === 'interrupted' ? (
+        <button className="tuner-mic tuner-resume" type="button" onClick={resumeMicrophoneAudio}>Resume audio</button>
+      ) : null}
+      {(status === 'denied' || status === 'unsupported' || status === 'error' || message) ? (
+        <p className="tool-error" role="alert">{message}</p>
+      ) : null}
+      <section className="tuner-main-card" aria-label="Live tuning">
       <div className="tuner-reading" aria-live="off">
         <strong>{reading?.note ?? '—'}</strong>
         <span>{reading ? reading.frequency.toFixed(1) + ' Hz' : 'No pitch detected'}</span>
@@ -357,11 +364,12 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           ) : <circle cx="160" cy="141" r="5" fill="#afbaa9" />}
         </svg>
       </div>
-      <div className="tuner-status" role="status">{getTuningMessage()}</div>
+      <div className="tuner-status" data-tuned={isTuned} role="status">{getTuningMessage()}</div>
       <div className="tuner-measurements">
         <div><strong>{reading && isNearString ? reading.targetLabel : '—'}</strong><span>{reading && isNearString ? reading.targetFrequency.toFixed(1) + ' Hz target' : 'Target'}</span></div>
         <div><strong>{reading && isNearString ? (reading.cents >= 0 ? '+' : '') + Math.round(reading.cents) + '¢' : '—'}</strong><span>Deviation</span></div>
       </div>
+      </section>
       <div className="tuner-trail-controls">
         <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
           onClick={() => setShowPitchTrail(value => !value)}>
@@ -388,30 +396,19 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           <small>8 seconds ago <span>Now</span></small>
         </section>
       ) : null}
-      <button className="tuner-mic" type="button" onClick={toggleMicrophone} aria-pressed={status === 'listening'}>
-        <span aria-hidden="true">◉</span> {status === 'listening' ? 'Stop microphone' :
-          status === 'requesting' ? 'Cancel microphone request' : 'Enable microphone'}
-      </button>
-      {status === 'listening' && micSignal === 'interrupted' ? (
-        <button className="tuner-mic" type="button" onClick={resumeMicrophoneAudio}>Resume audio</button>
-      ) : null}
-      {(status === 'denied' || status === 'unsupported' || status === 'error' || message) ? (
-        <p className="tool-error" role="alert">{message}</p>
-      ) : null}
       <div className="tuner-reference">
-        <span className="tuner-speaker" aria-hidden="true">♫</span>
+        <svg className="tuner-speaker" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 18V5l11-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="17" cy="16" r="3" />
+        </svg>
         <span><strong>Reference Pitch</strong><small>Play A (440 Hz)</small></span>
         <button type="button" className="tuner-reference-play" onClick={() => void toggleReference()}
           aria-label={referencePlaying ? 'Stop A 440 hertz tone' : 'Play A 440 hertz tone'}>
-          {referencePlaying ? 'Ⅱ' : '▶'}
+          {referencePlaying
+            ? <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="7" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+            : <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="m8 4 12 8-12 8z" /></svg>}
         </button>
       </div>
-      <div className="tool-cat-scene tool-tuner-scene" aria-hidden="true">
-        <img className="tool-scene-plant tool-plant-left" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
-        <img className="tool-scene-plant tool-plant-right" src={VISUAL_ASSETS.approvedDecor.plant} alt="" />
-        <img className="tool-scene-rug" src={VISUAL_ASSETS.sharedMvp.companionSurfaces.rug} alt="" />
-        <img className="tool-scene-cat" src={VISUAL_ASSETS.cat.sleepingFile(catId)} alt="" />
-      </div>
+
     </section>
   );
 }
