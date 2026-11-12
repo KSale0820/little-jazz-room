@@ -196,8 +196,8 @@ section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bott
   }
 }
 
-/* By default omit controls that cannot be used. The optional toggle reveals
-   the disabled components for anyone who wants to inspect unavailable features. */
+/* An unavailable tool is not interactive and is omitted in routine mode.
+   The remaining Metronome and Tuner use the full row. */
 section.practice-player.practice-demo-refresh .practice-utility-row.practice-demo-tools.hide-unavailable-tools {
   grid-template-columns: repeat(2,minmax(0,1fr)) !important;
   width: 100%;
@@ -206,23 +206,6 @@ section.practice-player.practice-demo-refresh .practice-utility-row.practice-dem
   box-sizing: border-box;
   min-width: 0;
   width: 100%;
-}
-section.practice-player.practice-demo-refresh .practice-unavailable-tools-toggle {
-  display: block;
-  width: fit-content;
-  min-height: 29px;
-  margin: 1px 0 1px auto;
-  padding: 3px 5px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: #5f786b;
-  font: 600 10px/1.25 system-ui,sans-serif;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-section.practice-player.practice-demo-refresh .practice-unavailable-tools-toggle:focus-visible {
-  outline: 2px solid #235a45;
 }
 
 /* Guided routines keep the compact dock in reach on short phone screens,
