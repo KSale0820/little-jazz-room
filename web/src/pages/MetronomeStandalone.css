@@ -1,0 +1,107 @@
+/* Practice Hub /metronome: the same ivory-and-evergreen controls as the
+   in-player popup, presented as a real, scrollable page rather than a modal. */
+.practice-metronome-standalone {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100%;
+  padding: 18px 14px 30px;
+  background: radial-gradient(ellipse at 50% 0%, #fffcf4, #fff8ee 78%);
+  color: #1a4d3b;
+  overflow-x: hidden;
+}
+.practice-metronome-standalone .practice-metronome-page-surface {
+  box-sizing: border-box;
+  display: block;
+  width: min(100%, 580px);
+  max-height: none;
+  margin: 0 auto;
+  padding: 20px 18px 22px;
+  overflow: visible;
+  border: 1px solid #d5e2d3;
+  border-radius: 18px;
+  box-shadow: none;
+  background: #fffcf4;
+}
+.practice-metronome-page-surface .practice-metronome-page-header {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  margin-bottom: 13px;
+}
+.practice-metronome-page-surface .practice-metronome-page-header h2 {
+  min-width: 0;
+  text-align: center;
+  color: #1a4d3b;
+}
+.practice-metronome-page-surface .practice-metronome-page-back {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 38px;
+  height: 38px;
+  padding: 0 0 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #1a4d3b;
+  font: 400 39px/.85 Georgia, serif;
+}
+.practice-metronome-page-surface .practice-metronome-page-spacer {
+  display: block;
+  width: 38px;
+  height: 38px;
+}
+.practice-metronome-page-surface .practice-metronome-field {
+  min-width: 0;
+}
+.practice-metronome-page-surface .practice-metronome-status p {
+  min-width: 0;
+  line-height: 1.35;
+}
+.practice-metronome-page-surface .practice-metronome-done {
+  margin-top: 12px;
+}
+.practice-metronome-page-surface button:focus-visible,
+.practice-metronome-page-surface input:focus-visible {
+  outline: 2px solid #b49c54;
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .practice-metronome-standalone {
+    padding: 12px 11px max(22px, env(safe-area-inset-bottom));
+  }
+  .practice-metronome-standalone .practice-metronome-page-surface {
+    padding: 16px 13px 19px;
+    border-radius: 16px;
+  }
+  .practice-metronome-page-surface .practice-metronome-tempo {
+    margin: 16px 0;
+  }
+  .practice-metronome-page-surface .practice-metronome-field {
+    padding: 12px 0;
+  }
+  .practice-metronome-page-surface .practice-metronome-tempo > div {
+    gap: 12px;
+  }
+  .practice-metronome-page-surface .practice-metronome-tempo strong {
+    min-width: 108px;
+  }
+  .practice-metronome-page-surface .practice-metronome-pills {
+    gap: 5px;
+  }
+  .practice-metronome-page-surface .practice-metronome-pills button {
+    padding: 6px 8px;
+    min-width: 35px;
+  }
+}
+@media (max-width: 360px) {
+  .practice-metronome-standalone { padding-inline: 8px; }
+  .practice-metronome-standalone .practice-metronome-page-surface { padding-inline: 10px; }
+  .practice-metronome-page-surface .practice-metronome-tempo > div { gap: 8px; }
+  .practice-metronome-page-surface .practice-metronome-tempo strong { min-width: 96px; }
+}
