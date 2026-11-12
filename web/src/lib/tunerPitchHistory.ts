@@ -31,9 +31,12 @@ export function buildPitchSnapshot(
     (p.frequency === null || (Number.isFinite(p.frequency) && p.frequency > 0)));
   if (valid.filter(p => p.frequency !== null).length < 2) return null;
   const origin = valid[0].timestamp;
-  const samples = valid.slice(-3600).map(p => ({
+  // Keep the complete current session. The live graph uses a virtualized
+  // viewport, so long sessions do not require rendering every point at once.
+  const samples = valid.map(p => ({
     timestamp: Math.max(0, Math.round(p.timestamp - origin)),
     frequency: p.frequency === null ? null : Math.round(p.frequency * 100) / 100,
+    ...(Number.isFinite(p.wallTime) ? { wallTime: p.wallTime } : {}),
   }));
   return {
     id: crypto.randomUUID(), savedAt: now.toISOString(), mode,
