@@ -151,7 +151,7 @@ section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bott
   border: 0;
   background: #205a42;
   color: white;
-  font: 700 clamp(12px,3.5vw,17px)/1.1 Georgia,serif;
+  font: 700 16px/1.1 Georgia,serif;
   white-space: nowrap;
 }
 section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-demo-session-actions .practice-demo-journal {
@@ -192,7 +192,7 @@ section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bott
     min-width: 40px;
   }
   section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-demo-session-actions .practice-finish-action {
-    font-size: 12px;
+    font-size: 15px;
   }
 }
 
@@ -245,4 +245,8 @@ section.practice-player.practice-demo-refresh .practice-unavailable-tools-toggle
 /* Informational-only toasts must never block the primary Finish control. */
 body:has(.practice-player.practice-guided) .toast-message {
   pointer-events: none;
+}
+
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-time-badge > strong {
+  font-size: 12px;
 }
