@@ -49,12 +49,16 @@ async function verifyCompletion(page, viewport, label) {
       empty: screen.classList.contains('gj-empty'),
       headingInset: Math.round(sections[0].getBoundingClientRect().top - screen.getBoundingClientRect().top),
       gaps,
+      actionBottomInset: Math.round(screen.getBoundingClientRect().bottom -
+        sections[sections.length - 1].getBoundingClientRect().bottom),
     };
   });
   if (spacing.empty) {
     assert(spacing.headingInset < 85, 'Large empty-state header inset: ' + JSON.stringify(spacing));
-    assert(spacing.gaps.every(gap => gap >= 0 && gap <= 48),
-      'Empty-session sections must have consistent gaps: ' + JSON.stringify(spacing));
+    assert(spacing.gaps.slice(0, -1).every(gap => gap >= 0 && gap <= 48),
+      'Empty-session recap sections must have consistent gaps: ' + JSON.stringify(spacing));
+    assert(spacing.actionBottomInset >= 0 && spacing.actionBottomInset <= 60,
+      'Done should stay near the bottom of its frame: ' + JSON.stringify(spacing));
   }
   await page.screenshot({ path: join(output, label + '-' + viewport.width + 'x' + viewport.height + '.png'),
     fullPage: true, animations: 'disabled' });
@@ -110,6 +114,20 @@ try {
     assert(await page.locator('.gj-status-complete').count() === 2, 'Expected two actual completed exercises');
     assert(!errors.length, 'Runtime errors: ' + errors.join('; '));
     await context.close();
+
+    // The screenshot reported by the designer was a zero-materials, zero-journal
+    // session. Verify that sparse state independently from the populated journal.
+    const emptyContext = await browser.newContext({ viewport, isMobile: true, hasTouch: true,
+      deviceScaleFactor: 2, timezoneId: 'America/Los_Angeles' });
+    const emptyPage = await emptyContext.newPage();
+    await emptyPage.goto(base + '/free-practice', { waitUntil: 'networkidle' });
+    await emptyPage.locator('.fp-start-timer').click();
+    await emptyPage.waitForTimeout(1200);
+    await emptyPage.getByRole('button', { name: 'Finish Session', exact: true }).click();
+    await verifyCompletion(emptyPage, viewport, 'free-practice-empty');
+    assert(await emptyPage.locator('.gj-activity').count() === 0,
+      'Empty practice should not display redundant activity placeholders');
+    await emptyContext.close();
   }
   console.log('Great Practice completion visual and persistence checks passed.');
 } finally {
