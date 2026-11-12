@@ -201,6 +201,9 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     catch { /* Optional browser preference */ }
     return next;
   });
+  // Keep existing non-routine/free practice behavior intact; routine players
+  // default to a cleaner view and can reveal unavailable controls if desired.
+  const displayUnavailableTools = !routine || showUnavailableTools;
   const [showMeasureNumbers, setShowMeasureNumbers] = useState(() => {
     try { return localStorage.getItem('little-jazz-room:number-measures:v1:' + userScope) !== 'false'; }
     catch { return true; }
@@ -1123,14 +1126,14 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
             <p className="practice-reference-note practice-demo-audio-note">{activeRecording
               ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.'
               : 'Playback follows the chart visually at this BPM; no recorded audio is available.'}</p>
-            {(activeRecording || showUnavailableTools) && <PracticeInlineLoop options={demoOptions} counts={loopCounts} wholeCount={wholeCount}
+            {(activeRecording || displayUnavailableTools) && <PracticeInlineLoop options={demoOptions} counts={loopCounts} wholeCount={wholeCount}
               wholeSelected={wholeSelected} onCount={(id, count) =>
                 updateInlineLoop({ ...loopCounts, [id]: count }, wholeCount, false)}
               onWhole={count => updateInlineLoop(loopCounts, count, true)}
               onAdd={() => setAddSectionOpen(true)} onAdvanced={openLoop}
               disabled={!activeRecording} />}
       </div>}
-            <div className={`practice-utility-row practice-demo-tools ${showPlayerControls && showUnavailableTools ? 'has-unavailable-tools' : 'hide-unavailable-tools'}`} aria-label="Practice tools">
+            <div className={`practice-utility-row practice-demo-tools ${showPlayerControls && displayUnavailableTools ? 'has-unavailable-tools' : 'hide-unavailable-tools'}`} aria-label="Practice tools">
               <div className="practice-demo-metronome-wrap">
                 <button className="practice-demo-tool-main" type="button" onClick={event => openTool('metronome', event.currentTarget)}>
                   <PracticeToolGlyph name="metronome" /><span>Metronome</span>
@@ -1144,11 +1147,11 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
               <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>
                 <PracticeToolGlyph name="tuner" /><span>Tuner</span>
               </button>
-              {showPlayerControls && showUnavailableTools && <button type="button" disabled title="Mixer is Preview only">
+              {showPlayerControls && displayUnavailableTools && <button type="button" disabled title="Mixer is Preview only">
                 <PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small>
               </button>}
             </div>
-            {showPlayerControls && <button type="button" className="practice-unavailable-tools-toggle"
+            {routine && showPlayerControls && <button type="button" className="practice-unavailable-tools-toggle"
               aria-pressed={showUnavailableTools} onClick={toggleUnavailableTools}>
               {showUnavailableTools ? 'Hide unavailable tools' : 'Show unavailable tools'}
             </button>}
