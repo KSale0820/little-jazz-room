@@ -879,9 +879,9 @@ export function PracticePage() {
       {instructionsOnly ? (
         <section className="practice-routine-tools-only" aria-label="Instructions-only practice tools">
           <button type="button" className="practice-routine-timer" onClick={togglePracticeClock}
-            aria-label={isRunning ? 'Pause practice timer' : 'Start practice timer'}>
+            aria-label={isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
             <PlayerPixelIcon name={isRunning ? 'pause' : 'play'} />
-            {isRunning ? 'Pause practice timer' : 'Start practice timer'}
+            {isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}
           </button>
           <div className="practice-utility-row practice-routine-simple-tools" aria-label="Practice tools">
             <button type="button" onClick={event => openTool('metronome', event.currentTarget)}>
