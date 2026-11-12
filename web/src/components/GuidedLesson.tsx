@@ -7,18 +7,19 @@ interface Props {
   lesson: Lesson;
   stepIndex: number;
   totalSteps: number;
+  hideTitle?: boolean;
 }
 
 /** Compact, scrollable instructional content, independent of the shared timer. */
-export function GuidedLesson({ lesson, stepIndex, totalSteps }: Props) {
+export function GuidedLesson({ lesson, stepIndex, totalSteps, hideTitle = false }: Props) {
 
   return (
     <section className="practice-lesson-scroll" aria-label="Guided lesson instructions" tabIndex={0}>
       <div className="practice-lesson-card">
-        <header className="practice-lesson-heading">
+        {!hideTitle && <header className="practice-lesson-heading">
           <span className="practice-lesson-eyebrow">LESSON {stepIndex + 1} OF {totalSteps}</span>
           <h2>{lesson.title}</h2>
-        </header>
+        </header>}
 
         <section className="practice-lesson-section" aria-labelledby="practice-lesson-goal">
           <h3 id="practice-lesson-goal">Your goal</h3>
@@ -46,7 +47,7 @@ export function GuidedLesson({ lesson, stepIndex, totalSteps }: Props) {
           <section className="practice-lesson-section practice-lesson-terms" aria-labelledby="practice-lesson-terms">
             <h3 id="practice-lesson-terms">Helpful terms</h3>
             <dl>{lesson.terminologyHelp.map(({ term, explanation }, index) => (
-              <div key={term + index}><dt>{term}</dt><dd>{explanation}</dd></div>
+              <div key={term + index}>{term !== 'Terminology' && <dt>{term}</dt>}<dd>{explanation}</dd></div>
             ))}</dl>
           </section>
         )}
