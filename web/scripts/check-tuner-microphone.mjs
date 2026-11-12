@@ -71,10 +71,9 @@ try {
   await page.waitForFunction(() =>
     document.querySelector('.tool-tuner')?.getAttribute('data-capture-path') === 'worklet',
   null, { timeout: 12000 });
-  // Regression for the specific user report: a note worked initially,
-  // then disappeared after several seconds. Check the live display repeatedly
-  // over more than seven seconds of continuous fake microphone capture.
-  for (let tick = 0; tick < 5; tick++) {
+  // Regression for the user-reported failure at about 15 seconds. Monitor
+  // for >25 seconds while the graph remains collapsed.
+  for (let tick = 0; tick < 18; tick++) {
     await page.waitForTimeout(1500);
     const note = await page.locator('.tuner-reading strong').textContent();
     const backend = await page.locator('.tool-tuner').getAttribute('data-capture-path');
@@ -128,6 +127,30 @@ try {
   console.log('PASS: real browser microphone detected A4 at ' + frequency +
     ' and drew ' + plotted.split(' ').length + ' live graph points');
   await page.getByRole('button', { name: /Stop microphone/ }).click();
+  // Stop must keep historical points. Saving must be real account-scoped data.
+  await page.getByRole('button', { name: 'Save pitch check for journal' }).click();
+  const snapshot = await page.evaluate(() => {
+    const key = Object.keys(localStorage).find(k => k.includes(':tuner-pitch-checks:v1:'));
+    return key ? JSON.parse(localStorage.getItem(key) || '[]')[0] : null;
+  });
+  if (!snapshot || snapshot.samples.length < 50 || snapshot.durationMs < 24000) {
+    throw new Error('Stopped tuner lost its >24-second measured pitch history');
+  }
+  await page.getByRole('region', { name: 'Saved pitch checks' }).waitFor();
+  await page.goto(origin + '/player?chart=blues-f-12');
+  await page.getByRole('button', { name: 'Open session journal' }).click();
+  const attach = page.getByRole('group', { name: "Attach today's tuner pitch checks" });
+  await attach.getByRole('checkbox').check();
+  await page.getByRole('button', { name: 'Save Entry' }).click();
+  await page.getByRole('button', { name: 'Open session journal' }).click();
+  await page.getByText('1 pitch chart attached').first().waitFor();
+  // Expanding the journal exposes the graph, not merely a decorative tag.
+  const latest = page.locator('.practice-feature-journal-card').first();
+  await latest.locator('button').first().click();
+  if (!(await page.locator('.practice-pitch-preview polyline').count())) {
+    throw new Error('Attached pitch graph is missing from journal entry');
+  }
+  await page.getByRole('button', { name: 'Close Session Journal' }).click();
 
   // Fallback is important for older Safari and offline Worklet loading.
   const fallbackContext = await browser.newContext({
