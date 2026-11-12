@@ -60,33 +60,43 @@ try {
     });
     assert.ok(Math.abs(toolWidths.first - toolWidths.second) < 12, 'Instruction tool widths should be equal');
     assert.ok(toolWidths.first + toolWidths.second > toolWidths.width - 25, 'Instruction tools should fill full row');
-    const footerOrder = await page.locator('.practice-demo-session-actions').locator('button').evaluateAll(buttons => buttons.map(b => b.getAttribute('aria-label') || b.textContent?.trim()));
-    assert.deepEqual(footerOrder.slice(0,4), ['Previous routine step', 'Next routine step', '✓ Finish Session', 'Open session journal']);
-    const footerLayout = await page.locator('.practice-demo-session-row').evaluate(root => {
-      const find = selector => root.querySelector(selector)?.getBoundingClientRect();
-      const rects = [
-        find('.practice-time-badge'),
-        find('[aria-label="Previous routine step"]'),
-        find('[aria-label="Next routine step"]'),
-        find('.practice-finish-action'),
-        find('[aria-label="Open session journal"]'),
-      ];
-      const bar = root.getBoundingClientRect();
-      return { tops: rects.map(rect => rect?.top), rights: rects.map(rect => rect?.right),
-        lefts: rects.map(rect => rect?.left), top: bar.top, left: bar.left, right: bar.right };
+    const navLabels = await page.locator('.routine-dock-top .routine-session-navigation button')
+      .evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
+    assert.deepEqual(navLabels, ['Previous routine step','Next routine step']);
+    const footerOrder = await page.locator('.routine-dock-bottom .practice-demo-session-actions button')
+      .evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label') || button.textContent?.trim()));
+    assert.deepEqual(footerOrder, ['✓ Finish Session', 'Open session journal']);
+    const dockLayout = await page.locator('.routine-session-dock').evaluate(dock => {
+      const bounds = selector => dock.querySelector(selector)?.getBoundingClientRect();
+      const top = bounds('.routine-dock-top'), bottom = bounds('.routine-dock-bottom');
+      const started = bounds('.routine-compact-checks'), nav = bounds('.routine-session-navigation');
+      const timer = bounds('.practice-time-badge'), finish = bounds('.practice-finish-action');
+      const journal = bounds('.practice-demo-journal'), outer = dock.getBoundingClientRect();
+      return {
+        outer: { left: outer.left, right: outer.right },
+        top: { top: top.top, bottom: top.bottom },
+        bottom: { top: bottom.top, bottom: bottom.bottom },
+        started: { top: started.top, bottom: started.bottom, right: started.right },
+        nav: { top: nav.top, bottom: nav.bottom, left: nav.left, right: nav.right },
+        lowerTops: [timer.top,finish.top,journal.top],
+        lowerRights: [timer.right,finish.right,journal.right],
+        lowerLefts: [timer.left,finish.left,journal.left],
+        green: getComputedStyle(top).backgroundColor,
+      };
     });
-    assert.ok(footerLayout.tops.every(top => Math.abs(top - footerLayout.tops[0]) < 6),
-      'Timer, step navigation, Finish and journal must be on the same row: ' + JSON.stringify(footerLayout));
-    assert.ok(footerLayout.lefts.every(left => left >= footerLayout.left - 2) &&
-      footerLayout.rights.every(right => right <= footerLayout.right + 2), 'Footer controls overflow the one-row toolbar');
-    const positions = await page.locator('.routine-compact-status').evaluate(status => {
+    assert.ok(dockLayout.top.bottom <= dockLayout.bottom.top + 2, 'Status and navigation must sit above Finish Session');
+    assert.ok(Math.abs(dockLayout.started.top - dockLayout.nav.top) < 9, 'Started/Complete and arrows must share one upper row');
+    assert.ok(dockLayout.started.right <= dockLayout.nav.left + 4, 'Status controls must not overlap navigation');
+    assert.ok(dockLayout.lowerTops.every(value => Math.abs(value - dockLayout.lowerTops[0]) < 6),
+      'Timer, Finish and journal must share the lower row: '+JSON.stringify(dockLayout));
+    assert.ok(dockLayout.lowerLefts.every(x => x >= dockLayout.outer.left - 2) &&
+      dockLayout.lowerRights.every(x => x <= dockLayout.outer.right + 2), 'Controls must not overflow the connected dock');
+    assert.ok(dockLayout.green !== 'rgba(0, 0, 0, 0)', 'Upper status row should have the light green background');
+    const positions = await page.locator('.routine-session-dock').evaluate(dock => {
       const tools = document.querySelector('.practice-demo-tools')?.getBoundingClientRect();
-      const footer = document.querySelector('.practice-demo-session-row')?.getBoundingClientRect();
-      const r = status.getBoundingClientRect();
-      return { statusTop: r.top, statusBottom: r.bottom, toolsBottom: tools?.bottom, footerTop: footer?.top };
+      return { dockTop: dock.getBoundingClientRect().top, toolsBottom: tools?.bottom };
     });
-    assert.ok(positions.statusTop >= positions.toolsBottom - 4 && positions.statusBottom <= positions.footerTop + 5,
-      'Started and Complete should sit directly above the footer toolbar');
+    assert.ok(positions.dockTop >= positions.toolsBottom - 4, 'Combined footer should follow the tool row');
     await page.screenshot({ path: join(dir, label + '-01-instructions.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Next routine step' }).click();
@@ -106,6 +116,20 @@ try {
     assert.ok(chartLinkPlacement.top < 55 && chartLinkPlacement.right < 35, 'See Chart should sit at the lesson upper-right corner');
     await seeChart.click();
     await page.getByRole('group', { name: /Chord chart:/ }).first().waitFor();
+    assert.equal(await page.locator('.practice-demo-loop').count(), 0,
+      'Unavailable Loop should be hidden by default');
+    assert.equal(await page.getByRole('button', { name: 'Mixer' }).count(), 0,
+      'Unavailable Mixer should be hidden by default');
+    assert.equal(await page.locator('.practice-demo-tools > button').count(), 1,
+      'Only Tuner should appear beside Metronome until unavailable tools are enabled');
+    await page.getByRole('button', { name: 'Show unavailable tools' }).click();
+    assert.equal(await page.locator('.practice-demo-loop').count(), 1,
+      'Show unavailable tools should reveal the disabled loop');
+    assert.equal(await page.locator('.practice-demo-tools > button').count(), 2,
+      'Show unavailable tools should reveal the disabled Mixer');
+    await page.getByRole('button', { name: 'Hide unavailable tools' }).click();
+    assert.equal(await page.locator('.practice-demo-loop').count(), 0);
+    assert.equal(await page.locator('.practice-demo-tools > button').count(), 1);
     assert.equal(await page.locator('#player-chart').count(), 0, 'Routine users must not be able to choose a different chart');
     assert.equal(await page.locator('.routine-chart-fixed-title').innerText(), 'ii–V–I in C');
     assert.deepEqual(await page.locator('.routine-step-sheet-number').allTextContents(), ['1','2','3']);
