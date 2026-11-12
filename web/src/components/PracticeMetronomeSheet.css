@@ -31,7 +31,13 @@
 .practice-metronome-pills { display:flex; gap:7px; flex-wrap:wrap; }
 .practice-metronome-pills button { flex:1 1 auto; min-height:38px; border:1px solid #b7cbb7; border-radius:10px; background:#fffdf7; color:#24533f; padding:6px 11px; font-weight:700; }
 .practice-metronome-pills button[aria-pressed=true] { background:#245c44; color:#fff; }
-.practice-metronome-pills button.active-beat { outline:2px solid #b49c54; outline-offset:2px; }
+/* Keep the moving gold beat ring INSIDE the button. An outside outline is
+   clipped by the horizontal accent-row scroller, especially on iOS Safari. */
+.practice-metronome-pills button.active-beat {
+  outline: none;
+  outline-offset: 0;
+  box-shadow: inset 0 0 0 3px #b49c54;
+}
 .practice-metronome-count { border-top:1px solid #dce5d8; display:flex; align-items:center; justify-content:space-between; padding:13px 0; }
 .practice-metronome-count label { display:flex; align-items:center; gap:7px; font-weight:700; }
 .practice-metronome-count input { accent-color:#1d6046; width:17px; height:17px; }
