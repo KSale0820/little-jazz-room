@@ -135,3 +135,19 @@
     grid-template-columns: repeat(auto-fit,minmax(72px,1fr));
   }
 }
+
+/* The shared chart-sheet component defaults to four measures across and
+   reserves a gutter for A/B form letters. Grouped routine rows already supply
+   their own 1/2/3 gutter, so let one or two bars fill the available row. */
+.practice-player.practice-guided.practice-demo-refresh .practice-chart-scroll.practice-chart-all
+.routine-step-sheet-row .chord-grid.practice-sheet {
+  box-sizing: border-box;
+  grid-template-columns: repeat(auto-fit,minmax(90px,1fr));
+  padding-left: 0;
+}
+@media (max-width: 390px) {
+  .practice-player.practice-guided.practice-demo-refresh .practice-chart-scroll.practice-chart-all
+  .routine-step-sheet-row .chord-grid.practice-sheet {
+    grid-template-columns: repeat(auto-fit,minmax(72px,1fr));
+  }
+}
