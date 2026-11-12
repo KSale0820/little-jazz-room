@@ -2,6 +2,7 @@
 
 :root {
   font-family: 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ui-heading: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   color: var(--ink);
   background: var(--page-bg);
   --font-serif: 'Palatino Linotype', 'Book Antiqua', Georgia, 'Times New Roman', serif;
