@@ -1,0 +1,265 @@
+/* Routine UX v2. Scope all overrides to routine mode so standalone chart and
+   Free Practice continue to use their approved class-demo geometry. */
+.practice-player.practice-guided .routine-step-trigger {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  justify-content: flex-start;
+  gap: 5px;
+  max-width: 100%;
+  min-height: 34px;
+  margin: -5px -7px -6px;
+  padding: 5px 7px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.practice-player.practice-guided .routine-step-trigger:hover,
+.practice-player.practice-guided .routine-step-trigger:focus-visible {
+  background: #e7efe4;
+}
+.practice-player.practice-guided .routine-step-trigger span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.practice-player.practice-guided .routine-step-trigger-icon {
+  font: 700 18px/1 system-ui,sans-serif;
+  color: #2c604c;
+  flex: none;
+}
+.practice-player.practice-guided .practice-routine-overview-bar {
+  min-height: 15px;
+  margin: 1px 0 3px;
+  font-size: 10px;
+}
+.practice-player.practice-guided .practice-guided-progress {
+  height: 4px;
+  min-height: 4px;
+  margin: 0 0 10px;
+}
+/* A single contextual link, inside the content, replaces the bulky tab bar. */
+.practice-player.practice-guided .routine-context-link,
+.practice-player.practice-guided .routine-context-action button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex: none;
+  gap: 3px;
+  min-height: 34px;
+  padding: 5px 10px;
+  border: 1px solid #b8cdbb;
+  border-radius: 9px;
+  background: #edf3e9;
+  color: #205840;
+  white-space: nowrap;
+  font: 700 11px/1.2 system-ui,sans-serif;
+  cursor: pointer;
+}
+.practice-player.practice-guided .routine-context-action {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0 0 5px;
+}
+.practice-player.practice-guided .practice-chart-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.practice-player.practice-guided .practice-chart-toolbar select {
+  flex: 1 1 120px;
+  width: auto;
+  min-width: 90px;
+}
+.practice-player.practice-guided .practice-chart-toolbar .routine-context-link {
+  margin-left: auto;
+}
+/* The lesson is the primary content in instruction mode. Never clip it to half
+   the viewport or show a nested scrollbar hiding the remaining instructions. */
+.app-shell:has(.practice-player.practice-guided.practice-instructions) .viewport {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.practice-player.practice-guided.practice-instructions {
+  min-height: 0;
+  height: auto;
+  overflow: visible;
+  padding-bottom: 12px;
+}
+.practice-player.practice-guided.practice-instructions .routine-instruction-area {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+}
+.practice-player.practice-guided.practice-instructions .practice-lesson-panel {
+  box-sizing: border-box;
+  display: block;
+  flex: 0 0 auto;
+  height: auto;
+  max-height: none !important;
+  min-height: 0;
+  width: 100%;
+  overflow: visible !important;
+  margin: 0 0 10px;
+}
+.practice-player.practice-guided.practice-instructions .practice-lesson-scroll {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+.practice-player.practice-guided.practice-instructions .practice-transport,
+.practice-player.practice-guided.practice-instructions .practice-guided-head,
+.practice-player.practice-guided.practice-instructions .practice-segments,
+.practice-player.practice-guided.practice-instructions .practice-notation-panel {
+  display: none !important;
+}
+/* The simple exercise always has exactly two equal, full-width tool cells. */
+section.practice-player.practice-guided.practice-demo-refresh.practice-instructions > .practice-utility-row.practice-demo-tools {
+  box-sizing: border-box;
+  display: grid !important;
+  width: 100%;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 8px;
+  margin: 10px 0 0;
+}
+.practice-player.practice-guided.practice-instructions .practice-demo-tools > .practice-demo-metronome-wrap,
+.practice-player.practice-guided.practice-instructions .practice-demo-tools > button {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  justify-self: stretch;
+}
+/* Small independent checkboxes encode: unchecked=Incomplete,
+   Started=Partial, Complete=both Started and Complete. */
+.practice-player.practice-guided .routine-compact-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex: 0 0 auto;
+  margin: 3px 0 7px;
+  min-height: 36px;
+}
+.practice-player.practice-guided .routine-compact-checks {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+.practice-player.practice-guided .routine-compact-checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  min-height: 31px;
+  box-sizing: border-box;
+  border: 1px solid #ccd8ca;
+  border-radius: 9px;
+  background: #faf9f3;
+  color: #245640;
+  white-space: nowrap;
+  font: 700 11px system-ui,sans-serif;
+}
+.practice-player.practice-guided .routine-compact-checks input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #215b43;
+}
+.practice-player.practice-guided .routine-compact-state {
+  color: #68786e;
+  font: 600 10px/1.2 system-ui,sans-serif;
+  white-space: nowrap;
+}
+/* Routine footer: timer on top and (Prev, Next) directly left of Finish.
+   The journal remains the final right-hand control. */
+section.practice-player.practice-guided.practice-demo-refresh .practice-session-row.practice-demo-session-row {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) !important;
+  gap: 0;
+  width: 100%;
+  min-height: 0;
+  margin: 10px 0 0;
+  overflow: hidden;
+}
+section.practice-player.practice-guided.practice-demo-refresh .practice-demo-session-row .practice-time-badge {
+  box-sizing: border-box;
+  width: 100% !important;
+  min-height: 35px;
+  height: auto;
+  padding: 4px 10px;
+  justify-content: flex-start;
+  border-bottom: 1px solid #d2dfce;
+  font-size: 11px;
+}
+section.practice-player.practice-guided.practice-demo-refresh .practice-demo-session-actions {
+  display: grid !important;
+  width: 100%;
+  border-radius: 0;
+  grid-template-columns: auto minmax(0,1fr) 40px;
+  align-items: stretch;
+  overflow: visible;
+}
+.practice-player.practice-guided .routine-session-navigation {
+  display: flex;
+  gap: 0;
+  border-right: 1px solid #c9d9c5;
+}
+.practice-player.practice-guided .routine-session-navigation button {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  min-height: 47px;
+  width: 40px;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid #c9d9c5;
+  background: #edf3e7;
+  color: #245943;
+  font: 700 24px/1 system-ui,sans-serif;
+}
+.practice-player.practice-guided .routine-session-navigation button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+section.practice-player.practice-guided.practice-demo-refresh .practice-demo-session-actions .practice-finish-action {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  width: auto;
+  min-height: 47px;
+  border: 0;
+  border-radius: 0;
+  padding: 4px 7px;
+  font: 700 clamp(10px,3.1vw,13px)/1.2 Georgia,serif;
+}
+section.practice-player.practice-guided.practice-demo-refresh .practice-demo-session-actions .practice-demo-journal {
+  width: 40px;
+  min-width: 40px;
+  flex-basis: 40px;
+  min-height: 47px;
+  border-radius: 0;
+}
+/* No old coach dock or blank reserved player footprint in instruction mode. */
+.practice-player.practice-guided .practice-coach-dock { display: none !important; }
+.practice-player.practice-guided.practice-instructions .practice-session-row,
+.practice-player.practice-guided.practice-instructions .practice-utility-row {
+  flex: 0 0 auto;
+}
+@media (max-width:390px) {
+  .practice-player.practice-guided .routine-session-navigation button { width: 36px; }
+  .practice-player.practice-guided .routine-compact-checks label { padding: 5px 6px; }
+  section.practice-player.practice-guided.practice-demo-refresh .practice-demo-session-actions .practice-finish-action { font-size: 11px; }
+}
