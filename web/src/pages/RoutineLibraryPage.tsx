@@ -179,14 +179,12 @@ export function RoutineLibraryPage() {
           aria-label={'Open ' + routine.title + ' in player'}>
           <span className="routine-card-icon-slot" data-icon-key={icon}
             style={{ backgroundPosition: routineIconPosition(icon) }} aria-hidden="true" />
-          <span className="routine-card-content">
-            <span className="routine-card-title">{routine.title}</span>
-            <span className="routine-card-tags">
-              <span className="routine-card-duration">◷ {routine.duration_minutes} min</span>
-              <span className="routine-card-level">{routine.level}</span>
-            </span>
-          </span>
+          <span className="routine-card-title">{routine.title}</span>
         </button>
+        <div className="routine-card-tags" aria-label={routine.duration_minutes + ' minutes, ' + routine.level}>
+          <span className="routine-card-duration">◷ {routine.duration_minutes} min</span>
+          <span className={'routine-card-level' + (/intermediate|advanced/i.test(routine.level) ? ' is-intermediate' : '')}>{routine.level}</span>
+        </div>
         <button type="button" className={'routine-bookmark' + (saved ? ' is-saved' : '')}
           aria-label={(saved ? 'Remove saved ' : 'Save ') + routine.title}
           aria-pressed={saved} onClick={() => toggleBookmark(routine.id)}>
