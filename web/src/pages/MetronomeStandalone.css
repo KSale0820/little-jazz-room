@@ -106,8 +106,7 @@
   .practice-metronome-page-surface .practice-metronome-tempo strong { min-width: 96px; }
 }
 
-/* Dedicated standalone transport buttons. The in-player metronome sheet keeps
-   its compact top switch and Done action unchanged. */
+/* Dedicated standalone transport buttons shared by every metronome view. */
 .practice-metronome-page-surface .practice-metronome-status.is-page-status {
   min-height: 52px;
   justify-content: center;
