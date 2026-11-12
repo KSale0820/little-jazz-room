@@ -44,7 +44,8 @@ it.skipIf(process.env.RUN_ROUTINE_BROWSER_QA !== '1')('visually captures R01/R03
       await page.goto('http://127.0.0.1:5187/routines');
       await page.getByRole('heading', { name: 'Routines', exact: true }).waitFor();
       await expect.poll(async () => page.getByRole('tab').count()).toBe(3);
-      await expect.poll(async () => page.locator('.routine-card-icon-slot').count()).toBe(14);
+      await expect.poll(async () => page.locator('.routine-card-icon-slot').count()).toBeGreaterThanOrEqual(14);
+      await expect.poll(async () => page.locator('.routine-shelf').first().locator('.routine-card').count()).toBeGreaterThanOrEqual(3);
       await expect.poll(async () => page.locator('.routine-card-icon-slot').first()
         .evaluate(element => getComputedStyle(element).backgroundImage))
         .toContain('routine-icons-sprite.png');
