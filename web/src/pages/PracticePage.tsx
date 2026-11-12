@@ -25,7 +25,7 @@ import { useAuth } from '../context/AuthContext';
 import { localStorageScopeForUser } from '../repository/localRepository';
 import { ChartAnnotationSheet, SessionJournalSheet, AddPracticeSectionSheet } from '../components/PracticePlayerSheets';
 import { PracticeMetronomeSheet } from '../components/PracticeMetronomeSheet';
-import { PracticeInlineLoop } from '../components/PracticeInlineLoop';
+import { PracticeInlineLoop, ControlChevron } from '../components/PracticeInlineLoop';
 import { usePracticeMetronome } from '../lib/usePracticeMetronome';
 import { readLocalList, persistLocalList, notesKey, journalKey, chartAnnotationDisplay } from '../lib/practicePlayerNotes';
 import type { ChartNote, PracticeJournalEntry } from '../lib/practicePlayerNotes';
@@ -121,6 +121,7 @@ export function PracticePage() {
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
   const toolTriggerRef = useRef<HTMLButtonElement | null>(null);
   const toolOverlayRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
   const [tempo, setTempo] = useState(100);
   const [tempoInput, setTempoInput] = useState('100');
   const recordingLoopRef = useRef<{ start: number; end: number; plays: number; remaining: number }[]>([]);
@@ -325,6 +326,21 @@ export function PracticePage() {
   const loopRange: [number, number] | null = currentSection ? [currentSection.startBar, currentSection.endBar] : null;
   const demoOptions = getPlayerLoopOptions(chart, customLoopSections);
   const userNoteMap: Record<number, string> = Object.fromEntries(chartNotes.map(item => [item.bar, item.text]));
+  useEffect(() => {
+    const heading = titleRef.current;
+    if (!heading) return;
+    const overflow = heading.scrollWidth - heading.clientWidth;
+    if (overflow < 3 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heading.scrollLeft = 0;
+      return;
+    }
+    // Only titles too long to fit glide gently; normal titles do not move.
+    const start = window.setTimeout(() => heading.scrollTo({ left: overflow, behavior: 'smooth' }), 1400);
+    const cycle = window.setInterval(() =>
+      heading.scrollTo({ left: heading.scrollLeft > overflow / 2 ? 0 : overflow, behavior: 'smooth' }), 4800);
+    return () => { window.clearTimeout(start); window.clearInterval(cycle); };
+  }, [chart.title, routine?.title]);
+
   const planStatus = activeRecording ? 'Recording plays at its original key and tempo' : playhead.ended ? 'Chart finished' : currentSection
     ? 'Section ' + ((playhead.sectionIndex ?? 0) + 1) + ' of ' + activeSections!.length + ' · Pass ' + playhead.pass + ' of ' + currentSection.plays
     : 'Chart once';
@@ -759,7 +775,7 @@ export function PracticePage() {
       <header className="practice-player-head">
         <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
         <div className="practice-title-group">
-          <h1>{routine?.title ?? chart.title}</h1>
+          <h1 ref={titleRef} title={routine?.title ?? chart.title}>{routine?.title ?? chart.title}</h1>
           <p>{routine
             ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length + ' · ' + (playableStep?.title ?? 'Exercise')
             : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
@@ -908,8 +924,8 @@ export function PracticePage() {
                     value={tempoInput} onChange={event => { setTempoInput(event.target.value); if (+event.target.value >= 40 && +event.target.value <= 240) changeTempo(+event.target.value); }}
                     onBlur={() => changeTempo(+tempoInput || tempo)} />
                   <div className="practice-demo-updown">
-                    <button type="button" aria-label="Increase reference BPM" onClick={() => changeTempo(tempo + 1)}>⌃</button>
-                    <button type="button" aria-label="Decrease reference BPM" onClick={() => changeTempo(tempo - 1)}>⌄</button>
+                    <button type="button" aria-label="Increase reference BPM" onClick={() => changeTempo(tempo + 1)}><ControlChevron up /></button>
+                    <button type="button" aria-label="Decrease reference BPM" onClick={() => changeTempo(tempo - 1)}><ControlChevron up={false} /></button>
                   </div>
                 </div>
               </div>
@@ -919,8 +935,8 @@ export function PracticePage() {
                   <select id="practice-demo-key" value={CHROMA[pitchClass(chartKey) ?? 0]} onChange={event => setChartKey(event.target.value)}
                     aria-label="Transpose concert chart key">{CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}</select>
                   <div className="practice-demo-updown">
-                    <button type="button" aria-label="Increase chart key by semitone" onClick={() => setChartKey(CHROMA[((pitchClass(chartKey) ?? 0) + 1) % 12])}>⌃</button>
-                    <button type="button" aria-label="Decrease chart key by semitone" onClick={() => setChartKey(CHROMA[((pitchClass(chartKey) ?? 0) + 11) % 12])}>⌄</button>
+                    <button type="button" aria-label="Increase chart key by semitone" onClick={() => setChartKey(CHROMA[((pitchClass(chartKey) ?? 0) + 1) % 12])}><ControlChevron up /></button>
+                    <button type="button" aria-label="Decrease chart key by semitone" onClick={() => setChartKey(CHROMA[((pitchClass(chartKey) ?? 0) + 11) % 12])}><ControlChevron up={false} /></button>
                   </div>
                 </div>
               </div>
