@@ -1130,6 +1130,64 @@ export function PracticePage() {
       )}
 
     </section>
+    {stepsOpen && routine && createPortal(
+      <div className="practice-routine-dialog-backdrop" onClick={() => setStepsOpen(false)}>
+        <section className="practice-routine-dialog" role="dialog" aria-modal="true" aria-label="Routine exercise overview"
+          onClick={event => event.stopPropagation()} onKeyDown={event => { if (event.key === 'Escape') setStepsOpen(false); }}>
+          <header><h2>{routine.title}</h2><button type="button" onClick={() => setStepsOpen(false)} autoFocus aria-label="Close routine overview">×</button></header>
+          <p>{completeCount} of {routine.steps.length} completed. Select an exercise to jump to it.</p>
+          <div className="practice-routine-step-list">
+            {routine.steps.map((step, index) => {
+              const playable = resolvePlayableStep(step, exercises, exercisesById);
+              const outcome = stepOutcomes[index];
+              return <button type="button" key={index} className={index === stepIndex ? 'current' : ''}
+                aria-current={index === stepIndex ? 'step' : undefined}
+                onClick={() => { setStepsOpen(false); requestStep(index); }}>
+                <span className="practice-routine-step-number">{index + 1}</span>
+                <span className="practice-routine-step-summary"><strong>{playable.title}</strong>
+                  <small>{step.duration_minutes} min · {playable.chart_id ? 'Chart' : 'Instructions'}</small></span>
+                <span className="practice-routine-step-state">{outcome === 'complete' ? '✓ Done' : outcome === 'needs-work' ? 'Needs work' : outcome === 'skipped' ? 'Skipped' : index === stepIndex ? 'Current' : 'Not marked'}</span>
+              </button>;
+            })}
+          </div>
+        </section>
+      </div>, document.querySelector('.app-shell') ?? document.body
+    )}
+    {pendingStep !== null && createPortal(
+      <div className="practice-routine-dialog-backdrop">
+        <section className="practice-routine-dialog" role="dialog" aria-modal="true" aria-label="Save modified exercise settings"
+          onKeyDown={event => { if (event.key === 'Escape') setPendingStep(null); }}>
+          <header><h2>Save your changes?</h2><button type="button" onClick={() => setPendingStep(null)} aria-label="Cancel changing exercises">×</button></header>
+          <p>You changed this exercise's player settings. The original routine will remain unchanged.</p>
+          <div className="practice-routine-change-summary">
+            <span>BPM: {stepDefaults.reference_bpm} → {tempo}</span>
+            <span>Key: {stepDefaults.chart_key} → {chartKey}</span>
+            <span>Loop and instrument settings are included when you save.</span>
+          </div>
+          <label className="practice-routine-save-label">New exercise name
+            <input type="text" maxLength={100} value={customTitle} onChange={event => setCustomTitle(event.target.value)} />
+          </label>
+          <button type="button" className="practice-routine-primary" disabled={!customTitle.trim()}
+            onClick={saveEditedExerciseAndContinue}>Save as New Exercise</button>
+          <button type="button" className="practice-routine-secondary" onClick={() => { const next = pendingStep; setPendingStep(null); goStep(next); }}>Continue Without Saving</button>
+          <button type="button" className="practice-routine-link" onClick={() => setPendingStep(null)}>Keep practicing</button>
+        </section>
+      </div>, document.querySelector('.app-shell') ?? document.body
+    )}
+    {journalOpen && createPortal(
+      <div className="practice-routine-dialog-backdrop" onClick={() => setJournalOpen(false)}>
+        <section className="practice-routine-dialog" role="dialog" aria-modal="true" aria-label="Session journal"
+          onClick={event => event.stopPropagation()} onKeyDown={event => { if (event.key === 'Escape') setJournalOpen(false); }}>
+          <header><h2>Practice journal</h2><button type="button" onClick={() => setJournalOpen(false)} aria-label="Close journal">×</button></header>
+          <p>What went well? What needs more work? Your notes will be saved when you finish the session.</p>
+          <label className="practice-routine-save-label">Session notes
+            <textarea rows={6} maxLength={500} value={notes}
+              onChange={event => setNotes(event.target.value)} placeholder="Add a quick note…" autoFocus />
+          </label>
+          <button type="button" className="practice-routine-primary" onClick={() => setJournalOpen(false)}>Done</button>
+        </section>
+      </div>, document.querySelector('.app-shell') ?? document.body
+    )}
     {loopOpen && createPortal(
       <LoopPlanSettings totalBars={chart.bars.length} enabled={loopEnabled} sections={loopSections}
         repeatPlan={repeatWholePlan} onApply={applyLoop} onClose={closeLoop} />,
