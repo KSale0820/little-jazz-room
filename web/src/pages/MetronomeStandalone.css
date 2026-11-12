@@ -105,3 +105,51 @@
   .practice-metronome-page-surface .practice-metronome-tempo > div { gap: 8px; }
   .practice-metronome-page-surface .practice-metronome-tempo strong { min-width: 96px; }
 }
+
+/* Dedicated standalone transport buttons. The in-player metronome sheet keeps
+   its compact top switch and Done action unchanged. */
+.practice-metronome-page-surface .practice-metronome-status.is-page-status {
+  min-height: 52px;
+  justify-content: center;
+  text-align: center;
+}
+.practice-metronome-page-surface .practice-metronome-status.is-page-status p {
+  width: 100%;
+  color: #416550;
+  font-size: 12px;
+}
+.practice-metronome-page-surface .practice-metronome-page-start {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: 49px;
+  margin-top: 14px;
+  padding: 10px 16px;
+  border: 1px solid #20583f;
+  border-radius: 12px;
+  background: #20583f;
+  color: #fffdf6;
+  font: 700 17px/1.2 Georgia, serif;
+}
+.practice-metronome-page-surface .practice-metronome-page-start[aria-pressed="true"] {
+  background: #245a42;
+  border-color: #245a42;
+}
+.practice-metronome-page-surface .practice-metronome-page-return {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 8px;
+  padding: 10px 16px;
+  border: 1px solid #bed4be;
+  border-radius: 12px;
+  background: #eaf2e5;
+  color: #245540;
+  font: 700 15px/1.2 Georgia, serif;
+}
+.practice-metronome-page-surface .practice-metronome-page-start:focus-visible,
+.practice-metronome-page-surface .practice-metronome-page-return:focus-visible {
+  outline: 2px solid #ad994e;
+  outline-offset: 2px;
+}
