@@ -951,7 +951,7 @@ export function PracticePage() {
         notes={chartNotes} onSave={saveChartAnnotation} onDelete={deleteChartAnnotation}
         onClose={() => setAnnotationOpen(false)} />, document.body)}
     {activeRecording && journalOpen && createPortal(
-      <SessionJournalSheet chartId={chart.id} chartTitle={chart.title} sessionId={sessionDraftId.current}
+      <SessionJournalSheet chartTitle={chart.title} sessionId={sessionDraftId.current}
         seconds={elapsedSeconds} entries={journalEntries} onSave={saveJournalEntry}
         onDelete={deleteJournalEntry} onClose={() => setJournalOpen(false)} />, document.body)}
     {activeRecording && addSectionOpen && createPortal(
