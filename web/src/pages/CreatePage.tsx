@@ -9,14 +9,16 @@ import {
   type CreateDraft,
   type LocalRepository,
 } from '../repository/localRepository';
-import type { Exercise, LocalExercise, LocalRoutine, Visibility } from '../types/content';
+import type { Exercise, LocalExercise, LocalRoutine, RoutinePlayerSettings, Visibility } from '../types/content';
+import { defaultPlayerSettings } from '../lib/routinePlayerSettings';
 import {
   appendBuilderExercise, exerciseSummary, previewRoutineImport, searchCatalogExercises, searchCatalogRoutines
 } from './routinePickerLogic';
 import './CreatePage.css';
 import './CleanPixelRoutines.css';
+import './RoutineStepPresets.css';
 
-interface BuilderStep { exerciseId: string; minutes: number; }
+interface BuilderStep { exerciseId: string; minutes: number; playerSettings?: RoutinePlayerSettings; }
 interface ChartReturnDraft {
   title: string;
   description: string;
@@ -35,20 +37,28 @@ interface ChartReturnDraft {
 const CHART_RETURN_KEY = 'little-jazz-room:create-chart-return:v1:';
 const DEMO_STEPS = ['swing-2-4', 'thirds-sevenths', 'blues-form'];
 const STEP_DURATION_KEY = 'little-jazz-room:create-step-durations:v1:';
+const STEP_SETTINGS_KEY = 'little-jazz-room:create-step-settings:v1:';
+const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
 function loadBuilderSteps(repo: LocalRepository, exercises: Exercise[]): BuilderStep[] {
   const draft = repo.readCreateDraft();
   const ids = draft?.stepExerciseIds?.length ? draft.stepExerciseIds : DEMO_STEPS;
   let durations: number[] = [];
+  let settings: (RoutinePlayerSettings | null)[] = [];
   try {
     const parsed: unknown = JSON.parse(localStorage.getItem(STEP_DURATION_KEY + repo.scope) ?? '[]');
     if (Array.isArray(parsed)) durations = parsed.filter((n): n is number => typeof n === 'number');
+  } catch { /* optional browser storage */ }
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(STEP_SETTINGS_KEY + repo.scope) ?? '[]');
+    if (Array.isArray(parsed)) settings = parsed;
   } catch { /* optional browser storage */ }
   return ids.map((exerciseId, index) => {
     const exercise = exercises.find(ex => ex.id === exerciseId) ?? exercisesById[exerciseId];
     return {
       exerciseId,
       minutes: durations[index] && Number.isFinite(durations[index]) ? durations[index]! : (exercise?.duration_minutes ?? 5),
+      playerSettings: settings[index] ?? undefined,
     };
   });
 }
@@ -78,6 +88,7 @@ export function CreatePage() {
   const [instrument, setInstrument] = useState(chartReturnDraft?.instrument ?? 'Piano');
   const [goal, setGoal] = useState(chartReturnDraft?.goal ?? 'Jazz standards');
   const [steps, setSteps] = useState<BuilderStep[]>(() => chartReturnDraft?.steps ?? loadBuilderSteps(repo, exercises));
+  const [expandedSettingsStep, setExpandedSettingsStep] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const pickerTriggerRef = useRef<HTMLButtonElement>(null);
@@ -136,6 +147,7 @@ export function CreatePage() {
     repo.writeCreateDraft(draft);
     try {
       localStorage.setItem(STEP_DURATION_KEY + repo.scope, JSON.stringify(steps.map(step => step.minutes)));
+      localStorage.setItem(STEP_SETTINGS_KEY + repo.scope, JSON.stringify(steps.map(step => step.playerSettings ?? null)));
     } catch { /* optional browser storage */ }
   };
 
@@ -190,6 +202,18 @@ export function CreatePage() {
   const setStepMinutes = (index: number, minutes: number) =>
     setSteps(previous => previous.map((step, i) => i === index ? { ...step, minutes } : step));
 
+  const stepOptions = (step: BuilderStep) => {
+    const exercise = exerciseFor(step.exerciseId);
+    const chart = charts.find(item => item.id === exercise?.chart_id);
+    return defaultPlayerSettings(chart?.concert_key ?? 'C', exercise?.suggested_bpm, step.playerSettings ?? exercise?.player_settings);
+  };
+  const updateStepOptions = (index: number, change: Partial<RoutinePlayerSettings>) =>
+    setSteps(previous => previous.map((step, i) => i === index
+      ? { ...step, playerSettings: { ...stepOptions(step), ...change } } : step));
+  const resetStepOptions = (index: number) =>
+    setSteps(previous => previous.map((step, i) => i === index
+      ? { ...step, playerSettings: undefined } : step));
+
   const openChartBuilder = (existingId?: string) => {
     persistDraft();
     const formDraft: ChartReturnDraft = {
@@ -225,13 +249,15 @@ export function CreatePage() {
         chart_id: snapshot.chart_id, category: 'Technique',
         level: selectedRoutine.level, duration_minutes: entry.minutes,
         suggested_material: 'Imported from ' + selectedRoutine.title,
-        suggested_bpm: null, audio_asset_id: null, visibility: 'private',
+        suggested_bpm: snapshot.player_settings?.reference_bpm ?? null, audio_asset_id: null, visibility: 'private',
+        player_settings: snapshot.player_settings,
         is_seed: false, applicable_instruments: ['All'],
       };
       repo.saveLocalExercise(localCopy);
     }
     setSteps(previous => [...previous, ...importPreview.additions.map(entry => ({
-      exerciseId: entry.exerciseId, minutes: entry.minutes
+      exerciseId: entry.exerciseId, minutes: entry.minutes,
+      playerSettings: entry.source.player_settings ?? entry.source.snapshot?.player_settings,
     }))]);
     refreshLocal();
     showToast(importPreview.additions.length + ' steps added from ' + selectedRoutine.title + '.');
@@ -260,6 +286,7 @@ export function CreatePage() {
       visibility: existing?.is_seed === false ? existing.visibility : 'private',
       is_seed: false, chart_id: exChartId || null,
       applicable_instruments: existing?.applicable_instruments ?? ['All'],
+      player_settings: existing?.player_settings,
     };
     setSaving(true);
     try {
@@ -294,7 +321,8 @@ export function CreatePage() {
       showToast('Every step needs an existing exercise and a positive duration.');
       return;
     }
-    const routineSteps = steps.map(step => ({ exercise_id: step.exerciseId, duration_minutes: step.minutes }));
+    const routineSteps = steps.map(step => ({ exercise_id: step.exerciseId, duration_minutes: step.minutes,
+      ...(step.playerSettings ? { player_settings: step.playerSettings } : {}) }));
     const routine: LocalRoutine & { goal: string } = {
       id: newLocalRoutineId(), title: title.trim(), description: description.trim(),
       goal,
