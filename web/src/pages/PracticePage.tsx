@@ -152,6 +152,7 @@ export function PracticePage() {
   const [chartNotes, setChartNotes] = useState<ChartNote[]>([]);
   const [journalEntries, setJournalEntries] = useState<PracticeJournalEntry[]>([]);
   const [annotationOpen, setAnnotationOpen] = useState(false);
+  const [bubbleBar, setBubbleBar] = useState<number | null>(null);
   const [journalOpen, setJournalOpen] = useState(false);
   const [addSectionOpen, setAddSectionOpen] = useState(false);
   const [customLoopSections, setCustomLoopSections] = useState<CustomPracticeSection[]>([]);
@@ -320,6 +321,7 @@ export function PracticePage() {
     const now = performance.now();
     setChartId(id);
     setChartKey(next.concert_key);
+    setBubbleBar(null);
     setLoopEnabled(false);
     setLoopSections([{ startBar: 1, endBar: Math.min(next.bars.length, 4), plays: 2 }]);
     setRepeatWholePlan(false);
@@ -790,15 +792,17 @@ export function PracticePage() {
             <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
               selectedBar={playhead.barIndex} activeBar={playhead.barIndex}
               activeEventIndex={playhead.eventIndex} loopRange={loopRange}
-              onSelectBar={moveToBar} showSectionLabels practiceSheet
+              onSelectBar={index => { moveToBar(index); setBubbleBar(index + 1); }} showSectionLabels practiceSheet
               showMeasureNumbers={activeRecording ? showMeasureNumbers : false}
               userAnnotations={activeRecording ? userNoteMap : undefined} />
           </div>
-          {activeRecording && chartNotes.some(note => note.bar === playhead.barIndex + 1 && chartAnnotationDisplay(note.text) === 'bubble') &&
+          {activeRecording && bubbleBar !== null &&
+            chartNotes.some(note => note.bar === bubbleBar && chartAnnotationDisplay(note.text) === 'bubble') &&
             <div className="practice-demo-chart-bubble-detail" role="status">
-              <strong>Bar {playhead.barIndex + 1} note</strong>
-              <span>{chartNotes.find(note => note.bar === playhead.barIndex + 1)?.text}</span>
+              <strong>Bar {bubbleBar} note</strong>
+              <span>{chartNotes.find(note => note.bar === bubbleBar)?.text}</span>
               <button type="button" onClick={() => setAnnotationOpen(true)}>Edit</button>
+              <button type="button" aria-label="Dismiss chart note" onClick={() => setBubbleBar(null)}>×</button>
             </div>}
 
         </div>
@@ -947,7 +951,7 @@ export function PracticePage() {
       </div>}
     </section>
     {activeRecording && annotationOpen && createPortal(
-      <ChartAnnotationSheet chartTitle={chart.title} totalBars={chart.bars.length} initialBar={playhead.barIndex + 1}
+      <ChartAnnotationSheet chartTitle={chart.title} totalBars={chart.bars.length} initialBar={bubbleBar ?? playhead.barIndex + 1}
         notes={chartNotes} onSave={saveChartAnnotation} onDelete={deleteChartAnnotation}
         onClose={() => setAnnotationOpen(false)} />, document.body)}
     {activeRecording && journalOpen && createPortal(
