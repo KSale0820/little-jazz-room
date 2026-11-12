@@ -7,7 +7,7 @@ describe('approved routine pixel icon atlas', () => {
     expect(ROUTINE_ICON_KEYS).toHaveLength(24);
     expect(new Set(ROUTINE_ICON_KEYS).size).toBe(24);
     expect(routineIconPosition('warm-ups')).toBe('0px 0px');
-    expect(routineIconPosition('focused-practice')).toBe('-160px -96px');
+    expect(routineIconPosition('focused-practice')).toBe('-100px -60px');
   });
 
   it('matches the core guided routines to their intended music skill', () => {
