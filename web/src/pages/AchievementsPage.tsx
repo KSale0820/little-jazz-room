@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { CatSprite, type VisibleCatId } from '../features/cats/CatCompanion';
 import { readPreviouslySelectedCat, readSavedUnlocks, unlockedCompanions } from '../lib/companionUnlocks';
+import { plantGrowth } from '../features/home-room/plantGrowth';
 import {
   ACHIEVEMENTS, achievementProgress, deriveEarned, summarizeEvidence, unlockedRoomItems,
   type RoomItemId,
@@ -38,9 +39,12 @@ const ITEMS: readonly RoomItem[] = [
 const CATEGORIES = ['All', 'Cats', 'Furniture', 'Plants', 'Music', 'Lighting'] as const;
 type CollectionCategory = typeof CATEGORIES[number];
 
-function RoomSprite({ item }: { item: RoomItem }) {
-  const [src, setSrc] = useState(item.sprite ?? '');
-  useEffect(() => { setSrc(item.sprite ?? ''); }, [item.sprite]);
+function RoomSprite({ item, plantStage }: { item: RoomItem; plantStage: number }) {
+  const imagePath = item.id === 'plant'
+    ? '/visuals/new-assets/2026-11-07-sharp-pixel/plant-growth-stages/plant-stage-' + plantStage + '.png'
+    : item.sprite ?? '';
+  const [src, setSrc] = useState(imagePath);
+  useEffect(() => { setSrc(imagePath); }, [imagePath]);
   if (item.cat) {
     return <CatSprite catId={item.cat} variant={item.pose ?? 'floor'} size={128} decorative className="ajr-cat-sprite" />;
   }
@@ -55,6 +59,7 @@ export function AchievementsPage() {
   const scope = repo.scope;
   const catAccount = user?.id ?? 'local';
   const evidence = useMemo(() => summarizeEvidence(sessions), [sessions]);
+  const plantStage = evidence.minutes >= 600 ? 4 : plantGrowth(evidence.minutes).stage;
   const unlockedCats = unlockedCompanions(
     evidence.minutes,
     readSavedUnlocks(catAccount),
@@ -108,7 +113,7 @@ export function AchievementsPage() {
             return <button key={item.id} type="button" className={'ajr-object ' + (editing ? 'is-editing' : '')}
               style={style} aria-label={'Inspect ' + item.label}
               onClick={() => setSelectedItem(item.id)}>
-              <RoomSprite item={item} />
+              <RoomSprite item={item} plantStage={plantStage} />
             </button>;
           })}
           <button type="button" className="ajr-decorate" onClick={() => {
