@@ -7,8 +7,6 @@
     }
   ],
   "git": {
-    "deploymentEnabled": {
-      "fix/practice-player-audio-controls-redesign": false
-    }
+    "deploymentEnabled": false
   }
 }
