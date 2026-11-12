@@ -1023,7 +1023,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
             </select>
           </label>
         </div>
-      </>
+      </>}
 
       {hasMusicContent && <div className="practice-transport">
         <div className="practice-recording-seek">
