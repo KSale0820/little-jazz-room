@@ -140,7 +140,7 @@
 .routine-shelf-heading h2 {
   min-width: 0;
   margin: 0;
-  font: 400 clamp(20px, 5.2vw, 22px)/1.12 Georgia, "Times New Roman", serif;
+  font: 400 clamp(16px, 4.2vw, 18px)/1.12 Georgia, "Times New Roman", serif;
   letter-spacing: -.025em;
   color: #185443;
 }
