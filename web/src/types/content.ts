@@ -55,6 +55,16 @@ export interface ExerciseLesson {
   learningOrder: number;
 }
 
+/** Optional in-player defaults. Stored with local/custom exercises and routine steps. */
+export interface RoutinePlayerSettings {
+  reference_bpm?: number;
+  chart_key?: string;
+  written_pitch?: WrittenPitch;
+  loop_enabled?: boolean;
+  loop_sections?: Array<{ startBar: number; endBar: number; plays: number }>;
+  repeat?: boolean;
+}
+
 export interface Exercise {
   id: string;
   title: string;
@@ -68,6 +78,7 @@ export interface Exercise {
   instructions: string;
   suggested_material: string;
   suggested_bpm: number | null;
+  player_settings?: RoutinePlayerSettings;
   audio_asset_id: string | null;
   visibility: string;
   is_seed?: boolean;
@@ -78,12 +89,14 @@ export interface Exercise {
 
 export interface RoutineStep {
   exercise_id: string;
+  player_settings?: RoutinePlayerSettings;
   duration_minutes: number;
   /** Populated for cloud routines so steps stay playable without source exercise access. */
   snapshot?: {
     title: string;
     instructions: string;
     chart_id: string | null;
+    player_settings?: RoutinePlayerSettings;
   };
 }
 

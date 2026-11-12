@@ -15,6 +15,7 @@ import type { Exercise, PracticeSessionRecord, Routine } from '../types/content'
 import { useCatSelection } from '../features/cats/CatCompanion';
 import { exercisesById } from '../data/seed';
 import { buildRoutineStepSnapshots } from '../lib/routineStepSnapshots';
+import { overlayLocalRoutinePresets } from '../lib/routinePlayerSettings';
 import { createChartRepository, mergeCharts } from '../features/charts/chartRepository';
 
 interface AppContextValue {
@@ -177,7 +178,10 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
     if (!user) return mergedLocal;
     const map = new Map<string, Routine>();
     for (const r of mergedLocal) map.set(r.id, r);
-    for (const r of cloudRoutines) map.set(r.id, r);
+    for (const r of cloudRoutines) {
+      const matchingLocal = local.find(item => item.id === r.id);
+      map.set(r.id, overlayLocalRoutinePresets(r, matchingLocal));
+    }
     for (const r of publicRoutines) {
       if (!map.has(r.id)) map.set(r.id, r);
     }
