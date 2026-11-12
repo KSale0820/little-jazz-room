@@ -948,7 +948,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
           title="View and select routine exercises">
           <span className="routine-step-segments" role="progressbar" aria-label="Completed routine exercises"
             aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={completeCount}>
-            {routine.steps.map((step, index) => <span key={index}
+            {routine.steps.map((_, index) => <span key={index}
               className={['routine-step-segment',
                 stepOutcomes[index] === 'complete' ? 'is-complete' :
                 stepOutcomes[index] === 'partial' ? 'is-partial' : 'is-incomplete',
