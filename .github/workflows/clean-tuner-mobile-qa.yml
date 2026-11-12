@@ -1,0 +1,53 @@
+name: Clean Tuner mobile QA
+
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/src/pages/TunerPage.tsx'
+      - 'web/src/pages/TunerClean.css'
+      - 'web/scripts/check-clean-tuner-mobile.mjs'
+      - '.github/workflows/clean-tuner-mobile-qa.yml'
+  workflow_dispatch:
+
+jobs:
+  clean-tuner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Production build
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start Vite test server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/clean-tuner.log 2>&1 &
+          for i in $(seq 1 55); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5174/ > /dev/null
+      - name: Verify clean tuner standalone and embedded at phone sizes
+        run: node scripts/check-clean-tuner-mobile.mjs
+      - name: Upload tuner screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clean-tuner-390x844-and-375x667
+          path: web/docs/screenshots/clean-tuner/
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Print dev server log if failed
+        if: failure()
+        run: tail -n 75 /tmp/clean-tuner.log || true
