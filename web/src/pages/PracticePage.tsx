@@ -1101,7 +1101,7 @@ export function PracticePage() {
           : 'The chart follows your chosen BPM. No recording is attached.'}</p>
       </div>
       )}
-      {!activeRecording && (
+      {!activeRecording && !instructionsOnly && (
         <>
       <div className="practice-utility-row" aria-label="Practice tools">
         <button type="button" onClick={event => openTool('metronome', event.currentTarget)}>
