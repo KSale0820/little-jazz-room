@@ -1,7 +1,9 @@
 import { PracticeTimeBadge, SkipTenIcon, RepeatIcon } from '../../components/PracticeMediaControls';
 import { TunerPage } from '../../pages/TunerPage';
-import { MetronomePage } from '../../pages/MetronomePage';
+import { PracticeMetronomeSheet } from '../../components/PracticeMetronomeSheet';
+import { usePracticeMetronome } from '../../lib/usePracticeMetronome';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { VISUAL_ASSETS } from '../../assets/visualManifest';
 import { useApp } from '../../context/AppContext';
@@ -33,6 +35,9 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playing, setPlaying] = useState(false);
+  // Same audio engine as Practice Hub, Free Practice and the chart player.
+  // Keep it mounted while the metronome sheet is closed.
+  const metronome = usePracticeMetronome();
   const [tool, setTool] = useState<'tuner' | 'metronome' | null>(null);
   const [repeatRecording, setRepeatRecording] = useState(false);
   const [ended, setEnded] = useState(false);
@@ -82,6 +87,7 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
   const finish = () => {
     if (completion) return;
     audioRef.current?.pause();
+    metronome.stop();
     pauseClock();
     setPlaying(false);
     setCompletion({
@@ -202,9 +208,14 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
       <button type="button" onClick={() => setTool('tuner')}><RecordingToolIcon kind="tuner" /><span>Tuner</span></button>
       <button type="button" onClick={() => setTool('metronome')}><RecordingToolIcon kind="metronome" /><span>Metronome</span></button>
     </div>
-    {tool && <div className="practice-tool-overlay" role="dialog" aria-modal="true" aria-label={tool === 'tuner' ? 'Tuner within practice' : 'Metronome within practice'} onKeyDown={event => { if (event.key === 'Escape') setTool(null); }}>
-      {tool === 'tuner' ? <TunerPage onClose={() => setTool(null)} /> : <MetronomePage onClose={() => setTool(null)} />}
+    {tool === 'tuner' && <div className="practice-tool-overlay" role="dialog" aria-modal="true"
+      aria-label="Tuner within practice" onKeyDown={event => { if (event.key === 'Escape') setTool(null); }}>
+      <TunerPage onClose={() => setTool(null)} />
     </div>}
+    {tool === 'metronome' && createPortal(
+      <PracticeMetronomeSheet controller={metronome} onClose={() => setTool(null)} />,
+      document.body
+    )}
     {ended && <p role="status" className="practice-recording-ended">Recording finished · Restart by moving the playhead to the beginning.</p>}
   </section>;
 }
