@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Routine } from '../types/content';
+import { routineIconFor, routineIconPosition } from '../lib/routinePixelIcons';
 import { readRoutineBookmarks, saveRoutineBookmarks } from '../lib/routineBookmarks';
 import './RoutineLibraryPage.css';
 
@@ -49,23 +50,6 @@ function shelfForRoutine(routine: Routine, categories: string[]): string {
   if (categories.includes('Improvisation')) return 'Improvisation';
   if (categories.includes('Repertoire')) return 'Standards & Repertoire';
   return 'Other Practice';
-}
-
-function iconKey(routine: Routine, section: string): string {
-  const title = routine.title.toLowerCase();
-  if (/warm.?up/.test(title)) return 'warm-ups';
-  if (/scale/.test(title)) return 'scales';
-  if (/arpeggio/.test(title)) return 'arpeggios';
-  if (/ii.v.i|three common jazz chords/.test(title)) return 'ii-v-i';
-  if (/comping|playing chords/.test(title)) return 'comping';
-  if (/12.bar blues/.test(title)) return '12-bar-blues';
-  if (/solo/.test(title)) return 'soloing';
-  if (/ear|sing notes/.test(title)) return 'ear-training';
-  if (/rhythm|swing/.test(title)) return 'rhythm';
-  if (/standard|song form|ballad/.test(title)) return 'standards';
-  if (section === 'Improvisation') return 'improvisation';
-  if (section === 'Harmony & Chords') return 'chords';
-  return section.toLowerCase().replace(/[^a-z]+/g, '-').replace(/-$/, '');
 }
 
 function matchesGoal(routine: Routine, section: string, filterGoal: string): boolean {
@@ -187,13 +171,14 @@ export function RoutineLibraryPage() {
     const section = shelfForRoutine(routine,
       routine.steps.map(step => exerciseMap.get(step.exercise_id)?.category ?? ''));
     const saved = bookmarks.includes(routine.id);
+    const icon = routineIconFor(routine.title, section);
     return (
       <article className="routine-card" key={routine.id}>
         <button type="button" className="routine-card-main"
           onClick={() => openRoutine(routine.id)}
           aria-label={'Open ' + routine.title + ' in player'}>
-          {/* Keep this slot empty until the approved pixel icons arrive. */}
-          <span className="routine-card-icon-slot" data-icon-key={iconKey(routine, section)} aria-hidden="true" />
+          <span className="routine-card-icon-slot" data-icon-key={icon}
+            style={{ backgroundPosition: routineIconPosition(icon) }} aria-hidden="true" />
           <span className="routine-card-content">
             <span className="routine-card-title">{routine.title}</span>
             <span className="routine-card-tags">
