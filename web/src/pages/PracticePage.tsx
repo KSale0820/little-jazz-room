@@ -21,7 +21,6 @@ import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { TunerPage } from './TunerPage';
-import { MetronomePage } from './MetronomePage';
 import { useAuth } from '../context/AuthContext';
 import { localStorageScopeForUser } from '../repository/localRepository';
 import { ChartAnnotationSheet, SessionJournalSheet, AddPracticeSectionSheet } from '../components/PracticePlayerSheets';
@@ -135,6 +134,10 @@ export function PracticePage() {
   const [stepMs, setStepMs] = useState(0);
   const [startedAtMs, setStartedAtMs] = useState<number | null>(null);
   const [nowMs, setNowMs] = useState(() => performance.now());
+  // Independent wall-clock practice timer: starts when the player opens,
+  // even if recorded audio or the chart-following playhead is not playing.
+  const [sessionAccumulatedMs, setSessionAccumulatedMs] = useState(0);
+  const [sessionStartedAtMs, setSessionStartedAtMs] = useState<number | null>(() => performance.now());
   const [completion, setCompletion] = useState<Completion | null>(null);
   const [notes, setNotes] = useState('');
   const [rating, setRating] = useState(0);
@@ -202,7 +205,7 @@ export function PracticePage() {
 
   const isRunning = startedAtMs !== null;
   const currentStepMs = elapsedMilliseconds(stepMs, startedAtMs, nowMs);
-  const elapsedSeconds = Math.floor((priorMs + currentStepMs) / 1000);
+  const elapsedSeconds = Math.floor((sessionAccumulatedMs + elapsedMilliseconds(0, sessionStartedAtMs, nowMs)) / 1000);
 
   const formProgress = routine ? Math.round(((stepIndex + 1) / routine.steps.length) * 100) : 0;
 
@@ -212,7 +215,10 @@ export function PracticePage() {
     setPriorMs(0);
     setStepMs(0);
     setStartedAtMs(null);
-    setNowMs(performance.now());
+    setSessionAccumulatedMs(0);
+    const sessionStart = performance.now();
+    setSessionStartedAtMs(sessionStart);
+    setNowMs(sessionStart);
     setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setCompletion(null);
     setSaveState('idle');
@@ -287,10 +293,20 @@ export function PracticePage() {
   }, [chosenExercise?.id, chosenExercise?.suggested_bpm]);
 
   useEffect(() => {
-    if (!isRunning || completion) return;
-    const timerId = window.setInterval(() => setNowMs(performance.now()), 50);
+    if ((!isRunning && sessionStartedAtMs === null) || completion) return;
+    const timerId = window.setInterval(() => setNowMs(performance.now()), 100);
     return () => window.clearInterval(timerId);
-  }, [isRunning, completion]);
+  }, [isRunning, sessionStartedAtMs, completion]);
+
+  useEffect(() => {
+    metronome.changeBpm(activeRecording?.recordedBpm ?? tempo);
+    const meter = chart.time_signature.join('/');
+    if (meter === '2/4' || meter === '3/4' || meter === '4/4' || meter === '6/8') {
+      metronome.changeSignature(meter);
+    }
+  // Set defaults on piece/tempo changes, not on independent metronome edits.
+  }, [chart.id, activeRecording?.recordedBpm, activeRecording ? null : tempo,
+    metronome.changeBpm, metronome.changeSignature]);
 
   const activeSections = loopEnabled && loopSections.length ? loopSections : null;
   // The media element is the master clock. Honor the original video's exact
@@ -479,6 +495,37 @@ export function PracticePage() {
     setNowMs(now);
   }
 
+  function toggleSessionTime() {
+    const now = performance.now();
+    if (sessionStartedAtMs === null) setSessionStartedAtMs(now);
+    else {
+      setSessionAccumulatedMs(previous => previous + elapsedMilliseconds(0, sessionStartedAtMs, now));
+      setSessionStartedAtMs(null);
+    }
+    setNowMs(now);
+  }
+
+  function seekChartSeconds(deltaSeconds: number) {
+    if (activeRecording) return;
+    const now = performance.now();
+    const beatOffset = deltaSeconds * tempo * chart.time_signature[1] / 240;
+    const max = Math.max(0, sequenceDuration(chart, activeSections) - 0.0001);
+    const next = Math.max(0, Math.min(max, rawChartBeat(musicalClock, now, tempo, chart) + beatOffset));
+    setMusicalClock({ chartBeat: next, startedAtMs: isRunning ? now : null });
+    setNowMs(now);
+  }
+
+  function toggleFullChartRepeat() {
+    const next = !repeatWholePlan;
+    setRepeatWholePlan(next);
+    setLoopEnabled(next);
+    setLoopSections([{ startBar: 1, endBar: chart.bars.length, plays: 1 }]);
+    const now = performance.now();
+    setMusicalClock({ chartBeat: rawChartBeat(musicalClock, now, tempo, chart),
+      startedAtMs: isRunning ? now : null });
+    setNowMs(now);
+  }
+
   function toggleTimer() {
     if (activeRecording) {
       const audio = audioRef.current;
@@ -534,7 +581,9 @@ export function PracticePage() {
     const now = performance.now();
     const finishedStamp = Date.now();
     const finalStepMs = elapsedMilliseconds(stepMs, startedAtMs, now);
-    const durationSeconds = Math.floor((priorMs + finalStepMs) / 1000);
+    const durationSeconds = Math.floor((sessionAccumulatedMs + elapsedMilliseconds(0, sessionStartedAtMs, now)) / 1000);
+    setSessionAccumulatedMs(previous => previous + elapsedMilliseconds(0, sessionStartedAtMs, now));
+    setSessionStartedAtMs(null);
     setStepMs(finalStepMs);
     setStartedAtMs(null);
     setMusicalClock(current => ({ chartBeat: rawChartBeat(current, now, tempo, chart), startedAtMs: null }));
@@ -613,7 +662,10 @@ export function PracticePage() {
     setPriorMs(0);
     setStepMs(0);
     setStartedAtMs(null);
-    setNowMs(performance.now());
+    setSessionAccumulatedMs(0);
+    const restartTime = performance.now();
+    setSessionStartedAtMs(restartTime);
+    setNowMs(restartTime);
     setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setCompletion(null);
     setNotes('');
