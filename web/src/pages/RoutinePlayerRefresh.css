@@ -168,3 +168,26 @@
   .practice-guided .practice-step-controls .practice-next { min-width: 87px; padding-inline: 7px; }
   .practice-guided .practice-routine-overview-bar { font-size: 10px; }
 }
+
+/* A chart-backed lesson can be viewed without losing access to the tuner,
+   metronome, timer, journal or Finish Session. The long-form lesson scrolls. */
+.app-shell:has(.practice-guided.practice-instructions:not(.practice-routine-instruction-only)) .viewport {
+  height: auto;
+  overflow-y: auto;
+}
+.practice-guided.practice-instructions:not(.practice-routine-instruction-only) {
+  height: auto;
+  min-height: 100%;
+}
+.practice-guided.practice-instructions:not(.practice-routine-instruction-only) .practice-lesson-panel {
+  flex: 0 0 auto;
+  max-height: min(42dvh, 400px);
+  overflow-y: auto;
+}
+.practice-guided.practice-instructions:not(.practice-routine-instruction-only) > .practice-utility-row {
+  display: grid;
+  flex: 0 0 auto;
+}
+.practice-guided.practice-instructions:not(.practice-routine-instruction-only) .practice-session-row {
+  flex: 0 0 auto;
+}
