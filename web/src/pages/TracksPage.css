@@ -30,7 +30,7 @@
 .t01-title {
   margin: 0;
   color: #154e3e;
-  font: 400 clamp(25px,6.5vw,28px)/1.13 Georgia, "Times New Roman", serif;
+  font: 600 clamp(25px,6.5vw,28px)/1.13 var(--font-ui-heading);
   letter-spacing: -.045em;
 }
 .t01-subtitle {
@@ -154,7 +154,7 @@
   min-width: 0;
   margin: 0;
   color: #185443;
-  font: 400 clamp(17px,4vw,18px)/1.12 Georgia, "Times New Roman", serif;
+  font: 600 clamp(17px,4vw,18px)/1.12 var(--font-ui-heading);
   letter-spacing: -.025em;
 }
 .t01-see-all {
@@ -237,7 +237,7 @@
   overflow-wrap: anywhere;
   padding-right: 19px;
   color: #1a483b;
-  font: 400 14px/1.13 Georgia, "Times New Roman", serif;
+  font: 600 14px/1.13 var(--font-ui-heading);
   letter-spacing: -.012em;
 }
 .t01-card-key {
@@ -404,7 +404,7 @@
 .t01-sheet-top h2 {
   margin: 0;
   color: #194c3f;
-  font: 700 24px Georgia, serif;
+  font: 700 24px var(--font-ui-heading);
 }
 .t01-sheet-top button {
   min-width: 44px;
@@ -419,7 +419,7 @@
 .t01-filter-field legend {
   margin-bottom: 10px;
   color: #315946;
-  font: 700 15px Georgia, serif;
+  font: 700 15px var(--font-ui-heading);
 }
 .t01-filter-field.is-highlighted legend {
   text-decoration: underline;
