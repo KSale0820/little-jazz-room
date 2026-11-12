@@ -206,10 +206,10 @@
 .gj-screen .gj-save-state { margin: 0; text-align: center; color: var(--gj-muted); }
 .gj-screen .gj-error { color: #9d4739; }
 .gj-screen button:focus-visible, .gj-screen textarea:focus-visible { outline: 2px solid #c28537; outline-offset: 2px; }
-/* Empty Free Practice uses the same compact, predictable section rhythm as
-   guided practice. Never distribute leftover viewport height between sections. */
+/* Empty practice keeps every recap section grouped at the top and anchors
+   the action row at the bottom. Only the space before the footer can grow. */
 .practice-complete.gj-screen.gj-empty { justify-content: flex-start; }
-.gj-screen.gj-empty .gj-actions { margin-top: 22px; }
+.gj-screen.gj-empty .gj-actions { margin-top: auto; }
 @media (max-width: 380px) {
   .practice-complete.gj-screen { padding: 42px 13px 18px; gap: 12px; }
   .gj-screen .gj-title { font-size: 36px; }
