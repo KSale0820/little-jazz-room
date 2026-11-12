@@ -13,9 +13,10 @@ type LessonCopy = Pick<Exercise, 'title' | 'description'> & { lesson: ExerciseLe
 const lesson = (
   title: string, description: string, learningOrder: number, goal: string,
   steps: string[], listenFor: string, success: string, terminologyHelp: string,
-  catPrompts: string[]
+  catPrompts: string[], stepChordRanges?: Array<[number, number] | null>
 ): LessonCopy => ({ title, description, lesson: {
-  goal, steps, listenFor, success, terminologyHelp, catPrompts, learningOrder
+  goal, steps, listenFor, success, terminologyHelp, catPrompts, learningOrder,
+  ...(stepChordRanges ? { stepChordRanges } : {}),
 } });
 
 export const beginnerLessonCopy: Record<string, LessonCopy> = {
@@ -87,7 +88,9 @@ export const beginnerLessonCopy: Record<string, LessonCopy> = {
     'Minor, dominant, and major seventh chords sound different, even though each has four notes.',
     'You can play all three groups of four notes up and down without a wrong note at a slow tempo.',
     'Playing a chord one note at a time is an arpeggio. m7 means minor seventh; 7 means dominant seventh; maj7 means major seventh.',
-    ['Four clear notes are better than four rushed notes.', 'Listen to how each chord has its own color.']
+    ['Four clear notes are better than four rushed notes.', 'Listen to how each chord has its own color.'],
+    // Dm7 | G7 | Cmaj7 (+ repeated Cmaj7). These groups match lesson steps 1–3.
+    [[1, 1], [2, 2], [3, 4], null]
   ),
   'thirds-sevenths': lesson(
     'Practice the Important Notes in Each Chord', 'Connect chords with only two notes each.', 6,
