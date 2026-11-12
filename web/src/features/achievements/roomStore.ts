@@ -4,6 +4,8 @@ export interface RoomPreferences {
   /** An item can be earned but hidden. Hidden items are never revoked. */
   visibility: Partial<Record<RoomItemId, boolean>>;
   mutedCelebrations: boolean;
+  /** Index of a predefined placement, independent of earned status. */
+  placements?: Partial<Record<RoomItemId, number>>;
 }
 
 const EARNED_VERSION = 'little-jazz-room:achievements:v1';
@@ -40,12 +42,18 @@ export function readRoomPreferences(scope: string, store: Pick<Storage, 'getItem
     if (!raw) return { visibility: { ...DEFAULTS.visibility }, mutedCelebrations: true };
     const candidate: unknown = JSON.parse(raw);
     if (!candidate || typeof candidate !== 'object') return { ...DEFAULTS };
-    const c = candidate as { visibility?: unknown; mutedCelebrations?: unknown };
+    const c = candidate as { visibility?: unknown; mutedCelebrations?: unknown; placements?: unknown };
     const rawVisibility = c.visibility && typeof c.visibility === 'object' ? c.visibility as Record<string, unknown> : {};
     const allowed: RoomItemId[] = ['luna', ...ACHIEVEMENTS.map(a => a.reward)];
     const visibility: RoomPreferences['visibility'] = {};
+    const rawPlacements = c.placements && typeof c.placements === 'object' ? c.placements as Record<string, unknown> : {};
+    const placements: NonNullable<RoomPreferences['placements']> = {};
+    for (const id of allowed) {
+      const n = rawPlacements[id];
+      if (Number.isInteger(n) && (n === 0 || n === 1)) placements[id] = n as number;
+    }
     for (const id of allowed) if (typeof rawVisibility[id] === 'boolean') visibility[id] = rawVisibility[id] as boolean;
-    return { visibility: { ...DEFAULTS.visibility, ...visibility }, mutedCelebrations: c.mutedCelebrations !== false };
+    return { visibility: { ...DEFAULTS.visibility, ...visibility }, mutedCelebrations: c.mutedCelebrations !== false, placements };
   } catch { return { visibility: { ...DEFAULTS.visibility }, mutedCelebrations: true }; }
 }
 

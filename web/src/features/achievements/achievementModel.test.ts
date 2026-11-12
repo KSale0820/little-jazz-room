@@ -65,5 +65,9 @@ describe('room achievements', () => {
     expect(saveRoomPreferences('a', preferences, store)).toBe(true);
     expect(isItemVisible('armchair', readRoomPreferences('a', store))).toBe(false);
     expect(isItemVisible('armchair', readRoomPreferences('b', store))).toBe(true);
+    preferences.placements = { milo: 1 };
+    expect(saveRoomPreferences('a', preferences, store)).toBe(true);
+    expect(readRoomPreferences('a', store).placements?.milo).toBe(1);
+    expect(readRoomPreferences('b', store).placements?.milo).toBeUndefined();
   });
 });
