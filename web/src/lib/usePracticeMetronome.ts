@@ -81,7 +81,13 @@ export function usePracticeMetronome() {
 
     const source = playbackSource.current();
     const clickCount = clicksRef.current;
-    const seconds = secondsBetweenClicks(bpmRef.current, meterRef.current, clickCount);
+    const sourceBpm = source.playing && source.tempoBpm && source.tempoBpm > 0
+      ? source.tempoBpm : bpmRef.current;
+    if (source.playing && sourceBpm !== bpmRef.current) {
+      bpmRef.current = sourceBpm;
+      setBpm(Math.round(sourceBpm));
+    }
+    const seconds = secondsBetweenClicks(sourceBpm, meterRef.current, clickCount);
     if (!Number.isFinite(seconds)) return;
 
     if (source.playing) {
