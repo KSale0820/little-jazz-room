@@ -295,3 +295,39 @@ html[data-theme="dark"] .sc-secondary { background: #292d2e; color: #f1f3f0; bor
 /* Saving is already represented by the primary CTA. The global app toast would
    cover the dedicated completion surface and is redundant here. */
 .app-root:has(.sc-page) > .toast-message { display: none !important; }
+
+/* Mockup fidelity: fill the dedicated phone viewport rather than leaving a
+   large unused region beneath the action buttons. Space the four content
+   groups as a single composition, preserving the short-phone layout. */
+.sc-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.sc-hero, .sc-summary, .sc-momentum, .sc-unlock, .sc-actions, .sc-more {
+  flex: 0 0 auto;
+}
+.sc-summary { margin-top: 0; margin-bottom: 0; }
+.sc-momentum, .sc-unlock { margin-bottom: 0; }
+.sc-more { margin-top: 0; }
+.sc-more > summary { opacity: .74; font-size: 10px; }
+.sc-hero-art .sc-hero-sparkle { filter: drop-shadow(0 1px 0 transparent); }
+
+@media (min-height: 760px) {
+  .sc-hero-art { width: 248px; height: 158px; margin-bottom: 5px; }
+  .sc-hero-cat { left: 7px; width: 154px; height: 154px; }
+  .sc-hero-plant { right: 2px; width: 88px; height: 137px; bottom: 6px; }
+  .sc-hero-award { left: 126px; bottom: 12px; width: 67px; height: 78px; }
+  .sc-hero-sparkle { top: 12px; right: 13px; }
+  .sc-without-cat { width: 212px; height: 152px; }
+  .sc-laurels { inset: 4px 0 0; width: 212px; height: 140px; }
+  .sc-hero-trophy { left: 72px; top: 20px; width: 75px; height: 104px; }
+  .sc-without-cat .sc-hero-sparkle { right: 18px; }
+  .sc-subtitle { margin-bottom: 15px; }
+  .sc-duration { min-height: 82px; }
+  .sc-momentum, .sc-unlock { min-height: 87px; }
+  .sc-primary, .sc-secondary { min-height: 54px; }
+}
+@media (max-height: 759px) {
+  .sc-hero-art { margin-bottom: 1px; }
+}
