@@ -1,5 +1,5 @@
 import type { PlayerLoopOption } from '../lib/practiceLoopProgram';
-import { repeatLabel } from '../lib/practicePlayerNotes';
+import { repeatLabel, nextRepeatCount } from '../lib/practicePlayerNotes';
 export function PracticeInlineLoop({ options, counts, wholeCount, wholeSelected, onCount, onWhole, onAdd, onAdvanced }: {
   options: PlayerLoopOption[]; counts: Record<string,number>; wholeCount:number; wholeSelected:boolean;
   onCount:(id:string,value:number)=>void; onWhole:(value:number)=>void;
@@ -12,8 +12,8 @@ export function PracticeInlineLoop({ options, counts, wholeCount, wholeSelected,
       <span className="practice-demo-count" role="group" aria-label={label+' repeats'}>
         <strong>{repeatLabel(value)}</strong>
         <span className="practice-loop-count-actions">
-          <button type="button" aria-label={'Increase '+label+' repeats'} onClick={()=>handle(value >= 11 ? 11 : value+1)}>⌃</button>
-          <button type="button" aria-label={'Decrease '+label+' repeats'} onClick={()=>handle(value>=11?10:Math.max(0,value-1))}>⌄</button>
+          <button type="button" aria-label={'Increase '+label+' repeats'} onClick={()=>handle(nextRepeatCount(value,1))}>⌃</button>
+          <button type="button" aria-label={'Decrease '+label+' repeats'} onClick={()=>handle(nextRepeatCount(value,-1))}>⌄</button>
         </span>
       </span>
     </div>;
