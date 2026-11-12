@@ -56,6 +56,7 @@ try {
     assert(result.filters[3].right <= width - 8, 'last filter is clipped at ' + width);
     assert(result.firstCard.width <= 140 && result.firstCard.height <= 100, 'cards are still too large');
     assert(result.secondCards.length >= 3, 'Standards shelf needs at least three seeded routines');
+    assert(result.shelfCount >= 4, 'major skill shelves should be present');
     assert(result.secondCards[2].right <= width + 3, 'third card should be visible before scrolling at ' + width);
     assert(result.viewport.bottom <= result.nav.top + 2, 'scroll area runs underneath navigation');
     assert(result.spriteSize === '120px 80px', 'pixel icons sized incorrectly');
