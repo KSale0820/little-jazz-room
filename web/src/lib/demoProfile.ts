@@ -181,15 +181,22 @@ const OWNED_KEYS = [
 ];
 
 export function clearDemoProfile(): void {
-  const keys: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && (key === DEMO_SEEDED || OWNED_KEYS.some(prefix =>
-      key === prefix + DEMO_SCOPE || key.startsWith(prefix + DEMO_SCOPE + ':')))) {
-      keys.push(key);
+  const clearScopedKeys = (store: Storage) => {
+    const keys: string[] = [];
+    for (let i = 0; i < store.length; i++) {
+      const key = store.key(i);
+      if (key && key.startsWith('little-jazz-room:') &&
+          (key === DEMO_SEEDED || key.endsWith(':' + DEMO_SCOPE) ||
+            key.includes(':' + DEMO_SCOPE + ':') ||
+            OWNED_KEYS.some(prefix => key === prefix + DEMO_SCOPE))) {
+        keys.push(key);
+      }
     }
-  }
-  for (const key of keys) localStorage.removeItem(key);
+    for (const key of keys) store.removeItem(key);
+  };
+  clearScopedKeys(localStorage);
+  // Chart builder drafts live in sessionStorage; resetting must clear those too.
+  try { clearScopedKeys(sessionStorage); } catch { /* private-mode storage can be blocked */ }
 }
 
 /** Idempotent: entering again never overwrites a user's edits to the sample. */
