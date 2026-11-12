@@ -80,6 +80,8 @@ export function usePracticeMetronome() {
     const v=clampBpm(value); bpmRef.current=v; setBpmState(v);
   },[]);
   const changeSignature = useCallback((value: MetronomeSignature) => {
+    // Syncing an unchanged signature must not interrupt an active click track.
+    if (signatureRef.current === value) return;
     if(ticking.current) stop();
     signatureRef.current=value; setSignatureState(value);
     const a=defaultAccents(value); accentsRef.current=a; setAccents(a);
