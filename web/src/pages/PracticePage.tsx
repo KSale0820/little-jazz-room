@@ -54,8 +54,9 @@ type Completion = {
   routineId?: string;
   exerciseId?: string;
   title: string;
-  chartTitle: string;
+  chartTitle?: string;
   recordingTitle?: string;
+  routineOutcomes?: { completed: number; needsWork: number; skipped: number; unmarked: number; total: number };
 };
 
 /**
@@ -554,8 +555,15 @@ export function PracticePage() {
       routineId: routine?.id,
       exerciseId: playableStep?.exercise_id,
       title: routine?.title ?? chart.title,
-      chartTitle: chart.title,
+      chartTitle: routine ? undefined : chart.title,
       recordingTitle: activeRecording?.title,
+      routineOutcomes: routine ? {
+        completed: Object.values(stepOutcomes).filter(outcome => outcome === 'complete').length,
+        needsWork: Object.values(stepOutcomes).filter(outcome => outcome === 'needs-work').length,
+        skipped: Object.values(stepOutcomes).filter(outcome => outcome === 'skipped').length,
+        unmarked: Math.max(0, routine.steps.length - Object.keys(stepOutcomes).length),
+        total: routine.steps.length,
+      } : undefined,
     });
     setSaveState('idle');
     savePromiseRef.current = null;
@@ -690,7 +698,14 @@ export function PracticePage() {
           <div>
             <strong>{completion.title}</strong>
             <span>{completion.routineId ? 'Guided Practice' : 'Free Practice'}</span>
-            <small>{completion.chartTitle} · {completion.recordingTitle ? 'Recorded backing track' : 'Chart only'}</small>
+            {completion.routineOutcomes ? (
+              <small>
+                {completion.routineOutcomes.completed} of {completion.routineOutcomes.total} exercises completed
+                {completion.routineOutcomes.needsWork ? ` · ${completion.routineOutcomes.needsWork} need work` : ''}
+                {completion.routineOutcomes.skipped ? ` · ${completion.routineOutcomes.skipped} skipped` : ''}
+                {completion.routineOutcomes.unmarked ? ` · ${completion.routineOutcomes.unmarked} unmarked` : ''}
+              </small>
+            ) : <small>{completion.chartTitle} · {completion.recordingTitle ? 'Recorded backing track' : 'Chart only'}</small>}
           </div>
         </div>
         <div className="practice-complete-notes">
