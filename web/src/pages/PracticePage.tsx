@@ -311,20 +311,6 @@ export function PracticePage() {
     : currentSection ? 'Section ' + ((playhead.sectionIndex ?? 0) + 1) + ' of ' + activeSections!.length + ' · Pass ' + playhead.pass + ' of ' + currentSection.plays
     : 'Chart once';
 
-  function chooseChart(id: string) {
-    const next = getChartById(id, charts);
-    if (!next) return;
-    audioRef.current?.pause();
-    const now = performance.now();
-    setChartId(id);
-    setChartKey(next.concert_key);
-    setLoopEnabled(false);
-    setLoopSections([{ startBar: 1, endBar: Math.min(next.bars.length, 4), plays: 2 }]);
-    setRepeatWholePlan(false);
-    setMusicalClock({ chartBeat: 0, startedAtMs: isRunning ? now : null });
-    setNowMs(now);
-  }
-
   function changeTempo(nextBpm: number) {
     const bpm = Math.max(40, Math.min(240, Math.round(nextBpm)));
     if (!Number.isFinite(bpm)) return;
@@ -680,20 +666,11 @@ export function PracticePage() {
         </button>
         <span className="practice-page-heading">Practice</span>
         <div className="practice-header-actions">
-          <button className="practice-bookmark-link" type="button" aria-label="View bookmarked tracks and charts"
-            onClick={() => navigate('/tracks?category=Bookmarked')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4V3.5Z"/></svg>
-          </button>
           <details className="practice-header-more">
             <summary aria-label="More practice options" title="More practice options">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
             </summary>
             <div className="practice-more-panel">
-              <label htmlFor="player-chart">Choose study chart</label>
-              <select id="player-chart" value={chartId} disabled={Boolean(activeRecording)}
-                onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
-                {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
-              </select>
               <label htmlFor="practice-instrument">Transposing instrument</label>
               <select id="practice-instrument" value={writtenPitch} onChange={event => setWrittenPitch(event.target.value as WrittenPitch)}
                 aria-label="Transposing instrument">
@@ -706,7 +683,6 @@ export function PracticePage() {
               <p>{formatChartMeta(chart)} · Key {chart.concert_key.replace('b', '♭')}</p>
               {!chart.is_custom && chart.style_instruction && <p>{chart.style_instruction}</p>}
               <p>{activeRecording ? 'Recorded audio plays at its original speed and pitch.' : 'Chart-only practice follows the selected BPM; no recording is attached.'}</p>
-              {activeRecording && <p>Chart selection stays linked to the recording.</p>}
             </div>
           </details>
         </div>
@@ -762,14 +738,6 @@ export function PracticePage() {
       ) : (
         <div className="practice-notation-panel" role="tabpanel" aria-label="Jazz chord chart">
 
-          {activeRecording && (
-          <div className="practice-chart-toolbar">
-            <label htmlFor="player-chart">{routine && !playableStep?.chart_id ? "Reference chart" : "Study chart"}</label>
-            <select id="player-chart" value={chartId} disabled={Boolean(activeRecording)} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
-              {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
-            </select>
-          </div>
-          )}
           <div className={`practice-chart-scroll practice-chart-all ${chart.bars.length > 16 ? 'chart-dense' : 'chart-standard'}`}
             aria-label={`Complete chord chart, ${chart.bars.length} measures`}>
             <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
@@ -871,7 +839,7 @@ export function PracticePage() {
                 </button>
                 {demoSections.map(section => {
                   const configured = loopEnabled ? loopSections.find(item => item.startBar === section.startBar) : null;
-                  return <button key={section.label} type="button" className="practice-demo-loop-part"
+                  return <button key={section.label} type="button" className={`practice-demo-loop-part ${configured ? "selected" : ""}`}
                     aria-label={`Edit ${section.label} repeat count in loop settings`} title="Configure in loop settings"
                     onClick={event => openLoop(event.currentTarget)}>
                     <span>{section.label}</span><span className="practice-demo-count"><b>{configured?.plays ?? 1}×</b><i aria-hidden="true">⌃<em>⌄</em></i></span>
