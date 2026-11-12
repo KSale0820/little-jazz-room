@@ -25,14 +25,14 @@ type RoomItem = {
 
 const ITEMS: readonly RoomItem[] = [
   { id: 'luna', label: 'Luna', category: 'Cats', x: 21, y: 66, w: 13, cat: 'luna', pose: 'sleeping' },
-  { id: 'armchair', label: 'Cozy armchair', category: 'Furniture', x: 32, y: 46, w: 17, sprite: '/visuals/achievements/armchair.png', fallback: '/visuals/achievements/armchair.svg' },
+  { id: 'armchair', label: 'Cozy armchair', category: 'Furniture', x: 32, y: 46, w: 17, sprite: '/achievements/armchair.png', fallback: '/achievements/armchair.svg' },
   { id: 'milo', label: 'Milo', category: 'Cats', x: 65, y: 34, w: 12, cat: 'milo', pose: 'floor' },
   { id: 'plant', label: 'First houseplant', category: 'Plants', x: 8, y: 55, w: 10, sprite: '/visuals/decor/plant.png' },
-  { id: 'music-stand', label: 'Music stand', category: 'Music', x: 45, y: 49, w: 9, sprite: '/visuals/achievements/music-stand.svg' },
+  { id: 'music-stand', label: 'Music stand', category: 'Music', x: 45, y: 49, w: 9, sprite: '/achievements/music-stand.svg' },
   { id: 'lamp', label: 'Warm little lamp', category: 'Lighting', x: 82, y: 27, w: 8, sprite: '/visuals/decor/brass-lamp.png' },
   { id: 'maple', label: 'Maple', category: 'Cats', x: 53, y: 71, w: 13, cat: 'maple', pose: 'sleeping' },
   { id: 'books', label: 'Music books', category: 'Music', x: 84, y: 37, w: 10, sprite: '/visuals/decor/books.png' },
-  { id: 'records', label: 'Record player', category: 'Music', x: 79, y: 69, w: 12, sprite: '/visuals/achievements/record-player.svg' },
+  { id: 'records', label: 'Record player', category: 'Music', x: 79, y: 69, w: 12, sprite: '/achievements/record-player.svg' },
 ] as const;
 
 const CATEGORIES = ['All', 'Cats', 'Furniture', 'Plants', 'Music', 'Lighting'] as const;
@@ -69,7 +69,7 @@ export function AchievementsPage() {
   const [category, setCategory] = useState<CollectionCategory>('All');
   const [editing, setEditing] = useState(false);
   const [selectedItem, setSelectedItem] = useState<RoomItemId | null>(null);
-  const [imageSrc, setImageSrc] = useState('/visuals/achievements/room-base.png');
+  const [imageSrc, setImageSrc] = useState('/achievements/room-base.png');
   const [saveError, setSaveError] = useState(false);
 
   useEffect(() => { saveEarned(scope, earned); }, [scope, earnedSignature]);
