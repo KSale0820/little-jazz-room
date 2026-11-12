@@ -95,6 +95,12 @@ export function ProgressRedesignPage() {
         </div>
       </div>
 
+      <button type="button" className="pgr-room-entry" onClick={() => navigate('/achievements')}>
+        <span className="pgr-room-icon" aria-hidden="true">♫</span>
+        <span className="pgr-room-copy"><strong>My Little Jazz Room</strong><small>Decorate your studio as you practice.</small></span>
+        <span className="pgr-room-cta">Visit room ›</span>
+      </button>
+
       <PracticeCalendar sessions={sessions} />
 
       <section className="pgr-week" aria-labelledby="pgr-week-heading">
