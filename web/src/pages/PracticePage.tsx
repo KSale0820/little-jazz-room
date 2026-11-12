@@ -624,6 +624,15 @@ export function PracticePage() {
     savePromiseRef.current = null;
   }
 
+  const journalControl = (
+    <button className="practice-demo-journal" type="button" aria-label="Session journal"
+      onClick={() => setJournalOpen(true)} title="Practice journal">
+      <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
+      </svg>
+    </button>
+  );
+
   if (standaloneRecording) {
     return <RecordingOnlyPractice recording={standaloneRecording} />;
   }
@@ -867,7 +876,32 @@ export function PracticePage() {
         </div>
       </>}
 
-      {activeRecording ? (
+      {instructionsOnly ? (
+        <section className="practice-routine-tools-only" aria-label="Instructions-only practice tools">
+          <button type="button" className="practice-routine-timer" onClick={togglePracticeClock}
+            aria-label={isRunning ? 'Pause practice timer' : 'Start practice timer'}>
+            <PlayerPixelIcon name={isRunning ? 'pause' : 'play'} />
+            {isRunning ? 'Pause practice timer' : 'Start practice timer'}
+          </button>
+          <div className="practice-utility-row practice-routine-simple-tools" aria-label="Practice tools">
+            <button type="button" onClick={event => openTool('metronome', event.currentTarget)}>
+              <PracticeToolGlyph name="metronome" /><span>Metronome</span>
+            </button>
+            <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>
+              <PracticeToolGlyph name="tuner" /><span>Tuner</span>
+            </button>
+          </div>
+          <div className="practice-session-row">
+            <PracticeTimeBadge seconds={elapsedSeconds} running={isRunning} />
+            <div className="practice-routine-session-actions">
+              <button className="practice-finish-action" type="button" onClick={finishSession}>
+                <PlayerPixelIcon name="finish-check" /><span>Finish Session</span>
+              </button>
+              {journalControl}
+            </div>
+          </div>
+        </section>
+      ) : activeRecording ? (
       <div className="practice-transport">
         {activeRecording && <div className="practice-recording-seek">
           <input id="recording-scrubber" type="range" min={0} max={recordingDuration || 1}
@@ -965,20 +999,15 @@ export function PracticePage() {
               <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>
                 <PracticeToolGlyph name="tuner" /><span>Tuner</span>
               </button>
-              <button type="button" disabled title="Mixer is Preview only">
+              {!routine && <button type="button" disabled title="Mixer is Preview only">
                 <PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small>
-              </button>
+              </button>}
             </div>
             <div className="practice-session-row practice-demo-session-row">
               <PracticeTimeBadge seconds={elapsedSeconds} running={isRunning} />
               <div className="practice-demo-session-actions">
                 <button className="practice-finish-action" type="button" onClick={finishSession}><span aria-hidden="true">✓</span> Finish Session</button>
-                <button className="practice-demo-journal" type="button" aria-label="Session journal (planned)" title="Session journal: coming later"
-                  onClick={() => showToast("In-session journal is planned. You can add notes after finishing the session.")}>
-                  <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
-                  </svg>
-                </button>
+                {journalControl}
               </div>
             </div>
       </div>
@@ -1081,15 +1110,18 @@ export function PracticePage() {
         <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>
           <PracticeToolGlyph name="tuner" /><span>Tuner</span>
         </button>
-        <button type="button" disabled title="Mixer is Preview only">
+        {!routine && <button type="button" disabled title="Mixer is Preview only">
           <PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small>
-        </button>
+        </button>}
       </div>
       <div className="practice-session-row">
         <PracticeTimeBadge seconds={elapsedSeconds} running={isRunning} />
-        <button className="practice-finish-action" type="button" onClick={finishSession}>
-          <PlayerPixelIcon name="finish-check" /><span>Finish Session</span>
-        </button>
+        <div className="practice-routine-session-actions">
+          <button className="practice-finish-action" type="button" onClick={finishSession}>
+            <PlayerPixelIcon name="finish-check" /><span>Finish Session</span>
+          </button>
+          {journalControl}
+        </div>
       </div>
         </>
       )}
