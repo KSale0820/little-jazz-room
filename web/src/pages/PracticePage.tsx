@@ -481,19 +481,6 @@ export function PracticePage() {
     setNowMs(now);
   }
 
-  function stepMeasure(delta: number) {
-    const now = performance.now();
-    const beats = beatsPerMeasure(chart);
-    const duration = sequenceDuration(chart, activeSections);
-    const raw = rawChartBeat(musicalClock, now, tempo, chart);
-    const offset = activeSections && repeatWholePlan ? raw % duration : raw;
-    const intended = Math.floor(offset / beats) * beats + delta * beats;
-    const next = activeSections && repeatWholePlan
-      ? (intended + duration) % duration : Math.max(0, Math.min(duration - beats, intended));
-    setMusicalClock({ chartBeat: next, startedAtMs: isRunning ? now : null });
-    setNowMs(now);
-  }
-
   function toggleSessionTime() {
     const now = performance.now();
     if (sessionStartedAtMs === null) setSessionStartedAtMs(now);
@@ -878,31 +865,38 @@ export function PracticePage() {
       )}
 
       <div className="practice-transport">
-        {activeRecording && <div className="practice-recording-seek">
-          <input id="recording-scrubber" type="range" min={0} max={recordingDuration || 1}
-            step={0.05} value={Math.min(recordingPosition, recordingDuration || 1)} disabled={!recordingDuration}
-            aria-label="Seek recording" onChange={event => seekRecording(Number(event.target.value))} />
-          <div className="practice-recording-times">{formatPracticeTime(Math.floor(recordingPosition))} / {formatPracticeTime(Math.floor(recordingDuration))}</div>
-        </div>}
+        <div className="practice-recording-seek">
+          {activeRecording ? <>
+            <input id="recording-scrubber" type="range" min={0} max={recordingDuration || 1}
+              step={0.05} value={Math.min(recordingPosition, recordingDuration || 1)} disabled={!recordingDuration}
+              aria-label="Seek recording" onChange={event => seekRecording(Number(event.target.value))} />
+            <div className="practice-recording-times">{formatPracticeTime(Math.floor(recordingPosition))} / {formatPracticeTime(Math.floor(recordingDuration))}</div>
+          </> : <>
+            <input id="recording-scrubber" type="range" min={1} max={chart.bars.length} step={1}
+              value={playhead.barIndex + 1} aria-label="Seek chart measure"
+              onChange={event => moveToBar(Number(event.target.value) - 1)} />
+            <div className="practice-recording-times">Bar {playhead.barIndex + 1} / {chart.bars.length}</div>
+          </>}
+        </div>
         <div className="practice-control-row">
           <button className="practice-measure-btn" type="button"
-            aria-label={activeRecording ? 'Back 10 seconds' : 'Previous measure'}
-            onClick={() => activeRecording ? seekRecording((audioRef.current?.currentTime ?? 0) - 10) : stepMeasure(-1)}>
-            {activeRecording ? <SkipTenIcon /> : '◀❙'}
+            aria-label="Back 10 seconds"
+            onClick={() => activeRecording ? seekRecording((audioRef.current?.currentTime ?? 0) - 10) : seekChartSeconds(-10)}>
+            <SkipTenIcon />
           </button>
           <button className="practice-timer-button" type="button" onClick={toggleTimer}
-            aria-label={activeRecording ? (recordingPlaying ? 'Pause recording' : 'Play recording') : isRunning ? 'Pause practice timer' : (priorMs + stepMs) ? 'Resume practice timer' : 'Start practice timer'}>
+            aria-label={activeRecording ? (recordingPlaying ? 'Pause recording' : 'Play recording') : (isRunning ? 'Pause chart follow-along' : 'Play chart follow-along')}>
             {(activeRecording ? recordingPlaying : isRunning) ? 'Ⅱ' : '▶'}
           </button>
           <button className="practice-measure-btn" type="button"
-            aria-label={activeRecording ? 'Forward 10 seconds' : 'Next measure'}
-            onClick={() => activeRecording ? seekRecording((audioRef.current?.currentTime ?? 0) + 10) : stepMeasure(1)}>
-            {activeRecording ? <SkipTenIcon forward /> : '❙▶'}
+            aria-label="Forward 10 seconds"
+            onClick={() => activeRecording ? seekRecording((audioRef.current?.currentTime ?? 0) + 10) : seekChartSeconds(10)}>
+            <SkipTenIcon forward />
           </button>
           <button className="practice-secondary-transport" type="button"
-            aria-label={activeRecording ? 'Repeat recording' : 'Configure loop'}
-            aria-pressed={activeRecording ? repeatRecording : loopEnabled}
-            onClick={event => activeRecording ? setRepeatRecording(value => !value) : openLoop(event.currentTarget)}>
+            aria-label={activeRecording ? 'Repeat recording' : 'Repeat chart follow-along'}
+            aria-pressed={activeRecording ? repeatRecording : repeatWholePlan}
+            onClick={() => activeRecording ? setRepeatRecording(value => !value) : toggleFullChartRepeat()}>
             <RepeatIcon />
           </button>
         </div>
@@ -936,7 +930,7 @@ export function PracticePage() {
                   aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select>
               </label>
               <button type="button" className="practice-demo-original"
-                aria-label="Reset reference BPM to original recording tempo"
+                aria-label={activeRecording ? 'Reset BPM to recorded tempo' : 'Reset BPM to original chart tempo'}
                 onClick={() => changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100)}>Original</button>
             </div>
             <p className="practice-reference-note practice-demo-audio-note">{activeRecording
