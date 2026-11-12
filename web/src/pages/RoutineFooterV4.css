@@ -12,6 +12,10 @@ section.practice-player.practice-guided.practice-demo-refresh .routine-session-d
   border-radius: 25px;
   background: #eef4ea;
   overflow: hidden;
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  box-shadow: 0 -5px 16px rgb(27 56 38 / 0.08);
 }
 section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top {
   box-sizing: border-box;
