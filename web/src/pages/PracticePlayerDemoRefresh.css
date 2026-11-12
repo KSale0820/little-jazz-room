@@ -10,13 +10,12 @@
 }
 .practice-demo-refresh .practice-title-group h1 { font-size: clamp(24px, 6.6vw, 30px); }
 .practice-demo-refresh .practice-title-group .practice-overline { display: none; }
-.practice-demo-refresh .practice-annotation-row,
-.practice-demo-refresh .practice-demo-annotation-row {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  min-height: 27px;
-  margin: 0 2px 4px;
+/* Chart annotations now sit in the header, beside the track title. */
+.practice-demo-refresh .practice-player-head { align-items: flex-start; }
+.practice-demo-refresh .practice-player-head .practice-title-group { flex: 1 1 0; min-width: 0; }
+.practice-demo-refresh .practice-player-head .practice-demo-chart-pencil {
+  align-self: flex-start;
+  margin-top: 3px;
 }
 .practice-demo-refresh .practice-demo-chart-pencil {
   display: grid;
@@ -233,7 +232,8 @@
 }
 .practice-demo-refresh .practice-utility-row.practice-demo-tools {
   display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
+  /* Give Metronome room for its separate quick-control preview. */
+  grid-template-columns: minmax(0,1.38fr) repeat(2,minmax(0,.81fr));
   gap: 6px;
   width: 100%;
   margin-top: 12px;
@@ -273,8 +273,9 @@
   width: 0;
   min-width: 0;
   min-height: 41px;
-  padding: 0;
+  padding: 0 2px;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 3px;
@@ -283,9 +284,11 @@
   color: var(--demo-green);
 }
 .practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-tool-main .practice-tool-glyph { width: 19px; height: 19px; min-height: 19px; }
-.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-tool-main span { font-size: 10px; }
+.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-tool-main span { font-size: 10px; white-space: nowrap; }
 .practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-metronome-switch {
   display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
   gap: 3px;
   align-items: center;
   justify-content: space-between;
