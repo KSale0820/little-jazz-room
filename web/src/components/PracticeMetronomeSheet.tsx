@@ -65,7 +65,6 @@ export function PracticeMetronomeSheet({ controller, onClose }: {
       </div>
       <div className="practice-metronome-field">
         <h3>Clicks per measure</h3>
-        <p className="practice-metronome-help">Choose fewer beats or an even subdivision of this measure. All clicks stay aligned to the original meter.</p>
         <div className="practice-metronome-pills" role="group" aria-label="Metronome clicks per measure">
           {options.map(value => <button key={value} type="button"
             aria-label={value + ' clicks per measure'}
