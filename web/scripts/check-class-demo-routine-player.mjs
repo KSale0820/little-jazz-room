@@ -108,7 +108,9 @@ try {
       return {
         insideShell: dock.parentElement.classList.contains('routine-dock-host') &&
           dock.parentElement.parentElement === shell,
-        shellTop: sr.top, shellBottom: sr.bottom, navTop: nr.top,
+        shellTop: sr.top, shellBottom: sr.bottom,
+        navVisible: getComputedStyle(nav).display !== 'none',
+        navTop: nr.top,
         top: dr.top, bottom: dr.bottom, finishBottom: fr.bottom,
         finishHit: Boolean(hit?.closest('.practice-finish-action')),
         position: getComputedStyle(dock.parentElement).position,
@@ -116,10 +118,11 @@ try {
     });
     assert.equal(dockPosition.insideShell, true, 'Dock must render directly inside app shell, outside viewport scroll');
     assert.equal(dockPosition.position, 'absolute', 'Dock must be app-shell anchored at all breakpoints');
+    assert.equal(dockPosition.navVisible, false, 'Active routine player should hide the normal bottom navigation');
     assert.ok(dockPosition.top >= dockPosition.shellTop - 2 &&
-      dockPosition.bottom <= dockPosition.navTop + 2 &&
-      dockPosition.finishBottom <= dockPosition.navTop + 2,
-      'Entire dock must be visible above tab bar in the app shell: ' + JSON.stringify(dockPosition));
+      dockPosition.bottom <= dockPosition.shellBottom + 2 &&
+      dockPosition.finishBottom <= dockPosition.shellBottom + 2,
+      'Entire dock must be visible within the phone app shell: ' + JSON.stringify(dockPosition));
     assert.equal(dockPosition.finishHit, true, 'Finish Session must be tappable without scrolling');
     await page.locator('.viewport').evaluate(viewport => { viewport.scrollTop = viewport.scrollHeight; });
     const afterScroll = await page.locator('.routine-session-dock').evaluate(dock => dock.getBoundingClientRect().top);
