@@ -262,15 +262,11 @@ export function ProgressPage() {
       </button>)}</div> : <p className="pr-empty">No sessions yet. Your completed practice will appear here.</p>}
     </section>
 
-    <nav className="pr-quick-links" aria-label="Saved practice information">
-      <button type="button" className="pr-shortcut pr-shortcut-calendar" onClick={() => navigate('/progress/calendar')}>
-        <span className="pr-shortcut-icon" aria-hidden="true"><ProgressIcon name="calendar" /></span><strong>Practice Calendar</strong><span className="pr-chevron" aria-hidden="true">›</span>
-      </button>
-      <button type="button" className="pr-shortcut pr-shortcut-journal" onClick={() => navigate('/progress/journal')}>
-        <span className="pr-shortcut-icon" aria-hidden="true"><ProgressIcon name="journal" /></span><strong>Journal</strong><span className="pr-chevron" aria-hidden="true">›</span>
-      </button>
-      <button type="button" className="pr-shortcut pr-shortcut-notes" onClick={() => navigate('/progress/notes')}>
-        <span className="pr-shortcut-icon" aria-hidden="true"><ProgressIcon name="notes" /></span><strong>Notes</strong><span className="pr-chevron" aria-hidden="true">›</span>
+    <nav className="pr-quick-links" aria-label="Practice journal">
+      <button type="button" className="pr-shortcut pr-shortcut-journal" onClick={() => navigate('/progress/practice-journal')}>
+        <span className="pr-shortcut-icon" aria-hidden="true"><img src="/visuals/progress/practice-journal.png" alt="" /></span>
+        <strong>Practice Journal</strong>
+        <span className="pr-chevron" aria-hidden="true">›</span>
       </button>
     </nav>
   </section>;
