@@ -59,9 +59,14 @@ try {
     await page.goto(base + '/tuner', { waitUntil: 'networkidle' });
     await checkClean('standalone', '.viewport > .tool-tuner');
     await page.screenshot({ path: join(out, '01-standalone-' + width + 'x' + height + '.png'), animations: 'disabled' });
-    await page.getByRole('button', { name: 'Tuner help' }).click();
-    check(await page.locator('.tool-tuner .tool-help').isVisible(), 'Tuner help disappeared');
-    await page.getByRole('button', { name: 'Tuner help' }).click();
+    check(await page.getByRole('button', { name: 'Tuner help' }).count() === 0,
+      'Removed help button was unexpectedly reintroduced');
+    check(await page.getByRole('region', { name: 'Live pitch graph' }).isVisible(),
+      'Pitch history must always be visible');
+    check(await page.getByRole('button', { name: /Show pitch graph|Hide pitch graph|Full take/ }).count() === 0,
+      'Obsolete graph controls must not be present');
+    check(await page.getByRole('button', { name: 'Clear graph' }).isVisible(),
+      'Clear graph action is missing');
     await page.getByRole('button', { name: 'Guitar', exact: true }).click();
     check(await page.getByRole('button', { name: 'Guitar', exact: true }).getAttribute('aria-pressed') === 'true',
       'Guitar mode did not select');
@@ -73,11 +78,8 @@ try {
     await page.getByRole('button', { name: 'Play A 440 hertz tone' }).click();
     await page.getByRole('button', { name: 'Stop A 440 hertz tone' }).waitFor();
     await page.getByRole('button', { name: 'Stop A 440 hertz tone' }).click();
-    await page.getByRole('button', { name: 'Show pitch graph' }).click();
-    await page.getByRole('region', { name: 'Live pitch graph' }).waitFor();
     await page.locator('.tuner-trail-panel').scrollIntoViewIfNeeded();
     await page.screenshot({ path: join(out, '02-graph-' + width + 'x' + height + '.png'), animations: 'disabled' });
-    await page.getByRole('button', { name: 'Hide pitch graph' }).click();
 
     await page.goto(base + '/free-practice', { waitUntil: 'networkidle' });
     await page.locator('.fp-redesign .practice-demo-tools').getByRole('button', { name: 'Tuner' }).click();
