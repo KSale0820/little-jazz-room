@@ -34,3 +34,21 @@ export function savePinnedPracticeRoutine(scope: string, id: string | null): voi
     else window.localStorage.removeItem(pinKey(scope));
   } catch { /* offline memory-only */ }
 }
+
+
+/** Monday=0 through Sunday=6. Off days do not require meeting the daily goal. */
+const offDaysKey = (scope: string) => `little-jazz-room:practice-off-days:v1:${scope}`;
+export function readPracticeOffDays(scope: string): number[] {
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(offDaysKey(scope)) ?? '[]');
+    return Array.isArray(parsed) ? [...new Set(parsed.filter((day): day is number =>
+      Number.isInteger(day) && day >= 0 && day <= 6))].sort((a, b) => a - b) : [];
+  } catch { return []; }
+}
+export function savePracticeOffDays(scope: string, days: number[]): number[] {
+  const valid = [...new Set(days.filter(day => Number.isInteger(day) && day >= 0 && day <= 6))]
+    .sort((a, b) => a - b);
+  try { window.localStorage.setItem(offDaysKey(scope), JSON.stringify(valid)); }
+  catch { /* optional device storage */ }
+  return valid;
+}
