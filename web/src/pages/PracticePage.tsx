@@ -23,7 +23,6 @@ import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
 import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
-import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { TunerPage } from './TunerPage';
 import { useAuth } from '../context/AuthContext';
 import { localStorageScopeForUser } from '../repository/localRepository';
@@ -118,7 +117,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    charts, exercises, routines, activeRoutineId, addSession, showToast, catId, repo, refreshLocal,
+    charts, exercises, routines, activeRoutineId, addSession, showToast, repo, refreshLocal,
   } = useApp();
   const requestedChart = freeSession?.kind === 'chart' ? freeSession.sourceId : searchParams.get('chart');
   const requestedRecording = freeSession?.kind === 'track' ? freeSession.sourceId : searchParams.get('recording');
