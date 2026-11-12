@@ -81,14 +81,16 @@ export function AppShell() {
               )}
             </div>
           ) : null}
-          {demoActive && <div className="demo-user-banner" role="status">
-            <span><strong>Sample: Alex Rivera</strong> <small>Device-only test data</small></span>
-            <div className="demo-user-actions">
-              <button type="button" onClick={() => { if (!resetDemo()) showToast('Unable to reset sample data on this browser.'); }}>Reset</button>
-              <button type="button" onClick={() => { exitDemo(); navigate('/progress'); }}>Exit</button>
-            </div>
-          </div>}
           <div className="viewport" id="main-viewport">
+            {/* The banner must live inside the scrolling viewport. A sibling above it
+                pushes a 100%-height viewport below the clipped app-shell bottom. */}
+            {demoActive && <div className="demo-user-banner" role="status">
+              <span><strong>Sample: Alex Rivera</strong> <small>Device-only test data</small></span>
+              <div className="demo-user-actions">
+                <button type="button" onClick={() => { if (!resetDemo()) showToast('Unable to reset sample data on this browser.'); }}>Reset</button>
+                <button type="button" onClick={() => { exitDemo(); navigate('/progress'); }}>Exit</button>
+              </div>
+            </div>}
             <Outlet />
           </div>
           <nav className="bottom-nav" aria-label="Main navigation">
