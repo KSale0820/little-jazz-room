@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { gatePitchFrequency } from '../pages/toolsAudio';
 import { buildPitchSnapshot, deletePitchSnapshot, pitchSnapshotCsv, readPitchSnapshots,
   sameLocalDay, savePitchSnapshot } from './tunerPitchHistory';
 
@@ -45,5 +46,33 @@ describe('tuner pitch journal snapshots', () => {
   it('matches calendar dates in local time, not UTC string prefixes', () => {
     expect(sameLocalDay('2026-11-11T09:00:00Z', '2026-11-11T19:00:00Z')).toBe(true);
     expect(sameLocalDay('invalid', '2026-11-11T19:00:00Z')).toBe(false);
+  });
+});
+
+describe('continuous pitch glitch rejection', () => {
+  it('ignores one-frame octave errors but accepts an intentional sustained jump', () => {
+    const first = gatePitchFrequency(null, 440, 0);
+    expect(first.frequency).toBe(440);
+    const spike = gatePitchFrequency(first.next, 880, 125);
+    expect(spike.frequency).toBeNull();
+    const recovery = gatePitchFrequency(spike.next, 440, 250);
+    expect(recovery.frequency).toBe(440);
+    const started = gatePitchFrequency(recovery.next, 880, 375);
+    expect(started.frequency).toBeNull();
+    const confirmed = gatePitchFrequency(started.next, 880, 500);
+    expect(confirmed.frequency).toBe(880);
+    const afterSilence = gatePitchFrequency(confirmed.next, 110, 1400);
+    expect(afterSilence.frequency).toBe(110);
+  });
+
+  it('preserves full history and wall-clock timestamps in the journal graph', () => {
+    const points = Array.from({ length: 4001 }, (_, i) => ({
+      timestamp: i * 250, frequency: i === 2000 ? null : 440,
+      wallTime: 1794432000000 + i * 250,
+    }));
+    const snapshot = buildPitchSnapshot('chromatic', points)!;
+    expect(snapshot.samples).toHaveLength(4001);
+    expect(snapshot.samples.at(-1)?.wallTime).toBe(points.at(-1)?.wallTime);
+    expect(snapshot.samples[2000].frequency).toBeNull();
   });
 });
