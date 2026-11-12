@@ -52,7 +52,8 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     modeRef.current = mode;
     recentPitchRef.current = null;
     setReading(null);
-    setPitchTrail([]);
+    // Frequencies are concert-pitch measurements independent of tuning mode.
+    // Switching Guitar/Bass/Chromatic must not erase a musician's take.
   }, [mode]);
 
   const selectedSnapshot = savedPitch.find(item => item.id === selectedSnapshotId) ?? null;
