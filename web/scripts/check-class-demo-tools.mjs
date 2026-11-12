@@ -9,7 +9,6 @@ const output = join(process.cwd(), 'docs', 'screenshots', 'class-demo-tools');
 mkdirSync(output, { recursive: true });
 // Reject a stale, missing, or accidentally recompressed background, not just a 200 response.
 for (const [file, expected] of [
-  ['p04-tuner-background.png', '5f2d0624f6e8d0af90e686a791e5bd6a19f4416649d85e44c57bad975f07d01e'],
   ['p05-metronome-room-2026-11-02.webp', '65d614f02c7665c64e0a05557efe48a24f180780425700db634e4025c788213f'],
 ]) {
   let actual;
@@ -97,10 +96,30 @@ try {
     await waitArtwork();
     await assertNoOverflow();
     if (!(await page.getByText('No pitch detected').isVisible())) throw new Error('Tuner fabricated idle pitch');
-    const missingTunerArt = await page.locator('.tool-tuner img').evaluateAll(
-      images => images.filter(img => !img.naturalWidth).map(img => img.src));
-    if (missingTunerArt.length) throw new Error('Missing tuner art: ' + missingTunerArt.join(', '));
-    await assertApprovedBackground('.tool-tuner .tool-bottom-art', 780);
+    // The redesigned P04 is intentionally clean: no room, cat, vines,
+    // illustrations or background image, unlike P05 Metronome.
+    const tunerSurface = await page.locator('.tool-tuner').evaluate(element => {
+      const css = getComputedStyle(element);
+      return { backgroundImage: css.backgroundImage, backgroundColor: css.backgroundColor,
+        horizontalOverflow: element.scrollWidth - element.clientWidth };
+    });
+    if (await page.locator('.tool-tuner img').count() ||
+      tunerSurface.backgroundImage !== 'none' || tunerSurface.horizontalOverflow > 1) {
+      throw new Error('Clean tuner contains decorative imagery or overflows: ' + JSON.stringify(tunerSurface));
+    }
+    if (!await page.locator('.tool-tuner .tuner-main-card').isVisible()) {
+      throw new Error('Clean tuner is missing the central tuning card');
+    }
+    const tuningModes = page.locator('.tool-tuner .tuner-modes button');
+    if (await tuningModes.count() !== 3 ||
+        !await page.getByRole('button', { name: 'Chromatic', exact: true }).isVisible()) {
+      throw new Error('Clean tuner segmented tuning selector is clipped');
+    }
+    const tunerControls = await page.locator('.tool-tuner .tuner-mic').first().boundingBox();
+    const tunerCard = await page.locator('.tool-tuner .tuner-main-card').boundingBox();
+    if (!tunerControls || !tunerCard || tunerControls.y + tunerControls.height > tunerCard.y + 1) {
+      throw new Error('Enable microphone must be clearly visible above the tuning card');
+    }
     await page.screenshot({ path: join(output, 'P04-tuner-' + width + 'x' + height + '.png'), fullPage: false });
     console.log('SCREENSHOT_PREVIEW_P04_' + width + 'x' + height + ':' + (await page.screenshot({ type: 'jpeg', quality: 62 })).toString('base64'));
     await page.getByRole('button', { name: 'Enable microphone' }).click();
@@ -170,7 +189,7 @@ try {
     await page.waitForTimeout(350);
     if ((await page.evaluate(() => window.__toolQAStarts)) !== afterPause) throw new Error('Click scheduling continued after pause');
     if (errors.length) throw new Error('Browser console errors: ' + errors.join(' | '));
-    console.log('PASS P04/P05 ' + width + 'x' + height + ': routes, image loads, responsive layout, microphone, reference tone, Web Audio click scheduling, pause, meter and tempo. Screenshots saved.');
+    console.log('PASS clean P04/P05 ' + width + 'x' + height + ': routes, clean tuner layout, P05 artwork, microphone, reference tone, Web Audio clicks, pause, meter and tempo. Screenshots saved.');
     await context.close();
   }
 
