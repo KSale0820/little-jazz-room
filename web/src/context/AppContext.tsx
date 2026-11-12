@@ -17,6 +17,7 @@ import { exercisesById } from '../data/seed';
 import { buildRoutineStepSnapshots } from '../lib/routineStepSnapshots';
 import { overlayLocalRoutinePresets } from '../lib/routinePlayerSettings';
 import { createChartRepository, mergeCharts } from '../features/charts/chartRepository';
+import { DEMO_SCOPE, isDemoProfileActive, setDemoProfileActive, seedDemoProfile, clearDemoProfile } from '../lib/demoProfile';
 
 interface AppContextValue {
   repo: LocalRepository;
@@ -44,6 +45,10 @@ interface AppContextValue {
   activeRoutineId: string | null;
   setActiveRoutineId: (id: string | null) => void;
   teamSignedIn: boolean;
+  demoActive: boolean;
+  enterDemo: () => boolean;
+  exitDemo: () => void;
+  resetDemo: () => boolean;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -64,14 +69,43 @@ function readBool(key: string, defaultValue: boolean): boolean {
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
+  const [demoActive, setDemoActive] = useState(isDemoProfileActive);
   if (loading) return null;
-  // Key all in-app state by identity: cloud results, forms, timers and cached profiles.
-  return <AccountAppProvider key={localStorageScopeForUser(user?.id)}>{children}</AccountAppProvider>;
+
+  const enterDemo = (): boolean => {
+    try {
+      seedDemoProfile();
+      setDemoProfileActive(true);
+      setDemoActive(true);
+      return true;
+    } catch { return false; }
+  };
+  const exitDemo = () => {
+    try { setDemoProfileActive(false); } catch { /* session-only fallback */ }
+    setDemoActive(false);
+  };
+  const resetDemo = (): boolean => {
+    try {
+      clearDemoProfile();
+      seedDemoProfile();
+      window.location.reload();
+      return true;
+    } catch { return false; }
+  };
+  // Key all in-app state by effective identity, including the isolated sample.
+  const scope = demoActive ? DEMO_SCOPE : localStorageScopeForUser(user?.id);
+  return <AccountAppProvider key={scope} demoActive={demoActive}
+    enterDemo={enterDemo} exitDemo={exitDemo} resetDemo={resetDemo}>{children}</AccountAppProvider>;
 }
 
-function AccountAppProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
-  const localScope = localStorageScopeForUser(user?.id);
+function AccountAppProvider({ children, demoActive, enterDemo, exitDemo, resetDemo }: {
+  children: ReactNode; demoActive: boolean; enterDemo: () => boolean;
+  exitDemo: () => void; resetDemo: () => boolean;
+}) {
+  const { user: authenticatedUser } = useAuth();
+  // Never read/write cloud content while previewing the sample.
+  const user = demoActive ? null : authenticatedUser;
+  const localScope = demoActive ? DEMO_SCOPE : localStorageScopeForUser(user?.id);
   const repo = useMemo(() => createLocalRepository(localScope), [localScope]);
   const client = getSupabaseClient();
   const cloudRepo = useMemo(() => {
@@ -84,7 +118,7 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
     return createSupabaseCatRepository(client, user.id);
   }, [client, user?.id]);
 
-  const accountKey = user?.id ?? 'local';
+  const accountKey = demoActive ? DEMO_SCOPE : user?.id ?? 'local';
   const { catId, chooseCat, saveError: catSaveError } = useCatSelection(catRepo, accountKey);
 
   const [tick, setTick] = useState(0);
@@ -263,6 +297,10 @@ function AccountAppProvider({ children }: { children: ReactNode }) {
     activeRoutineId,
     setActiveRoutineId,
     teamSignedIn: Boolean(user),
+    demoActive,
+    enterDemo,
+    exitDemo,
+    resetDemo,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
