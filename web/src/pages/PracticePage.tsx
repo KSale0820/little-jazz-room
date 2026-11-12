@@ -844,7 +844,12 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
           <div>
             <strong>{completion.title}</strong>
             <span>{completion.routineId ? 'Guided Practice' : 'Free Practice'}</span>
-            <small>{completion.chartTitle} · {completion.recordingTitle ? 'Recorded backing track' : 'Chart only'}</small>
+            {completion.routineOutcomes
+              ? <small>{completion.routineOutcomes.completed} of {completion.routineOutcomes.total} exercises completed
+                  {completion.routineOutcomes.needsWork ? ` · ${completion.routineOutcomes.needsWork} need work` : ''}
+                  {completion.routineOutcomes.skipped ? ` · ${completion.routineOutcomes.skipped} skipped` : ''}
+                  {completion.routineOutcomes.unmarked ? ` · ${completion.routineOutcomes.unmarked} not marked` : ''}</small>
+              : <small>{completion.chartTitle} · {completion.recordingTitle ? 'Recorded backing track' : 'Chart only'}</small>}
           </div>
         </div>
         <div className="practice-complete-notes">
@@ -931,12 +936,16 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
       </div>}
       {activeRecording && recordingError && <p role="alert" className="practice-recording-error">{recordingError}</p>}
 
-      {routine && (
-        <div className="practice-guided-progress" role="progressbar" aria-label="Routine steps completed"
-          aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={stepIndex}>
+      {routine && <>
+        <div className="practice-routine-overview-bar">
+          <span>{completeCount} of {routine.steps.length} exercises completed</span>
+          <button type="button" onClick={() => setStepsOpen(true)} aria-label="View all routine exercises">All Steps ☷</button>
+        </div>
+        <div className="practice-guided-progress" role="progressbar" aria-label="Completed routine exercises"
+          aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={completeCount}>
           <span style={{ width: formProgress + '%' }} />
         </div>
-      )}
+      </>}
 
       {routine && hasMusicContent && <div className="practice-segments" role="tablist" aria-label={routine ? 'Guided practice views' : 'Player view'}>
         {routine && <button type="button" role="tab" aria-controls="practice-instructions-panel" aria-selected={panel === 'instructions'} onClick={() => setPanel('instructions')} className={panel === 'instructions' ? 'selected' : undefined}>Instructions</button>}
@@ -982,15 +991,32 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
           <p>{lesson?.goal ?? 'Follow the exercise and practice at your own pace.'}</p>
         </aside>
       )}
-      {routine && (
+      {routine && <>
         <div className="practice-step-controls">
-          <button type="button" onClick={() => goStep(-1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
+          <button type="button" onClick={() => requestStep(stepIndex - 1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
           <div><strong>Step {stepIndex + 1} of {routine.steps.length}</strong><span>{playableStep?.title ?? 'Exercise'} · {currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0} min goal</span></div>
           {hasMusicContent && <button type="button" className="practice-chart-shortcut" onClick={() => setPanel(current => current === 'chart' ? 'instructions' : 'chart')} aria-label={panel === 'chart' ? 'Show instructions' : 'Show chart'}>{panel === 'chart' ? 'Instructions' : 'Chart'}</button>}
           <button type="button" className="practice-next" disabled={Boolean(freeSession && stepIndex === routine.steps.length - 1 && !freeSession.canNext)}
-            onClick={() => stepIndex === routine.steps.length - 1 ? (freeSession ? freeSession.onNext() : finishSession()) : goStep(1)}>{stepIndex === routine.steps.length - 1 ? (freeSession ? 'End of routine' : 'Finish') : 'Next Step ›'}</button>
+            onClick={() => requestStep(stepIndex === routine.steps.length - 1 ? 'finish' : stepIndex + 1)}>{stepIndex === routine.steps.length - 1 ? (freeSession ? 'End of routine' : 'Finish Routine') : 'Next Step ›'}</button>
         </div>
-      )}
+        <div className="practice-routine-outcome" aria-label="Exercise completion">
+          <button type="button" className={stepOutcomes[stepIndex] === 'complete' ? 'selected' : ''}
+            aria-pressed={stepOutcomes[stepIndex] === 'complete'}
+            onClick={() => setOutcome(stepOutcomes[stepIndex] === 'complete' ? '' : 'complete')}>
+            ✓ {stepOutcomes[stepIndex] === 'complete' ? 'Completed' : 'Mark Complete'}
+          </button>
+          <label>
+            <span className="sr-only">Exercise outcome</span>
+            <select aria-label="Exercise outcome" value={stepOutcomes[stepIndex] ?? ''}
+              onChange={event => setOutcome(event.target.value as RoutineStepOutcome | '')}>
+              <option value="">Not marked</option>
+              <option value="complete">Complete</option>
+              <option value="needs-work">Needs work</option>
+              <option value="skipped">Skipped</option>
+            </select>
+          </label>
+        </div>
+      </>
 
       {hasMusicContent && <div className="practice-transport">
         <div className="practice-recording-seek">
@@ -1058,8 +1084,18 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
                   aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select>
               </label>
               <button type="button" className="practice-demo-original"
-                aria-label={activeRecording ? 'Reset BPM to recorded tempo' : 'Reset BPM to original chart tempo'}
-                onClick={() => changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100)}>Original</button>
+                aria-label={routine ? 'Reset to routine preset' : activeRecording ? 'Reset BPM to recorded tempo' : 'Reset BPM to original chart tempo'}
+                onClick={() => {
+                  if (routine) {
+                    changeTempo(stepDefaults.reference_bpm);
+                    setChartKey(stepDefaults.chart_key);
+                    setWrittenPitch(stepDefaults.written_pitch);
+                    setLoopEnabled(stepDefaults.loop_enabled);
+                    setLoopSections(stepDefaults.loop_sections.length ? stepDefaults.loop_sections.map(section => ({ ...section }))
+                      : [{ startBar: 1, endBar: Math.min(chart.bars.length, 4), plays: 2 }]);
+                    setRepeatWholePlan(stepDefaults.repeat);
+                  } else changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100);
+                }}>{routine ? 'Routine Preset' : 'Original'}</button>
             </div>
             <p className="practice-reference-note practice-demo-audio-note">{activeRecording
               ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.'
