@@ -61,11 +61,11 @@ export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet' 
         : <button type="button" aria-label="Close Metronome settings" onClick={onClose}>×</button>}
     </header>
 
-    <div className="practice-metronome-status">
-      <button type="button" className={controller.playing ? 'on' : ''}
+    <div className={'practice-metronome-status' + (isPage ? ' is-page-status' : '')}>
+      {!isPage && <button type="button" className={controller.playing ? 'on' : ''}
         aria-pressed={controller.playing} onClick={controller.toggle}>
         {controller.playing ? 'On' : 'Off'} <span aria-hidden="true" />
-      </button>
+      </button>}
       <p role="status">{isPage
         ? controller.playing
           ? 'Metronome running. Tap Off to stop.'
@@ -141,7 +141,13 @@ export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet' 
     {!isPage && controller.synced &&
       <p className="practice-metronome-help">Count-in is skipped when the track is already playing, so beats stay synchronized.</p>}
     {controller.error && <p role="alert" className="practice-metronome-error">{controller.error}</p>}
-    <button type="button" className="practice-metronome-done" onClick={onClose}>
+    {isPage && <button type="button" className="practice-metronome-page-start"
+      aria-pressed={controller.playing} onClick={controller.toggle}>
+      {controller.playing ? 'Stop Metronome' : 'Start Metronome'}
+    </button>}
+    <button type="button"
+      className={isPage ? 'practice-metronome-page-return' : 'practice-metronome-done'}
+      onClick={onClose}>
       {isPage ? 'Back to Practice' : 'Done'}
     </button>
   </section>;
