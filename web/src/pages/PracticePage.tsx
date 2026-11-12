@@ -1169,7 +1169,7 @@ export function PracticePage() {
           </label>
           <button type="button" className="practice-routine-primary" disabled={!customTitle.trim()}
             onClick={saveEditedExerciseAndContinue}>Save as New Exercise</button>
-          <button type="button" className="practice-routine-secondary" onClick={() => { const next = pendingStep; setPendingStep(null); goStep(next); }}>Continue Without Saving</button>
+          <button type="button" className="practice-routine-secondary" onClick={() => { const next = pendingStep; setPendingStep(null); if (next !== null) goStep(next); }}>Continue Without Saving</button>
           <button type="button" className="practice-routine-link" onClick={() => setPendingStep(null)}>Keep practicing</button>
         </section>
       </div>, document.querySelector('.app-shell') ?? document.body
