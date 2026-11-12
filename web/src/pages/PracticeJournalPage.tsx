@@ -37,7 +37,8 @@ export function PracticeJournalPage() {
   const requested = FOCUS.find(f => f === legacyFocus) ?? FOCUS.find(f => f === params.get('tab'));
   const focus: Focus = requested ?? 'calendar';
   const today = localDay(new Date());
-  const firstDay = validDate(params.get('date')) ?? today;
+  const selectedDay = validDate(params.get('selected'));
+  const firstDay = selectedDay ?? validDate(params.get('date')) ?? today;
   const detailDay = validDate(params.get('day'));
   const [selectedDate, setSelectedDate] = useState(firstDay);
   const [monthDate, setMonthDate] = useState(() => new Date(readDate(firstDay).getFullYear(), readDate(firstDay).getMonth(), 1));
@@ -71,11 +72,12 @@ export function PracticeJournalPage() {
   const sessionTitle = (s: PracticeSessionRecord) =>
     routines.find(r => r.id === s.routineId)?.title ?? s.routineTitle ??
     exercises.find(e => e.id === s.exerciseId)?.title ?? 'Free Practice';
-  const sessionsForDate = sessions.filter(s => dateOf(s.finishedAt) === selectedDate)
+  const activeDate = selectedDay ?? selectedDate;
+  const sessionsForDate = sessions.filter(s => dateOf(s.finishedAt) === activeDate)
     .sort((a, b) => b.finishedAt.localeCompare(a.finishedAt));
   const secondsForDate = sessionsForDate.reduce((sum, s) => sum + Math.max(0, s.durationSeconds), 0);
-  const entriesForDate = entries.filter(e => dateOf(e.createdAt) === selectedDate).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const annotationsForDate = annotations.filter(n => dateOf(n.updatedAt) === selectedDate);
+  const entriesForDate = entries.filter(e => dateOf(e.createdAt) === activeDate).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const annotationsForDate = annotations.filter(n => dateOf(n.updatedAt) === activeDate);
 
   const searchable = (title: string, body: string, tags: string[], tune: string, date: string) => {
     const haystack = [title, body, tags.join(' '), tune, date].join(' ').toLowerCase();
@@ -108,13 +110,14 @@ export function PracticeJournalPage() {
     setQuery(''); setTagFilter(''); setTuneFilter('');
     navigate('/progress/practice-journal?tab=' + next);
   };
-  const openDay = (day: string) => navigate('/progress/practice-journal?tab=' + focus + '&day=' + day);
-  const backToJournal = () => navigate('/progress/practice-journal?tab=' + focus);
+  const selectedQuery = focus === 'calendar' && selectedDay ? '&selected=' + selectedDay : '';
+  const openDay = (day: string) => navigate('/progress/practice-journal?tab=' + focus + selectedQuery + '&day=' + day);
+  const backToJournal = () => navigate('/progress/practice-journal?tab=' + focus + selectedQuery);
   const chooseDate = (day: string) => {
     setSelectedDate(day);
     const date = readDate(day);
     setMonthDate(new Date(date.getFullYear(), date.getMonth(), 1));
-    openDay(day);
+    navigate('/progress/practice-journal?tab=calendar&selected=' + day);
   };
   const shiftMonth = (delta: number) => {
     const next = new Date(monthYear, monthIndex + delta, 1);
@@ -122,7 +125,7 @@ export function PracticeJournalPage() {
     setSelectedDate(localDay(next));
   };
   const makeEntry = (kind: 'journal' | 'note' = 'journal') => {
-    const when = readDate(focus === 'calendar' ? selectedDate : today).toISOString();
+    const when = readDate(focus === 'calendar' ? activeDate : today).toISOString();
     setEditingAnnotation(null);
     setDraft({ id: crypto.randomUUID(), sessionId: '', chartId: '', chartTitle: '', title: '',
       kind, text: '', tags: [], createdAt: when, updatedAt: when, durationSeconds: 0 });
@@ -235,6 +238,61 @@ export function PracticeJournalPage() {
     onBack={backToJournal} onEdit={editDay} onEditEntry={editSourceEntry}
     onOpenChart={id => navigate('/player?chart=' + encodeURIComponent(id))}
     onOpenRoutine={id => navigate('/player?routine=' + encodeURIComponent(id))} />;
+
+  if (selectedDay && focus === 'calendar') {
+    const primary = entriesForDate.find(e => e.kind !== 'note') ?? entriesForDate[0];
+    const combinedTags = uniqueTags([...entriesForDate.flatMap(e => e.tags ?? []),
+      ...annotationsForDate.flatMap(n => n.tags ?? [])]);
+    const displayDate = readDate(selectedDay).toLocaleDateString(undefined, {
+      weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+    });
+    return <section className="pj-page pj-day-overview" aria-label={'Practice on ' + selectedDay}>
+      <header className="pj-top pj-day-overview-nav">
+        <button type="button" className="pj-back" aria-label="Back to Calendar"
+          onClick={() => navigate('/progress/practice-journal?tab=calendar&date=' + selectedDay)}>‹</button>
+        <strong>Practice Journal</strong>
+        <button type="button" className="pj-pencil" aria-label="Open daily practice sheet"
+          onClick={() => openDay(selectedDay)}>
+          <img src="/visuals/progress/practice-journal.png" alt="" />
+        </button>
+      </header>
+      <div className="pj-day-heading pj-overview-heading">
+        <h1>{displayDate}</h1>
+        <span>{formatMinutes(secondsForDate)} min practiced</span>
+      </div>
+      {sessionsForDate.map(session => <button type="button" className="pj-card pj-session" key={session.id}
+        onClick={() => openDay(selectedDay)}>
+        <span aria-hidden="true">♫</span><div><strong>{sessionTitle(session)}</strong>
+          <small>{formatMinutes(session.durationSeconds)} min · {session.routineId ? 'Routine' : session.exerciseId ? 'Exercise' : 'Session'}</small>
+        </div><b aria-hidden="true">›</b>
+      </button>)}
+      {primary && <button type="button" className="pj-card pj-row" onClick={() => openDay(selectedDay)}
+        aria-label={'Open journal entry for ' + selectedDay}>
+        <img src="/visuals/progress/practice-journal.png" alt="" />
+        <div><strong>{noteLabel(primary)}</strong>
+          <TagChips palette={tagDefinitions} tags={combinedTags} />
+          <p>{entriesForDate.map(e => e.text || e.whatPracticed || e.takeaways || e.nextTime)
+            .filter(Boolean).join(' ') || 'View this day’s journal notes'}</p>
+        </div><b aria-hidden="true">›</b>
+      </button>}
+      {annotationsForDate.map(note => <button type="button" className="pj-card pj-row"
+        key={note.chartId + ':' + note.bar} onClick={() => openDay(selectedDay)}>
+        <img src="/journal/practice-notes.png" alt="" />
+        <div><strong>{note.chartTitle} · Bar {note.bar}</strong><p>{note.text}</p></div>
+        <b aria-hidden="true">›</b>
+      </button>)}
+      {!sessionsForDate.length && !entriesForDate.length && !annotationsForDate.length &&
+        <p className="pj-empty">Nothing saved for this day. Add a note to remember what you practiced.</p>}
+      <div className="pj-overview-actions">
+        <button type="button" className="pj-primary" onClick={() => openDay(selectedDay)}>
+          Open daily practice sheet
+        </button>
+        <button type="button" className="pj-overview-secondary" onClick={() => makeEntry('journal')}>
+          + Add a reflection
+        </button>
+      </div>
+    </section>;
+  }
 
   return <section className="pj-page" aria-label="Practice Journal">
     <header className="pj-heading"><button type="button" className="pj-back" onClick={() => navigate('/progress')} aria-label="Back to Progress">‹</button>

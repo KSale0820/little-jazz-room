@@ -20,8 +20,14 @@ try {
       assert.ok(await page.locator('.pj-day[aria-label*="practice recorded"]').count() > 0, 'seeded sessions must show markers');
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/calendar-' + viewport.width + '.png', fullPage: true });
 
-      // A day opens one sheet, including the routine, its reflection, and chart annotations.
+      // Calendar date opens the day overview, not the consolidated journal sheet.
       await page.locator('.pj-day.selected').click();
+      await page.getByRole('button', { name: 'Open daily practice sheet' }).waitFor();
+      assert.equal(await page.locator('.pj-detail').count(), 0, 'date should show overview first');
+      assert.ok(await page.locator('.pj-day-overview .pj-session').count() > 0);
+      assert.ok(await page.locator('.pj-day-overview .pj-row').count() > 0);
+      await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/overview-' + viewport.width + '.png', fullPage: true });
+      await page.getByRole('button', { name: 'Open daily practice sheet' }).click();
       await page.getByRole('heading', { name: 'What I practiced' }).waitFor();
       assert.equal(await page.locator('.pj-detail').count(), 1);
       assert.ok(await page.locator('.pj-detail-practiced').count() > 0);
@@ -35,6 +41,8 @@ try {
       assert.ok(isDateBeforeSheet, 'date/time should be above the colored sheet');
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/day-' + viewport.width + '.png', fullPage: true });
       await page.getByRole('button', { name: 'Back to Practice Journal' }).click();
+      await page.getByRole('button', { name: 'Back to Calendar' }).waitFor();
+      await page.getByRole('button', { name: 'Back to Calendar' }).click();
       assert.equal(await page.locator('.pj-tabs button.active').textContent(), 'Calendar');
 
       await page.getByRole('button', { name: 'Journal', exact: true }).click();

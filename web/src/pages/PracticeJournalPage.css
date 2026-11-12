@@ -146,3 +146,14 @@
 .pj-session-reflection { margin-top:8px; border-left:2px solid #b5c9ad; padding-left:11px; max-width:100%; }
 .pj-session-reflection strong,.pj-observation-label { display:block; margin-bottom:4px; color:#425442; font-size:12px; font-weight:700; }
 .pj-inline-edit { padding:3px 0; border:0; background:transparent; color:#3b674b; font:650 11px/1.3 var(--pj-font); text-decoration:underline; text-underline-offset:3px; }
+
+/* Calendar date selection opens the daily overview before the combined entry sheet. */
+.pj-day-overview-nav { border-bottom:1px solid #e8e0d4; padding-bottom:10px; }
+.pj-day-overview-nav .pj-pencil img { width:24px; height:24px; object-fit:contain; image-rendering:pixelated; }
+.pj-overview-heading { margin:23px 2px 14px; align-items:center; }
+.pj-overview-heading h1 { margin:0; font:700 20px/1.22 var(--pj-font); color:#213c2d; }
+.pj-overview-heading span { font-size:12px; }
+.pj-day-overview .pj-card { margin-bottom:12px; }
+.pj-overview-actions { margin:22px 0; text-align:center; }
+.pj-overview-actions .pj-primary { margin:0 auto; }
+.pj-overview-secondary { border:0; padding:12px 14px; margin-top:8px; background:transparent; color:#4d7556; font-weight:650; font-size:13px; }
