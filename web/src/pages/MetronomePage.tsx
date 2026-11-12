@@ -14,13 +14,13 @@ import './CleanPixelMotifPlacements.css';
 type Signature = '2/4' | '3/4' | '4/4' | '6/8';
 type ScheduledBeat = { time: number; index: number; countIn: boolean };
 
-export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
+export function MetronomePage({ onClose, initialBpm = 100 }: { onClose?: () => void; initialBpm?: number } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
   const [roomArtLoaded, setRoomArtLoaded] = useState(false);
   const [roomArtSource, setRoomArtSource] = useState<string>(VISUAL_ASSETS.tools.metronomeBackground);
   const newRoomArtLoaded = roomArtLoaded && roomArtSource === VISUAL_ASSETS.tools.metronomeBackground;
-  const [bpm, setBpm] = useState(100);
+  const [bpm, setBpm] = useState(() => clampBpm(initialBpm));
   const [signature, setSignature] = useState<Signature>('4/4');
   const [accents, setAccents] = useState<boolean[]>(defaultAccents('4/4'));
   const [countIn, setCountIn] = useState(true);
@@ -32,7 +32,7 @@ export function MetronomePage({ onClose }: { onClose?: () => void } = {}) {
   const [taps, setTaps] = useState(0);
 
   const contextRef = useRef<AudioContext | null>(null);
-  const bpmRef = useRef(100);
+  const bpmRef = useRef(clampBpm(initialBpm));
   const signatureRef = useRef<Signature>('4/4');
   const accentsRef = useRef<boolean[]>(defaultAccents('4/4'));
   const beatIndexRef = useRef(0);
