@@ -213,3 +213,36 @@
     padding-bottom: 0;
   }
 }
+
+/* Opt-in fixture banner is deliberately compact and separate from actual account controls. */
+.demo-user-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 9px 14px;
+  color: var(--ink, #243a31);
+  background: #e7efe6;
+  border-bottom: 1px solid #b7cabb;
+  font: 13px/1.35 system-ui, sans-serif;
+}
+.demo-user-banner span { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.demo-user-banner small { font-size: 11px; opacity: .8; }
+.demo-user-actions { display: flex; gap: 6px; }
+.demo-user-actions button {
+  padding: 5px 10px;
+  min-height: 30px;
+  border: 1px solid #7d9880;
+  border-radius: 7px;
+  background: #fbfcfa;
+  color: #23412d;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 650;
+}
+.demo-user-actions button:focus-visible { outline: 3px solid #466c51; outline-offset: 2px; }
+@media (prefers-color-scheme: dark) {
+  .demo-user-banner { background: #27362c; border-color: #496650; color: #edf5e8; }
+  .demo-user-actions button { background: #1d2921; color: #edf5e8; }
+}

@@ -13,7 +13,7 @@ export function ProfilePage() {
   const {
     catId, chooseCat, catSaveError,
     catMotion, setCatMotion,
-    sessions, routines, repo,
+    sessions, routines, repo, demoActive,
     showToast, setActiveRoutineId,
   } = useApp();
   const { user } = useAuth();
@@ -33,12 +33,12 @@ export function ProfilePage() {
     setSavingName(true);
     const localSaved = saveProfileName(accountKey, next);
     let cloudSaved = false;
-    if (user) {
+    if (user && !demoActive) {
       try { const client = getSupabaseClient(); if (client) { const { error } = await client.auth.updateUser({ data: { display_name: next } }); cloudSaved = !error; } }
       catch { cloudSaved = false; }
     }
     if (localSaved || cloudSaved) { setProfileName(next); setEditingName(false); showToast('Display name updated.'); }
-    setNameMessage(!cloudSaved && user ? 'Saved on this device; account sync unavailable.' : !localSaved && !cloudSaved ? 'Unable to save display name.' : '');
+    setNameMessage(!cloudSaved && user && !demoActive ? 'Saved on this device; account sync unavailable.' : !localSaved && !cloudSaved ? 'Unable to save display name.' : '');
     setSavingName(false);
   };
   const navigate = useNavigate();
@@ -74,6 +74,11 @@ export function ProfilePage() {
       {/* ── Account and export actions (original demo styling) ── */}
       <div className="box profile-section profile-account-actions" aria-label="Profile actions">
         <h2>Account</h2>
+        {!demoActive && <div className="profile-sample-preview">
+          <p><strong>Want to see a filled-in profile?</strong> Explore a sample musician with sessions, an 8-day streak, journals, chart notes and their own routine.</p>
+          <button type="button" className="btn" onClick={() => navigate('/demo')}>Explore sample profile</button>
+        </div>}
+        {demoActive && <p className="profile-sample-preview">Sample profile: edits stay on this browser and never sync to an account.</p>}
         {editingName ? (
           <form onSubmit={saveName} className="profile-name-form">
             <label htmlFor="profile-display-name">Display name</label>
