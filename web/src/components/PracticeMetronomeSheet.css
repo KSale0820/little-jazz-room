@@ -121,14 +121,106 @@
   outline: 2px solid #ad994e;
   outline-offset: 2px;
 }
-/* Keep controls accessible above mobile browser chrome even in long chart-player
-   sheets. Closing the sheet never stops a playing session metronome. */
+/* Actions sit after Count-in in document flow. They must never obscure controls. */
 .practice-metronome-sheet:not(.practice-metronome-page-surface) .practice-metronome-actions {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  margin-top: 6px;
-  padding: 9px 0 max(3px, env(safe-area-inset-bottom));
-  background: #fffcf4;
-  border-top: 1px solid #e2e8de;
+  position: static;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Compact, full-screen mobile metronome: one footer row, no sticky overlay. */
+.practice-metronome-sheet .practice-metronome-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+  align-items: stretch;
+  gap: 7px;
+  padding-top: 7px;
+}
+.practice-metronome-sheet .practice-metronome-actions .practice-metronome-page-return,
+.practice-metronome-sheet .practice-metronome-actions .practice-metronome-page-start {
+  min-width: 0;
+  width: 100%;
+  min-height: 43px;
+  margin: 0;
+  padding: 8px 5px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.practice-metronome-sheet .practice-metronome-pills[aria-label="Accent metronome clicks"] {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.practice-metronome-sheet .practice-metronome-pills[aria-label="Accent metronome clicks"] button {
+  flex: 1 0 37px;
+}
+@media (max-width: 600px) {
+  .practice-metronome-sheet {
+    padding: 13px 15px max(13px, env(safe-area-inset-bottom));
+    max-height: min(96dvh, calc(100dvh - 8px));
+  }
+  .practice-metronome-sheet header {
+    margin-bottom: 7px;
+  }
+  .practice-metronome-sheet h2 {
+    font-size: 24px;
+  }
+  .practice-metronome-sheet .practice-metronome-tempo {
+    margin: 8px 0 11px;
+    gap: 7px;
+  }
+  .practice-metronome-sheet .practice-metronome-tempo > div {
+    gap: 12px;
+  }
+  .practice-metronome-sheet .practice-metronome-tempo > div button {
+    width: 39px;
+    height: 39px;
+  }
+  .practice-metronome-sheet .practice-metronome-tempo strong {
+    min-width: 110px;
+    font-size: 35px;
+  }
+  .practice-metronome-sheet .practice-metronome-tap {
+    padding: 8px;
+    min-height: 39px;
+  }
+  .practice-metronome-sheet .practice-metronome-field {
+    padding: 9px 0;
+  }
+  .practice-metronome-sheet .practice-metronome-field h3 {
+    margin-bottom: 7px;
+  }
+  .practice-metronome-sheet .practice-metronome-pills {
+    gap: 5px;
+  }
+  .practice-metronome-sheet .practice-metronome-pills button {
+    min-height: 36px;
+    padding: 5px 8px;
+  }
+  .practice-metronome-sheet .practice-metronome-piece-meter {
+    padding: 7px 10px;
+    font-size: 16px;
+  }
+  .practice-metronome-sheet .practice-metronome-count {
+    padding: 9px 0;
+  }
+  .practice-metronome-sheet .practice-metronome-count button {
+    padding: 6px 10px;
+  }
+  .practice-metronome-sheet .practice-metronome-actions {
+    padding-top: 6px;
+  }
+}
+@media (max-width: 370px) {
+  .practice-metronome-sheet .practice-metronome-actions {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+    gap: 5px;
+  }
+  .practice-metronome-sheet .practice-metronome-actions .practice-metronome-page-return,
+  .practice-metronome-sheet .practice-metronome-actions .practice-metronome-page-start {
+    font-size: 12.5px;
+    padding-inline: 2px;
+  }
 }
