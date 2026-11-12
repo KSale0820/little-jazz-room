@@ -1220,7 +1220,7 @@ export function PracticePage() {
           }
         }}
       >
-        {activeTool === 'tuner' ? <TunerPage onClose={closeTool} /> : <MetronomePage onClose={closeTool} />}
+        {activeTool === 'tuner' ? <TunerPage onClose={closeTool} /> : <MetronomePage onClose={closeTool} initialBpm={routine ? tempo : undefined} />}
       </div>,
       document.querySelector('.app-shell') ?? document.body
     )}
