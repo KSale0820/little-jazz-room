@@ -241,14 +241,14 @@ export function FreePracticePage() {
     setNow(Date.now());
   };
 
-  const saveJournal = (value: string) => {
+  const saveJournal = (value: string, pitchCaptureIds: string[]) => {
     const stamp = new Date().toISOString();
     const existing = journalEntries.find(entry => entry.sessionId === session.id);
     const entry: PracticeJournalEntry = {
       id: existing?.id ?? crypto.randomUUID(), sessionId: session.id,
       chartId: '', chartTitle: active?.title ?? 'Free Practice',
       text: value, createdAt: existing?.createdAt ?? stamp, updatedAt: stamp,
-      durationSeconds: seconds,
+      durationSeconds: seconds, pitchCaptureIds,
     };
     const next = [...journalEntries.filter(row => row.sessionId !== session.id), entry];
     if (!persistLocalList(journalKey(repo.scope), next)) {
@@ -357,7 +357,7 @@ export function FreePracticePage() {
         </div>, document.querySelector('.app-shell') ?? document.body))}
     {!active && journalOpen && createPortal(
       <SessionJournalSheet chartTitle="Free Practice" sessionId={session.id} seconds={seconds}
-        entries={journalEntries} onSave={saveJournal}
+        entries={journalEntries} userScope={repo.scope} onSave={saveJournal}
         onDelete={id => {
           const next = journalEntries.filter(entry => entry.id !== id);
           if (persistLocalList(journalKey(repo.scope), next)) setJournalEntries(next);
