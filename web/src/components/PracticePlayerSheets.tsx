@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChartNote, PracticeJournalEntry } from '../lib/practicePlayerNotes';
 import { readPitchSnapshots, sameLocalDay, type TunerPitchSnapshot } from '../lib/tunerPitchHistory';
-import { pitchTrailGeometry } from '../pages/toolsAudio';
+import { TunerPitchGraph } from './TunerPitchGraph';
 import { INLINE_ANNOTATION_LIMIT, chartAnnotationDisplay } from '../lib/practicePlayerNotes';
 import './PracticePlayerSheets.css';
 
@@ -113,27 +113,23 @@ export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes,
 }
 
 function PitchJournalPreview({ snapshot }: { snapshot: TunerPitchSnapshot }) {
-  const geometry = pitchTrailGeometry(snapshot.samples, snapshot.durationMs, Math.max(8000, snapshot.durationMs));
   return <div className="practice-pitch-preview">
-    <strong>Pitch check · {new Date(snapshot.savedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</strong>
-    <svg viewBox="0 0 320 102" preserveAspectRatio="none" role="img" aria-label="Saved frequency measurements with silent gaps">
-      {geometry.segments.map((segment, i) => <polyline key={i} fill="none"
-        stroke="#397456" strokeWidth="2.5" strokeLinejoin="round"
-        points={segment.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ')} />)}
-    </svg>
-    <small>{geometry.lowNote} – {geometry.highNote} · {Math.round(snapshot.durationMs / 1000)} seconds</small>
+    <strong>Pitch graph · {new Date(snapshot.savedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</strong>
+    <TunerPitchGraph compact samples={snapshot.samples} savedAt={snapshot.savedAt} />
   </div>;
 }
 
-export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, userScope, onSave, onDelete, onClose }: {
+export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, userScope, onSave, onDelete, onClose,
+  initialPitchCaptureIds = [], title = 'Session Journal' }: {
   chartTitle: string; sessionId: string; seconds: number; entries: PracticeJournalEntry[];
-  userScope: string;
+  userScope: string; initialPitchCaptureIds?: string[]; title?: string;
   onSave: (text: string, pitchCaptureIds: string[]) => void;
   onDelete: (id: string) => void; onClose: () => void;
 }) {
   const existing = entries.find(e => e.sessionId === sessionId);
   const [text, setText] = useState(existing?.text ?? '');
-  const [linkedPitchIds, setLinkedPitchIds] = useState<string[]>(existing?.pitchCaptureIds ?? []);
+  const [linkedPitchIds, setLinkedPitchIds] = useState<string[]>(() =>
+    [...new Set([...(existing?.pitchCaptureIds ?? []), ...initialPitchCaptureIds])]);
   const [savedPitch] = useState(() => readPitchSnapshots(userScope));
   const todayPitch = savedPitch.filter(snapshot =>
     sameLocalDay(snapshot.savedAt, existing?.createdAt ?? new Date().toISOString()));
@@ -141,11 +137,15 @@ export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, u
   const [expanded, setExpanded] = useState<string | null>(null);
   const ordered = entries.slice().sort((a,b) => b.updatedAt.localeCompare(a.updatedAt));
   const recent = all ? ordered : ordered.slice(0, 4);
-  return <Sheet title="Session Journal" onClose={onClose}>
+  return <Sheet title={title} onClose={onClose}>
     <div className="practice-feature-session-summary">
       <strong>{chartTitle}</strong><span>This session · {Math.floor(seconds / 60)}m {seconds % 60}s practiced</span>
     </div>
-    <label className="practice-feature-label" htmlFor="journal-entry">What did you practice today?</label>
+    {linkedPitchIds.map(id => {
+      const snapshot = savedPitch.find(item => item.id === id);
+      return snapshot ? <PitchJournalPreview key={id} snapshot={snapshot} /> : null;
+    })}
+    <label className="practice-feature-label" htmlFor="journal-entry">Practice notes (optional)</label>
     <textarea id="journal-entry" rows={5} maxLength={4000} value={text} onChange={e => setText(e.target.value)}
       placeholder="What went well? What would you like to work on next?" />
     {todayPitch.length ? <fieldset className="practice-pitch-attach">
@@ -179,7 +179,7 @@ export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, u
         {expanded === entry.id && <button className="practice-feature-delete" type="button" onClick={() => onDelete(entry.id)}>Delete entry</button>}
       </div>)}
     </div>
-    <p className="practice-feature-local-note">Journals are saved on this device for your current account.</p>
+    <p className="practice-feature-local-note">Journals and attached pitch graphs are saved on this device for your current account.</p>
   </Sheet>;
 }
 
