@@ -37,6 +37,7 @@ import './PracticePage.css';
 import './PracticePlayerApproved.css';
 import './PracticePlayerDemoRefresh.css';
 import './RoutineClassDemo.css';
+import './RoutineCompactV2.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'instructions' | 'chart';
