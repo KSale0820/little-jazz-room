@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChartNote, PracticeJournalEntry } from '../lib/practicePlayerNotes';
+import { readPitchSnapshots, sameLocalDay, type TunerPitchSnapshot } from '../lib/tunerPitchHistory';
+import { pitchTrailGeometry } from '../pages/toolsAudio';
 import { INLINE_ANNOTATION_LIMIT, chartAnnotationDisplay } from '../lib/practicePlayerNotes';
 import './PracticePlayerSheets.css';
 
@@ -110,12 +112,31 @@ export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes,
   </Sheet>;
 }
 
-export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, onSave, onDelete, onClose }: {
+function PitchJournalPreview({ snapshot }: { snapshot: TunerPitchSnapshot }) {
+  const geometry = pitchTrailGeometry(snapshot.samples, snapshot.durationMs, Math.max(8000, snapshot.durationMs));
+  return <div className="practice-pitch-preview">
+    <strong>Pitch check · {new Date(snapshot.savedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</strong>
+    <svg viewBox="0 0 320 102" preserveAspectRatio="none" role="img" aria-label="Saved frequency measurements with silent gaps">
+      {geometry.segments.map((segment, i) => <polyline key={i} fill="none"
+        stroke="#397456" strokeWidth="2.5" strokeLinejoin="round"
+        points={segment.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ')} />)}
+    </svg>
+    <small>{geometry.lowNote} – {geometry.highNote} · {Math.round(snapshot.durationMs / 1000)} seconds</small>
+  </div>;
+}
+
+export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, userScope, onSave, onDelete, onClose }: {
   chartTitle: string; sessionId: string; seconds: number; entries: PracticeJournalEntry[];
-  onSave: (text: string) => void; onDelete: (id: string) => void; onClose: () => void;
+  userScope: string;
+  onSave: (text: string, pitchCaptureIds: string[]) => void;
+  onDelete: (id: string) => void; onClose: () => void;
 }) {
   const existing = entries.find(e => e.sessionId === sessionId);
   const [text, setText] = useState(existing?.text ?? '');
+  const [linkedPitchIds, setLinkedPitchIds] = useState<string[]>(existing?.pitchCaptureIds ?? []);
+  const [savedPitch] = useState(() => readPitchSnapshots(userScope));
+  const todayPitch = savedPitch.filter(snapshot =>
+    sameLocalDay(snapshot.savedAt, existing?.createdAt ?? new Date().toISOString()));
   const [all, setAll] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const ordered = entries.slice().sort((a,b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -127,9 +148,19 @@ export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, o
     <label className="practice-feature-label" htmlFor="journal-entry">What did you practice today?</label>
     <textarea id="journal-entry" rows={5} maxLength={4000} value={text} onChange={e => setText(e.target.value)}
       placeholder="What went well? What would you like to work on next?" />
+    {todayPitch.length ? <fieldset className="practice-pitch-attach">
+      <legend>Attach today's tuner pitch checks</legend>
+      {todayPitch.map(snapshot => <label key={snapshot.id}>
+        <input type="checkbox" checked={linkedPitchIds.includes(snapshot.id)}
+          onChange={event => setLinkedPitchIds(previous => event.target.checked
+            ? [...previous, snapshot.id] : previous.filter(id => id !== snapshot.id))} />
+        <span>{new Date(snapshot.savedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} · {snapshot.mode} · {Math.round(snapshot.durationMs / 1000)}s</span>
+      </label>)}
+    </fieldset> : <p className="practice-feature-local-note">Save a pitch check in the Tuner to attach its chart to today's journal.</p>}
     <div className="practice-feature-actions">
       <button type="button" onClick={onClose}>Cancel</button>
-      <button type="button" className="practice-feature-primary" disabled={!text.trim()} onClick={() => onSave(text.trim())}>Save Entry</button>
+      <button type="button" className="practice-feature-primary" disabled={!text.trim() && !linkedPitchIds.length}
+        onClick={() => onSave(text.trim(), linkedPitchIds)}>Save Entry</button>
     </div>
     <div className="practice-feature-history">
       <div className="practice-feature-history-heading"><h3>Past Journals</h3>
@@ -139,7 +170,12 @@ export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, o
         <button type="button" onClick={() => setExpanded(v => v === entry.id ? null : entry.id)} aria-expanded={expanded === entry.id}>
           <strong>{entry.chartTitle}</strong><small>{new Date(entry.updatedAt).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</small>
           <span>{expanded === entry.id ? entry.text : entry.text.slice(0, 100) + (entry.text.length > 100 ? '…' : '')}</span>
+          {entry.pitchCaptureIds?.length ? <small>{entry.pitchCaptureIds.length} pitch chart{entry.pitchCaptureIds.length === 1 ? '' : 's'} attached</small> : null}
         </button>
+        {expanded === entry.id && entry.pitchCaptureIds?.map(id => {
+          const snapshot = savedPitch.find(item => item.id === id);
+          return snapshot ? <PitchJournalPreview key={id} snapshot={snapshot} /> : null;
+        })}
         {expanded === entry.id && <button className="practice-feature-delete" type="button" onClick={() => onDelete(entry.id)}>Delete entry</button>}
       </div>)}
     </div>
