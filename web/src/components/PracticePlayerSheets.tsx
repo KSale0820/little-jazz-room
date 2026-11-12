@@ -139,7 +139,10 @@ export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, u
   const recent = all ? ordered : ordered.slice(0, 4);
   return <Sheet title={title} onClose={onClose}>
     <div className="practice-feature-session-summary">
-      <strong>{chartTitle}</strong><span>This session · {Math.floor(seconds / 60)}m {seconds % 60}s practiced</span>
+      <strong>{chartTitle}</strong>
+      <span>{title === 'Daily Journal'
+        ? new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })
+        : 'This session · ' + Math.floor(seconds / 60) + 'm ' + (seconds % 60) + 's practiced'}</span>
     </div>
     {linkedPitchIds.map(id => {
       const snapshot = savedPitch.find(item => item.id === id);
