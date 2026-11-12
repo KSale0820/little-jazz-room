@@ -167,7 +167,7 @@ export function GreatPracticeCompletion({
           ? <textarea aria-label="Practice journal reflection" maxLength={4000}
               value={journalText} onChange={event => updateJournal(event.target.value)}
               placeholder="What went well? What would you like to work on next?" rows={5} />
-          : <p className="gj-preview">{journalText || 'What went well? What would you like to work on next?'}</p>}
+          : <p className="gj-preview">{journalText ? journalText.length > 138 ? journalText.slice(0, 138).trimEnd() + '…' : journalText : 'What went well? What would you like to work on next?'}</p>}
       </div>
       {journalExpanded && <p className="gj-helper">Your reflection saves to this session’s journal as you type.</p>}
       {journalError && <p className="gj-error" role="alert">Could not save changes on this device.</p>}
