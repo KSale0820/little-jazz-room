@@ -12,6 +12,29 @@ type Shelf = { key: string; title: string; items: Routine[] };
 
 const initialFilters: Filters = { instrument: '', goal: '', duration: '', level: '' };
 
+/**
+ * Related-skill shelves intentionally cross-list existing guided routines.
+ * This makes smaller categories browseable without inventing new presets.
+ */
+const relatedSeedShelves: Record<string, readonly string[]> = {
+  'rhythm-time': ['Warm-Ups'],
+  'no-backing': ['Warm-Ups'],
+  'first-improv': ['Technique'],
+  'ii-v-i-workout': ['Technique', 'Improvisation'],
+  'comping-basics': ['Technique'],
+  'walking-bass': ['Rhythm & Timing'],
+  'jazz-standards-starter': ['Ear Training'],
+  '12bar-blues': ['Ear Training'],
+  'forms-and-ballads': ['Standards & Repertoire'],
+};
+
+const featuredShelfOrder: Record<string, readonly string[]> = {
+  'Warm-Ups': ['daily-warm-up', 'rhythm-time', 'no-backing'],
+  'Standards & Repertoire': ['12bar-blues', 'jazz-standards-starter', 'rhythm-changes-starter', 'forms-and-ballads'],
+  'Technique': ['first-improv', 'ii-v-i-workout', 'comping-basics', 'walking-bass'],
+  'Improvisation': ['first-improv', 'intermediate-solo', 'ii-v-i-workout'],
+};
+
 const librarySections = [
   'Warm-Ups',
   'Standards & Repertoire',
@@ -103,11 +126,27 @@ export function RoutineLibraryPage() {
     const groups = new Map<string, Routine[]>(librarySections.map(title => [title, []]));
     source.forEach(routine => {
       const categories = routine.steps.map(step => exerciseMap.get(step.exercise_id)?.category ?? '');
-      const section = shelfForRoutine(routine, categories);
-      groups.get(section)?.push(routine);
+      const primary = shelfForRoutine(routine, categories);
+      groups.get(primary)?.push(routine);
+      // Curate related Library shelves from real seeded content. No duplication within a shelf.
+      if (tab === 'Library') {
+        for (const related of relatedSeedShelves[routine.id] ?? []) {
+          if (related !== primary) groups.get(related)?.push(routine);
+        }
+      }
     });
     return [...groups].filter(([, items]) => items.length > 0)
-      .map(([title, items]) => ({ key: title, title, items }));
+      .map(([title, items]) => {
+        const order = featuredShelfOrder[title];
+        if (tab === 'Library' && order) {
+          items.sort((a, b) => {
+            const rankA = order.indexOf(a.id);
+            const rankB = order.indexOf(b.id);
+            return (rankA < 0 ? 99 : rankA) - (rankB < 0 ? 99 : rankB);
+          });
+        }
+        return { key: title, title, items };
+      });
   }, [tab, bookmarks, combinedRoutines, routines, publicRoutines, exerciseMap]);
 
   const searching = Boolean(query.trim() || Object.values(filters).some(Boolean));
