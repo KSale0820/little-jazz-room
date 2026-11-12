@@ -42,14 +42,21 @@ it.skipIf(process.env.RUN_ROUTINE_BROWSER_QA !== '1')('visually captures R01/R03
       const context = await browser.newContext({ viewport: { width: width!, height: height! }, deviceScaleFactor: 1 });
       const page = await context.newPage();
       await page.goto('http://127.0.0.1:5187/routines');
-      await page.getByRole('heading', { name: 'Practice routines' }).waitFor();
+      await page.getByRole('heading', { name: 'Routines', exact: true }).waitFor();
+      await expect.poll(async () => page.getByRole('tab').count()).toBe(3);
+      await expect.poll(async () => page.locator('.routine-card-icon-slot').count()).toBeGreaterThan(0);
       await page.locator('.routine-card').first().waitFor();
       recordImage('R01-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
       if (width === 390) {
         await page.locator('.viewport').evaluate(element => { element.scrollTop = element.scrollHeight; });
         recordImage('R01-bottom-' + width + 'x' + height, await page.screenshot({ type: 'jpeg', quality: 68 }));
-        await page.getByRole('button', { name: 'See all 14 preset routines' }).click();
-        await expect.poll(async () => page.locator('.routine-card').count()).toBe(14);
+        await page.getByRole('button', { name: 'See all Standards & Repertoire routines' }).click();
+        await expect.poll(async () => page.locator('.routine-focused-grid .routine-card').count()).toBeGreaterThan(0);
+        await page.getByRole('button', { name: /All categories/ }).click();
+        await page.getByRole('tab', { name: 'Community' }).click();
+        await expect.poll(async () => page.getByRole('tab', { name: 'Community' }).getAttribute('aria-selected')).toBe('true');
+        await page.getByRole('tab', { name: 'Library' }).click();
+        await expect.poll(async () => page.locator('.routine-shelf').count()).toBeGreaterThan(0);
       }
       await page.goto('http://127.0.0.1:5187/create');
       await page.getByRole('heading', { name: 'Create routine' }).waitFor();
