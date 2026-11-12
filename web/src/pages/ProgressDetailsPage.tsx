@@ -9,10 +9,11 @@ import { isVisibleCatId } from '../features/cats/CatCompanion';
 import type { PracticeSessionRecord } from '../types/content';
 import './ProgressDetailsPage.css';
 
-type DetailView = 'achievements' | 'calendar' | 'journal' | 'notes' | 'activity';
+type DetailView = 'achievements' | 'practice-journal' | 'calendar' | 'journal' | 'notes' | 'activity';
+type JournalSection = 'calendar' | 'journal' | 'notes';
 const TITLES: Record<DetailView, string> = {
-  achievements: 'Achievements', calendar: 'Practice Calendar', journal: 'Practice Journal',
-  notes: 'Saved Notes', activity: 'Practice History',
+  achievements: 'Achievements', 'practice-journal': 'Practice Journal', calendar: 'Practice Journal', journal: 'Practice Journal',
+  notes: 'Practice Journal', activity: 'Practice History',
 };
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const localDay = (date: Date) => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
@@ -30,10 +31,15 @@ function SessionItem({ session, label, onSelect }: { session: PracticeSessionRec
 
 export function ProgressDetailsPage() {
   const { view: rawView } = useParams();
-  const view: DetailView = rawView === 'achievements' || rawView === 'calendar' || rawView === 'journal' || rawView === 'notes' || rawView === 'activity'
+  const view: DetailView = rawView === 'achievements' || rawView === 'practice-journal' || rawView === 'calendar' || rawView === 'journal' || rawView === 'notes' || rawView === 'activity'
     ? rawView : 'activity';
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  const isJournal = view === 'practice-journal' || view === 'calendar' || view === 'journal' || view === 'notes';
+  // Old deep links continue to open their corresponding section.
+  const journalSection: JournalSection = view === 'calendar' || view === 'journal' || view === 'notes' ? view
+    : params.get('tab') === 'journal' || params.get('tab') === 'notes' ? params.get('tab') as JournalSection : 'calendar';
+  const journalPath = (tab: JournalSection) => '/progress/practice-journal?tab=' + tab;
   const { repo, sessions, routines, exercises, charts, catId } = useApp();
   const initialDate = params.get('date') && /^\d{4}-\d{2}-\d{2}$/.test(params.get('date')!) ? new Date(params.get('date')! + 'T12:00:00') : new Date();
   const [monthDate, setMonthDate] = useState(() => new Date(initialDate.getFullYear(), initialDate.getMonth(), 1));
@@ -90,6 +96,13 @@ export function ProgressDetailsPage() {
       <div><span>Little Jazz Room</span><h1>{TITLES[view]}</h1></div>
     </header>
 
+    {isJournal && <nav className="pd-journal-sections" aria-label="Practice journal sections">
+      {([['calendar', 'Calendar'], ['journal', 'Entries'], ['notes', 'Notes']] as const).map(([section, label]) =>
+        <button type="button" key={section} onClick={() => navigate(journalPath(section))}
+          aria-current={journalSection === section ? 'page' : undefined}
+          className={journalSection === section ? 'is-active' : ''}>{label}</button>)}
+    </nav>}
+
     {view === 'achievements' && <div className="pd-body">
       <p className="pd-intro">Milestones earned from your actual saved practice, not demo scores.</p>
       <div className="pd-total"><strong>{earned} / {milestones.length}</strong><span>milestones earned</span></div>
@@ -103,7 +116,7 @@ export function ProgressDetailsPage() {
       <button type="button" className="pd-primary" onClick={() => navigate('/free-practice')}>Start Practicing</button>
     </div>}
 
-    {view === 'calendar' && <div className="pd-body">
+    {isJournal && journalSection === 'calendar' && <div className="pd-body">
       <p className="pd-intro">Select a date to see how much you practiced and what you worked on.</p>
       <section className="pd-panel">
         <div className="pd-month"><button type="button" onClick={() => moveMonth(-1)} aria-label="Previous month">‹</button>
@@ -128,7 +141,7 @@ export function ProgressDetailsPage() {
       {!selectedSessions.length && !selectedJournals.length && <p className="pd-empty">Nothing recorded on this date.</p>}
     </div>}
 
-    {view === 'journal' && <div className="pd-body">
+    {isJournal && journalSection === 'journal' && <div className="pd-body">
       <p className="pd-intro">Reflections saved from the practice player on this device for this account.</p>
       {journalEntries.length ? journalEntries.map(entry => <article className="pd-panel pd-journal" key={entry.id}>
         <button type="button" className="pd-journal-toggle" onClick={() => setExpandedJournal(id => id === entry.id ? null : entry.id)}
@@ -140,7 +153,7 @@ export function ProgressDetailsPage() {
       </article>) : <p className="pd-empty">No journal entries yet. Add a reflection during practice and it will appear here.</p>}
     </div>}
 
-    {view === 'notes' && <div className="pd-body">
+    {isJournal && journalSection === 'notes' && <div className="pd-body">
       <p className="pd-intro">Your saved measure annotations for charts, including charts used by exercises.</p>
       {annotations.length ? annotations.map(note => <article className="pd-panel pd-annotation" key={note.chartId + '-' + note.bar}>
         <div><strong>{note.chartTitle} · Bar {note.bar}</strong><small>{dateLabel(note.updatedAt)}</small></div>
