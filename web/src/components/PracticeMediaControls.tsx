@@ -25,14 +25,14 @@ export function PracticeTimeBadge({ seconds, running, onTogglePause }: {
   seconds: number; running: boolean; onTogglePause?: () => void;
 }) {
   return <div className="practice-time-badge">
-    <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <circle cx="16" cy="16" r="11"/><path d="M16 9v7l5 3"/>
-    </svg>
-    <span className="practice-time-caption">Time practiced</span>
     {onTogglePause && <button type="button" className="practice-time-toggle" onClick={onTogglePause}
       aria-label={running ? 'Pause practice timer' : 'Resume practice timer'} title={running ? 'Pause practice time' : 'Resume practice time'}>
       {running ? <PauseIcon size={13} /> : <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M4 2.5 13 8l-9 5.5Z" /></svg>}
     </button>}
+    <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="16" cy="16" r="11"/><path d="M16 9v7l5 3"/>
+    </svg>
+    <span className="practice-time-caption">Time practiced</span>
     <strong data-testid="session-elapsed">{formatPracticeTime(seconds)}</strong>
     {!running && seconds > 0 && <span className="practice-time-paused">Paused</span>}
   </div>;
