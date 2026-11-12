@@ -239,7 +239,9 @@ export function PracticeJournalPage() {
   return <section className="pj-page" aria-label="Practice Journal">
     <header className="pj-heading"><button type="button" className="pj-back" onClick={() => navigate('/progress')} aria-label="Back to Progress">‹</button>
       <div><small>Little Jazz Room</small><h1>Practice Journal</h1></div>
-      <button type="button" className="pj-plus" aria-label={'New ' + (focus === 'notes' ? 'note' : 'journal entry')} onClick={() => makeEntry(focus === 'notes' ? 'note' : 'journal')}>+</button></header>
+      <button type="button" className="pj-plus" aria-label={'New ' + (focus === 'notes' ? 'note' : 'journal entry')} onClick={() => makeEntry(focus === 'notes' ? 'note' : 'journal')}>
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+      </button></header>
     <nav className="pj-tabs" aria-label="Journal focus">
       {FOCUS.map(f => <button type="button" key={f} className={focus === f ? 'active' : ''} aria-current={focus === f ? 'page' : undefined}
         onClick={() => goFocus(f)}>{f === 'calendar' ? 'Calendar' : f === 'journal' ? 'Journal' : 'Notes'}</button>)}
