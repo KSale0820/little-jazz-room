@@ -53,6 +53,8 @@ jobs:
         run: node scripts/check-class-demo-integration.mjs
       - name: Chart to practice and chart to routine reload paths
         run: node scripts/check-chart-routine-player-integration.mjs
+      - name: Routine player instruction/chart and save-preset QA
+        run: node scripts/check-routine-player-refresh.mjs
       - name: Timer-first Free Practice end-to-end
         run: node scripts/check-free-practice.mjs
       - name: Upload screenshot and test reports
@@ -67,6 +69,7 @@ jobs:
             web/docs/screenshots/free-practice/
             web/docs/screenshots/class-demo-integration/
             web/docs/screenshots/chart-routine-player-integration/
+            web/docs/screenshots/routine-player-refresh/
             web/docs/approved-ui/TRACKS-AND-CHARTS-APPROVED-UI.png
             web/public/visuals/tracks-approved/tracks-title.png
             web/public/visuals/tracks-approved/jazz-study-shelf.png
