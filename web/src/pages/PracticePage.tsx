@@ -620,6 +620,14 @@ export function PracticePage() {
             : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
           {chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
         </div>
+        {activeRecording && <button type="button" className="practice-demo-chart-pencil"
+          aria-label="Chart notes (planned)" title="Chart notes: coming later"
+          onClick={() => showToast("Chart annotations are planned. Your chart has not been changed.")}>
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor"
+            strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m4 16 11-11 4 4-11 11-5 1 1-5Z"/><path d="m13.5 6.5 4 4"/>
+          </svg>
+        </button>}
       </header>
 
       {activeRecording && <audio
@@ -666,12 +674,6 @@ export function PracticePage() {
               {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
             </select>
           </div>
-          {activeRecording && <div className="practice-demo-annotation-row">
-            <button type="button" className="practice-demo-chart-pencil" aria-label="Chart notes (planned)" title="Chart notes: coming later"
-              onClick={() => showToast("Chart annotations are planned. Your chart has not been changed.")}>
-              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m4 16 11-11 4 4-11 11-5 1 1-5Z"/><path d="m13.5 6.5 4 4"/></svg>
-            </button>
-          </div>}
           <div className={`practice-chart-scroll practice-chart-all ${chart.bars.length > 16 ? 'chart-dense' : 'chart-standard'}`}
             aria-label={`Complete chord chart, all ${chart.bars.length} measures visible`}>
             <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
