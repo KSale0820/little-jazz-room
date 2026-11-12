@@ -28,6 +28,24 @@ const relatedSeedShelves: Record<string, readonly string[]> = {
   'forms-and-ballads': ['Standards & Repertoire'],
 };
 
+/**
+ * Small-card labels only. Full routine titles remain unchanged in data, search,
+ * player navigation and accessible button names.
+ */
+const compactRoutineTitles: Record<string, string> = {
+  'rhythm-time': 'Rhythm Warm-Up',
+  'no-backing': 'Without a Backing Track',
+  'ii-v-i-workout': 'II–V–I Workout',
+  'jazz-standards-starter': 'Jazz Song Forms',
+  'rhythm-changes-starter': 'Rhythm Changes',
+  'comping-basics': 'Comping Basics',
+  'walking-bass': 'Walking Bass Basics',
+  'intermediate-solo': 'Longer Jazz Solos',
+  'first-minor-bossa': 'Minor Bossa Basics',
+  'forms-and-ballads': 'Ballad Chords & Forms',
+  'ear-training': 'Hear & Sing Notes',
+};
+
 const featuredShelfOrder: Record<string, readonly string[]> = {
   'Warm-Ups': ['daily-warm-up', 'rhythm-time', 'no-backing'],
   'Standards & Repertoire': ['12bar-blues', 'jazz-standards-starter', 'rhythm-changes-starter', 'forms-and-ballads'],
@@ -215,10 +233,10 @@ export function RoutineLibraryPage() {
       <article className="routine-card" key={routine.id}>
         <button type="button" className="routine-card-main"
           onClick={() => openRoutine(routine.id)}
-          aria-label={'Open ' + routine.title + ' in player'}>
+          aria-label={'Open ' + routine.title + ' in player'} title={routine.title}>
           <span className="routine-card-icon-slot" data-icon-key={icon}
             style={{ backgroundPosition: routineIconPosition(icon) }} aria-hidden="true" />
-          <span className="routine-card-title">{routine.title}</span>
+          <span className="routine-card-title">{compactRoutineTitles[routine.id] ?? routine.title}</span>
         </button>
         <div className="routine-card-tags" aria-label={routine.duration_minutes + ' minutes, ' + routine.level}>
           <span className="routine-card-duration">◷ {routine.duration_minutes} min</span>
