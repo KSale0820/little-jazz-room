@@ -1149,6 +1149,58 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
       )}
 
     </section>
+    {stepsOpen && routine && createPortal(
+      <div className="routine-class-dialog-backdrop" onClick={() => setStepsOpen(false)}>
+        <section className="routine-class-dialog" role="dialog" aria-modal="true" aria-label="Routine exercise overview"
+          onClick={event => event.stopPropagation()}
+          onKeyDown={event => { if (event.key === 'Escape') setStepsOpen(false); }}>
+          <header><h2>{routine.title}</h2><button type="button" aria-label="Close routine overview"
+            onClick={() => setStepsOpen(false)} autoFocus>×</button></header>
+          <p>{completeCount} of {routine.steps.length} completed. Select any exercise to jump to it.</p>
+          <div className="routine-class-list">
+            {routine.steps.map((step, index) => {
+              const target = resolvePlayableStep(step, exercises, exercisesById);
+              const status = stepOutcomes[index];
+              return <button type="button" key={index}
+                className={index === stepIndex ? 'is-current' : undefined}
+                aria-current={index === stepIndex ? 'step' : undefined}
+                onClick={() => { setStepsOpen(false); requestStep(index); }}>
+                <span className="routine-class-step-number">{index + 1}</span>
+                <span className="routine-class-step-name"><strong>{target.title}</strong>
+                  <small>{step.duration_minutes} min · {target.chart_id ? 'Chart' : 'Instructions'}</small></span>
+                <span className="routine-class-step-status">{status === 'complete' ? '✓ Complete' :
+                  status === 'needs-work' ? 'Needs work' : status === 'skipped' ? 'Skipped' :
+                  index === stepIndex ? 'Current' : 'Not marked'}</span>
+              </button>;
+            })}
+          </div>
+        </section>
+      </div>, document.body
+    )}
+    {pendingStep !== null && createPortal(
+      <div className="routine-class-dialog-backdrop">
+        <section className="routine-class-dialog" role="dialog" aria-modal="true" aria-label="Save modified exercise settings"
+          onKeyDown={event => { if (event.key === 'Escape') setPendingStep(null); }}>
+          <header><h2>Save your exercise changes?</h2>
+            <button type="button" aria-label="Keep practicing" onClick={() => setPendingStep(null)}>×</button></header>
+          <p>You changed this step's settings. Save a new exercise without changing the original routine?</p>
+          <div className="routine-class-change-summary">
+            <span>Tempo: {stepDefaults.reference_bpm} → {tempo} BPM</span>
+            <span>Key: {stepDefaults.chart_key.replace('b', '♭')} → {chartKey.replace('b', '♭')}</span>
+            <span>Instrument, loop and repeat changes will also be included.</span>
+          </div>
+          <label className="routine-class-label">New exercise name
+            <input autoFocus type="text" maxLength={100}
+              value={customExerciseTitle} onChange={event => setCustomExerciseTitle(event.target.value)} />
+          </label>
+          <button type="button" className="routine-class-primary" disabled={!customExerciseTitle.trim()}
+            onClick={saveEditedExerciseAndContinue}>Save as New Exercise</button>
+          <button type="button" className="routine-class-secondary"
+            onClick={() => { const next = pendingStep; setPendingStep(null); if (next !== null) goStep(next); }}>Continue Without Saving</button>
+          <button type="button" className="routine-class-link" onClick={() => setPendingStep(null)}>Keep practicing</button>
+        </section>
+      </div>, document.body
+    )}
     {annotationOpen && createPortal(
       <ChartAnnotationSheet chartTitle={chart.title} totalBars={chart.bars.length} initialBar={bubbleBar ?? playhead.barIndex + 1}
         notes={chartNotes} onSave={saveChartAnnotation} onDelete={deleteChartAnnotation}
