@@ -14,7 +14,6 @@ import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { RECORDED_BACKING_TRACKS, hasChartSync, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
 import { readRoutineBookmarks, saveRoutineBookmarks } from '../lib/routineBookmarks';
-import { formatPracticeTime } from './practicePlayerLogic';
 import type { PracticeSessionRecord } from '../types/content';
 import './FreePracticePage.css';
 
