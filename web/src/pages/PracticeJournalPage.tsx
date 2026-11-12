@@ -3,14 +3,15 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { journalKey, notesKey, persistLocalList, readLocalList, type ChartNote, type PracticeJournalEntry } from '../lib/practicePlayerNotes';
 import type { PracticeSessionRecord } from '../types/content';
+import { DailyJournalSheet } from './DailyJournalSheet';
+import { JournalTagPicker } from '../components/JournalTagPicker';
+import { colorForTag, readJournalTags, saveJournalTag, uniqueJournalTags, type JournalTagColor, type JournalTagDefinition } from '../lib/journalTagPalette';
 import './PracticeJournalPage.css';
 
 type Focus = 'calendar' | 'journal' | 'notes';
 type SavedAnnotation = ChartNote & { chartId: string; chartTitle: string };
 const FOCUS: Focus[] = ['calendar', 'journal', 'notes'];
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const TAGS = ['Scales', 'Tune', 'Improvisation', 'Technique', 'Rhythm', 'Tone', 'Comping', 'Ear Training', 'Intonation', 'Repertoire'];
-const TAG_COLORS = ['sage', 'lilac', 'gold', 'blue', 'rose'];
 const localDay = (date: Date) => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
 const dateOf = (value: string) => {
   const d = new Date(value);
@@ -20,15 +21,11 @@ const readDate = (value: string) => new Date(value + 'T12:00:00');
 const validDate = (value: string | null) => value && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(readDate(value).getTime()) ? value : null;
 const formatDate = (value: string) => new Date(value).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 const formatMinutes = (seconds: number) => Math.round(Math.max(0, seconds || 0) / 60);
-const tagTone = (tag: string) => {
-  const index = TAGS.findIndex(t => t.toLowerCase() === tag.toLowerCase());
-  return TAG_COLORS[index < 0 ? 0 : index % TAG_COLORS.length];
-};
-const uniqueTags = (values: string[]) => [...new Set(values.map(x => x.trim()).filter(Boolean))];
+const uniqueTags = uniqueJournalTags;
 const noteLabel = (entry: PracticeJournalEntry) => entry.title?.trim() || entry.chartTitle?.trim() || (entry.kind === 'note' ? 'Practice note' : 'Practice reflection');
 
-function TagChips({ tags }: { tags: string[] }) {
-  return <div className="pj-chips">{tags.map(t => <span key={t} className={'pj-chip pj-' + tagTone(t)}>{t}</span>)}</div>;
+function TagChips({ tags, palette }: { tags: string[]; palette: JournalTagDefinition[] }) {
+  return <div className="pj-chips">{tags.map(t => <span key={t} className={'pj-chip pj-' + colorForTag(palette, t)}>{t}</span>)}</div>;
 }
 
 export function PracticeJournalPage() {
@@ -41,6 +38,7 @@ export function PracticeJournalPage() {
   const focus: Focus = requested ?? 'calendar';
   const today = localDay(new Date());
   const firstDay = validDate(params.get('date')) ?? today;
+  const detailDay = validDate(params.get('day'));
   const [selectedDate, setSelectedDate] = useState(firstDay);
   const [monthDate, setMonthDate] = useState(() => new Date(readDate(firstDay).getFullYear(), readDate(firstDay).getMonth(), 1));
   const [query, setQuery] = useState('');
@@ -50,10 +48,10 @@ export function PracticeJournalPage() {
   const [entries, setEntries] = useState<PracticeJournalEntry[]>(() => readLocalList<PracticeJournalEntry>(journalKey(repo.scope)));
   const [draft, setDraft] = useState<PracticeJournalEntry | null>(null);
   const [editingAnnotation, setEditingAnnotation] = useState<SavedAnnotation | null>(null);
-  const [tagInput, setTagInput] = useState('');
+  const [tagDefinitions, setTagDefinitions] = useState<JournalTagDefinition[]>(() => readJournalTags(repo.scope));
 
   useEffect(() => {
-    const reload = () => { setEntries(readLocalList<PracticeJournalEntry>(journalKey(repo.scope))); setRevision(n => n + 1); };
+    const reload = () => { setEntries(readLocalList<PracticeJournalEntry>(journalKey(repo.scope))); setTagDefinitions(readJournalTags(repo.scope)); setRevision(n => n + 1); };
     reload();
     window.addEventListener('focus', reload);
     window.addEventListener('storage', reload);
@@ -66,7 +64,7 @@ export function PracticeJournalPage() {
       .map(item => ({ ...item, chartId: chart.id, chartTitle: chart.title }))
   ), [repo.scope, charts, revision]);
 
-  const allTags = useMemo(() => uniqueTags([...TAGS, ...entries.flatMap(e => e.tags ?? []), ...annotations.flatMap(n => n.tags ?? [])]), [entries, annotations]);
+  const allTags = useMemo(() => uniqueTags([...tagDefinitions.map(t => t.name), ...entries.flatMap(e => e.tags ?? []), ...annotations.flatMap(n => n.tags ?? [])]), [tagDefinitions, entries, annotations]);
   const allTunes = useMemo(() => [...new Set([...entries.map(e => e.chartTitle), ...annotations.map(n => n.chartTitle)]
     .filter(title => title && title !== 'Free Practice'))].sort(), [entries, annotations]);
 
@@ -102,15 +100,18 @@ export function PracticeJournalPage() {
     const tags = entries.filter(e => dateOf(e.createdAt) === date).flatMap(e => e.tags ?? []);
     const noteTags = annotations.filter(n => dateOf(n.updatedAt) === date).flatMap(n => n.tags ?? []);
     const practiced = sessions.some(s => dateOf(s.finishedAt) === date);
-    const colors = [...new Set([...tags, ...noteTags].map(tagTone))].slice(0, 3);
+    const colors = [...new Set([...tags, ...noteTags].map(t => colorForTag(tagDefinitions, t)))].slice(0, 3);
     return colors.length ? colors : practiced || entries.some(e => dateOf(e.createdAt) === date) || annotations.some(n => dateOf(n.updatedAt) === date) ? ['sage'] : [];
   };
 
   const goFocus = (next: Focus) => navigate('/progress/practice-journal?tab=' + next);
+  const openDay = (day: string) => navigate('/progress/practice-journal?tab=' + focus + '&day=' + day);
+  const backToJournal = () => navigate('/progress/practice-journal?tab=' + focus);
   const chooseDate = (day: string) => {
     setSelectedDate(day);
     const date = readDate(day);
     setMonthDate(new Date(date.getFullYear(), date.getMonth(), 1));
+    openDay(day);
   };
   const shiftMonth = (delta: number) => {
     const next = new Date(monthYear, monthIndex + delta, 1);
@@ -120,19 +121,22 @@ export function PracticeJournalPage() {
   const makeEntry = (kind: 'journal' | 'note' = 'journal') => {
     const when = readDate(focus === 'calendar' ? selectedDate : today).toISOString();
     setEditingAnnotation(null);
-    setTagInput('');
     setDraft({ id: crypto.randomUUID(), sessionId: '', chartId: '', chartTitle: '', title: '',
       kind, text: '', tags: [], createdAt: when, updatedAt: when, durationSeconds: 0 });
   };
-  const openEntry = (entry: PracticeJournalEntry) => {
+  const openEntry = (entry: PracticeJournalEntry) => openDay(dateOf(entry.createdAt));
+  const openAnnotation = (note: SavedAnnotation) => openDay(dateOf(note.updatedAt));
+  const editDay = () => {
+    if (!detailDay) return;
+    const current = entries.filter(e => dateOf(e.createdAt) === detailDay);
+    const primary = current.find(e => e.id.startsWith('daily:')) ?? current.find(e => e.kind !== 'note');
+    const existing = primary ?? {
+      id: 'daily:' + detailDay, sessionId: '', chartId: '', chartTitle: '', kind: 'journal' as const,
+      title: '', text: '', createdAt: readDate(detailDay).toISOString(),
+      updatedAt: new Date().toISOString(), durationSeconds: 0, tags: [],
+    };
     setEditingAnnotation(null);
-    setTagInput('');
-    setDraft({ ...entry, tags: [...(entry.tags ?? [])] });
-  };
-  const openAnnotation = (note: SavedAnnotation) => {
-    setDraft(null);
-    setTagInput('');
-    setEditingAnnotation({ ...note, tags: [...(note.tags ?? [])] });
+    setDraft({ ...existing, tags: [...(existing.tags ?? [])] });
   };
   const saveEntry = () => {
     if (!draft) return;
@@ -148,6 +152,7 @@ export function PracticeJournalPage() {
     setEntries(next);
     setDraft(null);
     setRevision(n => n + 1);
+    openDay(dateOf(entry.createdAt));
     showToast('Saved to your journal.');
   };
   const saveAnnotation = () => {
@@ -168,18 +173,24 @@ export function PracticeJournalPage() {
     if (!tag.trim()) return;
     if (draft) setDraft(d => d ? { ...d, tags: uniqueTags([...(d.tags ?? []), tag]) } : d);
     if (editingAnnotation) setEditingAnnotation(d => d ? { ...d, tags: uniqueTags([...(d.tags ?? []), tag]) } : d);
-    setTagInput('');
   };
   const removeTag = (tag: string) => {
     if (draft) setDraft(d => d ? { ...d, tags: (d.tags ?? []).filter(t => t !== tag) } : d);
     if (editingAnnotation) setEditingAnnotation(d => d ? { ...d, tags: (d.tags ?? []).filter(t => t !== tag) } : d);
   };
+  const setTagColor = (name: string, color: JournalTagColor): boolean => {
+    const next = saveJournalTag(repo.scope, name, color);
+    if (!next) { showToast('Could not save tag color on this device.'); return false; }
+    setTagDefinitions(next);
+    return true;
+  };
 
   if (draft || editingAnnotation) return <section className="pj-page pj-editor" aria-label="Edit practice journal">
-    <header className="pj-top"><button type="button" className="pj-back" onClick={() => { setDraft(null); setEditingAnnotation(null); }}>‹</button>
-      <strong>{editingAnnotation ? 'Chart note' : draft?.kind === 'note' ? 'Practice note' : 'Practice entry'}</strong>
+    <header className="pj-top"><button type="button" className="pj-back" aria-label="Back to journal entry" onClick={() => { setDraft(null); setEditingAnnotation(null); }}>‹</button>
+      <strong>{editingAnnotation ? 'Edit chart note' : draft?.kind === 'note' ? 'Edit practice note' : 'Edit practice entry'}</strong>
       <button type="button" className="pj-save" onClick={editingAnnotation ? saveAnnotation : saveEntry}>Save</button></header>
     {draft && <>
+      <div className="pj-editor-date-line">{formatDate(draft.createdAt)} · {formatMinutes(draft.durationSeconds)} min practiced</div>
       <label className="pj-field">Title<input value={draft.title ?? ''} placeholder="What did you work on?"
         onChange={e => setDraft(d => d ? { ...d, title: e.target.value } : d)} /></label>
       <div className="pj-field-row"><label className="pj-field">Date<input type="date" value={dateOf(draft.createdAt)}
@@ -194,14 +205,8 @@ export function PracticeJournalPage() {
     </>}
     {editingAnnotation && <div className="pj-related">Linked to <strong>{editingAnnotation.chartTitle}</strong> · Bar {editingAnnotation.bar}
       <button type="button" onClick={() => navigate('/player?chart=' + encodeURIComponent(editingAnnotation.chartId))}>Open chart ›</button></div>}
-    <section className="pj-edit-card pj-tint-sage"><h2>Tags</h2>
-      <div className="pj-edit-tags"><TagChips tags={activeTags} />
-        {activeTags.map(t => <button type="button" key={t} className="pj-remove-tag" onClick={() => removeTag(t)} aria-label={'Remove ' + t}>× {t}</button>)}</div>
-      <div className="pj-tag-suggestions">{TAGS.filter(t => !activeTags.includes(t)).slice(0, 7)
-        .map(t => <button type="button" key={t} onClick={() => addTag(t)}>+ {t}</button>)}</div>
-      <form className="pj-add-tag" onSubmit={e => { e.preventDefault(); addTag(tagInput); }}>
-        <input aria-label="Custom tag" placeholder="Add your own tag" value={tagInput} maxLength={36} onChange={e => setTagInput(e.target.value)} />
-        <button type="submit" disabled={!tagInput.trim()}>Add</button></form></section>
+    <JournalTagPicker selected={activeTags} definitions={tagDefinitions} onAdd={addTag} onRemove={removeTag}
+      onSetColor={setTagColor} />
     {draft?.kind !== 'note' && draft && <label className="pj-field pj-tint-sage">What I practiced<textarea rows={3} value={draft.whatPracticed ?? ''}
       placeholder="Exercises, tempos, keys, sections…" onChange={e => setDraft(d => d ? { ...d, whatPracticed: e.target.value } : d)} /></label>}
     <label className="pj-field pj-tint-lilac">Notes & observations<textarea rows={5} value={draft?.text ?? editingAnnotation?.text ?? ''}
@@ -216,6 +221,12 @@ export function PracticeJournalPage() {
     </>}
     <button type="button" className="pj-primary" onClick={editingAnnotation ? saveAnnotation : saveEntry}>Save changes</button>
   </section>;
+
+  if (detailDay) return <DailyJournalSheet day={detailDay} sessions={sessions} entries={entries} annotations={annotations}
+    routines={routines} exercises={exercises} charts={charts} palette={tagDefinitions}
+    onBack={backToJournal} onEdit={editDay}
+    onOpenChart={id => navigate('/player?chart=' + encodeURIComponent(id))}
+    onOpenRoutine={id => navigate('/player?routine=' + encodeURIComponent(id))} />;
 
   return <section className="pj-page" aria-label="Practice Journal">
     <header className="pj-heading"><button type="button" className="pj-back" onClick={() => navigate('/progress')} aria-label="Back to Progress">‹</button>
@@ -258,25 +269,24 @@ export function PracticeJournalPage() {
       </section>
       <div className="pj-day-heading"><h2>{readDate(selectedDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</h2>
         <span>{formatMinutes(secondsForDate)} min practiced</span></div>
-      {sessionsForDate.map(s => <button type="button" className="pj-card pj-session" key={s.id}
-        onClick={() => navigate('/progress/activity?session=' + encodeURIComponent(s.id))}>
-        <span>♫</span><div><strong>{sessionTitle(s)}</strong><small>{formatMinutes(s.durationSeconds)} min · Session</small></div><b>›</b></button>)}
-      {entriesForDate.map(entry => <button type="button" className="pj-card pj-row" key={entry.id} onClick={() => openEntry(entry)}>
-        <img src={entry.kind === 'note' ? '/journal/practice-notes.png' : '/visuals/progress/practice-journal.png'} alt="" />
-        <div><strong>{noteLabel(entry)}</strong><TagChips tags={entry.tags ?? []} /><p>{entry.text || entry.nextTime || entry.takeaways || 'Open entry'}</p></div><b>›</b></button>)}
-      {annotationsForDate.map(note => <button type="button" className="pj-card pj-row" key={note.chartId + note.bar} onClick={() => openAnnotation(note)}>
-        <img src="/journal/practice-notes.png" alt="" /><div><strong>{note.chartTitle} · Bar {note.bar}</strong>
-          <TagChips tags={note.tags ?? []} /><p>{note.text}</p></div><b>›</b></button>)}
-      {!sessionsForDate.length && !entriesForDate.length && !annotationsForDate.length && <p className="pj-empty">Nothing saved for this day. Add a note to remember what you practiced.</p>}
+      {(sessionsForDate.length > 0 || entriesForDate.length > 0 || annotationsForDate.length > 0)
+        ? <button type="button" className="pj-card pj-day-summary" onClick={() => openDay(selectedDate)}>
+          <img src="/visuals/progress/practice-journal.png" alt="" />
+          <span><strong>View practice sheet</strong><small>{sessionsForDate.length} sessions · {entriesForDate.length} reflections · {annotationsForDate.length} chart notes</small>
+            <TagChips palette={tagDefinitions} tags={uniqueTags([...entriesForDate.flatMap(e => e.tags ?? []), ...annotationsForDate.flatMap(n => n.tags ?? [])])} /></span>
+          <b aria-hidden="true">›</b>
+        </button>
+        : <p className="pj-empty">Nothing saved for this day. Add a note to remember what you practiced.</p>}
       <button type="button" className="pj-primary" onClick={() => makeEntry('journal')}>+ Add entry</button>
     </>}
 
     {focus === 'journal' && <>
-      <div className="pj-list-heading"><h2>Journal entries</h2><span>{journalRows.length} entries</span></div>
-      {journalRows.map(entry => <button type="button" className="pj-card pj-row" key={entry.id} onClick={() => openEntry(entry)}>
+      <div className="pj-list-heading"><h2>Journal entries</h2><span>{new Set(journalRows.map(e => dateOf(e.createdAt))).size} days</span></div>
+      {journalRows.filter((entry, i) => journalRows.findIndex(e => dateOf(e.createdAt) === dateOf(entry.createdAt)) === i)
+        .map(entry => <button type="button" className="pj-card pj-row" key={dateOf(entry.createdAt)} onClick={() => openEntry(entry)}>
         <span className="pj-date-badge">{new Date(entry.createdAt).toLocaleDateString(undefined, { month: 'short' })}<b>{new Date(entry.createdAt).getDate()}</b></span>
         <div><small>{formatDate(entry.createdAt)} · {formatMinutes(entry.durationSeconds)} min</small>
-          <strong>{noteLabel(entry)}</strong><TagChips tags={entry.tags ?? []} />
+          <strong>{noteLabel(entry)}</strong><TagChips palette={tagDefinitions} tags={entry.tags ?? []} />
           <p>{entry.text || entry.whatPracticed || entry.nextTime || 'Open entry'}</p></div><b>›</b>
       </button>)}
       {!journalRows.length && <p className="pj-empty">{entries.length ? 'No entries match those filters.' : 'Your reflections will appear here after practice. You can also add a journal entry manually.'}</p>}
@@ -289,7 +299,7 @@ export function PracticeJournalPage() {
         onClick={() => row.type === 'entry' ? openEntry(row.entry) : openAnnotation(row.note)}>
         <img src="/journal/practice-notes.png" alt="" />
         <div><small>{formatDate(row.date)}</small><strong>{row.type === 'entry' ? noteLabel(row.entry) : row.note.chartTitle + ' · Bar ' + row.note.bar}</strong>
-          <TagChips tags={row.type === 'entry' ? row.entry.tags ?? [] : row.note.tags ?? []} />
+          <TagChips palette={tagDefinitions} tags={row.type === 'entry' ? row.entry.tags ?? [] : row.note.tags ?? []} />
           <p>{row.type === 'entry' ? row.entry.text : row.note.text}</p></div><b>›</b>
       </button>)}
       {!noteRows.length && <p className="pj-empty">No notes found. Save a chart annotation during practice or add a note here.</p>}
