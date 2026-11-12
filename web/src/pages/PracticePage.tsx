@@ -753,7 +753,7 @@ export function PracticePage() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 4 7 12l8 8"/></svg>
         </button>
         <span className="practice-page-heading">Practice</span>
-        <div className="practice-header-actions">
+        {!instructionsOnly && <div className="practice-header-actions">
           <details className="practice-header-more">
             <summary aria-label="More practice options" title="More practice options">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
@@ -773,7 +773,7 @@ export function PracticePage() {
               <p>{activeRecording ? 'Recorded audio plays at its original speed and pitch.' : 'Chart-only practice follows the selected BPM; no recording is attached.'}</p>
             </div>
           </details>
-        </div>
+        </div>}
       </header>
       <div className="practice-title-group">
         <h1>{routine?.title ?? chart.title}</h1>
@@ -782,7 +782,7 @@ export function PracticePage() {
           <span>{routine ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length : chart.difficulty || 'All levels'}</span>
           {(!routine || stepHasChart) && <span>{displayChartForm(chart.form) || chart.time_signature.join('/')}</span>}
         </div>
-        {chart.is_custom && chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
+        {(!routine || stepHasChart) && chart.is_custom && chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
       </div>
         </>
       )}
