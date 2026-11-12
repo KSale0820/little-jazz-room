@@ -10,6 +10,7 @@ import './SessionCompletion.css';
 
 const ICONS = '/visuals/new-assets/2026-11-07-sharp-pixel/approved-isolated-icons';
 const PLANTS = '/visuals/new-assets/2026-11-07-sharp-pixel/plant-growth-stages';
+const SLEEP_ZZZ = '/visuals/new-assets/2026-11-07-sharp-pixel/sleep-zzz-sharp.png';
 const GOAL_PREFIX = 'little-jazz-room:daily-practice-goal:v1:';
 
 /** Same account-scoped preference as Practice; fallback matches Progress's current 30-minute goal. */
@@ -113,7 +114,9 @@ export function SessionCompletion({
   const nowStage = completionPlantStage(today, dailyGoal, savedRecord);
   const beforeStage = completionPlantStage(before, dailyGoal, before > 0);
   const currentPlant = `${PLANTS}/plant-stage-${nowStage}.png`;
-  const previousPlant = `${PLANTS}/plant-stage-${beforeStage}.png`;
+  // The owner-approved scene always starts with the little sprout: it is decorative,
+  // not a claimed reward or earned milestone.
+  const previousPlant = `${PLANTS}/plant-stage-${Math.max(1, beforeStage)}.png`;
   const seconds = Math.max(0, Math.floor(record.durationSeconds));
   const minutes = Math.floor(seconds / 60);
   const remainder = seconds % 60;
@@ -134,6 +137,7 @@ export function SessionCompletion({
       <div className={'sc-hero-art ' + (catMode ? 'sc-with-cat' : 'sc-without-cat')} aria-hidden="true">
         {catMode ? <>
           <CatSprite catId={heroCatId} variant={hasMilestone ? 'floor' : 'sleeping'} size={110} decorative className="sc-hero-cat"/>
+          {!hasMilestone && <img className="sc-sleep-zzz" src={SLEEP_ZZZ} alt="" />}
           {hasMilestone && <img className="sc-hero-award" src={ICONS + '/trophy.png'} alt="" />}
           <img className="sc-hero-plant" src={currentPlant} alt="" />
           <img className="sc-hero-sparkle" src={ICONS + '/star.png'} alt=""/>
