@@ -1116,12 +1116,18 @@ export function PracticePage() {
       </div>
       <div className="practice-session-row">
         <PracticeTimeBadge seconds={elapsedSeconds} running={isRunning} />
-        <div className="practice-routine-session-actions">
+        {routine ? (
+          <div className="practice-routine-session-actions">
+            <button className="practice-finish-action" type="button" onClick={finishSession}>
+              <PlayerPixelIcon name="finish-check" /><span>Finish Session</span>
+            </button>
+            {journalControl}
+          </div>
+        ) : (
           <button className="practice-finish-action" type="button" onClick={finishSession}>
             <PlayerPixelIcon name="finish-check" /><span>Finish Session</span>
           </button>
-          {journalControl}
-        </div>
+        )}
       </div>
         </>
       )}
