@@ -29,7 +29,11 @@ export function PracticeInlineLoop({ options, counts, wholeCount, wholeSelected,
       <button className="practice-demo-loop-title" type="button" disabled={disabled} onClick={event=>onAdvanced(event.currentTarget)} title={disabled ? 'Loop unavailable without a recording' : 'Advanced loop editor'}>Loop</button>
       <button type="button" className="practice-demo-add-section" disabled={disabled} onClick={onAdd}>+ Section</button>
     </div>
-    <div className="practice-demo-loop-items">
+    <div className="practice-demo-loop-items" style={{
+      // Three columns for the six standard entries fill the full row at every
+      // viewport width. More sections retain two rows and scroll horizontally.
+      gridTemplateColumns: `repeat(${Math.max(1, Math.ceil((options.length + 1) / 2))}, minmax(${options.length + 1 > 8 ? '76px' : options.length + 1 > 6 ? '62px' : '0px'}, 1fr))`,
+    }}>
       {(() => {
         const items = [
           picker('whole','Whole',wholeCount,onWhole,wholeSelected),
@@ -37,8 +41,8 @@ export function PracticeInlineLoop({ options, counts, wholeCount, wholeSelected,
         ];
         // Column-first DOM order yields a readable two-row, left-to-right layout.
         // Additional custom sections scroll horizontally without creating a third row.
-        const columns = Math.max(4, Math.ceil(items.length / 2));
-        return Array.from({ length: columns }, (_, index) => [items[index],items[index+columns]])
+        const columns = Math.max(1, Math.ceil(items.length / 2));
+        return Array.from({ length: columns }, (_, index) => [items[index], items[index + columns]])
           .flat().filter(item => item !== undefined);
       })()}
     </div>
