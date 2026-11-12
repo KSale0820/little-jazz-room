@@ -89,6 +89,8 @@ try {
     await page.getByRole('combobox', { name: 'Exercise outcome' }).selectOption('needs-work');
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
+    await page.getByText(/1 of 3 exercises completed/).waitFor();
+    assert.equal(await page.getByText('Chart only', { exact: true }).count(), 0, 'Routine summary should not show unrelated chart metadata');
     assert.equal(await page.locator('#practice-notes').inputValue(), 'Counted the swing beats.');
     await page.getByRole('button', { name: 'Save Session', exact: true }).click();
     await page.getByRole('button', { name: /Session Saved/ }).waitFor();
