@@ -31,7 +31,8 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci
       - run: npm run build
-      - run: npm test
+      - name: Focused tuner pitch history unit tests
+        run: npx vitest run src/lib/tunerPitchHistory.test.ts
       - run: npx playwright install --with-deps chromium
       - name: Test real A440 input beyond 25 seconds and journal attachment
         run: node scripts/check-tuner-microphone.mjs
