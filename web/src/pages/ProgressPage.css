@@ -105,16 +105,25 @@
 .pr-session .pr-chevron { font-size: 16px; }
 .pr-empty { padding: 8px 10px; margin: 0; border-radius: 8px; background: #f6f6ef; color: #69786d; font: 400 10.5px/1.45 var(--pr-sans); }
 
-.pr-quick-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.pr-shortcut { display: flex; align-items: center; gap: 7px; position: relative; min-width: 0; min-height: 61px; padding: 9px 7px; border: 1px solid #e5ded7; border-radius: 16px; color: #243d2e; text-align: left; }
-.pr-shortcut-calendar { background: #edf0e2; }
-.pr-shortcut-journal { background: #f3eaf0; }
-.pr-shortcut-notes { background: #e8efe3; }
-.pr-shortcut-icon { display: grid; place-items: center; width: 29px; height: 29px; flex: 0 0 29px; color: #326c4d; }
-.pr-shortcut-icon svg { width: 27px; height: 27px; }
-.pr-shortcut-journal .pr-shortcut-icon { color: #73577e; }
-.pr-shortcut strong { min-width: 0; max-width: calc(100% - 36px); color: #25352b; font: 700 11.5px/1.18 var(--pr-sans); overflow-wrap: normal; }
-.pr-shortcut .pr-chevron { position: absolute; bottom: 8px; right: 5px; font-size: 16px; }
+/* Single illustrated entry point for calendar, entries, and saved annotations. */
+.pr-quick-links { margin-top: 3px; }
+.pr-shortcut {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 68px;
+  gap: 12px;
+  padding: 9px 14px;
+  background: #f1e9ef;
+  color: #283b2d;
+  text-align: left;
+  border: 1px solid #e6dfe0;
+  border-radius: 17px;
+}
+.pr-shortcut-icon { display: grid; place-items: center; width: 48px; height: 48px; flex: 0 0 48px; }
+.pr-shortcut-icon img { display: block; width: 48px; height: 48px; object-fit: contain; image-rendering: pixelated; }
+.pr-shortcut strong { flex: 1; color: #253a2f; font: 700 15px/1.2 var(--pr-sans); }
+.pr-shortcut .pr-chevron { margin-left: auto; font-size: 21px; }
 
 .app-shell:has(.pr-page) .bottom-nav a.current { background: #e3edd9; border-radius: 12px; color: #205e41; }
 .app-shell:has(.pr-page) .bottom-nav { padding-left: 8px; padding-right: 8px; }
@@ -137,9 +146,5 @@
   .pr-goal-input label, .pr-off-days legend { font-size: 9px; }
   .pr-off-days > div { gap: 2px; }
   .pr-off-days button { height: 28px; font-size: 9.5px; }
-  .pr-shortcut { gap: 4px; padding: 8px 5px; }
-  .pr-shortcut-icon { width: 24px; flex-basis: 24px; }
-  .pr-shortcut-icon svg { width: 24px; height: 24px; }
-  .pr-shortcut strong { font-size: 10.5px; }
 }
 @media (min-width: 900px) { .pr-page { padding-bottom: 20px; } }
