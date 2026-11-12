@@ -361,3 +361,114 @@ html[data-theme="dark"] .practice-player.practice-unified.practice-demo-refresh 
 @media (max-width: 390px) {
   html[data-theme] .practice-player.practice-unified.practice-free.practice-demo-refresh { padding-inline: 10px; }
 }
+
+
+/* Player-only navigation: give the score and session controls the full screen.
+   Practice, Tracks, Routines, and Progress navigation remains on other pages.
+   This overrides the older V3 rule that force-shows the bottom nav. */
+html[data-theme] .app-shell:has(.practice-unified.practice-player) .bottom-nav {
+  display: none;
+}
+html[data-theme] .app-shell:has(.practice-unified.practice-player) .viewport {
+  height: 100%;
+  min-height: 0;
+  padding-bottom: 0;
+}
+html[data-theme] .app-shell:has(.practice-guided.practice-instructions) .viewport {
+  overflow: hidden;
+}
+
+/* Keep the A1/A2/B/C/Tag section chips as a compact class-demo-style
+   four-column control group, with section names separate from repeat counts.
+   This is only a presentation change: each button opens the existing editor. */
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-loop {
+  display: grid;
+  grid-template-columns: 47px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  margin-top: 13px;
+  padding: 10px 9px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-loop-title {
+  color: var(--color-action);
+  font: 700 14px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-loop-items {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px 4px;
+  min-width: 0;
+}
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-loop-part {
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 2px;
+  min-width: 0;
+  min-height: 38px;
+  padding: 2px;
+  color: var(--color-action);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  font: 700 11px/1.1 var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-loop-part > span:first-child {
+  display: grid;
+  place-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
+}
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-loop-part.selected > span:first-child {
+  color: var(--color-action-text);
+  background: var(--color-action);
+  border-radius: 7px;
+}
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-count {
+  display: flex;
+  flex: 0 0 31px;
+  align-items: center;
+  justify-content: space-evenly;
+  min-width: 0;
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  font: 700 10px/1.1 var(--font-ui, system-ui, sans-serif);
+}
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-count b,
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-count em {
+  font: inherit;
+}
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-count i {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font: 700 12px/.9 var(--font-ui, system-ui, sans-serif);
+  font-style: normal;
+}
+html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-add-section {
+  grid-column: span 2;
+  min-height: 38px;
+  padding: 2px;
+  color: var(--color-action);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-action);
+  border-radius: 10px;
+  font: 700 12px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+@media (max-width: 390px) {
+  html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-loop {
+    grid-template-columns: 41px minmax(0,1fr);
+    gap: 3px;
+    padding: 8px 5px;
+  }
+  html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-loop-items { gap: 4px 3px; }
+  html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-loop-part { font-size: 10px; }
+  html[data-theme] .practice-player.practice-unified.practice-demo-refresh .practice-demo-count { flex-basis: 29px; font-size: 9px; }
+}
