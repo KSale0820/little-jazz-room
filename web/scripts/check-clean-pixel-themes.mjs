@@ -342,6 +342,7 @@ try {
           timer: box('.practice-session-row .practice-time-badge'),
           finish: box('.practice-finish-action'),
           nav: box('nav.bottom-nav'),
+          navDisplay: (() => { const nav = document.querySelector('nav.bottom-nav'); return nav ? getComputedStyle(nav).display : 'absent'; })(),
           fullChartVisible: (() => {
             const chart = document.querySelector('.practice-chart-scroll');
             const lastMeasure = chart?.querySelector('.chord-grid .measure:last-child');
@@ -413,8 +414,16 @@ try {
         'Controls need compact footprints: ' + JSON.stringify({ theme, width, height, boxes }));
       assert.ok(Math.abs(boxes.timer.y - boxes.finish.y) <= 15,
         'Time practiced and compact Finish should share the bottom row: ' + JSON.stringify({ theme, width, height, boxes }));
-      assert.ok(boxes.finish.bottom <= boxes.nav.y + 1,
-        'Finish Session must stay visible above bottom navigation: ' + JSON.stringify({ theme, width, height, boxes }));
+      assert.equal(boxes.navDisplay, 'none',
+        'Bottom navigation must be hidden during player mode: ' + JSON.stringify({ theme, width, height, boxes }));
+      if (height >= 800) {
+        assert.ok(boxes.finish.bottom <= height + 1,
+          'Finish Session must be visible within the full-height player: ' + JSON.stringify({ theme, width, height, boxes }));
+      } else {
+        await page.locator('.practice-finish-action').scrollIntoViewIfNeeded();
+        assert.ok(await page.locator('.practice-finish-action').isVisible(),
+          'Finish Session must remain scroll-reachable on shorter screens: ' + JSON.stringify({ theme, width, height, boxes }));
+      }
       await page.screenshot({
         path: path.join(output, 'player-autumn-leaves-' + width + 'x' + height + '-' + theme + '.png'),
         animations: 'disabled',
