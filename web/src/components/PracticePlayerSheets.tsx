@@ -54,12 +54,9 @@ export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes,
       placeholder="e.g. Tag, End, 5×, rubato" />
     <div className="practice-feature-help" aria-live="polite">
       <span>{cleaned.length} / {INLINE_ANNOTATION_LIMIT} inline characters</span>
-      <strong className={long ? 'note-long' : ''}>{!cleaned ? 'Add a note to see its preview' : long ? 'Too long for the measure: shown as a tappable note bubble' : 'Fits directly inside the measure'}</strong>
-    </div>
-    <div className="practice-feature-preview"><span>Measure {bar}</span>
-      <span className={long ? 'practice-note-bubble-preview' : 'practice-note-inline-preview'}>
-        {long ? '▤ Tap for note' : cleaned || 'Annotation preview'}
-      </span>
+      <strong className={long ? 'note-long' : ''}>{long
+        ? 'This note is too long for a measure and will appear as a chart bubble.'
+        : 'Short annotations appear directly in the measure.'}</strong>
     </div>
     <div className="practice-feature-actions">
       {notes.some(n => n.bar === bar) && <button type="button" className="practice-feature-danger" onClick={() => { onDelete(bar); setText(''); }}>Remove</button>}
