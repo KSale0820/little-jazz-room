@@ -188,11 +188,13 @@
 .routine-card-main:hover .routine-card-title,
 .routine-card-main:focus-visible .routine-card-title { text-decoration: underline; text-underline-offset: 3px; }
 .routine-card-icon-slot {
-  flex: 0 0 33px;
-  width: 33px;
-  height: 33px;
-  /* Intentionally transparent and empty. Approved pixel art will go here. */
-  background: transparent;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  background-image: url('/assets/routines/routine-icons-sprite.png');
+  background-size: 192px 128px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
 }
 .routine-card-content {
   display: flex;
@@ -328,5 +330,5 @@
   .routine-shelf-heading h2 { font-size: 21px; }
   .routine-card { flex-basis: 221px; width: 221px; }
   .routine-card-main { gap: 7px; padding-left: 10px; }
-  .routine-card-icon-slot { flex-basis: 30px; width: 30px; height: 30px; }
+  .routine-card-icon-slot { flex-basis: 32px; width: 32px; height: 32px; }
 }
