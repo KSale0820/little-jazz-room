@@ -14,7 +14,7 @@ import './CleanPixelMotifPlacements.css';
 type Signature = '2/4' | '3/4' | '4/4' | '6/8';
 type ScheduledBeat = { time: number; index: number; countIn: boolean };
 
-export function MetronomePage({ onClose, initialBpm = 100 }: { onClose?: () => void; initialBpm?: number } = {}) {
+export function MetronomePage({ onClose, initialBpm = 100, onBpmChange }: { onClose?: () => void; initialBpm?: number; onBpmChange?: (bpm: number) => void } = {}) {
   const navigate = useNavigate();
   const { catId } = useApp();
   const [roomArtLoaded, setRoomArtLoaded] = useState(false);
@@ -168,6 +168,7 @@ export function MetronomePage({ onClose, initialBpm = 100 }: { onClose?: () => v
     const next = clampBpm(value);
     bpmRef.current = next;
     setBpm(next);
+    onBpmChange?.(next);
   };
 
   const changeSignature = (next: Signature) => {
