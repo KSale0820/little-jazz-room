@@ -424,6 +424,83 @@ export function CreatePage() {
                     aria-label={'Duration for ' + label + ' in minutes'}
                     onChange={e => setStepMinutes(index, Number(e.target.value))} />
                 </label>
+                <button type="button" className="builder-step-settings-toggle"
+                  aria-expanded={expandedSettingsStep === index}
+                  aria-controls={'builder-step-preset-' + index}
+                  onClick={() => setExpandedSettingsStep(current => current === index ? null : index)}>
+                  ⚙ {step.playerSettings ? 'Edit player preset' : 'Configure player preset'}
+                </button>
+                {expandedSettingsStep === index && (() => {
+                  const preset = stepOptions(step);
+                  const section = preset.loop_sections[0] ?? { startBar: 1, endBar: Math.min(chart?.bars.length ?? 4, 4), plays: 2 };
+                  const maxBars = chart?.bars.length ?? 1;
+                  return <fieldset className="builder-step-preset" id={'builder-step-preset-' + index}>
+                    <legend>Step {index + 1} player settings</legend>
+                    <div className="builder-step-preset-fields">
+                      <label>Reference / metronome BPM
+                        <input aria-label={'Preset BPM for ' + label} type="number" min="40" max="240" step="1"
+                          value={preset.reference_bpm}
+                          onChange={event => updateStepOptions(index, { reference_bpm: Math.max(40, Math.min(240, Number(event.target.value) || 40)) })} />
+                      </label>
+                      {chart && <>
+                        <label>Concert key
+                          <select aria-label={'Preset key for ' + label} value={preset.chart_key}
+                            onChange={event => updateStepOptions(index, { chart_key: event.target.value })}>
+                            {CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}
+                          </select>
+                        </label>
+                        <label>Transposing instrument
+                          <select aria-label={'Preset instrument for ' + label} value={preset.written_pitch}
+                            onChange={event => updateStepOptions(index, { written_pitch: event.target.value as 'C' | 'Bb' | 'Eb' })}>
+                            <option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option>
+                          </select>
+                        </label>
+                        <label className="builder-step-preset-check">
+                          <input type="checkbox" checked={preset.loop_enabled}
+                            aria-label={'Loop a section for ' + label}
+                            onChange={event => updateStepOptions(index, {
+                              loop_enabled: event.target.checked,
+                              loop_sections: event.target.checked ? [section] : preset.loop_sections,
+                            })} />
+                          Loop a section
+                        </label>
+                        {preset.loop_enabled && <div className="builder-step-loop-fields">
+                          <label>Start bar
+                            <input type="number" min="1" max={maxBars}
+                              aria-label={'Preset loop start for ' + label} value={section.startBar}
+                              onChange={event => {
+                                const startBar = Math.max(1, Math.min(maxBars, Number(event.target.value) || 1));
+                                updateStepOptions(index, { loop_sections: [{ ...section, startBar, endBar: Math.max(startBar, section.endBar) }] });
+                              }} />
+                          </label>
+                          <label>End bar
+                            <input type="number" min={section.startBar} max={maxBars}
+                              aria-label={'Preset loop end for ' + label} value={section.endBar}
+                              onChange={event => updateStepOptions(index, {
+                                loop_sections: [{ ...section, endBar: Math.max(section.startBar, Math.min(maxBars, Number(event.target.value) || section.startBar)) }],
+                              })} />
+                          </label>
+                          <label>Plays
+                            <input type="number" min="1" max="24" value={section.plays}
+                              aria-label={'Preset loop plays for ' + label}
+                              onChange={event => updateStepOptions(index, {
+                                loop_sections: [{ ...section, plays: Math.max(1, Math.min(24, Number(event.target.value) || 1)) }],
+                              })} />
+                          </label>
+                        </div>}
+                        <label className="builder-step-preset-check">
+                          <input type="checkbox" checked={preset.repeat}
+                            aria-label={'Repeat playback for ' + label}
+                            onChange={event => updateStepOptions(index, { repeat: event.target.checked })} />
+                          Repeat {preset.loop_enabled ? 'the loop plan' : 'the whole chart'}
+                        </label>
+                      </>}
+                    </div>
+                    <button type="button" className="builder-step-preset-reset"
+                      onClick={() => resetStepOptions(index)}>Restore exercise defaults</button>
+                    <p>Applied automatically in the routine player. Player presets are stored on this device; cross-device sync is not available yet.</p>
+                  </fieldset>;
+                })()}
               </div>
               <div className="builder-step-move">
                 <button type="button" aria-label={'Move ' + label + ' up'} disabled={index === 0}
