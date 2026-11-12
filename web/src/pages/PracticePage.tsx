@@ -41,6 +41,7 @@ import './RoutineClassDemo.css';
 import './RoutineCompactV2.css';
 import './RoutineFooterV3.css';
 import './RoutineStepChords.css';
+import './RoutineFooterV4.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'instructions' | 'chart';
@@ -190,6 +191,19 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const [loopCounts, setLoopCounts] = useState<Record<string, number>>({});
   const [wholeCount, setWholeCount] = useState(1);
   const [wholeSelected, setWholeSelected] = useState(true);
+  const [showUnavailableTools, setShowUnavailableTools] = useState(() => {
+    try { return localStorage.getItem('little-jazz-room:show-unavailable-tools:v1:' + userScope) === 'true'; }
+    catch { return false; }
+  });
+  const toggleUnavailableTools = () => setShowUnavailableTools(previous => {
+    const next = !previous;
+    try { localStorage.setItem('little-jazz-room:show-unavailable-tools:v1:' + userScope, String(next)); }
+    catch { /* Optional browser preference */ }
+    return next;
+  });
+  // Keep existing non-routine/free practice behavior intact; routine players
+  // default to a cleaner view and can reveal unavailable controls if desired.
+  const displayUnavailableTools = !routine || showUnavailableTools;
   const [showMeasureNumbers, setShowMeasureNumbers] = useState(() => {
     try { return localStorage.getItem('little-jazz-room:number-measures:v1:' + userScope) !== 'false'; }
     catch { return true; }
@@ -1112,14 +1126,14 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
             <p className="practice-reference-note practice-demo-audio-note">{activeRecording
               ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.'
               : 'Playback follows the chart visually at this BPM; no recorded audio is available.'}</p>
-            <PracticeInlineLoop options={demoOptions} counts={loopCounts} wholeCount={wholeCount}
+            {(activeRecording || displayUnavailableTools) && <PracticeInlineLoop options={demoOptions} counts={loopCounts} wholeCount={wholeCount}
               wholeSelected={wholeSelected} onCount={(id, count) =>
                 updateInlineLoop({ ...loopCounts, [id]: count }, wholeCount, false)}
               onWhole={count => updateInlineLoop(loopCounts, count, true)}
               onAdd={() => setAddSectionOpen(true)} onAdvanced={openLoop}
-              disabled={!activeRecording} />
+              disabled={!activeRecording} />}
       </div>}
-            <div className="practice-utility-row practice-demo-tools" aria-label="Practice tools">
+            <div className={`practice-utility-row practice-demo-tools ${showPlayerControls && displayUnavailableTools ? 'has-unavailable-tools' : 'hide-unavailable-tools'}`} aria-label="Practice tools">
               <div className="practice-demo-metronome-wrap">
                 <button className="practice-demo-tool-main" type="button" onClick={event => openTool('metronome', event.currentTarget)}>
                   <PracticeToolGlyph name="metronome" /><span>Metronome</span>
@@ -1133,55 +1147,79 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
               <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>
                 <PracticeToolGlyph name="tuner" /><span>Tuner</span>
               </button>
-              {showPlayerControls && <button type="button" disabled title="Mixer is Preview only">
+              {showPlayerControls && displayUnavailableTools && <button type="button" disabled title="Mixer is Preview only">
                 <PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small>
               </button>}
             </div>
-      {routine && <div className="routine-compact-status" role="group" aria-label="Exercise status">
-        <div className="routine-compact-checks">
-          <label>
-            <input type="checkbox" checked={Boolean(stepOutcomes[stepIndex])}
-              onChange={event => changeStepCheck('started', event.target.checked)} />
-            <span>Started</span>
-          </label>
-          <label>
-            <input type="checkbox" checked={stepOutcomes[stepIndex] === 'complete'}
-              onChange={event => changeStepCheck('complete', event.target.checked)} />
-            <span>Complete</span>
-          </label>
+            {routine && showPlayerControls && <button type="button" className="practice-unavailable-tools-toggle"
+              aria-pressed={showUnavailableTools} onClick={toggleUnavailableTools}>
+              {showUnavailableTools ? 'Hide unavailable tools' : 'Show unavailable tools'}
+            </button>}
+      {routine && !freeSession ? (
+        <div className="routine-session-dock" aria-label="Routine session controls">
+          <div className="routine-dock-top">
+            <div className="routine-compact-status" role="group" aria-label="Exercise status">
+              <div className="routine-compact-checks">
+                <label>
+                  <input type="checkbox" checked={Boolean(stepOutcomes[stepIndex])}
+                    onChange={event => changeStepCheck('started', event.target.checked)} />
+                  <span>Started</span>
+                </label>
+                <label>
+                  <input type="checkbox" checked={stepOutcomes[stepIndex] === 'complete'}
+                    onChange={event => changeStepCheck('complete', event.target.checked)} />
+                  <span>Complete</span>
+                </label>
+              </div>
+              <span className="routine-compact-state" aria-live="polite">
+                {stepOutcomes[stepIndex] === 'complete' ? 'Complete' : stepOutcomes[stepIndex] === 'partial' ? 'Partial' : 'Incomplete'}
+              </span>
+            </div>
+            <div className="routine-session-navigation" aria-label="Routine step navigation">
+              <button type="button" aria-label="Previous routine step" title="Previous step"
+                disabled={stepIndex === 0} onClick={() => requestStep(stepIndex - 1)}>‹</button>
+              <button type="button" aria-label="Next routine step" title="Next step"
+                disabled={stepIndex === routine.steps.length - 1}
+                onClick={() => requestStep(stepIndex + 1)}>›</button>
+            </div>
+          </div>
+          <div className="practice-session-row practice-demo-session-row routine-dock-bottom">
+            <PracticeTimeBadge seconds={elapsedSeconds} running={sessionStartedAtMs !== null}
+              onTogglePause={toggleSessionTime} />
+            <div className="practice-demo-session-actions">
+              <button className="practice-finish-action" type="button" onClick={finishSession}>
+                <span aria-hidden="true">✓</span> Finish Session
+              </button>
+              <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
+                onClick={() => setJournalOpen(true)}>
+                <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
-        <span className="routine-compact-state" aria-live="polite">
-          {stepOutcomes[stepIndex] === 'complete' ? 'Complete' : stepOutcomes[stepIndex] === 'partial' ? 'Partial' : 'Incomplete'}
-        </span>
-      </div>}
-
-            {freeSession
-              ? <FreePracticeSessionBar seconds={elapsedSeconds} running={freeSession.clockRunning}
-                  onToggleTimer={freeSession.onPause} canPrevious={freeSession.canPrevious}
-                  canNext={freeSession.canNext} onPrevious={freeSession.onPrevious}
-                  onNext={freeSession.onNext} onFinish={freeSession.onFinish}
-                  onJournal={() => setJournalOpen(true)} />
-              : <div className="practice-session-row practice-demo-session-row">
-                  <PracticeTimeBadge seconds={elapsedSeconds} running={sessionStartedAtMs !== null}
-                    onTogglePause={toggleSessionTime} />
-                  <div className="practice-demo-session-actions">
-                    {routine && <div className="routine-session-navigation" aria-label="Routine step navigation">
-                      <button type="button" aria-label="Previous routine step" title="Previous step"
-                        disabled={stepIndex === 0} onClick={() => requestStep(stepIndex - 1)}>‹</button>
-                      <button type="button" aria-label="Next routine step" title="Next step"
-                        disabled={stepIndex === routine.steps.length - 1}
-                        onClick={() => requestStep(stepIndex + 1)}>›</button>
-                    </div>}
-                    <button className="practice-finish-action" type="button" onClick={finishSession}><span aria-hidden="true">✓</span> Finish Session</button>
-                    <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
-                      onClick={() => setJournalOpen(true)}>
-                      <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>}
-
+      ) : freeSession
+        ? <FreePracticeSessionBar seconds={elapsedSeconds} running={freeSession.clockRunning}
+            onToggleTimer={freeSession.onPause} canPrevious={freeSession.canPrevious}
+            canNext={freeSession.canNext} onPrevious={freeSession.onPrevious}
+            onNext={freeSession.onNext} onFinish={freeSession.onFinish}
+            onJournal={() => setJournalOpen(true)} />
+        : <div className="practice-session-row practice-demo-session-row">
+            <PracticeTimeBadge seconds={elapsedSeconds} running={sessionStartedAtMs !== null}
+              onTogglePause={toggleSessionTime} />
+            <div className="practice-demo-session-actions">
+              <button className="practice-finish-action" type="button" onClick={finishSession}>
+                <span aria-hidden="true">✓</span> Finish Session
+              </button>
+              <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
+                onClick={() => setJournalOpen(true)}>
+                <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
+                </svg>
+              </button>
+            </div>
+          </div>}
 
     </section>
     {stepsOpen && routine && createPortal(
