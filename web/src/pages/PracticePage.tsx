@@ -16,6 +16,7 @@ import { formatChartMeta } from '../lib/chords';
 import { beatsPerMeasure, locateSequencePlayhead, rawChartBeat, sequenceBeatForBar, sequenceDuration } from '../lib/practiceChartClock';
 import type { LoopSection } from '../lib/practiceChartClock';
 import { resolvePlayableStep } from '../lib/routinePlayback';
+import { defaultPlayerSettings, makeSavedExercise, settingsChanged, type RoutineStepOutcome, type RoutineStepOutcomes } from '../lib/routinePlayerSettings';
 import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
 import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
@@ -104,7 +105,7 @@ export function PracticePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    charts, exercises, routines, activeRoutineId, addSession, showToast, catId,
+    charts, exercises, routines, activeRoutineId, addSession, showToast, catId, repo, refreshLocal,
   } = useApp();
   const requestedChart = searchParams.get('chart');
   const requestedRecording = searchParams.get('recording');
@@ -115,6 +116,11 @@ export function PracticePage() {
   const routine = routineId ? routines.find(item => item.id === routineId) ?? null : null;
   const missingRoutine = Boolean(requestedRoutine && !routine);
   const [stepIndex, setStepIndex] = useState(0);
+  const [stepOutcomes, setStepOutcomes] = useState<RoutineStepOutcomes>({});
+  const [stepsOpen, setStepsOpen] = useState(false);
+  const [pendingStep, setPendingStep] = useState<number | 'finish' | null>(null);
+  const [customTitle, setCustomTitle] = useState('');
+  const [journalOpen, setJournalOpen] = useState(false);
   const currentStep = routine?.steps[stepIndex] ?? null;
   const playableStep = useMemo(
     () => currentStep ? resolvePlayableStep(currentStep, exercises, exercisesById) : null,
@@ -192,14 +198,31 @@ export function PracticePage() {
     ? normalizeGuidedLesson(playableStep, chosenExercise, currentStep?.snapshot)
     : null, [playableStep, chosenExercise, currentStep?.snapshot]);
 
+  const stepChart = playableStep?.chart_id ? getChartById(playableStep.chart_id, charts) : null;
+  const stepHasChart = Boolean(stepChart);
+  const instructionsOnly = Boolean(routine && !stepHasChart);
+  const stepDefaults = useMemo(
+    () => defaultPlayerSettings(stepChart?.concert_key ?? chart.concert_key, chosenExercise?.suggested_bpm, playableStep?.player_settings),
+    [stepChart?.concert_key, chart.concert_key, chosenExercise?.suggested_bpm, playableStep?.player_settings],
+  );
+  const currentSettings = {
+    reference_bpm: tempo, chart_key: chartKey, written_pitch: writtenPitch,
+    loop_enabled: loopEnabled, loop_sections: loopSections, repeat: repeatWholePlan,
+  };
+  const editedStepSettings = Boolean(routine && stepHasChart && settingsChanged(currentSettings, stepDefaults));
+  const completeCount = Object.values(stepOutcomes).filter(status => status === 'complete').length;
   const isRunning = startedAtMs !== null;
   const currentStepMs = elapsedMilliseconds(stepMs, startedAtMs, nowMs);
   const elapsedSeconds = Math.floor((priorMs + currentStepMs) / 1000);
 
-  const formProgress = routine ? Math.round(((stepIndex + 1) / routine.steps.length) * 100) : 0;
+  const formProgress = routine && routine.steps.length ? Math.round(completeCount / routine.steps.length * 100) : 0;
 
   useEffect(() => {
     setStepIndex(0);
+    setStepOutcomes({});
+    setStepsOpen(false);
+    setPendingStep(null);
+    setJournalOpen(false);
     setPanel(routine ? 'instructions' : 'chart');
     setPriorMs(0);
     setStepMs(0);
@@ -271,12 +294,25 @@ export function PracticePage() {
   }, [playableStep?.chart_id, playableStep?.exercise_id, charts, requestedChart, requestedRecording]);
 
   useEffect(() => {
-    if (chosenExercise?.suggested_bpm != null) {
-      const bpm = Math.max(40, Math.min(240, chosenExercise.suggested_bpm));
-      setTempo(bpm);
-      setTempoInput(String(bpm));
+    if (!routine) {
+      if (chosenExercise?.suggested_bpm != null) {
+        const bpm = Math.max(40, Math.min(240, chosenExercise.suggested_bpm));
+        setTempo(bpm);
+        setTempoInput(String(bpm));
+      }
+      return;
     }
-  }, [chosenExercise?.id, chosenExercise?.suggested_bpm]);
+    // Loading a step's preset changes only player state, never the source exercise.
+    setTempo(stepDefaults.reference_bpm);
+    setTempoInput(String(stepDefaults.reference_bpm));
+    setChartKey(stepDefaults.chart_key);
+    setWrittenPitch(stepDefaults.written_pitch);
+    setLoopEnabled(stepDefaults.loop_enabled);
+    setLoopSections(stepDefaults.loop_sections.length ? stepDefaults.loop_sections.map(section => ({ ...section }))
+      : [{ startBar: 1, endBar: Math.min(stepChart?.bars.length ?? chart.bars.length, 4), plays: 2 }]);
+    setRepeatWholePlan(stepDefaults.repeat);
+    setPanel(stepHasChart ? 'chart' : 'instructions');
+  }, [routine?.id, stepIndex, stepDefaults, stepHasChart]);
 
   useEffect(() => {
     if (!isRunning || completion) return;
@@ -442,18 +478,59 @@ export function PracticePage() {
     setNowMs(now);
   }
 
-  function goStep(delta: number) {
+  function goStep(next: number | 'finish') {
     if (!routine) return;
-    const next = Math.max(0, Math.min(routine.steps.length - 1, stepIndex + delta));
-    if (next === stepIndex) return;
+    setPendingStep(null);
+    setStepsOpen(false);
+    if (next === 'finish') { finishSession(); return; }
+    if (next === stepIndex || next < 0 || next >= routine.steps.length) return;
+    // Stop audio before changing chart/step, while preserving accumulated practice time.
+    suppressAudioPauseRef.current = true;
+    audioRef.current?.pause();
     const now = performance.now();
     setPriorMs(value => value + elapsedMilliseconds(stepMs, startedAtMs, now));
     setStepMs(0);
     setStartedAtMs(null);
     setNowMs(now);
     setStepIndex(next);
-    setPanel('instructions');
     setMusicalClock({ chartBeat: 0, startedAtMs: null });
+    suppressAudioPauseRef.current = false;
+  }
+
+  function requestStep(next: number | 'finish') {
+    if (!routine || next === stepIndex) return;
+    if (editedStepSettings) {
+      setCustomTitle((playableStep?.title ?? 'Exercise') + ' (custom)');
+      setPendingStep(next);
+      setStepsOpen(false);
+      return;
+    }
+    goStep(next);
+  }
+
+  function saveEditedExerciseAndContinue() {
+    if (pendingStep === null || !customTitle.trim()) return;
+    try {
+      const exercise = makeSavedExercise(
+        chosenExercise, customTitle, playableStep?.instructions ?? '', playableStep?.chart_id ?? null,
+        currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 5, currentSettings,
+      );
+      repo.saveLocalExercise(exercise);
+      refreshLocal();
+      showToast('Saved as a new exercise in My Exercises on this device.');
+      goStep(pendingStep);
+    } catch {
+      showToast('Could not save the customized exercise. Your settings are still here.');
+    }
+  }
+
+  function updateOutcome(value: RoutineStepOutcome | '') {
+    setStepOutcomes(previous => {
+      const next = { ...previous };
+      if (value) next[stepIndex] = value;
+      else delete next[stepIndex];
+      return next;
+    });
   }
 
   function finishSession() {
@@ -505,7 +582,7 @@ export function PracticePage() {
         try {
           localStorage.setItem(
             'little-jazz-room:practice-feedback:v1:' + record.id,
-            JSON.stringify({ notes: savedNotes, rating: savedRating }),
+            JSON.stringify({ notes: savedNotes, rating: savedRating, routineStepOutcomes: routine ? stepOutcomes : undefined }),
           );
         } catch { /* optional local feedback */ }
         setSaveState('saved');
@@ -532,6 +609,7 @@ export function PracticePage() {
     if (audioRef.current) audioRef.current.currentTime = 0;
     setRecordingPosition(0);
     setStepIndex(0);
+    setStepOutcomes({});
     setPriorMs(0);
     setStepMs(0);
     setStartedAtMs(null);
