@@ -26,6 +26,7 @@ export function usePracticeMetronome() {
   const ticking = useRef(false);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const nodes = useRef(new Set<OscillatorNode>());
+  const visualQueue = useRef<{ time: number; index: number }[]>([]);
   const next = useRef(0);
   const beat = useRef(0);
   const countLeft = useRef(0);
@@ -49,6 +50,7 @@ export function usePracticeMetronome() {
     timer.current = null;
     for (const osc of nodes.current) { try { osc.stop(); } catch { /* already ended */ } }
     nodes.current.clear();
+    visualQueue.current = [];
     if (context.current?.state === 'running') void context.current.suspend().catch(() => undefined);
     wasSynced.current = false;
     previousPosition.current = null;
@@ -72,7 +74,17 @@ export function usePracticeMetronome() {
     osc.onended = () => { nodes.current.delete(osc); osc.disconnect(); gain.disconnect(); };
     osc.start(at);
     osc.stop(at + .05);
-    setActiveBeat(index);
+    // The audible onset is scheduled ahead on the Web Audio clock. Advance the
+    // highlighted accent only after that onset, never at enqueue time.
+    visualQueue.current.push({ time: at, index });
+  }, []);
+
+  const flushVisualBeat = useCallback((now: number) => {
+    let current: number | null = null;
+    while (visualQueue.current.length && visualQueue.current[0].time <= now + .004) {
+      current = visualQueue.current.shift()!.index;
+    }
+    if (current !== null) setActiveBeat(current);
   }, []);
 
   const schedule = useCallback(() => {
@@ -95,6 +107,7 @@ export function usePracticeMetronome() {
         source.positionSeconds < previousPosition.current - .12 ||
         source.positionSeconds > previousPosition.current + .75) {
         latestScheduledTick.current = -1;
+        visualQueue.current = [];
       }
       previousPosition.current = source.positionSeconds;
       if (!wasSynced.current) setSynced(true);
@@ -104,6 +117,7 @@ export function usePracticeMetronome() {
         playClick(ctx, ctx.currentTime + delay, tick % clickCount, false);
         latestScheduledTick.current = tick;
       });
+      flushVisualBeat(ctx.currentTime);
       return;
     }
 
@@ -111,6 +125,7 @@ export function usePracticeMetronome() {
       // Playback paused or stopped: preserve the musician's independent metronome
       // while returning to a fresh, unsynchronized count without burst clicks.
       next.current = ctx.currentTime + .04;
+      visualQueue.current = [];
       beat.current = 0;
       latestScheduledTick.current = -1;
       previousPosition.current = null;
@@ -126,7 +141,8 @@ export function usePracticeMetronome() {
       beat.current = (beat.current + 1) % clickCount;
       next.current += seconds;
     }
-  }, [playClick]);
+    flushVisualBeat(ctx.currentTime);
+  }, [flushVisualBeat, playClick]);
 
   const start = useCallback(async () => {
     const AudioCtor = audioContextConstructor();
@@ -140,6 +156,8 @@ export function usePracticeMetronome() {
       wasSynced.current = false;
       previousPosition.current = null;
       latestScheduledTick.current = -1;
+      visualQueue.current = [];
+      setActiveBeat(-1);
       // Do not play a count-in over the already-running backing track.
       countLeft.current = playbackSource.current().playing ? 0 : countIn ? clicksRef.current * countInBars : 0;
       next.current = ctx.currentTime + .04;
