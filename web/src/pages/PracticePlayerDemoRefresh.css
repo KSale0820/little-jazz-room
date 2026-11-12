@@ -872,3 +872,197 @@
     min-width: 19px; flex-basis: 19px; width: 19px;
   }
 }
+
+/* Mobile polish: space the compact metronome and preserve the journal hit target. */
+.practice-player.practice-demo-refresh .practice-utility-row.practice-demo-tools {
+  grid-template-columns: minmax(0,1.65fr) minmax(0,.8fr) minmax(0,.8fr);
+  column-gap: 5px;
+  min-width: 0;
+}
+.practice-player.practice-demo-refresh .practice-demo-metronome-wrap {
+  box-sizing: border-box;
+  gap: 5px;
+  padding: 4px 5px;
+  min-width: 0;
+}
+.practice-player.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-tool-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  gap: 5px;
+  padding: 0;
+  justify-content: flex-start;
+}
+.practice-player.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-tool-main .practice-tool-glyph {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+.practice-player.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-tool-main span {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.practice-player.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-metronome-switch {
+  box-sizing: border-box;
+  flex: 0 0 43px;
+  width: 43px;
+  min-width: 43px;
+  height: 27px;
+  min-height: 27px;
+  padding: 3px 4px;
+  font-size: 9px;
+}
+.practice-player.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-metronome-switch .practice-demo-switch-knob {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+}
+
+/* Keep the entire connected Finish / Journal pair inside the rounded session bar. */
+.practice-player.practice-demo-refresh .practice-session-row.practice-demo-session-row {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) max-content;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-demo-session-actions {
+  display: flex;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  min-width: 0;
+  align-self: stretch;
+  overflow: visible;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-finish-action {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  padding-inline: 9px;
+  border-radius: 12px 0 0 12px;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-demo-journal {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  flex: 0 0 43px;
+  width: 43px;
+  min-width: 43px;
+  min-height: 49px;
+  padding: 0;
+  border-radius: 0 13px 13px 0;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-demo-journal svg {
+  display: block;
+  width: 19px;
+  height: 19px;
+  max-width: none;
+  flex: none;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  padding-left: 5px;
+  padding-right: 3px;
+  gap: 4px;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge .practice-time-toggle {
+  order: 0;
+  flex: 0 0 22px;
+  width: 22px;
+  min-width: 22px;
+  height: 25px;
+  min-height: 25px;
+  margin: 0;
+  padding: 0;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge .practice-time-toggle svg {
+  width: 12px;
+  height: 12px;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge > svg {
+  order: 1;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge .practice-time-caption {
+  order: 2;
+}
+.practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge > strong {
+  order: 3;
+  font-size: 10px;
+}
+
+/* Reserve only the width of the printed number. Annotations use the remainder
+   of the measure's top line rather than an arbitrary 60% limit. */
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet
+.measure .measure-user-annotation {
+  left: 2px;
+  right: 21px;
+  width: auto;
+  max-width: none;
+  top: 1px;
+  font-size: 7.4px;
+  line-height: 1.15;
+  letter-spacing: -.12px;
+  text-align: right;
+  white-space: nowrap;
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet
+.measure:has(.measure-user-annotation) .measure-annotation {
+  left: 2px;
+  right: auto;
+  max-width: 31%;
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all .chord-grid.practice-sheet
+.measure:has(.measure-annotation) .measure-user-annotation {
+  left: 32%;
+  right: 21px;
+  max-width: none;
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all:not(.practice-show-measure-numbers)
+.chord-grid.practice-sheet .measure .measure-user-annotation { right: 3px; }
+
+@media (max-width: 390px) {
+  .practice-player.practice-demo-refresh .practice-utility-row.practice-demo-tools {
+    grid-template-columns: minmax(0,1.65fr) minmax(0,.8fr) minmax(0,.8fr);
+    gap: 4px;
+  }
+  .practice-player.practice-demo-refresh .practice-demo-metronome-wrap {
+    gap: 3px;
+    padding: 4px;
+  }
+  .practice-player.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-tool-main span { font-size: 9px; }
+  .practice-player.practice-demo-refresh .practice-demo-metronome-wrap .practice-demo-metronome-switch {
+    flex-basis: 40px;
+    width: 40px;
+    min-width: 40px;
+  }
+  .practice-player.practice-demo-refresh .practice-demo-session-row .practice-finish-action {
+    padding-inline: 7px;
+    font-size: 11px;
+  }
+  .practice-player.practice-demo-refresh .practice-demo-session-row .practice-demo-journal {
+    flex-basis: 38px;
+    width: 38px;
+    min-width: 38px;
+  }
+  .practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge {
+    gap: 3px;
+    padding-left: 4px;
+  }
+  .practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge .practice-time-toggle {
+    flex-basis: 20px;
+    width: 20px;
+    min-width: 20px;
+  }
+  .practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge .practice-time-caption { font-size: 8px; }
+  .practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge > strong { font-size: 9px; }
+}
