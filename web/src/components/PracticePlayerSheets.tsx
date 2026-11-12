@@ -34,9 +34,40 @@ export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes,
   chartTitle: string; totalBars: number; initialBar: number; notes: ChartNote[];
   onSave: (bar: number, text: string) => void; onDelete: (bar: number) => void; onClose: () => void;
 }) {
-  const [bar, setBar] = useState(Math.min(totalBars, Math.max(1, initialBar)));
-  const [text, setText] = useState(() => notes.find(n => n.bar === initialBar)?.text ?? '');
-  useEffect(() => setText(notes.find(n => n.bar === bar)?.text ?? ''), [bar, notes]);
+  const initial = Math.min(totalBars, Math.max(1, initialBar));
+  const [bar, setBar] = useState(initial);
+  // Keep the number being typed separate from the committed measure. Clamping on
+  // each keystroke makes entering 13, 25, etc. impossible on mobile keyboards.
+  const [barInput, setBarInput] = useState(String(initial));
+  const [text, setText] = useState(() => notes.find(n => n.bar === initial)?.text ?? '');
+  const [drafts, setDrafts] = useState<Record<number, string>>({});
+  function selectBar(value: number) {
+    const next = Math.min(totalBars, Math.max(1, Math.trunc(value)));
+    if (!Number.isFinite(next)) return;
+    setBarInput(String(next));
+    if (next === bar) return;
+    const original = notes.find(n => n.bar === bar)?.text ?? '';
+    const nextSaved = notes.find(n => n.bar === next)?.text;
+    // Typing before changing the bar must not erase the note. The user may be
+    // correcting which measure it belongs to; carry it to an empty destination
+    // while also preserving the original draft if they navigate back.
+    const nextText = drafts[next] ?? nextSaved ?? (text !== original ? text : '');
+    setDrafts(previous => ({ ...previous, [bar]: text }));
+    setText(nextText);
+    setBar(next);
+  }
+  function commitTypedBar() {
+    const parsed = Number(barInput);
+    if (!/^\\d+$/.test(barInput) || !Number.isInteger(parsed) || parsed < 1 || parsed > totalBars) {
+      setBarInput(String(bar));
+      return;
+    }
+    selectBar(parsed);
+  }
+  function updateDraft(value: string) {
+    setText(value);
+    setDrafts(previous => ({ ...previous, [bar]: value }));
+  }
   const cleaned = text.trim();
   const long = chartAnnotationDisplay(cleaned) === 'bubble';
   return <Sheet title="Chart Annotations" tone="red" onClose={onClose}>
@@ -44,13 +75,19 @@ export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes,
     <div className="practice-feature-fieldline">
       <label htmlFor="chart-note-bar">Measure</label>
       <div className="practice-feature-bar-controls">
-        <button type="button" aria-label="Previous measure" disabled={bar <= 1} onClick={() => setBar(v => v - 1)}>−</button>
-        <input id="chart-note-bar" type="number" min={1} max={totalBars} value={bar} onChange={event => setBar(Math.min(totalBars, Math.max(1, Number(event.target.value) || 1)))} />
-        <button type="button" aria-label="Next measure" disabled={bar >= totalBars} onClick={() => setBar(v => v + 1)}>+</button>
+        <button type="button" aria-label="Previous measure" disabled={bar <= 1}
+          onClick={() => selectBar(bar - 1)}>−</button>
+        <input id="chart-note-bar" type="text" inputMode="numeric" pattern="[0-9]*"
+          aria-label={`Measure number, 1 through ${totalBars}`} autoComplete="off"
+          value={barInput} onChange={event => setBarInput(event.target.value.replace(/\\D/g, '').slice(0, 3))}
+          onBlur={commitTypedBar}
+          onKeyDown={event => { if (event.key === 'Enter') event.currentTarget.blur(); }} />
+        <button type="button" aria-label="Next measure" disabled={bar >= totalBars}
+          onClick={() => selectBar(bar + 1)}>+</button>
       </div>
     </div>
     <label className="practice-feature-label" htmlFor="chart-note-text">Annotation</label>
-    <textarea id="chart-note-text" rows={3} maxLength={240} value={text} onChange={e => setText(e.target.value)}
+    <textarea id="chart-note-text" rows={3} maxLength={240} value={text} onChange={e => updateDraft(e.target.value)}
       placeholder="e.g. Tag, End, 5×, rubato" />
     <div className="practice-feature-help" aria-live="polite">
       <span>{cleaned.length} / {INLINE_ANNOTATION_LIMIT} inline characters</span>
@@ -59,13 +96,13 @@ export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes,
         : 'Short annotations appear directly in the measure.'}</strong>
     </div>
     <div className="practice-feature-actions">
-      {notes.some(n => n.bar === bar) && <button type="button" className="practice-feature-danger" onClick={() => { onDelete(bar); setText(''); }}>Remove</button>}
+      {notes.some(n => n.bar === bar) && <button type="button" className="practice-feature-danger" onClick={() => { onDelete(bar); updateDraft(''); }}>Remove</button>}
       <button type="button" onClick={onClose}>Cancel</button>
       <button type="button" className="practice-feature-primary" disabled={!cleaned} onClick={() => { onSave(bar, cleaned); onClose(); }}>Save Annotation</button>
     </div>
     {notes.length > 0 && <div className="practice-feature-history">
       <h3>My chart annotations</h3>
-      {notes.slice().sort((a,b) => a.bar - b.bar).map(n => <button type="button" key={n.bar} onClick={() => setBar(n.bar)}>
+      {notes.slice().sort((a,b) => a.bar - b.bar).map(n => <button type="button" key={n.bar} onClick={() => selectBar(n.bar)}>
         <strong>Bar {n.bar}</strong><span>{n.text}</span>
       </button>)}
     </div>}
