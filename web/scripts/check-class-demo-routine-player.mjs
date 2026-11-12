@@ -128,6 +128,33 @@ try {
     const afterScroll = await page.locator('.routine-session-dock').evaluate(dock => dock.getBoundingClientRect().top);
     assert.ok(Math.abs(afterScroll - dockPosition.top) < 2,
       'Routine dock must remain fixed to app shell while reading long instructions');
+
+    // A visually overflowing lesson can still have NO actual scrolling when
+    // max-height:100% caps its parent. A swipe then rubber-bands to the top.
+    // Check genuine scrollable range AND scroll persistence after input ends.
+    const metrics = await page.locator('.viewport').evaluate(el => ({
+      clientHeight: el.clientHeight, scrollHeight: el.scrollHeight,
+      maxScroll: el.scrollHeight - el.clientHeight, scrollTop: el.scrollTop,
+      playerMaxHeight: getComputedStyle(el.querySelector('.practice-player')).maxHeight,
+    }));
+    assert.ok(metrics.maxScroll > 90,
+      'Lesson must generate genuine viewport scrolling, not rubber-band overflow: ' + JSON.stringify(metrics));
+    await page.locator('.viewport').evaluate(el => { el.scrollTop = 0; });
+    await page.locator('.practice-lesson-card').hover();
+    await page.mouse.wheel(0, 480);
+    await page.waitForTimeout(300);
+    const swiped = await page.locator('.viewport').evaluate(el => el.scrollTop);
+    assert.ok(swiped > 45, 'Swipe must move the scrollable lesson viewport: ' + swiped);
+    await page.waitForTimeout(400);
+    const settled = await page.locator('.viewport').evaluate(el => el.scrollTop);
+    assert.ok(settled > 45 && Math.abs(swiped - settled) < 60,
+      'Viewport bounced back after finger released: ' + JSON.stringify({swiped, settled, metrics}));
+    const finishInView = await page.getByRole('button', { name: 'Finish Session', exact: true }).evaluate(button => {
+      const rect = button.getBoundingClientRect();
+      return rect.top >= 0 && rect.bottom <= window.innerHeight;
+    });
+    assert.equal(finishInView, true, 'Footer must remain visible while content scrolls');
+    await page.locator('.viewport').evaluate(el => { el.scrollTop = 0; });
     await page.screenshot({ path: join(dir, label + '-01-instructions.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Next routine step' }).click();
