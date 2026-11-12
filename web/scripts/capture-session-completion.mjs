@@ -51,6 +51,22 @@ try {
           assert((await page.locator('.sc-hero-cat').count() > 0) === catMode, 'Decorative Cat Mode mismatch');
           if (reward) assert(await page.locator('.sc-unlock-art img').count() === 1, 'Earned Milo not shown');
           assert(await page.evaluate(() => document.documentElement.dataset.theme) === theme, 'Wrong theme');
+          await page.waitForFunction(() => [...document.querySelectorAll('.sc-page img')]
+            .every(image => image.complete && image.naturalWidth > 0), null, { timeout: 12000 });
+          assert(!await page.locator('.bottom-nav').isVisible(), 'Completion must hide the standard tab bar');
+          const geometry = await page.evaluate(() => {
+            const main = document.querySelector('.sc-primary')?.getBoundingClientRect();
+            const secondary = document.querySelector('.sc-secondary')?.getBoundingClientRect();
+            const hero = document.querySelector('.sc-hero-art')?.getBoundingClientRect();
+            return { mainBottom: main?.bottom ?? Infinity, secondaryBottom: secondary?.bottom ?? Infinity,
+              heroTop: hero?.top ?? -1, viewport: innerHeight };
+          });
+          assert(geometry.secondaryBottom <= geometry.viewport - 5,
+            'Action buttons must remain inside the visible phone viewport: ' + JSON.stringify(geometry));
+          assert(geometry.heroTop >= 0, 'Hero artwork must not be clipped: ' + JSON.stringify(geometry));
+          assert(!await page.locator('.toast-message').isVisible(), 'Redundant save toast must not cover the completion');
+          if (catMode && !reward) assert(await page.locator('.sc-sleep-zzz').count() === 1,
+            'Approved sleep decoration missing');
           const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
           assert(overflow <= 1, 'Horizontal overflow ' + overflow);
           const slug = [reward ? 'earned-milo' : 'standard', theme, catMode ? 'cat-on' : 'cat-off', width + 'x' + height].join('-');
