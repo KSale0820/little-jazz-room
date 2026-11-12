@@ -509,3 +509,213 @@
   .practice-demo-refresh .practice-demo-loop-part .practice-demo-count { flex-basis: 31px; }
   .practice-demo-refresh .practice-demo-loop-title { font-size: 12px; }
 }
+
+/* Class-demo mobile fit corrections: shared recorded and chart-only player. */
+.practice-player.practice-demo-refresh .practice-player-head {
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+.practice-player.practice-demo-refresh .practice-player-head .practice-title-group { min-width: 0; }
+.practice-player.practice-demo-refresh .practice-title-group h1 {
+  display: block;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  font-size: clamp(23px, 6.5vw, 30px);
+}
+.practice-player.practice-demo-refresh .practice-title-group h1::-webkit-scrollbar { display: none; }
+.practice-demo-refresh .practice-demo-chart-header-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 30px;
+  margin: 2px 0 4px;
+  padding-right: 1px;
+}
+.practice-demo-refresh .practice-demo-chart-header-actions .practice-demo-header-actions {
+  display: flex; flex: 0 0 auto; align-items: center; gap: 6px;
+}
+.practice-demo-refresh .practice-demo-chart-header-actions .practice-demo-chart-pencil {
+  width: 31px; height: 30px; margin: 0;
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all.practice-show-measure-numbers
+.chord-grid.practice-sheet .measure .measure-num {
+  color: #657a6c;
+  font-weight: 600;
+}
+.practice-player.practice-demo-refresh .practice-chart-scroll.practice-chart-all.practice-show-measure-numbers
+.chord-grid.practice-sheet .measure .measure-num::first-letter {
+  color: inherit;
+}
+
+/* Give the instrument and Concert selection priority over the Original button. */
+.practice-demo-refresh .practice-demo-settings {
+  grid-template-columns: minmax(0,1.05fr) minmax(0,.92fr) minmax(0,1.85fr) minmax(44px,.55fr);
+  gap: 3px;
+  min-width: 0;
+}
+.practice-demo-refresh .practice-demo-setting { padding: 3px 3px; gap: 3px; }
+.practice-demo-refresh .practice-demo-input-stepper { overflow: hidden; min-width: 0; }
+.practice-demo-refresh .practice-demo-updown { flex: 0 0 16px; min-width: 16px; }
+.practice-demo-refresh .practice-demo-updown button {
+  display: flex; align-items: center; justify-content: center;
+  box-sizing: border-box; width: 100%; height: 50%;
+  min-height: 0; line-height: 1; font-size: 12px; overflow: visible;
+}
+.practice-demo-refresh .practice-demo-updown button svg {
+  display: block; width: 12px; height: 8px; flex: none;
+}
+.practice-demo-refresh .practice-demo-instrument { min-width: 0; }
+.practice-demo-refresh .practice-demo-instrument select {
+  -webkit-appearance: none; appearance: none;
+  width: 0; flex: 1 1 0; min-width: 0;
+  padding: 0 14px 0 4px;
+  text-align: left;
+  font-size: 10px;
+  background-color: #f8f5ed;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23194e3d' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-size: 9px 6px;
+  background-position: right 3px center;
+  background-repeat: no-repeat;
+}
+.practice-demo-refresh .practice-demo-original {
+  padding: 2px 0;
+  white-space: nowrap;
+  text-decoration: none;
+  font-size: 10px;
+  letter-spacing: -.15px;
+}
+
+/* Loop label and Add Section share the left rail; all repeat options stay in two rows. */
+.practice-demo-refresh .practice-demo-loop {
+  grid-template-columns: 62px minmax(0,1fr);
+  gap: 4px;
+  align-items: stretch;
+  padding: 8px 6px;
+}
+.practice-demo-refresh .practice-demo-loop-rail {
+  display: flex; flex-direction: column;
+  align-items: stretch; justify-content: space-between;
+  min-width: 0; gap: 5px;
+}
+.practice-demo-refresh .practice-demo-loop-title {
+  flex: 0 0 auto; min-height: 30px; padding: 0 3px;
+  text-align: left; font-size: 13px;
+}
+.practice-demo-refresh .practice-demo-loop-rail .practice-demo-add-section {
+  grid-column: auto;
+  width: 100%; min-height: 32px; padding: 2px 0;
+  font: 700 9.5px/1.1 system-ui,sans-serif;
+  white-space: nowrap;
+}
+.practice-demo-refresh .practice-demo-loop-items {
+  display: grid;
+  grid-template-rows: repeat(2, 34px);
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: max(58px, calc((100% - 12px) / 4));
+  gap: 4px;
+  align-content: center;
+  min-width: 0;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.practice-demo-refresh .practice-demo-loop-items::-webkit-scrollbar { display: none; }
+.practice-demo-refresh .practice-demo-loop-part {
+  min-width: 0; min-height: 0; max-height: 34px;
+  gap: 1px; padding: 2px 1px;
+  border-radius: 8px;
+}
+.practice-demo-refresh .practice-demo-loop-part .practice-loop-option-name {
+  font-size: 10px; min-width: 0; padding: 0 1px;
+}
+.practice-demo-refresh .practice-demo-loop-part .practice-demo-count {
+  flex: 0 0 30px; min-width: 30px; max-width: 30px;
+  padding: 0 1px; gap: 0;
+  justify-content: space-between;
+  overflow: visible;
+}
+.practice-demo-refresh .practice-demo-count strong {
+  font: 700 9px/1 system-ui,sans-serif;
+  letter-spacing: -.3px;
+}
+.practice-demo-refresh .practice-loop-count-actions {
+  flex: 0 0 11px; width: 11px; min-width: 11px;
+  height: 100%; display: flex; flex-direction: column;
+  justify-content: space-around; align-items: center;
+}
+.practice-demo-refresh .practice-loop-count-actions button {
+  box-sizing: border-box;
+  min-width: 11px; width: 11px;
+  min-height: 0; height: 50%;
+  font: 700 11px/1 system-ui,sans-serif;
+  display: flex; align-items: center; justify-content: center;
+}
+.practice-demo-refresh .practice-demo-loop.is-disabled {
+  background: #f0f0e9;
+  border-color: #d3d8d0;
+  opacity: .53;
+}
+.practice-demo-refresh .practice-demo-loop.is-disabled button { cursor: not-allowed; }
+.practice-demo-refresh .practice-demo-loop.is-disabled .practice-demo-loop-part.selected .practice-loop-option-name {
+  background: #ccd2c8; color: #536356;
+}
+
+/* Dedicated pause button must not hide the running session clock. */
+.practice-demo-refresh .practice-demo-session-row .practice-time-badge {
+  gap: 4px; justify-content: flex-start;
+  overflow: hidden;
+  font-size: 9px;
+}
+.practice-demo-refresh .practice-demo-session-row .practice-time-badge > svg {
+  width: 17px; height: 17px;
+}
+.practice-demo-refresh .practice-demo-session-row .practice-time-badge .practice-time-caption {
+  flex: 0 1 auto; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.practice-demo-refresh .practice-demo-session-row .practice-time-badge > strong {
+  flex: none; white-space: nowrap;
+  font-size: 10px; font-variant-numeric: tabular-nums;
+}
+.practice-demo-refresh .practice-demo-session-row .practice-time-paused {
+  display: none;
+}
+.practice-demo-refresh .practice-demo-session-row .practice-time-toggle {
+  display: grid; place-items: center; flex: 0 0 23px;
+  width: 23px; height: 25px; min-height: 25px;
+  margin-left: auto; padding: 0;
+  border: 1px solid #c4d6c2; border-radius: 7px;
+  background: #e2ebdd; color: #1d533e;
+  font: 700 11px/1 system-ui,sans-serif;
+}
+.practice-demo-refresh .practice-demo-session-row .practice-time-toggle:focus-visible {
+  outline: 2px solid #1e6047; outline-offset: 2px;
+}
+@media(max-width:390px) {
+  .practice-demo-refresh .practice-demo-setting { gap: 2px; padding: 2px; }
+  .practice-demo-refresh .practice-demo-instrument select { font-size: 9.5px; }
+  .practice-demo-refresh .practice-demo-original { font-size: 10px; padding: 1px 0; }
+  .practice-demo-refresh .practice-demo-loop {
+    grid-template-columns: 58px minmax(0,1fr);
+    gap: 3px; padding: 7px 5px;
+  }
+  .practice-demo-refresh .practice-demo-loop-items {
+    grid-template-rows: repeat(2, 32px);
+    grid-auto-columns: max(56px, calc((100% - 9px) / 4));
+    gap: 3px;
+  }
+  .practice-demo-refresh .practice-demo-loop-part { max-height: 32px; }
+  .practice-demo-refresh .practice-demo-loop-rail .practice-demo-add-section { font-size: 9px; min-height: 30px; }
+  .practice-demo-refresh .practice-demo-session-row .practice-time-badge { font-size: 8px; padding-inline: 5px; gap: 3px; }
+  .practice-demo-refresh .practice-demo-session-row .practice-time-badge > strong { font-size: 9px; }
+  .practice-demo-refresh .practice-demo-session-row .practice-time-toggle { width: 21px; flex-basis: 21px; }
+}
