@@ -136,13 +136,15 @@ export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet',
     {!isPage && controller.synced &&
       <p className="practice-metronome-help">Count-in is skipped when the track is already playing, so beats stay synchronized.</p>}
     {controller.error && <p role="alert" className="practice-metronome-error">{controller.error}</p>}
-    <button type="button" className="practice-metronome-page-start"
-      aria-pressed={controller.playing} onClick={controller.toggle}>
-      {controller.playing ? 'Stop Metronome' : 'Start Metronome'}
-    </button>
-    <button type="button" className="practice-metronome-page-return" onClick={onClose}>
-      {isPage ? 'Back to Practice' : 'Return to Practice'}
-    </button>
+    <div className="practice-metronome-actions">
+      <button type="button" className="practice-metronome-page-start"
+        aria-pressed={controller.playing} onClick={controller.toggle}>
+        {controller.playing ? 'Stop Metronome' : 'Start Metronome'}
+      </button>
+      <button type="button" className="practice-metronome-page-return" onClick={onClose}>
+        {isPage ? 'Back to Practice' : 'Return to Practice'}
+      </button>
+    </div>
   </section>;
 }
 
