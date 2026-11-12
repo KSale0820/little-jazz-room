@@ -29,3 +29,17 @@ export interface PlaybackClockSample {
   /** Effective source tempo, including any recorded playback-rate adjustment. */
   tempoBpm?: number;
 }
+
+/** Shared 0-based accent indexing for every click, including count-in.
+ * UI Click 1 maps to index 0. Count-in must not silently suppress the selected
+ * first-beat accent, or it sounds as though the emphasis arrives a beat late. */
+export function metronomeClickSound(
+  zeroBasedBeatIndex: number, selectedAccents: readonly boolean[], countingIn: boolean,
+): { frequency: number; volume: number; accent: boolean } {
+  const accent = Boolean(selectedAccents[zeroBasedBeatIndex]);
+  return {
+    accent,
+    frequency: accent ? 1420 : countingIn ? 760 : 970,
+    volume: accent ? .16 : countingIn ? .085 : .1,
+  };
+}
