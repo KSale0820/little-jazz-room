@@ -494,13 +494,14 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     setChartNotes(updated);
     if (!persistLocalList(notesKey(userScope, chart.id), updated)) showToast('Could not update chart annotations on this device.');
   }
-  function saveJournalEntry(text: string) {
+  function saveJournalEntry(text: string, pitchCaptureIds: string[]) {
     const now = new Date().toISOString();
     const existing = journalEntries.find(entry => entry.sessionId === sessionDraftId.current);
     const entry: PracticeJournalEntry = {
       id: existing?.id ?? crypto.randomUUID(), sessionId: sessionDraftId.current,
       chartId: hasMusicContent ? chart.id : '', chartTitle: hasMusicContent ? chart.title : routine?.title ?? 'Free Practice', text,
       createdAt: existing?.createdAt ?? now, updatedAt: now, durationSeconds: elapsedSeconds,
+      pitchCaptureIds,
     };
     const updated = [...journalEntries.filter(item => item.sessionId !== sessionDraftId.current), entry];
     if (!persistLocalList(journalKey(userScope), updated)) { showToast('Could not save journal entry on this device.'); return; }
@@ -1216,7 +1217,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
         onClose={() => setAnnotationOpen(false)} />, document.body)}
     {journalOpen && createPortal(
       <SessionJournalSheet chartTitle={hasMusicContent ? chart.title : routine?.title ?? 'Free Practice'} sessionId={sessionDraftId.current}
-        seconds={elapsedSeconds} entries={journalEntries} onSave={saveJournalEntry}
+        seconds={elapsedSeconds} entries={journalEntries} userScope={userScope} onSave={saveJournalEntry}
         onDelete={deleteJournalEntry} onClose={() => setJournalOpen(false)} />, document.body)}
     {addSectionOpen && createPortal(
       <AddPracticeSectionSheet maxBar={chart.bars.length} onAdd={addInlineSection}
