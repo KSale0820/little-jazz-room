@@ -25,6 +25,7 @@ import { MetronomePage } from './MetronomePage';
 import './PracticePage.css';
 import './PracticePlayerApproved.css';
 import './PracticePlayerDemoRefresh.css';
+import './PracticePlayerPixelSkin.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'instructions' | 'chart';
