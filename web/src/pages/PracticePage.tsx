@@ -488,7 +488,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
 
   function saveChartAnnotation(bar: number, text: string) {
     const date = new Date().toISOString();
-    const updated = [...chartNotes.filter(item => item.bar !== bar), { bar, text, updatedAt: date }]
+    const updated = [...chartNotes.filter(item => item.bar !== bar), { ...chartNotes.find(item => item.bar === bar), bar, text, updatedAt: date }]
       .sort((a, b) => a.bar - b.bar);
     setChartNotes(updated);
     if (!persistLocalList(notesKey(userScope, chart.id), updated)) showToast('Could not save chart annotation on this device.');
@@ -503,7 +503,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     const now = new Date().toISOString();
     const existing = journalEntries.find(entry => entry.sessionId === sessionDraftId.current);
     const entry: PracticeJournalEntry = {
-      id: existing?.id ?? crypto.randomUUID(), sessionId: sessionDraftId.current,
+      ...existing, id: existing?.id ?? crypto.randomUUID(), sessionId: sessionDraftId.current,
       chartId: hasMusicContent ? chart.id : '', chartTitle: hasMusicContent ? chart.title : routine?.title ?? 'Free Practice', text,
       createdAt: existing?.createdAt ?? now, updatedAt: now, durationSeconds: elapsedSeconds,
     };

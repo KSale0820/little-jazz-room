@@ -33,6 +33,9 @@
 .pr-achievement { background: #fff0da; }
 .pr-milestone-icon { display: grid; place-items: center; width: 32px; height: 34px; flex: 0 0 32px; }
 .pr-milestone-icon img { display: block; width: 32px; height: 32px; image-rendering: pixelated; object-fit: contain; }
+/* The streak fire is the focal pixel reward; keep the trophy size unchanged. */
+.pr-streak .pr-milestone-icon { width: 44px; height: 44px; flex-basis: 44px; }
+.pr-streak .pr-milestone-icon img { width: 44px; height: 44px; }
 .pr-milestone-text { display: flex; flex: 1; flex-direction: column; gap: 3px; min-width: 0; }
 .pr-milestone-text strong { color: #1e2f27; font: 700 12.5px/1.13 var(--pr-sans); white-space: nowrap; letter-spacing: -.015em; }
 .pr-milestone-text small { color: #4f6557; font: 400 10.5px/1.12 var(--pr-sans); }
@@ -134,6 +137,8 @@
   .pr-milestone { gap: 4px; padding: 7px 6px; }
   .pr-milestone-icon { flex-basis: 28px; width: 28px; }
   .pr-milestone-icon img { width: 28px; height: 28px; }
+  .pr-streak .pr-milestone-icon { width: 38px; height: 38px; flex-basis: 38px; }
+  .pr-streak .pr-milestone-icon img { width: 38px; height: 38px; }
   .pr-milestone-text strong { font-size: 11px; }
   .pr-card { padding-left: 10px; padding-right: 10px; }
   .pr-section-head h2 { font-size: 16.5px; }
@@ -148,3 +153,12 @@
   .pr-off-days button { height: 28px; font-size: 9.5px; }
 }
 @media (min-width: 900px) { .pr-page { padding-bottom: 20px; } }
+
+/* Three compact entry points open one unified journal with a different focus. */
+.pr-quick-links { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.pr-quick-links .pr-shortcut { flex-direction:column; justify-content:center; gap:3px; min-width:0; min-height:84px; padding:8px 4px; background:#f3eee7; border-color:#e5ddd2; text-align:center; }
+.pr-quick-links .pr-shortcut:nth-child(2) { background:#eaf0e6; }
+.pr-quick-links .pr-shortcut:nth-child(3) { background:#eee8f0; }
+.pr-quick-links .pr-shortcut-icon { width:40px; height:40px; flex:none; color:#426c50; }
+.pr-quick-links .pr-shortcut-icon img { width:40px; height:40px; }
+.pr-quick-links .pr-shortcut strong { flex:none; font-size:12px; }

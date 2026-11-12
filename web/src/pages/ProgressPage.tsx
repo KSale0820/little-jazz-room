@@ -263,10 +263,17 @@ export function ProgressPage() {
     </section>
 
     <nav className="pr-quick-links" aria-label="Practice journal">
-      <button type="button" className="pr-shortcut pr-shortcut-journal" onClick={() => navigate('/progress/practice-journal')}>
+      <button type="button" className="pr-shortcut" onClick={() => navigate('/progress/calendar')}>
+        <span className="pr-shortcut-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="29" height="29" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4M17 3v4M3 10h18M8 14h3v3H8z" /></svg></span>
+        <strong>Calendar</strong>
+      </button>
+      <button type="button" className="pr-shortcut" onClick={() => navigate('/progress/journal')}>
         <span className="pr-shortcut-icon" aria-hidden="true"><img src="/visuals/progress/practice-journal.png" alt="" /></span>
-        <strong>Practice Journal</strong>
-        <span className="pr-chevron" aria-hidden="true">›</span>
+        <strong>Journal</strong>
+      </button>
+      <button type="button" className="pr-shortcut" onClick={() => navigate('/progress/notes')}>
+        <span className="pr-shortcut-icon" aria-hidden="true"><img src="/visuals/progress/practice-notes.png" alt="" /></span>
+        <strong>Notes</strong>
       </button>
     </nav>
   </section>;
