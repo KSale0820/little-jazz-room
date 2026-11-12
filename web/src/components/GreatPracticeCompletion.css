@@ -1,0 +1,286 @@
+/* Approved November 11 Great Practice layout: centered rays, no clock/cat/vines,
+   unboxed goal and streak, journal preview, and primary Done action. */
+.practice-complete.gj-screen {
+  --gj-green: #20563f;
+  --gj-text: #173b2d;
+  --gj-muted: #666f69;
+  --gj-border: #dfd8ca;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  min-height: calc(100dvh - 14px);
+  margin: 7px;
+  padding: 62px 18px max(25px, env(safe-area-inset-bottom));
+  background: #fffaf3;
+  border: 1px solid var(--gj-green);
+  border-radius: 18px;
+  overflow: visible;
+  text-align: left;
+  color: var(--gj-text);
+  font-family: system-ui, sans-serif;
+  font-size: 12px;
+}
+.gj-screen * { box-sizing: border-box; }
+.gj-screen .gj-close {
+  position: absolute;
+  top: 12px;
+  right: 13px;
+  border: 0;
+  background: none;
+  padding: 3px;
+  width: 35px;
+  height: 35px;
+  font-size: 29px;
+  line-height: 1;
+  color: var(--gj-green);
+}
+.gj-screen .gj-hero {
+  text-align: center;
+  margin: 0 auto 3px;
+  width: 100%;
+  max-width: 440px;
+}
+.gj-screen .gj-title {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  color: var(--gj-green);
+  font: 700 clamp(29px, 8.1vw, 39px)/1.08 Georgia, serif;
+  letter-spacing: -.025em;
+}
+.gj-screen .gj-title::before,
+.gj-screen .gj-title::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 23px;
+  height: 32px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  background: linear-gradient(#efa937,#efa937) 2px 3px / 12px 4px no-repeat,
+              linear-gradient(#efa937,#efa937) 0 16px / 18px 4px no-repeat,
+              linear-gradient(#efa937,#efa937) 2px 28px / 12px 4px no-repeat;
+  border-radius: 2px;
+}
+.gj-screen .gj-title::before { left: -26px; transform: translateY(-50%) rotate(180deg); }
+.gj-screen .gj-title::after { right: -26px; }
+.gj-screen .gj-time {
+  margin: 10px 0 0;
+  font: 700 25px/1.15 Georgia, serif;
+  font-variant-numeric: tabular-nums;
+  color: var(--gj-green);
+}
+.gj-screen .gj-date {
+  margin: 8px auto 0;
+  color: var(--gj-muted);
+  font: 400 12px/1.4 system-ui, sans-serif;
+}
+.gj-screen .gj-summary {
+  display: flex;
+  align-items: center;
+  min-height: 72px;
+  gap: 12px;
+  padding: 9px 11px;
+  border: 1px solid var(--gj-border);
+  border-radius: 17px;
+  background: #fffaf4;
+}
+.gj-screen .gj-summary-art {
+  width: 69px;
+  height: 64px;
+  flex: 0 0 69px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.gj-screen .gj-summary > div { min-width: 0; }
+.gj-screen .gj-summary h2 {
+  color: var(--gj-green);
+  font: 700 18px/1.2 Georgia, serif;
+  overflow-wrap: anywhere;
+}
+.gj-screen .gj-summary p {
+  margin: 5px 0 0;
+  font: 400 12px/1.4 system-ui, sans-serif;
+  color: var(--gj-muted);
+}
+.gj-screen .gj-block { min-width: 0; }
+.gj-screen .gj-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.gj-screen .gj-heading h2,
+.gj-screen .gj-rating h2 {
+  font: 700 clamp(17px, 4.9vw, 20px)/1.15 Georgia, serif;
+  color: var(--gj-text);
+}
+.gj-screen .gj-heading > span { color: #525d55; white-space: nowrap; font-size: 11px; }
+.gj-screen .gj-heading button {
+  flex: none;
+  background: none;
+  border: none;
+  padding: 5px 0;
+  color: var(--gj-green);
+  font: 500 11px/1.25 system-ui, sans-serif;
+  text-decoration: none;
+}
+.gj-screen .gj-activity-list {
+  border: 1px solid var(--gj-border);
+  border-radius: 15px;
+  background: #fffaf4;
+  padding: 3px 12px;
+}
+.gj-screen .gj-activity {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 57px;
+  padding: 7px 1px;
+}
+.gj-screen .gj-activity + .gj-activity { border-top: 1px solid #e4ded2; }
+.gj-screen .gj-activity-icon {
+  display: inline-flex;
+  flex: 0 0 24px;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid #788272;
+  border-radius: 50%;
+  color: #73806e;
+  font: 700 17px/1 system-ui, sans-serif;
+}
+.gj-screen .gj-status-complete { background: #5b905e; border-color: #5b905e; color: #fff; }
+.gj-screen .gj-status-partial { background: #e8d59e; border-color: #d2b86a; color: #74582b; }
+.gj-screen .gj-status-practiced { background: #eaf0e7; border-color: #83a082; color: var(--gj-green); }
+.gj-screen .gj-activity-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+.gj-screen .gj-activity-text strong {
+  color: var(--gj-text);
+  font: 700 14px/1.2 Georgia, serif;
+  overflow-wrap: anywhere;
+}
+.gj-screen .gj-activity-text span {
+  font: 400 11px/1.2 system-ui, sans-serif;
+  color: var(--gj-muted);
+  overflow-wrap: anywhere;
+}
+.gj-screen .gj-no-activities { padding: 14px 2px; color: var(--gj-muted); }
+.gj-screen .gj-book-icon { font: 500 23px/10px Georgia, serif; margin-right: 4px; vertical-align: -1px; }
+.gj-screen .gj-journal-card {
+  border: 1px solid var(--gj-border);
+  border-radius: 15px;
+  background: #f6efe4;
+  overflow: hidden;
+}
+.gj-screen .gj-preview {
+  margin: 0;
+  padding: 11px 13px;
+  color: #252e29;
+  font: italic 12px/1.55 system-ui, sans-serif;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.gj-screen .gj-journal-card textarea {
+  display: block;
+  width: 100%;
+  min-height: 140px;
+  border: none;
+  outline-offset: -3px;
+  background: #fffaf4;
+  color: var(--gj-text);
+  padding: 12px 13px;
+  font: 400 13px/1.5 system-ui, sans-serif;
+  resize: vertical;
+}
+.gj-screen .gj-helper { margin: 5px 0 0; color: var(--gj-muted); font-size: 10px; }
+.gj-screen .gj-rating {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.gj-screen .gj-rating h2 { margin: 0; }
+.gj-screen .gj-rating [role=group] {
+  display: flex;
+  gap: 1px;
+  flex-shrink: 0;
+}
+.gj-screen .gj-star {
+  border: 0;
+  background: transparent;
+  color: #d99339;
+  font: 400 28px/1.1 Georgia, serif;
+  width: 27px;
+  height: 35px;
+  padding: 0;
+}
+.gj-screen .gj-star.selected { color: #d88a32; }
+.gj-screen .gj-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 45px;
+  padding: 3px 9px;
+  font-size: 12px;
+}
+.gj-screen .gj-goal { flex: 1; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 3px 8px; }
+.gj-screen .gj-goal > span:nth-child(2) { white-space: nowrap; }
+.gj-screen .gj-progress-icon { color: var(--gj-green); font-size: 19px; letter-spacing: -4px; margin-right: 6px; }
+.gj-screen .gj-goal-bar { height: 5px; width: 100%; margin: 3px 0 0 0; background: #e0e5da; border-radius: 20px; overflow: hidden; }
+.gj-screen .gj-goal-bar > span { display: block; height: 100%; border-radius: inherit; background: #3b8063; }
+.gj-screen .gj-streak {
+  flex: none;
+  border-left: 1px solid #ded9cc;
+  padding-left: 9px;
+  white-space: nowrap;
+}
+.gj-screen .gj-streak span { color: #b47c26; font-size: 22px; vertical-align: -2px; }
+.gj-screen .gj-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: auto;
+}
+.gj-screen .gj-actions button,
+.gj-screen .gj-retry {
+  min-height: 48px;
+  border-radius: 999px;
+  font: 700 15px/1.2 Georgia, serif;
+  padding: 7px 9px;
+}
+.gj-screen .gj-again { background: transparent; color: var(--gj-green); border: 1.5px solid var(--gj-green); }
+.gj-screen .gj-again span { font-size: 21px; vertical-align: -1px; margin-right: 2px; }
+.gj-screen .gj-done { border: 1.5px solid var(--gj-green); background: var(--gj-green); color: #fffaf0; }
+.gj-screen button:disabled { opacity: .5; cursor: not-allowed; }
+.gj-screen .gj-retry { color: #fff; border: 1px solid var(--gj-green); background: var(--gj-green); width: 100%; }
+.gj-screen .gj-save-state { text-align: center; margin: -5px 0 0; color: var(--gj-muted); }
+.gj-screen .gj-error { color: #9d4739; }
+.gj-screen button:focus-visible, .gj-screen textarea:focus-visible { outline: 2px solid #c28537; outline-offset: 2px; }
+@media (max-width: 380px) {
+  .practice-complete.gj-screen { padding: 50px 13px 18px; gap: 12px; }
+  .gj-screen .gj-title { font-size: 28px; }
+  .gj-screen .gj-summary-art { width: 61px; height: 59px; flex-basis: 61px; }
+  .gj-screen .gj-rating h2 { font-size: 16px; }
+  .gj-screen .gj-star { width: 25px; font-size: 26px; }
+}
+@media (max-height: 700px) {
+  .practice-complete.gj-screen { padding-top: 43px; gap: 10px; }
+  .gj-screen .gj-activity { min-height: 45px; padding: 4px 1px; }
+  .gj-screen .gj-time { margin-top: 5px; }
+  .gj-screen .gj-summary { min-height: 62px; }
+  .gj-screen .gj-actions button { min-height: 44px; }
+}
