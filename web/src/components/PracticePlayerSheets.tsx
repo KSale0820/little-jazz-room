@@ -1,0 +1,135 @@
+import { useEffect, useRef, useState } from 'react';
+import type { ChartNote, PracticeJournalEntry } from '../lib/practicePlayerNotes';
+import { INLINE_ANNOTATION_LIMIT, chartAnnotationDisplay } from '../lib/practicePlayerNotes';
+import './PracticePlayerSheets.css';
+
+function Sheet({ title, children, onClose, tone = 'green' }: {
+  title: string; children: React.ReactNode; onClose: () => void; tone?: 'green' | 'red';
+}) {
+  const sheet = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    sheet.current?.querySelector<HTMLElement>('input,textarea,button')?.focus();
+    return () => previous?.focus?.();
+  }, []);
+  const keyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') { event.preventDefault(); onClose(); }
+    if (event.key !== 'Tab') return;
+    const controls = [...(sheet.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled)') ?? [])];
+    if (!controls.length) return;
+    const first = controls[0], last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  };
+  return <div className="practice-sheet-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
+    <div ref={sheet} className={'practice-feature-sheet practice-feature-sheet-' + tone}
+      role="dialog" aria-modal="true" aria-label={title} onKeyDown={keyDown}>
+      <header><h2>{title}</h2><button type="button" className="practice-feature-close" aria-label={'Close ' + title} onClick={onClose}>×</button></header>
+      {children}
+    </div>
+  </div>;
+}
+
+export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes, onSave, onDelete, onClose }: {
+  chartTitle: string; totalBars: number; initialBar: number; notes: ChartNote[];
+  onSave: (bar: number, text: string) => void; onDelete: (bar: number) => void; onClose: () => void;
+}) {
+  const [bar, setBar] = useState(Math.min(totalBars, Math.max(1, initialBar)));
+  const [text, setText] = useState(() => notes.find(n => n.bar === initialBar)?.text ?? '');
+  useEffect(() => setText(notes.find(n => n.bar === bar)?.text ?? ''), [bar, notes]);
+  const cleaned = text.trim();
+  const long = chartAnnotationDisplay(cleaned) === 'bubble';
+  return <Sheet title="Chart Annotations" tone="red" onClose={onClose}>
+    <p className="practice-feature-subtitle">Add tiny red instructions directly to the chart for {chartTitle}.</p>
+    <div className="practice-feature-fieldline">
+      <label htmlFor="chart-note-bar">Measure</label>
+      <div className="practice-feature-bar-controls">
+        <button type="button" aria-label="Previous measure" disabled={bar <= 1} onClick={() => setBar(v => v - 1)}>−</button>
+        <input id="chart-note-bar" type="number" min={1} max={totalBars} value={bar} onChange={event => setBar(Math.min(totalBars, Math.max(1, Number(event.target.value) || 1)))} />
+        <button type="button" aria-label="Next measure" disabled={bar >= totalBars} onClick={() => setBar(v => v + 1)}>+</button>
+      </div>
+    </div>
+    <label className="practice-feature-label" htmlFor="chart-note-text">Annotation</label>
+    <textarea id="chart-note-text" rows={3} maxLength={240} value={text} onChange={e => setText(e.target.value)}
+      placeholder="e.g. Tag, End, 5×, rubato" />
+    <div className="practice-feature-help" aria-live="polite">
+      <span>{cleaned.length} / {INLINE_ANNOTATION_LIMIT} inline characters</span>
+      <strong className={long ? 'note-long' : ''}>{!cleaned ? 'Add a note to see its preview' : long ? 'Too long for the measure: shown as a tappable note bubble' : 'Fits directly inside the measure'}</strong>
+    </div>
+    <div className="practice-feature-preview"><span>Measure {bar}</span>
+      <span className={long ? 'practice-note-bubble-preview' : 'practice-note-inline-preview'}>
+        {long ? '▤ Tap for note' : cleaned || 'Annotation preview'}
+      </span>
+    </div>
+    <div className="practice-feature-actions">
+      {notes.some(n => n.bar === bar) && <button type="button" className="practice-feature-danger" onClick={() => { onDelete(bar); setText(''); }}>Remove</button>}
+      <button type="button" onClick={onClose}>Cancel</button>
+      <button type="button" className="practice-feature-primary" disabled={!cleaned} onClick={() => { onSave(bar, cleaned); onClose(); }}>Save Annotation</button>
+    </div>
+    {notes.length > 0 && <div className="practice-feature-history">
+      <h3>My chart annotations</h3>
+      {notes.slice().sort((a,b) => a.bar - b.bar).map(n => <button type="button" key={n.bar} onClick={() => setBar(n.bar)}>
+        <strong>Bar {n.bar}</strong><span>{n.text}</span>
+      </button>)}
+    </div>}
+  </Sheet>;
+}
+
+export function SessionJournalSheet({ chartId, chartTitle, sessionId, seconds, entries, onSave, onDelete, onClose }: {
+  chartId: string; chartTitle: string; sessionId: string; seconds: number; entries: PracticeJournalEntry[];
+  onSave: (text: string) => void; onDelete: (id: string) => void; onClose: () => void;
+}) {
+  const existing = entries.find(e => e.sessionId === sessionId);
+  const [text, setText] = useState(existing?.text ?? '');
+  const [all, setAll] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const ordered = entries.slice().sort((a,b) => b.updatedAt.localeCompare(a.updatedAt));
+  const recent = all ? ordered : ordered.slice(0, 4);
+  return <Sheet title="Session Journal" onClose={onClose}>
+    <div className="practice-feature-session-summary">
+      <strong>{chartTitle}</strong><span>This session · {Math.floor(seconds / 60)}m {seconds % 60}s practiced</span>
+    </div>
+    <label className="practice-feature-label" htmlFor="journal-entry">What did you practice today?</label>
+    <textarea id="journal-entry" rows={5} maxLength={4000} value={text} onChange={e => setText(e.target.value)}
+      placeholder="What went well? What would you like to work on next?" />
+    <div className="practice-feature-actions">
+      <button type="button" onClick={onClose}>Cancel</button>
+      <button type="button" className="practice-feature-primary" disabled={!text.trim()} onClick={() => onSave(text.trim())}>Save Entry</button>
+    </div>
+    <div className="practice-feature-history">
+      <div className="practice-feature-history-heading"><h3>Past Journals</h3>
+        {ordered.length > 4 && <button type="button" onClick={() => setAll(v => !v)}>{all ? 'Show fewer' : 'View all'}</button>}</div>
+      {!ordered.length && <p className="practice-feature-empty">Your saved practice reflections will appear here.</p>}
+      {recent.map(entry => <div className="practice-feature-journal-card" key={entry.id}>
+        <button type="button" onClick={() => setExpanded(v => v === entry.id ? null : entry.id)} aria-expanded={expanded === entry.id}>
+          <strong>{entry.chartTitle}</strong><small>{new Date(entry.updatedAt).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</small>
+          <span>{expanded === entry.id ? entry.text : entry.text.slice(0, 100) + (entry.text.length > 100 ? '…' : '')}</span>
+        </button>
+        {expanded === entry.id && <button className="practice-feature-delete" type="button" onClick={() => onDelete(entry.id)}>Delete entry</button>}
+      </div>)}
+    </div>
+    <p className="practice-feature-local-note">Journals are saved on this device for your current account.</p>
+  </Sheet>;
+}
+
+export function AddPracticeSectionSheet({ maxBar, onAdd, onClose }: {
+  maxBar: number; onAdd: (name: string, start: number, end: number) => void; onClose: () => void;
+}) {
+  const [name, setName] = useState('');
+  const [start, setStart] = useState(1);
+  const [end, setEnd] = useState(Math.min(maxBar, 8));
+  const valid = name.trim().length > 0 && start >= 1 && end <= maxBar && end >= start;
+  return <Sheet title="+ Add Section" onClose={onClose}>
+    <p className="practice-feature-subtitle">Create a loop over a custom bar range. It will appear in the Loop row.</p>
+    <label className="practice-feature-label" htmlFor="new-section-label">Section name</label>
+    <input id="new-section-label" maxLength={18} value={name} placeholder="e.g. Bridge, Solo, D" onChange={e => setName(e.target.value)} />
+    <div className="practice-feature-split">
+      <label>Start bar<input type="number" min={1} max={maxBar} value={start} onChange={e => setStart(Number(e.target.value))} /></label>
+      <label>End bar<input type="number" min={1} max={maxBar} value={end} onChange={e => setEnd(Number(e.target.value))} /></label>
+    </div>
+    <div className="practice-feature-preview"><strong>Range preview</strong><span>{valid ? 'Bars ' + start + '–' + end + ' (' + (end - start + 1) + ' bars)' : 'Choose a valid range and name'}</span></div>
+    <div className="practice-feature-actions"><button type="button" onClick={onClose}>Cancel</button>
+      <button type="button" className="practice-feature-primary" disabled={!valid} onClick={() => { onAdd(name.trim(),start,end); onClose(); }}>Add Section</button>
+    </div>
+  </Sheet>;
+}
