@@ -40,6 +40,22 @@ async function verifyCompletion(page, viewport, label) {
     button: document.querySelector('.gj-done')?.getBoundingClientRect().toJSON(),
   }));
   assert(geometry.pageWidth <= geometry.viewportWidth + 2, 'Horizontal overflow: ' + JSON.stringify(geometry));
+  const spacing = await page.locator('.gj-screen').evaluate(screen => {
+    const sections = [...screen.children].filter(element =>
+      element.matches('.gj-hero, .gj-summary, .gj-block, .gj-rating, .gj-progress, .gj-actions'));
+    const gaps = sections.slice(1).map((section, index) =>
+      Math.round(section.getBoundingClientRect().top - sections[index].getBoundingClientRect().bottom));
+    return {
+      empty: screen.classList.contains('gj-empty'),
+      headingInset: Math.round(sections[0].getBoundingClientRect().top - screen.getBoundingClientRect().top),
+      gaps,
+    };
+  });
+  if (spacing.empty) {
+    assert(spacing.headingInset < 85, 'Large empty-state header inset: ' + JSON.stringify(spacing));
+    assert(spacing.gaps.every(gap => gap >= 0 && gap <= 48),
+      'Empty-session sections must have consistent gaps: ' + JSON.stringify(spacing));
+  }
   await page.screenshot({ path: join(output, label + '-' + viewport.width + 'x' + viewport.height + '.png'),
     fullPage: true, animations: 'disabled' });
 }
