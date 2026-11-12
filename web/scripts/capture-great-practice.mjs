@@ -15,11 +15,12 @@ const browser = await chromium.launch({ headless: true });
 async function verifyCompletion(page, viewport, label) {
   await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
   await page.getByRole('heading', { name: "Rate today's session" }).waitFor();
-  const rays = await page.locator('.gj-title').evaluate(element => ({
-    left: getComputedStyle(element, '::before').content,
-    right: getComputedStyle(element, '::after').content,
-  }));
-  assert(rays.left !== 'none' && rays.right !== 'none', 'Great practice emphasis rays missing');
+  assert(await page.locator('.gj-rays').count() === 2, 'Great practice SVG emphasis rays missing');
+  const font = await page.locator('.gj-title').evaluate(element => getComputedStyle(element).fontFamily);
+  assert(font.includes('Palatino'), 'Expected refined serif typography instead of Georgia-only styling: ' + font);
+  const assets = await page.evaluate(() => Array.from(document.querySelectorAll('.gj-summary-art, .gj-streak img'))
+    .map(img => ({src:img.getAttribute('src'),loaded:img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0})));
+  assert(assets.length === 2 && assets.every(asset => asset.loaded), 'Missing reusable room or streak assets: ' + JSON.stringify(assets));
   assert(await page.locator('.practice-confetti, .practice-celebrate, .practice-playing-cat, .practice-complete-footer').count() === 0,
     'Obsolete clock / cat / confetti was restored');
   assert(await page.locator('.gj-journal-card').isVisible(), 'Default journal preview is missing');
@@ -81,10 +82,15 @@ try {
     await page.goto(base + '/routines', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Open Daily Jazz Warm-Up in player' }).click();
     await page.waitForURL(url => url.pathname === '/player');
+    // Two marked exercises reproduce the approved 2/3-completed mockup with real routine state.
+    await page.getByRole('checkbox', { name: 'Complete', exact: true }).check();
+    await page.getByRole('button', { name: 'Next routine step' }).click();
+    await page.getByRole('checkbox', { name: 'Complete', exact: true }).check();
     await page.waitForTimeout(1200);
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await verifyCompletion(page, viewport, 'guided-practice');
-    assert(await page.locator('.gj-activity').count() >= 2, 'Guided exercise breakdown is missing');
+    assert(await page.locator('.gj-activity').count() === 3, 'Guided exercise breakdown should show three real steps');
+    assert(await page.locator('.gj-status-complete').count() === 2, 'Expected two actual completed exercises');
     assert(!errors.length, 'Runtime errors: ' + errors.join('; '));
     await context.close();
   }
