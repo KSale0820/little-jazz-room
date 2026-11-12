@@ -942,7 +942,7 @@ export function PracticePage() {
               wholeSelected={wholeSelected} onCount={(id, count) =>
                 updateInlineLoop({ ...loopCounts, [id]: count }, wholeCount, false)}
               onWhole={count => updateInlineLoop(loopCounts, count, true)}
-              onAdd={() => setAddSectionOpen(true)} onAdvanced={() => setLoopOpen(true)}
+              onAdd={() => setAddSectionOpen(true)} onAdvanced={openLoop}
               disabled={!activeRecording} />
             <div className="practice-utility-row practice-demo-tools" aria-label="Practice tools">
               <div className="practice-demo-metronome-wrap">
