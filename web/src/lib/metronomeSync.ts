@@ -26,4 +26,6 @@ export interface PlaybackClockSample {
   playing: boolean;
   /** Signed seconds relative to the first bar's downbeat, not the audio-file start. */
   positionSeconds: number;
+  /** Effective source tempo, including any recorded playback-rate adjustment. */
+  tempoBpm?: number;
 }
