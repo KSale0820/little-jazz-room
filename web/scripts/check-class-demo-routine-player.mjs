@@ -13,9 +13,12 @@ const readScoped = (prefix) => {
   return JSON.parse(localStorage.getItem(key ?? '') ?? '[]');
 };
 try {
-  for (const viewport of [{ width: 390, height: 844 }, { width: 375, height: 667 }]) {
+  for (const viewport of [
+    { width: 390, height: 844 }, { width: 375, height: 667 },
+    { width: 430, height: 844 }, { width: 1200, height: 900 },
+  ]) {
     const label = viewport.width + 'x' + viewport.height;
-    const ctx = await browser.newContext({ viewport, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+    const ctx = await browser.newContext({ viewport, isMobile: viewport.width < 900, hasTouch: viewport.width < 900, deviceScaleFactor: 1 });
     const page = await ctx.newPage();
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
@@ -23,6 +26,8 @@ try {
     await page.goto(base + '/player?routine=daily-warm-up', { waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'Daily Jazz Warm-Up' }).waitFor();
     assert.equal(await page.locator('.practice-no-chart').count(), 1, 'Opening routine step is instructions-only');
+    assert.equal(await page.locator('.practice-unavailable-tools-toggle').count(), 0,
+      'Show unavailable tools should no longer exist');
     assert.equal(await page.locator('.practice-notation-panel').count(), 0, 'Unrelated fallback chart visible');
     assert.equal(await page.locator('.practice-transport').count(), 0, 'Instructions-only playback visible');
     assert.equal(await page.locator('.practice-lesson-heading').count(), 0, 'Repeated exercise heading visible inside lesson');
@@ -92,13 +97,37 @@ try {
     assert.ok(dockLayout.lowerLefts.every(x => x >= dockLayout.outer.left - 2) &&
       dockLayout.lowerRights.every(x => x <= dockLayout.outer.right + 2), 'Controls must not overflow the connected dock');
     assert.ok(dockLayout.green !== 'rgba(0, 0, 0, 0)', 'Upper status row should have the light green background');
-    const dockPosition = await page.locator('.routine-session-dock').evaluate(dock => ({
-      top: dock.getBoundingClientRect().top,
-      bottom: dock.getBoundingClientRect().bottom,
-      height: innerHeight,
-    }));
-    assert.ok(dockPosition.top >= -2 && dockPosition.bottom <= dockPosition.height + 2,
-      'The routine dock must stay reachable within a short mobile viewport');
+    const dockPosition = await page.locator('.routine-session-dock').evaluate(dock => {
+      const shell = dock.closest('.app-shell');
+      const nav = shell.querySelector('.bottom-nav');
+      const footer = dock.querySelector('.routine-dock-bottom');
+      const finish = footer.querySelector('.practice-finish-action');
+      const dr = dock.getBoundingClientRect(), sr = shell.getBoundingClientRect();
+      const nr = nav.getBoundingClientRect(), fr = finish.getBoundingClientRect();
+      const hit = document.elementFromPoint(fr.x + fr.width / 2, fr.y + fr.height / 2);
+      return {
+        insideShell: dock.parentElement.classList.contains('routine-dock-host') &&
+          dock.parentElement.parentElement === shell,
+        shellTop: sr.top, shellBottom: sr.bottom,
+        navVisible: getComputedStyle(nav).display !== 'none',
+        navTop: nr.top,
+        top: dr.top, bottom: dr.bottom, finishBottom: fr.bottom,
+        finishHit: Boolean(hit?.closest('.practice-finish-action')),
+        position: getComputedStyle(dock.parentElement).position,
+      };
+    });
+    assert.equal(dockPosition.insideShell, true, 'Dock must render directly inside app shell, outside viewport scroll');
+    assert.equal(dockPosition.position, 'absolute', 'Dock must be app-shell anchored at all breakpoints');
+    assert.equal(dockPosition.navVisible, false, 'Active routine player should hide the normal bottom navigation');
+    assert.ok(dockPosition.top >= dockPosition.shellTop - 2 &&
+      dockPosition.bottom <= dockPosition.shellBottom + 2 &&
+      dockPosition.finishBottom <= dockPosition.shellBottom + 2,
+      'Entire dock must be visible within the phone app shell: ' + JSON.stringify(dockPosition));
+    assert.equal(dockPosition.finishHit, true, 'Finish Session must be tappable without scrolling');
+    await page.locator('.viewport').evaluate(viewport => { viewport.scrollTop = viewport.scrollHeight; });
+    const afterScroll = await page.locator('.routine-session-dock').evaluate(dock => dock.getBoundingClientRect().top);
+    assert.ok(Math.abs(afterScroll - dockPosition.top) < 2,
+      'Routine dock must remain fixed to app shell while reading long instructions');
     await page.screenshot({ path: join(dir, label + '-01-instructions.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Next routine step' }).click();
@@ -124,14 +153,8 @@ try {
       'Unavailable Mixer should be hidden by default');
     assert.equal(await page.locator('.practice-demo-tools > button').count(), 1,
       'Only Tuner should appear beside Metronome until unavailable tools are enabled');
-    await page.getByRole('button', { name: 'Show unavailable tools' }).click();
-    assert.equal(await page.locator('.practice-demo-loop').count(), 1,
-      'Show unavailable tools should reveal the disabled loop');
-    assert.equal(await page.locator('.practice-demo-tools > button').count(), 2,
-      'Show unavailable tools should reveal the disabled Mixer');
-    await page.getByRole('button', { name: 'Hide unavailable tools' }).click();
-    assert.equal(await page.locator('.practice-demo-loop').count(), 0);
-    assert.equal(await page.locator('.practice-demo-tools > button').count(), 1);
+    assert.equal(await page.getByRole('button', { name: /unavailable tools/i }).count(), 0,
+      'A routine must not offer to reveal disabled Loop or Mixer');
     assert.equal(await page.locator('#player-chart').count(), 0, 'Routine users must not be able to choose a different chart');
     assert.equal(await page.locator('.routine-chart-fixed-title').innerText(), 'ii–V–I in C');
     assert.deepEqual(await page.locator('.routine-step-sheet-number').allTextContents(), ['1','2','3']);
