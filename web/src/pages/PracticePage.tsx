@@ -32,6 +32,7 @@ import './PracticePlayerReferenceV3.css';
 import './PracticePlayerCompactV4.css';
 import './PracticePlayerDemoRefresh.css';
 import './PracticePlayerPixelDemoIntegration.css';
+import './RoutinePlayerRefresh.css';
 
 function displayChartForm(form: string): string {
   const bluesBars = /^blues-(\d+)$/i.exec(form.trim());
@@ -136,7 +137,7 @@ export function PracticePage() {
   const [loopOpen, setLoopOpen] = useState(false);
   const loopTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [musicalClock, setMusicalClock] = useState({ chartBeat: 0, startedAtMs: null as number | null });
-  const [panel, setPanel] = useState<Panel>(routine ? 'instructions' : 'chart');
+  const [panel, setPanel] = useState<Panel>(routine && !playableStep?.chart_id ? 'instructions' : 'chart');
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
   const toolTriggerRef = useRef<HTMLButtonElement | null>(null);
   const toolOverlayRef = useRef<HTMLDivElement | null>(null);
@@ -716,7 +717,7 @@ export function PracticePage() {
 
   return (
     <>
-    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${activeRecording ? 'practice-has-recording' : ''} ${routine && panel === 'instructions' ? 'practice-instructions' : ''} practice-unified ${activeRecording ? 'practice-demo-refresh' : ''}`} aria-label="Shared practice player">
+    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${activeRecording ? 'practice-has-recording' : ''} ${routine && panel === 'instructions' ? 'practice-instructions' : ''} ${instructionsOnly ? 'practice-routine-instruction-only' : ''} practice-unified ${activeRecording ? 'practice-demo-refresh' : ''}`} aria-label="Shared practice player">
       {activeRecording ? (
       <header className="practice-player-head">
         <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
@@ -770,7 +771,7 @@ export function PracticePage() {
         <div className="practice-chart-tags" aria-label="Chart details">
           <span>{routine ? 'Guided Practice' : chart.feel ? chart.feel.charAt(0).toUpperCase() + chart.feel.slice(1) : 'Practice chart'}</span>
           <span>{routine ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length : chart.difficulty || 'All levels'}</span>
-          <span>{displayChartForm(chart.form) || chart.time_signature.join('/')}</span>
+          {(!routine || stepHasChart) && <span>{displayChartForm(chart.form) || chart.time_signature.join('/')}</span>}
         </div>
         {chart.is_custom && chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
       </div>
@@ -794,22 +795,29 @@ export function PracticePage() {
         onEnded={() => setRecordingPlaying(false)}
         onError={() => setRecordingError('Recording could not be loaded. Check the audio file and format.')}
         aria-label={activeRecording.title + ' backing track'} />}
-      <p className="practice-audio-state" data-testid="chart-playhead" title={planStatus}><strong>{activeRecording ? 'Recorded Track' : 'Chart Only'}</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · {activeRecording ? activeRecording.recordedBpm + ' BPM audio' : 'No recording'}</p>
+      <p className="practice-audio-state" data-testid="chart-playhead" title={instructionsOnly ? 'Instructions-only exercise' : planStatus}>
+        {instructionsOnly ? <><strong>Instructions only</strong> · Practice at your own pace</> :
+          <><strong>{activeRecording ? 'Recorded Track' : 'Chart Only'}</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · {activeRecording ? activeRecording.recordedBpm + ' BPM audio' : 'No recording'}</>}
+      </p>
       {activeRecording && recordingError && <p role="alert" className="practice-recording-error">{recordingError}</p>}
 
-      {routine && (
-        <div className="practice-guided-progress" role="progressbar" aria-label="Routine steps completed"
-          aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={stepIndex}>
+      {routine && <>
+        <div className="practice-routine-overview-bar">
+          <span>{completeCount} of {routine.steps.length} exercises completed</span>
+          <button type="button" onClick={() => setStepsOpen(true)} aria-label="View all routine exercises">All steps ☷</button>
+        </div>
+        <div className="practice-guided-progress" role="progressbar" aria-label="Completed routine exercises"
+          aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={completeCount}>
           <span style={{ width: formProgress + '%' }} />
         </div>
-      )}
+      </>}
 
-      {routine && <div className="practice-segments" role="tablist" aria-label={routine ? 'Guided practice views' : 'Player view'}>
+      {routine && stepHasChart && <div className="practice-segments" role="tablist" aria-label={routine ? 'Guided practice views' : 'Player view'}>
         {routine && <button type="button" role="tab" aria-controls="practice-instructions-panel" aria-selected={panel === 'instructions'} onClick={() => setPanel('instructions')} className={panel === 'instructions' ? 'selected' : undefined}>Instructions</button>}
         <button type="button" role="tab" aria-selected={panel === 'chart'} onClick={() => setPanel('chart')} className={panel === 'chart' ? 'selected' : undefined}>Chart</button>
       </div>}
 
-      {routine && lesson && panel === 'instructions' ? (
+      {routine && lesson && (instructionsOnly || panel === 'instructions') ? (
         <div id="practice-instructions-panel" className="practice-lesson-panel" role="tabpanel" aria-label="Instructions">
           <GuidedLesson key={stepIndex} lesson={lesson} stepIndex={stepIndex} totalSteps={routine.steps.length} />
         </div>
@@ -827,20 +835,37 @@ export function PracticePage() {
         </div>
       )}
 
-      {routine && panel === 'chart' && (
+      {routine && stepHasChart && panel === 'chart' && (
         <aside className="practice-guided-head" aria-label="Current guided exercise">
           <strong>{lesson?.title ?? playableStep?.title ?? 'Exercise'}</strong>
           <p>{lesson?.goal ?? 'Follow the exercise and practice at your own pace.'}</p>
         </aside>
       )}
-      {routine && (
+      {routine && <>
         <div className="practice-step-controls">
-          <button type="button" onClick={() => goStep(-1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
+          <button type="button" onClick={() => requestStep(stepIndex - 1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
           <div><strong>Step {stepIndex + 1} of {routine.steps.length}</strong><span>{playableStep?.title ?? 'Exercise'} · {currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0} min goal</span></div>
-          <button type="button" className="practice-chart-shortcut" onClick={() => setPanel(current => current === 'chart' ? 'instructions' : 'chart')} aria-label={panel === 'chart' ? 'Show instructions' : 'Show chart'}>{panel === 'chart' ? 'Instructions' : 'Chart'}</button>
-          <button type="button" className="practice-next" onClick={() => stepIndex === routine.steps.length - 1 ? finishSession() : goStep(1)}>{stepIndex === routine.steps.length - 1 ? 'Finish' : 'Next Step ›'}</button>
+          {stepHasChart && <button type="button" className="practice-chart-shortcut" onClick={() => setPanel(current => current === 'chart' ? 'instructions' : 'chart')} aria-label={panel === 'chart' ? 'Show instructions' : 'Show chart'}>{panel === 'chart' ? 'Instructions' : 'Chart'}</button>}
+          <button type="button" className="practice-next" onClick={() => requestStep(stepIndex === routine.steps.length - 1 ? 'finish' : stepIndex + 1)}>{stepIndex === routine.steps.length - 1 ? 'Finish Routine' : 'Next Step ›'}</button>
         </div>
-      )}
+        <div className="practice-routine-outcome" aria-label="Exercise completion">
+          <button type="button" className={stepOutcomes[stepIndex] === 'complete' ? 'selected' : ''}
+            aria-pressed={stepOutcomes[stepIndex] === 'complete'}
+            onClick={() => updateOutcome(stepOutcomes[stepIndex] === 'complete' ? '' : 'complete')}>
+            ✓ {stepOutcomes[stepIndex] === 'complete' ? 'Completed' : 'Mark Complete'}
+          </button>
+          <label>
+            <span className="sr-only">Exercise outcome</span>
+            <select aria-label="Exercise outcome" value={stepOutcomes[stepIndex] ?? ''}
+              onChange={event => updateOutcome(event.target.value as RoutineStepOutcome | '')}>
+              <option value="">Not marked</option>
+              <option value="complete">Complete</option>
+              <option value="needs-work">Needs work</option>
+              <option value="skipped">Skipped</option>
+            </select>
+          </label>
+        </div>
+      </>}
 
       {activeRecording ? (
       <div className="practice-transport">
