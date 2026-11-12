@@ -368,3 +368,16 @@
 }
 .tool-tuner .tuner-saved-pitch-row button:first-child { flex: 1; min-width: 0; }
 .tool-tuner .tuner-saved-pitch-row button:last-child { min-width: 38px; text-align: center; font-size: 18px; }
+
+
+/* 2026-11 tuner history: one always-on chart, horizontally scrollable. */
+.tool-tuner .tuner-header-spacer { display: block; flex: 0 0 36px; width: 36px; }
+.tool-tuner .tuner-trail-panel { margin-top: 12px; }
+.tool-tuner .tuner-history-graph { height: 158px; min-width: 0; }
+.tool-tuner .tuner-history-scroll { width: 100%; height: 156px; }
+.tool-tuner .tuner-history-scroll svg { width: auto; max-width: none; height: 152px; }
+.tool-tuner .tuner-history-actions { margin-top: 10px; }
+@media (max-height: 720px) and (max-width: 899px) {
+  .tool-tuner .tuner-history-graph { height: 158px; }
+  .tool-tuner .tuner-history-scroll { height: 156px; }
+}
