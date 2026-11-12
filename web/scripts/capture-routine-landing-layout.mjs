@@ -54,6 +54,7 @@ try {
         type: {
           titleWeight: getComputedStyle(document.querySelector('.routine-intro h1')).fontWeight,
           headingWeight: getComputedStyle(document.querySelector('.routine-shelf-heading h2')).fontWeight,
+          headingSize: getComputedStyle(document.querySelector('.routine-shelf-heading h2')).fontSize,
           titleFamily: getComputedStyle(document.querySelector('.routine-intro h1')).fontFamily,
           titleSize: getComputedStyle(document.querySelector('.routine-intro h1')).fontSize,
           cardWeight: getComputedStyle(document.querySelector('.routine-card-title')).fontWeight,
@@ -71,6 +72,7 @@ try {
     assert(result.title.height <= 35, 'Routines title is too large');
     assert(result.type.titleFamily.includes('Georgia'), 'mockup serif typeface is wrong');
     assert(result.type.cardWeight === '400', 'routine cards must match Tracks regular Georgia titles');
+    assert(parseFloat(result.type.headingSize) <= 18, 'category headings must be at most 18px');
     assert(parseFloat(result.type.titleSize) <= 30, 'Routines header must be no larger than 30px');
     assert(result.shelfInsets.every(shelf => shelf.firstCardLeft === null || (
       shelf.firstCardLeft >= shelf.left - 1 && shelf.firstCardLeft <= shelf.left + 3
