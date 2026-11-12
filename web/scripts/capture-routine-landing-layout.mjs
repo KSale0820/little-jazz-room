@@ -46,6 +46,16 @@ try {
         viewport: box('.viewport'), nav: box('.bottom-nav'), page: box('.routine-library'),
         title: box('.routine-intro h1'), firstShelf: box('.routine-shelf'),
         firstCard: cards[0], secondCards, filters,
+        shelfInsets: [...document.querySelectorAll('.routine-shelf-scroll')].map(shelf => {
+          const first = shelf.querySelector('.routine-card')?.getBoundingClientRect();
+          const box = shelf.getBoundingClientRect();
+          return { left: box.left, firstCardLeft: first?.left ?? null, scrollLeft: shelf.scrollLeft };
+        }),
+        type: {
+          titleWeight: getComputedStyle(document.querySelector('.routine-intro h1')).fontWeight,
+          headingWeight: getComputedStyle(document.querySelector('.routine-shelf-heading h2')).fontWeight,
+          titleFamily: getComputedStyle(document.querySelector('.routine-intro h1')).fontFamily,
+        },
         shelfCount: document.querySelectorAll('.routine-shelf').length,
         spriteSize: getComputedStyle(document.querySelector('.routine-card-icon-slot')).backgroundSize,
         documentScrollWidth: document.documentElement.scrollWidth,
@@ -55,6 +65,11 @@ try {
     assert(result.filters.length === 4, 'all four filters must exist');
     assert(result.filters[3].right <= width - 8, 'last filter is clipped at ' + width);
     assert(result.firstCard.width <= 140 && result.firstCard.height <= 100, 'cards are still too large');
+    assert(result.type.titleWeight === '700' && result.type.headingWeight === '700', 'mockup serif font weight is wrong');
+    assert(result.type.titleFamily.includes('Georgia'), 'mockup serif typeface is wrong');
+    assert(result.shelfInsets.every(shelf => shelf.firstCardLeft === null || (
+      shelf.firstCardLeft >= shelf.left - 1 && shelf.firstCardLeft <= shelf.left + 3
+    )), 'one or more shelves start flush against the screen edge or snap left');
     assert(result.secondCards.length >= 3, 'Standards shelf needs at least three seeded routines');
     assert(result.shelfCount >= 4, 'major skill shelves should be present');
     assert(result.secondCards[2].right <= width + 3, 'third card should be visible before scrolling at ' + width);
