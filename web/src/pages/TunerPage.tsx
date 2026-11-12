@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { localStorageScopeForUser } from '../repository/localRepository';
+import { buildPitchSnapshot, deletePitchSnapshot, pitchSnapshotCsv, readPitchSnapshots, savePitchSnapshot, type TunerPitchSnapshot } from '../lib/tunerPitchHistory';
 import {
   audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, pitchTrailGeometry,
   readingFromFrequency, retainMeasuredPitch,
@@ -13,6 +16,13 @@ type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
 
 export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userScope = localStorageScopeForUser(user?.id);
+  const [savedPitch, setSavedPitch] = useState<TunerPitchSnapshot[]>(() => readPitchSnapshots(userScope));
+  const [selectedSnapshotId, setSelectedSnapshotId] = useState<string | null>(null);
+  const [showAllSaved, setShowAllSaved] = useState(false);
+  const [pitchWindowMs, setPitchWindowMs] = useState(30000);
+  const [historyMessage, setHistoryMessage] = useState('');
   const [mode, setMode] = useState<TuningMode>('chromatic');
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
@@ -23,7 +33,6 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const [referencePlaying, setReferencePlaying] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const modeRef = useRef(mode);
-  const showPitchTrailRef = useRef(false);
   const recentPitchRef = useRef<RecentPitch>(null);
   const requestRef = useRef(0);
   const permissionPendingRef = useRef(false);
@@ -32,6 +41,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const workletRef = useRef<AudioWorkletNode | null>(null);
   const lastWorkletFrameRef = useRef(0);
+  const lastCaptureAtRef = useRef(0);
+  const lastHistoryAtRef = useRef(0);
+  const watchdogRef = useRef(0);
   const [capturePath, setCapturePath] = useState<'analyser' | 'worklet'>('analyser');
   const rafRef = useRef(0);
   const toneRef = useRef<{ context: AudioContext; oscillator: OscillatorNode } | null>(null);
@@ -43,20 +55,21 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     setPitchTrail([]);
   }, [mode]);
 
-  useEffect(() => {
-    showPitchTrailRef.current = showPitchTrail;
-  }, [showPitchTrail]);
-
-  const trail = useMemo(() => pitchTrailGeometry(
-    pitchTrail, pitchTrail[pitchTrail.length - 1]?.timestamp ?? 0,
-  ), [pitchTrail]);
+  const selectedSnapshot = savedPitch.find(item => item.id === selectedSnapshotId) ?? null;
+  const displayedPitch = selectedSnapshot?.samples ?? pitchTrail;
+  const displayedNow = selectedSnapshot?.durationMs ?? pitchTrail.at(-1)?.timestamp ?? 0;
+  const displayedWindow = pitchWindowMs === 0
+    ? Math.max(8000, (displayedPitch.at(-1)?.timestamp ?? 0) - (displayedPitch[0]?.timestamp ?? 0))
+    : pitchWindowMs;
+  const trail = useMemo(() => pitchTrailGeometry(displayedPitch, displayedNow, displayedWindow),
+    [displayedPitch, displayedNow, displayedWindow]);
   const pitchTrailEnabled = showPitchTrail;
 
   const stopMicrophone = useCallback(() => {
     requestRef.current++;
     permissionPendingRef.current = false;
     recentPitchRef.current = null;
-    setPitchTrail([]);
+    window.clearInterval(watchdogRef.current);
     cancelAnimationFrame(rafRef.current);
     workletRef.current?.port.close();
     workletRef.current?.disconnect();
@@ -86,16 +99,22 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     const onHidden = () => {
       // Safari may report a transient visibility change during the permission
       // sheet. Do not cancel a pending getUserMedia() when that happens.
-      if (document.hidden && !permissionPendingRef.current) {
-        stopMicrophone();
-        stopReference();
+      if (document.hidden && !permissionPendingRef.current && microphoneRef.current) {
+        // Mobile browsers briefly suspend Web Audio when the page dims or
+        // switches apps. Preserve the microphone and pitch history for resume.
         setReading(null);
-        setStatus(current => current === 'listening' || current === 'requesting' ? 'idle' : current);
+        setMicSignal('interrupted');
+        stopReference();
+      } else if (!document.hidden && contextRef.current &&
+        contextRef.current.state !== 'running') {
+        void contextRef.current.resume().catch(() => setMicSignal('interrupted'));
       }
     };
     document.addEventListener('visibilitychange', onHidden);
+    window.addEventListener('focus', onHidden);
     return () => {
       document.removeEventListener('visibilitychange', onHidden);
+      window.removeEventListener('focus', onHidden);
       stopMicrophone();
       stopReference();
     };
@@ -111,8 +130,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     setReading(null);
     setStatus('requesting');
     setMicSignal('starting');
-    setPitchTrail([]);
+    // Starting again does not discard the last take. Clear explicitly if wanted.
     setMessage('');
+    setHistoryMessage('');
     permissionPendingRef.current = true;
     const request = requestRef.current;
     let stream: MediaStream | null = null;
@@ -157,16 +177,17 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       // backend. The worklet is fed by the audio clock, not the display clock.
       const processSamples = (frame: Float32Array, sampleRate: number, now: number) => {
         if (request !== requestRef.current) return;
+        lastCaptureAtRef.current = now;
         const frequency = detectPitch(frame, sampleRate);
         const measured = frequency === null ? null : readingFromFrequency(frequency, modeRef.current);
         const stable = retainMeasuredPitch(recentPitchRef.current, measured, now);
         recentPitchRef.current = stable.recent;
         setReading(stable.displayed);
-        if (showPitchTrailRef.current && (frequency !== null || stable.recent === null)) {
-          setPitchTrail(previous => [
-            ...previous.filter(point => point.timestamp > now - 8000),
-            { timestamp: now, frequency },
-          ].slice(-100));
+        // Capture even while the graph is collapsed. Keep at most 15 minutes
+        // of compact pitch points (4 Hz), including true silence as gaps.
+        if (now - lastHistoryAtRef.current >= 250) {
+          lastHistoryAtRef.current = now;
+          setPitchTrail(previous => [...previous, { timestamp: now, frequency }].slice(-3600));
         }
         const level = inputRms(frame);
         setMicSignal(stable.displayed !== null ? 'active' : level >= MIN_TUNER_RMS
@@ -192,7 +213,30 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         rafRef.current = requestAnimationFrame(analyseFallback);
       };
       setStatus('listening');
+      lastCaptureAtRef.current = performance.now();
       rafRef.current = requestAnimationFrame(analyseFallback);
+      // Detect suspended capture rather than silently leaving "Listening" on
+      // screen. The analyser is already an independent worklet fallback.
+      watchdogRef.current = window.setInterval(() => {
+        if (request !== requestRef.current || document.hidden) return;
+        if (context!.state !== 'running') {
+          setReading(null);
+          setMicSignal('interrupted');
+          void context!.resume().catch(() => setMicSignal('interrupted'));
+        } else if (performance.now() - lastCaptureAtRef.current > 3000) {
+          setReading(null);
+          setMicSignal('interrupted');
+        }
+      }, 1000);
+      context.onstatechange = () => {
+        if (request !== requestRef.current) return;
+        if (context!.state !== 'running') {
+          setReading(null);
+          setMicSignal('interrupted');
+        } else {
+          setMicSignal('starting');
+        }
+      };
 
       // AudioWorklet receives continuous microphone frames on the audio
       // rendering thread. iOS Safari's requestAnimationFrame may be uneven
@@ -202,6 +246,12 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           await context.audioWorklet.addModule('/worklets/tuner-capture.js');
           if (request !== requestRef.current) return;
           const worklet = new AudioWorkletNode(context, 'ljr-tuner-capture');
+          worklet.addEventListener('processorerror', () => {
+            if (request === requestRef.current) {
+              lastWorkletFrameRef.current = 0;
+              setCapturePath('analyser');
+            }
+          });
           worklet.port.onmessage = event => {
             if (request !== requestRef.current || event.data?.type !== 'frame') return;
             const now = performance.now();
@@ -216,6 +266,12 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           // Older/limited Safari continues using the analyser, unchanged.
         }
       }
+      stream.getAudioTracks()[0]?.addEventListener('mute', () => {
+        if (request === requestRef.current) { setReading(null); setMicSignal('interrupted'); }
+      });
+      stream.getAudioTracks()[0]?.addEventListener('unmute', () => {
+        if (request === requestRef.current) setMicSignal('starting');
+      });
       stream.getAudioTracks()[0]?.addEventListener('ended', () => {
         if (request === requestRef.current) {
           stopMicrophone();
@@ -242,7 +298,7 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
 
   const resumeMicrophoneAudio = () => {
     const context = contextRef.current;
-    if (!context) return;
+    if (!context || context.state === 'closed') { void startMicrophone(); return; }
     void context.resume().then(() => {
       setMicSignal(context.state === 'running' ? 'starting' : 'interrupted');
     }).catch(() => {
@@ -258,6 +314,43 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     } else {
       void startMicrophone();
     }
+  };
+
+  const savePitchHistory = () => {
+    const snapshot = buildPitchSnapshot(mode, pitchTrail);
+    if (!snapshot) { setHistoryMessage('Play a note first to save a pitch check.'); return; }
+    if (!savePitchSnapshot(userScope, snapshot)) {
+      setHistoryMessage('Could not save pitch history on this device.'); return;
+    }
+    setSavedPitch(readPitchSnapshots(userScope));
+    setSelectedSnapshotId(snapshot.id);
+    setShowPitchTrail(true);
+    setHistoryMessage("Pitch check saved. Attach it in today's Session Journal.");
+  };
+
+  const resetPitchHistory = () => {
+    setPitchTrail([]);
+    lastHistoryAtRef.current = 0;
+    setSelectedSnapshotId(null);
+    setHistoryMessage('');
+  };
+
+  const removePitchHistory = (id: string) => {
+    if (!deletePitchSnapshot(userScope, id)) {
+      setHistoryMessage('Could not delete saved pitch check.'); return;
+    }
+    setSavedPitch(readPitchSnapshots(userScope));
+    if (selectedSnapshotId === id) setSelectedSnapshotId(null);
+  };
+
+  const exportPitchHistory = (snapshot: TunerPitchSnapshot) => {
+    const blob = new Blob([pitchSnapshotCsv(snapshot)], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'little-jazz-pitch-' + snapshot.savedAt.slice(0, 10) + '.csv';
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
   };
 
   const toggleReference = async () => {
@@ -390,11 +483,16 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       </div>
       {pitchTrailEnabled ? (
         <section className="tuner-trail-panel" aria-label="Live pitch graph">
-          <div className="tuner-trail-heading"><strong>Pitch over time</strong></div>
+          <div className="tuner-trail-heading"><strong>{selectedSnapshot ? 'Saved pitch check' : 'Pitch history'}</strong></div>
+          <div className="tuner-history-range" role="group" aria-label="Pitch history range">
+            {([['8s', 8000], ['30s', 30000], ['2m', 120000], ['Full take', 0]] as const).map(([label, ms]) =>
+              <button type="button" key={label} aria-pressed={pitchWindowMs === ms}
+                onClick={() => setPitchWindowMs(ms)}>{label}</button>)}
+          </div>
           <div className="tuner-trail-plot">
             <span className="tuner-trail-high">{trail.highNote}</span>
             <svg viewBox="0 0 320 102" preserveAspectRatio="none" role="img"
-              aria-label="Live graph of detected pitch over eight seconds. Higher notes appear higher. Breaks indicate silence.">
+              aria-label="Measured pitch over the selected time range. Higher notes appear higher; gaps indicate silence.">
               <line x1="0" x2="320" y1="27" y2="27" stroke="#dedecf" strokeDasharray="4 6" />
               <line x1="0" x2="320" y1="69" y2="69" stroke="#dedecf" strokeDasharray="4 6" />
               {trail.segments.map((segment, index) => (
@@ -405,7 +503,36 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
             </svg>
             <span className="tuner-trail-low">{trail.lowNote}</span>
           </div>
-          <small>8 seconds ago <span>Now</span></small>
+          <small>{pitchWindowMs === 0 ? 'Start of take' : pitchWindowMs / 1000 + ' seconds ago'} <span>{selectedSnapshot ? 'Saved' : 'Now'}</span></small>
+          {selectedSnapshot ? (
+            <div className="tuner-history-actions">
+              <button type="button" onClick={() => exportPitchHistory(selectedSnapshot)}>Export CSV</button>
+              <button type="button" onClick={() => setSelectedSnapshotId(null)}>View live take</button>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+      <div className="tuner-history-actions">
+        <button type="button" disabled={pitchTrail.filter(p => p.frequency !== null).length < 2}
+          onClick={savePitchHistory}>Save pitch check for journal</button>
+        <button type="button" disabled={!pitchTrail.length} onClick={resetPitchHistory}>Clear take</button>
+      </div>
+      {historyMessage ? <p className="tuner-history-message" role="status">{historyMessage}</p> : null}
+      {savedPitch.length ? (
+        <section className="tuner-saved-pitch" aria-label="Saved pitch checks">
+          <div className="tuner-trail-heading"><strong>Saved pitch checks</strong>
+            {savedPitch.length > 3 ? <button type="button" onClick={() => setShowAllSaved(v => !v)}>
+              {showAllSaved ? 'Show fewer' : 'View all'}</button> : null}
+          </div>
+          {(showAllSaved ? savedPitch : savedPitch.slice(0, 3)).map(snapshot => (
+            <div className="tuner-saved-pitch-row" key={snapshot.id}>
+              <button type="button" onClick={() => { setSelectedSnapshotId(snapshot.id); setShowPitchTrail(true); }}>
+                {new Date(snapshot.savedAt).toLocaleDateString()} · {snapshot.mode} · {Math.round(snapshot.durationMs / 1000)}s
+              </button>
+              <button type="button" aria-label={'Delete pitch check ' + snapshot.id}
+                onClick={() => removePitchHistory(snapshot.id)}>×</button>
+            </div>
+          ))}
         </section>
       ) : null}
 
