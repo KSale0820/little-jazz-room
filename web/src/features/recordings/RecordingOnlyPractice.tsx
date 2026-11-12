@@ -45,6 +45,12 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
   const [completion, setCompletion] = useState<{ id: string; durationSeconds: number; finishedAt: string } | null>(null);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
 
+  useEffect(() => {
+    // An unlinked recording has no verified bar-one timestamp, so the click
+    // track stays independent but can use its known source tempo by default.
+    if (recording.recordedBpm) metronome.changeBpm(recording.recordedBpm);
+  }, [recording.id, recording.recordedBpm, metronome.changeBpm]);
+
   const currentElapsed = () => {
     const { accumulatedMs, startedAtMs } = clockRef.current;
     return accumulatedMs + (startedAtMs === null ? 0 : Math.max(0, performance.now() - startedAtMs));
