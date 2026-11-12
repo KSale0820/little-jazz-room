@@ -1,8 +1,19 @@
 import type { Exercise, LocalExercise, Routine, RoutinePlayerSettings, WrittenPitch } from '../types/content';
 import type { LoopSection } from './practiceChartClock';
 
-export type RoutineStepOutcome = 'complete' | 'needs-work' | 'skipped';
+/** Incomplete is an absent outcome. Partial means started but not completed. */
+export type RoutineStepOutcome = 'partial' | 'complete';
 export type RoutineStepOutcomes = Record<number, RoutineStepOutcome>;
+
+/** Two independent check controls produce exactly three valid states. */
+export function toggleRoutineCheck(
+  current: RoutineStepOutcome | undefined,
+  check: 'started' | 'complete',
+  checked: boolean,
+): RoutineStepOutcome | undefined {
+  if (check === 'started') return checked ? (current === 'complete' ? 'complete' : 'partial') : undefined;
+  return checked ? 'complete' : 'partial';
+}
 
 export interface ActivePlayerSettings {
   reference_bpm: number;
