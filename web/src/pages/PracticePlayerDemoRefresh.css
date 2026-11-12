@@ -1066,3 +1066,76 @@
   .practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge .practice-time-caption { font-size: 8px; }
   .practice-player.practice-demo-refresh .practice-demo-session-row .practice-time-badge > strong { font-size: 9px; }
 }
+
+/* Compact player settings and content-aware two-row loop widths, November 11.
+   The loop component supplies the actual column count; these styles never
+   reserve an unused fourth column on phones or wider previews. */
+.practice-player.practice-demo-refresh .practice-demo-loop-items {
+  grid-auto-columns: auto;
+  justify-content: stretch;
+  align-content: center;
+  width: 100%;
+  min-width: 0;
+}
+.practice-player.practice-demo-refresh .practice-demo-loop-part {
+  width: 100%;
+  min-width: 0;
+}
+.practice-player.practice-demo-refresh .practice-demo-settings {
+  grid-template-columns: minmax(0,1.05fr) minmax(0,.95fr) minmax(0,1.88fr) minmax(49px,.52fr);
+  align-items: center;
+  gap: 3px;
+}
+.practice-player.practice-demo-refresh .practice-demo-settings .practice-demo-setting {
+  box-sizing: border-box;
+  height: 39px;
+  min-height: 39px;
+  padding: 2px 4px;
+  align-items: center;
+}
+.practice-player.practice-demo-refresh .practice-demo-input-stepper {
+  box-sizing: border-box;
+  height: 30px;
+  min-height: 30px;
+}
+.practice-player.practice-demo-refresh .practice-demo-input-stepper .practice-demo-updown {
+  box-sizing: border-box;
+  height: 100%;
+  align-self: stretch;
+  flex: 0 0 16px;
+}
+.practice-player.practice-demo-refresh .practice-demo-input-stepper .practice-demo-updown button {
+  box-sizing: border-box;
+  height: 50%;
+  min-height: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.practice-player.practice-demo-refresh .practice-demo-input-stepper .practice-demo-updown button svg {
+  display: block;
+  width: 11px;
+  height: 7px;
+  flex: none;
+}
+.practice-player.practice-demo-refresh .practice-demo-instrument select {
+  box-sizing: border-box;
+  height: 30px;
+  min-height: 30px;
+}
+.practice-player.practice-demo-refresh .practice-demo-original {
+  box-sizing: border-box;
+  height: 39px;
+  min-height: 39px;
+  padding: 2px 1px;
+  text-decoration: none;
+}
+@media (max-width: 390px) {
+  .practice-player.practice-demo-refresh .practice-demo-settings .practice-demo-setting {
+    padding-inline: 3px;
+  }
+  .practice-player.practice-demo-refresh .practice-demo-settings {
+    grid-template-columns: minmax(0,1.06fr) minmax(0,.94fr) minmax(0,1.88fr) minmax(48px,.52fr);
+  }
+}
