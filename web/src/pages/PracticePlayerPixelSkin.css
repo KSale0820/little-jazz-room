@@ -32,8 +32,8 @@
   width: 25px;
   height: 25px;
   background: #93689b;
-  -webkit-mask: url('/visuals/pixel-motifs/music-notes.svg') center / contain no-repeat;
-  mask: url('/visuals/pixel-motifs/music-notes.svg') center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20shape-rendering%3D%22crispEdges%22%20aria-hidden%3D%22true%22%3E%0A%20%20%3C!--%20Crisp%20paired%20eighth%20notes%3A%20deliberately%20compact%2C%20no%20notation%20text.%20--%3E%0A%20%20%3Cpath%20fill%3D%22%23000%22%20d%3D%22M19%209h21v5H19z%20M19%2014h5v22h-5z%20M35%2014h5v17h-5z%0A%20%20%20%20M13%2031h11v5H13z%20M9%2035h15v6H9z%20M13%2041h8v2h-8z%0A%20%20%20%20M29%2026h11v5H29z%20M25%2030h15v6H25z%20M29%2036h8v2h-8z%22%2F%3E%0A%20%20%3Cpath%20fill%3D%22%23000%22%20d%3D%22M5%2010h3v3H5z%20M2%2013h9v3H2z%20M5%2016h3v3H5z%20M41%2037h3v3h-3z%20M38%2040h9v3h-9z%20M41%2043h3v3h-3z%22%20opacity%3D%22.65%22%2F%3E%0A%3C%2Fsvg%3E%0A") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%20shape-rendering%3D%22crispEdges%22%20aria-hidden%3D%22true%22%3E%0A%20%20%3C!--%20Crisp%20paired%20eighth%20notes%3A%20deliberately%20compact%2C%20no%20notation%20text.%20--%3E%0A%20%20%3Cpath%20fill%3D%22%23000%22%20d%3D%22M19%209h21v5H19z%20M19%2014h5v22h-5z%20M35%2014h5v17h-5z%0A%20%20%20%20M13%2031h11v5H13z%20M9%2035h15v6H9z%20M13%2041h8v2h-8z%0A%20%20%20%20M29%2026h11v5H29z%20M25%2030h15v6H25z%20M29%2036h8v2h-8z%22%2F%3E%0A%20%20%3Cpath%20fill%3D%22%23000%22%20d%3D%22M5%2010h3v3H5z%20M2%2013h9v3H2z%20M5%2016h3v3H5z%20M41%2037h3v3h-3z%20M38%2040h9v3h-9z%20M41%2043h3v3h-3z%22%20opacity%3D%22.65%22%2F%3E%0A%3C%2Fsvg%3E%0A") center / contain no-repeat;
   image-rendering: pixelated;
   opacity: .8;
   pointer-events: none;
