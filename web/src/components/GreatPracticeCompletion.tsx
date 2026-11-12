@@ -142,7 +142,7 @@ export function GreatPracticeCompletion({
       <div className="gj-activity-list">
         {activities.map(item => <div className="gj-activity" key={item.id}>
           <span className={'gj-activity-icon gj-status-' + item.status} aria-hidden="true">
-            {item.status === 'complete' ? '✓' : item.status === 'partial' ? '◐' : item.status === 'unmarked' ? '○' : '♪'}
+            {item.status === 'complete' ? '✓' : item.status === 'partial' ? '◐' : item.status === 'unmarked' ? '' : '♪'}
           </span>
           <div className="gj-activity-text">
             <strong>{item.title}</strong>
