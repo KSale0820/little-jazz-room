@@ -1,0 +1,336 @@
+/* Clean P04 tuner, sharing the class-demo Practice Player's restrained
+   cream, evergreen outlines and utility-first visual language.
+   Scoped so the separate Metronome screen is never restyled. */
+.tool-page.tool-tuner {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  overflow: visible;
+  padding: 18px clamp(15px, 4.5vw, 24px) max(20px, env(safe-area-inset-bottom));
+  background: #fffaf2;
+  color: #123e31;
+  isolation: auto;
+}
+.tool-tuner .tool-heading {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 39px;
+  gap: 9px;
+  align-items: center;
+  min-height: 48px;
+  margin: 0 0 10px;
+}
+.tool-tuner .tool-heading h1 {
+  margin: 0;
+  color: #123e31;
+  text-align: left;
+  font: 700 clamp(28px, 7.7vw, 34px)/1.12 Georgia, 'Palatino Linotype', serif;
+  letter-spacing: -.025em;
+}
+.tool-tuner .tool-back,
+.tool-tuner .tool-settings {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 40px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: #194d3c;
+  background: transparent;
+}
+.tool-tuner .tool-back {
+  font: 400 42px/.8 Georgia, serif;
+  padding-bottom: 6px;
+}
+.tool-tuner .tool-settings {
+  justify-self: end;
+  width: 39px;
+  height: 39px;
+  border: 1px solid #b7cbb9;
+  background: #fffdf8;
+  font: 700 19px/1 system-ui, sans-serif;
+}
+.tool-tuner .tool-help {
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 11px 12px;
+  border: 1px solid #c9d9ca;
+  border-radius: 11px;
+  background: #f1f6ec;
+  color: #466354;
+  font: 400 12px/1.5 system-ui, sans-serif;
+}
+.tool-tuner .tuner-modes {
+  box-sizing: border-box;
+  display: grid;
+  width: 100%;
+  max-width: none;
+  min-height: 46px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid #b6cdbd;
+  border-radius: 11px;
+  background: #eff3e9;
+}
+.tool-tuner .tuner-modes button {
+  min-width: 0;
+  min-height: 38px;
+  height: 100%;
+  padding: 7px 5px;
+  overflow: visible;
+  border: 0;
+  border-radius: 8px;
+  color: #42634f;
+  background: transparent;
+  font: 700 clamp(11px, 3.5vw, 13px)/1.2 system-ui, sans-serif;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+.tool-tuner .tuner-modes button[aria-pressed=true] {
+  color: #fffaf2;
+  background: #1d593f;
+  box-shadow: 0 1px 2px #123a3026;
+}
+.tool-tuner .tuner-mic {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  max-width: none;
+  min-height: 48px;
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border: 1px solid #18543b;
+  border-radius: 11px;
+  color: #fffdf8;
+  background: #1c5b42;
+  font: 700 13px/1.2 system-ui, sans-serif;
+  box-shadow: none;
+}
+.tool-tuner .tuner-mic svg { width: 20px; height: 20px; flex: 0 0 20px; }
+.tool-tuner .tuner-mic[aria-pressed=true] {
+  color: #16513d;
+  background: #e2eee4;
+  border-color: #8dbba0;
+}
+.tool-tuner .tuner-mic.tuner-resume {
+  margin-top: 8px;
+  background: #eff5eb;
+  color: #175a41;
+}
+.tool-tuner .tool-error {
+  margin: 8px 0 0;
+  border: 1px solid #d9baa3;
+  border-radius: 10px;
+  background: #fff2e9;
+  font: 400 12px/1.45 system-ui, sans-serif;
+}
+.tool-tuner .tuner-main-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding: 16px 16px 13px;
+  margin-top: 12px;
+  border: 1px solid #cedacd;
+  border-radius: 16px;
+  background: #fffdf8;
+}
+.tool-tuner .tuner-reading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 89px;
+  margin: 0;
+}
+.tool-tuner .tuner-reading strong {
+  color: #123e31;
+  font: 700 clamp(61px, 17vw, 74px)/.99 Georgia, 'Palatino Linotype', serif;
+  letter-spacing: -.045em;
+}
+.tool-tuner .tuner-reading > span {
+  margin: 3px 0 0;
+  color: #63776b;
+  font: 500 13px/1.25 system-ui, sans-serif;
+}
+.tool-tuner .tuner-reading small {
+  margin-top: 2px;
+  color: #557064;
+  font: 500 11px/1.2 system-ui, sans-serif;
+}
+.tool-tuner .tuner-gauge {
+  align-self: center;
+  width: 100%;
+  max-width: 360px;
+  height: 125px;
+  margin: 0;
+  overflow: hidden;
+}
+.tool-tuner .tuner-gauge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.tool-tuner .tuner-status {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 35px;
+  width: 100%;
+  max-width: none;
+  min-height: 35px;
+  height: 35px;
+  margin: 2px auto 0;
+  padding: 6px 10px;
+  border: 1px solid #dbe5d8;
+  border-radius: 9px;
+  background: #eef4ea;
+  color: #23583e;
+  font: 700 clamp(12px, 3.55vw, 14px)/1.15 system-ui, sans-serif;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tool-tuner .tuner-status[data-tuned=true] {
+  background: #dcefe0;
+  color: #165940;
+  border-color: #8fbd9e;
+}
+.tool-tuner .tuner-measurements {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  width: 100%;
+  min-width: 0;
+  margin: 13px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #e4e8de;
+}
+.tool-tuner .tuner-measurements div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
+}
+.tool-tuner .tuner-measurements div + div { border-left: 1px solid #e2e8de; }
+.tool-tuner .tuner-measurements strong {
+  color: #1a4d3a;
+  font: 700 20px/1.1 Georgia, serif;
+  font-variant-numeric: tabular-nums;
+}
+.tool-tuner .tuner-measurements span {
+  margin-top: 5px;
+  color: #65776d;
+  font: 500 11px/1.15 system-ui, sans-serif;
+}
+.tool-tuner .tuner-reference {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 63px;
+  padding: 9px 11px;
+  margin-top: 12px;
+  border: 1px solid #c8d9cd;
+  border-radius: 12px;
+  background: #fffdf8;
+}
+.tool-tuner .tuner-speaker {
+  flex: 0 0 27px;
+  width: 27px;
+  height: 27px;
+  color: #1d5b43;
+}
+.tool-tuner .tuner-reference > span:nth-child(2) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+.tool-tuner .tuner-reference strong {
+  color: #1b4b3a;
+  font: 700 14px/1.15 system-ui, sans-serif;
+}
+.tool-tuner .tuner-reference small {
+  color: #61796b;
+  font: 500 11px/1.2 system-ui, sans-serif;
+}
+.tool-tuner .tuner-reference-play {
+  display: grid;
+  place-items: center;
+  flex: 0 0 43px;
+  width: 43px;
+  height: 43px;
+  padding: 0;
+  border: 1px solid #206447;
+  border-radius: 9px;
+  background: #1d5b42;
+  color: #fffdf8;
+}
+.tool-tuner .tuner-reference-play svg { width: 19px; height: 19px; }
+.tool-tuner .tuner-trail-controls { width: 100%; margin-top: 11px; }
+.tool-tuner .tuner-trail-toggle {
+  width: 100%;
+  min-height: 39px;
+  padding: 8px 10px;
+  border: 1px solid #cbdacc;
+  border-radius: 10px;
+  background: #f3f6ef;
+  color: #275743;
+  font: 700 12px/1.2 system-ui, sans-serif;
+}
+.tool-tuner .tuner-trail-panel {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin: 9px 0 0;
+  padding: 12px 12px 10px;
+  border: 1px solid #cedbcf;
+  border-radius: 13px;
+  background: #fffdf8;
+}
+.tool-tuner .tuner-trail-heading strong { color: #1c4c3b; font: 700 13px/1.2 system-ui, sans-serif; }
+.tool-tuner .tuner-trail-plot { height: 100px; }
+.tool-tuner .tuner-trail-plot svg { width: 100%; height: 100%; }
+.tool-tuner .tuner-trail-panel > small { color: #6b8073; }
+@media (max-width: 390px) {
+  .tool-page.tool-tuner { padding: 12px 15px 18px; }
+  .tool-tuner .tool-heading { margin-bottom: 7px; min-height: 43px; }
+  .tool-tuner .tuner-modes { min-height: 43px; }
+  .tool-tuner .tuner-modes button { min-height: 35px; }
+  .tool-tuner .tuner-mic { min-height: 44px; margin-top: 10px; }
+  .tool-tuner .tuner-main-card { padding: 11px 12px 10px; margin-top: 10px; }
+  .tool-tuner .tuner-reading { min-height: 74px; }
+  .tool-tuner .tuner-reading strong { font-size: 60px; }
+  .tool-tuner .tuner-gauge { height: 106px; }
+  .tool-tuner .tuner-measurements { margin-top: 9px; padding-top: 10px; }
+  .tool-tuner .tuner-reference { min-height: 57px; margin-top: 10px; }
+  .tool-tuner .tuner-trail-controls { margin-top: 8px; }
+}
+@media (max-height: 720px) and (max-width: 899px) {
+  .tool-page.tool-tuner { padding-top: 9px; }
+  .tool-tuner .tool-heading { margin-bottom: 6px; }
+  .tool-tuner .tuner-main-card { margin-top: 8px; }
+  .tool-tuner .tuner-reading { min-height: 66px; }
+  .tool-tuner .tuner-reading strong { font-size: 54px; }
+  .tool-tuner .tuner-gauge { height: 99px; }
+  .tool-tuner .tuner-measurements { margin-top: 7px; padding-top: 8px; }
+  .tool-tuner .tuner-reference { margin-top: 8px; }
+  .tool-tuner .tuner-trail-plot { height: 75px; }
+}
