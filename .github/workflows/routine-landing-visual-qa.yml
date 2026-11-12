@@ -1,0 +1,30 @@
+name: Routines approved mockup visual QA
+
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/src/pages/RoutineLibraryPage*'
+      - 'web/src/lib/routinePixelIcons*'
+      - 'web/scripts/capture-routine-landing-layout.mjs'
+      - '.github/workflows/routine-landing-visual-qa.yml'
+
+jobs:
+  compact-layout:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build app
+        run: npm run build
+      - name: Check compact layout and capture screenshots
+        run: node scripts/capture-routine-landing-layout.mjs
