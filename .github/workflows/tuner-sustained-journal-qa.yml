@@ -1,0 +1,37 @@
+name: Sustained Tuner and Journal QA
+
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/src/pages/TunerPage.tsx'
+      - 'web/src/pages/TunerClean.css'
+      - 'web/src/lib/tunerPitchHistory.ts'
+      - 'web/src/lib/practicePlayerNotes.ts'
+      - 'web/src/components/PracticePlayerSheets.tsx'
+      - 'web/src/components/PracticePlayerSheets.css'
+      - 'web/src/pages/PracticePage.tsx'
+      - 'web/scripts/check-tuner-microphone.mjs'
+      - '.github/workflows/tuner-sustained-journal-qa.yml'
+  workflow_dispatch:
+
+jobs:
+  sustained-microphone-and-journal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - name: Test real A440 input beyond 25 seconds and journal attachment
+        run: node scripts/check-tuner-microphone.mjs
