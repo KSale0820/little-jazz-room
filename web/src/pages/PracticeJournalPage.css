@@ -141,3 +141,7 @@
 .pj-custom-colors { padding:4px 0 0; }
 @media(hover:none) { .pj-tag-selected .pj-tag-x { opacity:1; } }
 @media(max-width:380px) { .pj-detail-section { padding:15px 13px; } .pj-detail-title { font-size:22px; } .pj-tag-manager { padding:12px; } }
+
+.pj-session-reflection { margin-top:8px; border-left:2px solid #b5c9ad; padding-left:11px; max-width:100%; }
+.pj-session-reflection strong,.pj-observation-label { display:block; margin-bottom:4px; color:#425442; font-size:12px; font-weight:700; }
+.pj-inline-edit { padding:3px 0; border:0; background:transparent; color:#3b674b; font:650 11px/1.3 system-ui,sans-serif; text-decoration:underline; text-underline-offset:3px; }

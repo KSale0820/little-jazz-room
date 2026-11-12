@@ -104,7 +104,10 @@ export function PracticeJournalPage() {
     return colors.length ? colors : practiced || entries.some(e => dateOf(e.createdAt) === date) || annotations.some(n => dateOf(n.updatedAt) === date) ? ['sage'] : [];
   };
 
-  const goFocus = (next: Focus) => navigate('/progress/practice-journal?tab=' + next);
+  const goFocus = (next: Focus) => {
+    setQuery(''); setTagFilter(''); setTuneFilter('');
+    navigate('/progress/practice-journal?tab=' + next);
+  };
   const openDay = (day: string) => navigate('/progress/practice-journal?tab=' + focus + '&day=' + day);
   const backToJournal = () => navigate('/progress/practice-journal?tab=' + focus);
   const chooseDate = (day: string) => {
@@ -125,6 +128,10 @@ export function PracticeJournalPage() {
       kind, text: '', tags: [], createdAt: when, updatedAt: when, durationSeconds: 0 });
   };
   const openEntry = (entry: PracticeJournalEntry) => openDay(dateOf(entry.createdAt));
+  const editSourceEntry = (entry: PracticeJournalEntry) => {
+    setEditingAnnotation(null);
+    setDraft({ ...entry, tags: [...(entry.tags ?? [])] });
+  };
   const openAnnotation = (note: SavedAnnotation) => openDay(dateOf(note.updatedAt));
   const editDay = () => {
     if (!detailDay) return;
@@ -140,7 +147,8 @@ export function PracticeJournalPage() {
   };
   const saveEntry = () => {
     if (!draft) return;
-    if (!draft.title?.trim() && !draft.text.trim() && !draft.takeaways?.trim() && !draft.nextTime?.trim()) {
+    if (!draft.title?.trim() && !draft.text.trim() && !draft.whatPracticed?.trim() &&
+        !draft.takeaways?.trim() && !draft.nextTime?.trim() && !(draft.tags?.length)) {
       showToast('Add a title or a note before saving.'); return;
     }
     const current = readLocalList<PracticeJournalEntry>(journalKey(repo.scope));
@@ -224,7 +232,7 @@ export function PracticeJournalPage() {
 
   if (detailDay) return <DailyJournalSheet day={detailDay} sessions={sessions} entries={entries} annotations={annotations}
     routines={routines} exercises={exercises} charts={charts} palette={tagDefinitions}
-    onBack={backToJournal} onEdit={editDay}
+    onBack={backToJournal} onEdit={editDay} onEditEntry={editSourceEntry}
     onOpenChart={id => navigate('/player?chart=' + encodeURIComponent(id))}
     onOpenRoutine={id => navigate('/player?routine=' + encodeURIComponent(id))} />;
 

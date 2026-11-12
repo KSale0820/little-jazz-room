@@ -14,6 +14,7 @@ interface Props {
   palette: JournalTagDefinition[];
   onBack: () => void;
   onEdit: () => void;
+  onEditEntry: (entry: PracticeJournalEntry) => void;
   onOpenChart: (id: string) => void;
   onOpenRoutine: (id: string) => void;
 }
@@ -23,7 +24,7 @@ const mins = (seconds: number) => Math.round(Math.max(0, seconds || 0) / 60);
 function Paragraphs({ text }: { text: string }) {
   return <>{text.split(/\n+/).map((line, i) => line.trim() ? <p key={i}>{line}</p> : null)}</>;
 }
-export function DailyJournalSheet({ day, sessions, entries, annotations, routines, exercises, charts, palette, onBack, onEdit, onOpenChart, onOpenRoutine }: Props) {
+export function DailyJournalSheet({ day, sessions, entries, annotations, routines, exercises, charts, palette, onBack, onEdit, onEditEntry, onOpenChart, onOpenRoutine }: Props) {
   const datedSessions = sessions.filter(s => dateOf(s.finishedAt) === day).sort((a,b) => a.finishedAt.localeCompare(b.finishedAt));
   const datedEntries = entries.filter(e => dateOf(e.createdAt) === day);
   const datedNotes = annotations.filter(n => dateOf(n.updatedAt) === day).sort((a,b) => a.bar - b.bar);
@@ -68,12 +69,16 @@ export function DailyJournalSheet({ day, sessions, entries, annotations, routine
         <span className="pj-completed" aria-label="Saved session">✓</span>
         <div><strong>{fmtSession(s)}</strong><small>{mins(s.durationSeconds)} min · {s.routineId ? 'Routine' : s.exerciseId ? 'Exercise' : 'Free practice'}</small>
           {datedEntries.filter(e => e.sessionId && e.sessionId === s.id && e.text?.trim()).map(e =>
-            <div className="pj-session-reflection" key={e.id}>{e.title?.trim() && <strong>{e.title}</strong>}<Paragraphs text={e.text} /></div>)}
+            <div className="pj-session-reflection" key={e.id}>{e.title?.trim() && <strong>{e.title}</strong>}
+              <Paragraphs text={e.text} />
+              <button type="button" className="pj-inline-edit" onClick={() => onEditEntry(e)}>Edit reflection</button>
+            </div>)}
         </div>
       </div>)}
       {practicedText.map(e => <div key={e.id} className="pj-detail-note"><Paragraphs text={e.whatPracticed ?? ''} /></div>)}
       {datedEntries.filter(e => e.sessionId && !datedSessions.some(s => s.id === e.sessionId) && e.text?.trim()).map(e =>
-        <div key={e.id} className="pj-detail-note"><strong>{e.title || e.chartTitle || 'Practice reflection'}</strong><Paragraphs text={e.text} /></div>)}
+        <div key={e.id} className="pj-detail-note"><strong>{e.title || e.chartTitle || 'Practice reflection'}</strong>
+          <Paragraphs text={e.text} /><button type="button" className="pj-inline-edit" onClick={() => onEditEntry(e)}>Edit reflection</button></div>)}
       {datedNotes.length > 0 && <div className="pj-measure-notes"><strong>Chart annotations</strong>
         {datedNotes.map(n => <button type="button" key={n.chartId + ':' + n.bar} className="pj-measure-link" onClick={() => onOpenChart(n.chartId)}>
           <span>{n.chartTitle} · bar {n.bar}</span><small>{n.text}</small>
@@ -84,7 +89,8 @@ export function DailyJournalSheet({ day, sessions, entries, annotations, routine
       <h2><span aria-hidden="true">✎</span>Notes & observations</h2>
       {notesText.length > 0 ? notesText.map(e => <div key={e.id} className="pj-observation">
         {e.title?.trim() && <strong className="pj-observation-label">{e.title}</strong>}
-        <Paragraphs text={e.text} /></div>) :
+        <Paragraphs text={e.text} />
+        <button type="button" className="pj-inline-edit" onClick={() => onEditEntry(e)}>Edit note</button></div>) :
         <p className="pj-muted">Practice reflections from saved sessions appear above with the activities they describe.</p>}
     </section>
     <section className="pj-detail-section pj-tint-gold" aria-label="Takeaways">
