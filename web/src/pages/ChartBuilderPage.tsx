@@ -240,7 +240,8 @@ export function ChartBuilderPage() {
   const cancel = () => {
     if (dirty && !window.confirm('Discard changes to this chart?')) return;
     clearStoredDraft();
-    navigate('/my-charts');
+    const returnTo = searchParams.get('returnTo');
+    navigate(returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/my-charts');
   };
 
   const save = () => {
