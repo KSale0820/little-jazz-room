@@ -8,6 +8,8 @@ export interface GuidedLesson {
   listenFor: string;
   success: string;
   terminologyHelp: { term: string; explanation: string }[];
+  /** Explicit 1-based chart-bar ranges for each instruction step; absent for unmatched charts. */
+  stepChordRanges?: Array<[number, number] | null>;
   catPrompts: string[];
 }
 
@@ -59,6 +61,18 @@ function terms(value: unknown): GuidedLesson['terminologyHelp'] {
   });
 }
 
+function readChordRanges(raw: unknown): Array<[number, number] | null> | undefined {
+  if (!Array.isArray(raw) || !raw.length) return undefined;
+  const validated = raw.map((range): [number, number] | null => {
+    if (range === null) return null;
+    if (!Array.isArray(range) || range.length !== 2) return null;
+    const [start, end] = range;
+    if (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end < start) return null;
+    return [start, end];
+  });
+  return validated.some(Boolean) ? validated : undefined;
+}
+
 function structuredCarrier(raw: unknown): Fields {
   if (!isFields(raw)) return {};
   const nested = raw.lesson ?? raw.guidedLesson ?? raw.lessonContent ?? raw.lesson_content;
@@ -82,6 +96,13 @@ export function normalizeGuidedLesson(base: LessonBase, exercise?: unknown, snap
   const catPrompts = (Array.isArray(rawPrompt) ? rawPrompt.map(text) : [text(rawPrompt)])
     .filter(Boolean).map(line => line.length > 115 ? line.slice(0, 112).trimEnd() + '…' : line);
   const singlePrompt = stringField(source, 'catPrompt', 'cat_prompt');
+  const liveSource = structuredCarrier(exercise);
+  const liveSteps = readSteps(liveSource.steps);
+  const sameSteps = JSON.stringify(liveSteps) === JSON.stringify(steps.length ? steps : fallbackSteps);
+  // The selected snapshot can be older than the seeded lesson metadata. Only
+  // recover live range mappings when the actual instruction steps still match.
+  const stepChordRanges = readChordRanges(pick(source, 'stepChordRanges', 'step_chord_ranges')) ??
+    (sameSteps ? readChordRanges(pick(liveSource, 'stepChordRanges', 'step_chord_ranges')) : undefined);
 
   return {
     title,
@@ -92,6 +113,7 @@ export function normalizeGuidedLesson(base: LessonBase, exercise?: unknown, snap
     success: stringField(source, 'success') || stringField(source, 'successCriteria', 'success_criteria') ||
       'You can complete the steps smoothly and repeat them without losing the beat.',
     terminologyHelp: terms(pick(source, 'terminologyHelp', 'terminology_help')),
+    stepChordRanges,
     catPrompts: catPrompts.length ? catPrompts : singlePrompt ? [singlePrompt] : [
       'Let\'s start slowly.',
       'Listen for smooth note changes.',

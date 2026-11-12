@@ -1,0 +1,153 @@
+/* Link the chords to individual routine instructions without replacing the
+   shared ChordGrid component or affecting standalone chart practice. */
+.practice-player.practice-guided .practice-lesson-card {
+  position: relative;
+}
+.practice-player.practice-guided .routine-lesson-chart-link {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+.practice-player.practice-guided .routine-lesson-chart-link > button {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  min-height: 35px;
+  padding: 6px 11px;
+  border: 1px solid #b4cdb9;
+  border-radius: 9px;
+  background: #edf4e9;
+  color: #235a42;
+  font: 700 11px/1.2 system-ui,sans-serif;
+  white-space: nowrap;
+}
+.practice-player.practice-guided .routine-lesson-chart-link > button > span {
+  font-size: 16px;
+  line-height: 1;
+}
+.practice-player.practice-guided .routine-lesson-chart-link + .practice-lesson-section:first-of-type h3 {
+  padding-right: 95px;
+}
+.practice-player.practice-guided .routine-lesson-inline-chords {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 8px 0 13px;
+}
+.practice-player.practice-guided .routine-lesson-inline-chords .chord-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 5px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+}
+.practice-player.practice-guided .routine-lesson-inline-chords .measure {
+  flex: 1 1 85px;
+  min-width: 0;
+  min-height: 39px;
+  max-width: none;
+  box-sizing: border-box;
+  padding: 4px 6px;
+  border: 1px solid #c3d4c5;
+  border-radius: 8px;
+  background: #f0f6ee;
+  color: #23533c;
+}
+.practice-player.practice-guided .routine-lesson-inline-chords .chords {
+  min-height: 29px;
+  height: auto;
+  font-size: 15px;
+  gap: 3px;
+}
+.practice-player.practice-guided .routine-lesson-inline-chords .chords span {
+  box-sizing: border-box;
+  padding: 1px 4px;
+  color: #265840;
+  background: transparent;
+  border: 0;
+  font-size: 14px;
+  font-family: Georgia, serif;
+  font-weight: 700;
+}
+/* The exercise owns its chart. Unlike standalone chart practice it has
+   a static chart title, not a selector that could silently change the material. */
+.practice-player.practice-guided .routine-chart-fixed-title {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: #2a5c44;
+  font: 700 13px/1.3 Georgia,serif;
+  overflow-wrap: anywhere;
+}
+.practice-player.practice-guided .routine-step-sheet {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+.practice-player.practice-guided .routine-step-sheet-row {
+  box-sizing: border-box;
+  display: grid;
+  align-items: stretch;
+  grid-template-columns: 28px minmax(0,1fr);
+  gap: 6px;
+  min-width: 0;
+}
+.practice-player.practice-guided .routine-step-sheet-number {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  color: #205b46;
+  font: 700 21px/1 Georgia,serif;
+  border-right: 2px solid #b4cbb8;
+  text-align: center;
+}
+.practice-player.practice-guided .routine-step-sheet-row .chord-grid {
+  box-sizing: border-box;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: repeat(auto-fit,minmax(90px,1fr));
+}
+.practice-player.practice-guided .routine-step-sheet-row .measure {
+  min-width: 0;
+  min-height: 67px;
+}
+@media (max-width: 390px) {
+  .practice-player.practice-guided .routine-lesson-chart-link {
+    right: 9px;
+  }
+  .practice-player.practice-guided .routine-lesson-chart-link > button {
+    padding-inline: 9px;
+    font-size: 11px;
+  }
+  .practice-player.practice-guided .routine-step-sheet-row {
+    grid-template-columns: 23px minmax(0,1fr);
+  }
+  .practice-player.practice-guided .routine-step-sheet-row .chord-grid {
+    grid-template-columns: repeat(auto-fit,minmax(72px,1fr));
+  }
+}
+
+/* The shared chart-sheet component defaults to four measures across and
+   reserves a gutter for A/B form letters. Grouped routine rows already supply
+   their own 1/2/3 gutter, so let one or two bars fill the available row. */
+.practice-player.practice-guided.practice-demo-refresh .practice-chart-scroll.practice-chart-all
+.routine-step-sheet-row .chord-grid.practice-sheet {
+  box-sizing: border-box;
+  grid-template-columns: repeat(auto-fit,minmax(90px,1fr));
+  padding-left: 0;
+}
+@media (max-width: 390px) {
+  .practice-player.practice-guided.practice-demo-refresh .practice-chart-scroll.practice-chart-all
+  .routine-step-sheet-row .chord-grid.practice-sheet {
+    grid-template-columns: repeat(auto-fit,minmax(72px,1fr));
+  }
+}
