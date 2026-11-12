@@ -71,9 +71,9 @@ try {
   await page.waitForFunction(() =>
     document.querySelector('.tool-tuner')?.getAttribute('data-capture-path') === 'worklet',
   null, { timeout: 12000 });
-  // Regression for the user-reported failure at about 15 seconds. Monitor
-  // for >25 seconds while the graph remains collapsed.
-  for (let tick = 0; tick < 18; tick++) {
+  // Regression for the user-reported glitch around 15 seconds: hold a genuine
+  // A440 microphone signal for over a minute and verify it stays steady.
+  for (let tick = 0; tick < 43; tick++) {
     await page.waitForTimeout(1500);
     const note = await page.locator('.tuner-reading strong').textContent();
     const backend = await page.locator('.tool-tuner').getAttribute('data-capture-path');
@@ -87,9 +87,14 @@ try {
   if (!Number.isFinite(measured) || Math.abs(measured - 440) > 4) {
     throw new Error('Expected A440 microphone input, got ' + frequency);
   }
-  // Chromatic is also the singing mode. Its optional graph tracks the same mic.
-  await page.getByRole('button', { name: 'Show pitch graph' }).click();
+  // The pitch graph is always on. All plotted points must come from microphone measurements.
   await page.getByRole('region', { name: 'Live pitch graph' }).waitFor();
+  if (await page.getByRole('button', { name: /Show pitch graph|Hide pitch graph|Full take/ }).count()) {
+    throw new Error('Legacy graph visibility/time selector reappeared');
+  }
+  if (await page.getByRole('button', { name: 'Tuner help' }).count()) {
+    throw new Error('The top-right help button must be removed');
+  }
   if (await page.getByRole('button', { name: 'Voice', exact: true }).count()) {
     throw new Error('Redundant Voice mode must not appear');
   }
@@ -103,6 +108,17 @@ try {
   if (!plotted || plotted.split(' ').length < 2) {
     throw new Error('Chromatic pitch graph did not receive enough live microphone samples');
   }
+  const scroll = await page.locator('.tuner-history-scroll').evaluate(element => ({
+    width: element.clientWidth, total: element.scrollWidth,
+  }));
+  if (scroll.total <= scroll.width) {
+    throw new Error('The 60+ second pitch history is not horizontally scrollable: ' + JSON.stringify(scroll));
+  }
+  // The saved note must remain stable with no transient octave-spike readings.
+  const history = await page.evaluate(() =>
+    [...document.querySelectorAll('.tuner-history-scroll polyline')]
+      .flatMap(line => (line.getAttribute('points') || '').split(' ').filter(Boolean)));
+  if (history.length < 100) throw new Error('Measured pitch chart is unexpectedly short');
   for (const [width, height] of [[390, 844], [375, 667]]) {
     await page.setViewportSize({ width, height });
     await page.getByRole('region', { name: 'Live pitch graph' }).scrollIntoViewIfNeeded();
@@ -127,28 +143,41 @@ try {
   console.log('PASS: real browser microphone detected A4 at ' + frequency +
     ' and drew ' + plotted.split(' ').length + ' live graph points');
   await page.getByRole('button', { name: /Stop microphone/ }).click();
-  // Stop must keep historical points. Saving must be real account-scoped data.
-  await page.getByRole('button', { name: 'Save pitch check for journal' }).click();
+  // Stopping does not erase the full session's recorded notes.
+  await page.getByRole('button', { name: 'Add graph to journal' }).click();
   const snapshot = await page.evaluate(() => {
     const key = Object.keys(localStorage).find(k => k.includes(':tuner-pitch-checks:v1:'));
     return key ? JSON.parse(localStorage.getItem(key) || '[]')[0] : null;
   });
-  if (!snapshot || snapshot.samples.length < 50 || snapshot.durationMs < 24000) {
-    throw new Error('Stopped tuner lost its >24-second measured pitch history');
+  if (!snapshot || snapshot.samples.length < 100 || snapshot.durationMs < 30000) {
+    throw new Error('Tuner lost its full measured pitch history');
   }
-  await page.getByRole('region', { name: 'Saved pitch checks' }).waitFor();
+  const journal = page.getByRole('dialog', { name: 'Daily Journal' });
+  await journal.waitFor();
+  if (!(await journal.locator('.practice-pitch-preview polyline').count())) {
+    throw new Error('Daily Journal did not open with the actual pitch graph pasted in');
+  }
+  // Text is optional. Save the graph directly and verify its journal association.
+  await journal.getByRole('button', { name: 'Save Entry' }).click();
+  const entry = await page.evaluate(() => {
+    const key = Object.keys(localStorage).find(k => k.includes(':practice-journals:v1:'));
+    const list = key ? JSON.parse(localStorage.getItem(key) || '[]') : [];
+    return list.find(item => item.pitchCaptureIds?.length);
+  });
+  if (!entry || !entry.pitchCaptureIds.includes(snapshot.id)) {
+    throw new Error('Pitch graph was not linked to the saved daily journal');
+  }
+  await page.getByRole('button', { name: 'Clear graph' }).click();
+  if (!(await page.getByText('Play a note to begin your pitch history.').isVisible())) {
+    throw new Error('Clear graph did not clear the live timeline');
+  }
   await page.goto(origin + '/player?chart=blues-f-12');
   await page.getByRole('button', { name: 'Open session journal' }).click();
-  const attach = page.getByRole('group', { name: "Attach today's tuner pitch checks" });
-  await attach.getByRole('checkbox').check();
-  await page.getByRole('button', { name: 'Save Entry' }).click();
-  await page.getByRole('button', { name: 'Open session journal' }).click();
   await page.getByText('1 pitch chart attached').first().waitFor();
-  // Expanding the journal exposes the graph, not merely a decorative tag.
   const latest = page.locator('.practice-feature-journal-card').first();
   await latest.locator('button').first().click();
-  if (!(await page.locator('.practice-pitch-preview polyline').count())) {
-    throw new Error('Attached pitch graph is missing from journal entry');
+  if (!(await latest.locator('.practice-pitch-preview polyline').count())) {
+    throw new Error('Saved pitch graph was not accessible from the journal history');
   }
   await page.getByRole('button', { name: 'Close Session Journal' }).click();
 
