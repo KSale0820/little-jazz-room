@@ -25,6 +25,25 @@ try {
         animations: 'disabled' });
     };
     const elapsed = () => page.getByTestId('session-elapsed').innerText();
+    const checkFooter = async name => {
+      const footer = page.locator('.fp-session-footer');
+      check(await footer.count() === 1, name + ': missing single session footer');
+      const geometry = await footer.evaluate(element => {
+        const cells = [...element.children].map(child => child.getBoundingClientRect());
+        return {
+          count: cells.length,
+          minY: Math.min(...cells.map(rect => rect.top)),
+          maxY: Math.max(...cells.map(rect => rect.top)),
+          width: element.clientWidth,
+          scrollWidth: element.scrollWidth,
+          bottom: element.getBoundingClientRect().bottom,
+        };
+      });
+      check(geometry.count === 6, name + ': expected timer, play/pause, previous, next, finish, journal');
+      check(geometry.maxY - geometry.minY <= 2, name + ': session controls wrapped onto multiple lines');
+      check(geometry.scrollWidth <= geometry.width + 1, name + ': footer overflows its width');
+      check(await footer.getByRole('button').count() === 5, name + ': missing footer action');
+    };
 
     await page.goto(base + '/free-practice', { waitUntil: 'networkidle' });
     await page.locator('.fp-redesign').waitFor();
@@ -35,10 +54,24 @@ try {
     check(await page.locator('.fp-redesign img').count() === 0, 'No decorative images in empty state');
     check(await page.getByRole('button', { name: /Tuner/ }).isVisible(), 'Tuner missing in empty state');
     check(await page.getByRole('button', { name: /Metronome/ }).isVisible(), 'Metronome missing in empty state');
-    await page.waitForTimeout(1150);
-    const initial = await elapsed();
-    check(initial !== '00:00', 'Free Practice must track time without playback');
+    check(await page.locator('.fp-simple-tools .practice-tool-glyph').count() === 2,
+      'Empty-state Metronome and Tuner must use the approved player icon components');
+    await page.waitForTimeout(1250);
+    check((await elapsed()) === '00:00', 'Free Practice timer must NOT start automatically');
+    check(await page.getByRole('button', { name: 'Start practice timer' }).count() >= 1,
+      'Empty state requires a separate Start practice timer row');
+    await checkFooter('empty');
     await screenshot('01-empty');
+
+    await page.locator('.fp-start-timer').click();
+    await page.waitForTimeout(1250);
+    check((await elapsed()) !== '00:00', 'Start practice timer action did not begin counting');
+    await page.locator('.fp-session-footer').getByRole('button', { name: 'Pause practice timer' }).click();
+    const pausedTime = await elapsed();
+    await page.waitForTimeout(1200);
+    check((await elapsed()) === pausedTime, 'Paused session timer kept counting');
+    await page.locator('.fp-session-footer').getByRole('button', { name: 'Resume practice timer' }).click();
+    await screenshot('01b-empty-timer-running');
 
     await page.getByRole('button', { name: /Chart \/ Track/ }).click();
     await page.getByRole('dialog', { name: 'Add to Session' }).waitFor();
@@ -55,6 +88,7 @@ try {
       'Only chart-based content may expose Mixer (Preview)');
     const beforeAdd = await elapsed();
     check(beforeAdd !== '00:00', 'Queue selection reset the independent session timer');
+    await checkFooter('recording');
     await screenshot('02-recording');
 
     await page.getByRole('button', { name: /\+ Add/ }).click();
@@ -70,6 +104,7 @@ try {
     check(await page.locator('.practice-lesson-scroll').count() === 1,
       'Routine must reuse the actual guided lesson component');
     check(await page.locator('.practice-coach-dock').count() === 0, 'Free Practice must omit companion illustrations');
+    await checkFooter('routine');
     await screenshot('03-routine-instructions');
 
     await page.getByRole('button', { name: 'Previous practice item' }).click();
