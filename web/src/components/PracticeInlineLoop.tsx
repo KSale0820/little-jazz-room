@@ -1,5 +1,12 @@
 import type { PlayerLoopOption } from '../lib/practiceLoopProgram';
 import { repeatLabel, nextRepeatCount } from '../lib/practicePlayerNotes';
+/** Small fixed-size chevrons avoid clipped font glyphs in compact steppers. */
+export function ControlChevron({ up }: { up: boolean }) {
+  return <svg aria-hidden="true" viewBox="0 0 16 12" width="12" height="8"
+    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d={up ? 'M3 9 8 4l5 5' : 'm3 3 5 5 5-5'} />
+  </svg>;
+}
 export function PracticeInlineLoop({ options, counts, wholeCount, wholeSelected, onCount, onWhole, onAdd, onAdvanced, disabled = false }: {
   options: PlayerLoopOption[]; counts: Record<string,number>; wholeCount:number; wholeSelected:boolean;
   onCount:(id:string,value:number)=>void; onWhole:(value:number)=>void;
@@ -12,8 +19,8 @@ export function PracticeInlineLoop({ options, counts, wholeCount, wholeSelected,
       <span className="practice-demo-count" role="group" aria-label={label+' repeats'}>
         <strong>{repeatLabel(value)}</strong>
         <span className="practice-loop-count-actions">
-          <button type="button" aria-label={'Increase '+label+' repeats'} disabled={disabled} onClick={()=>handle(nextRepeatCount(value,1))}>⌃</button>
-          <button type="button" aria-label={'Decrease '+label+' repeats'} disabled={disabled} onClick={()=>handle(nextRepeatCount(value,-1))}>⌄</button>
+          <button type="button" aria-label={'Increase '+label+' repeats'} disabled={disabled} onClick={()=>handle(nextRepeatCount(value,1))}><ControlChevron up /></button>
+          <button type="button" aria-label={'Decrease '+label+' repeats'} disabled={disabled} onClick={()=>handle(nextRepeatCount(value,-1))}><ControlChevron up={false} /></button>
         </span>
       </span>
     </div>;
