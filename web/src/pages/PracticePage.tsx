@@ -306,11 +306,13 @@ export function PracticePage() {
       if (activeRecording) {
         const audio = audioRef.current;
         return { playing: Boolean(audio && !audio.paused && !audio.ended && audio.readyState >= 2),
-          positionSeconds: (audio?.currentTime ?? 0) - activeRecording.chartStartSeconds };
+          positionSeconds: (audio?.currentTime ?? 0) - activeRecording.chartStartSeconds,
+          tempoBpm: activeRecording.recordedBpm * (audio?.playbackRate ?? 1) };
       }
       return { playing: isRunning,
         positionSeconds: rawChartBeat(musicalClock, performance.now(), tempo, chart) *
-          60 * 4 / (tempo * chart.time_signature[1]) };
+          60 * 4 / (tempo * chart.time_signature[1]),
+        tempoBpm: tempo };
     });
   }, [metronome.connectPlayback, activeRecording?.id, activeRecording?.chartStartSeconds,
     isRunning, musicalClock, tempo, chart.id, chart.time_signature[1]]);
