@@ -129,10 +129,7 @@ export function PracticePage() {
   const recordingLoopIndex = useRef(0);
   const [repeatRecording, setRepeatRecording] = useState(false);
 
-  // Prior steps are committed as milliseconds; the current step retains its
-  // fractional second when paused or advanced.
-  const [priorMs, setPriorMs] = useState(0);
-  const [stepMs, setStepMs] = useState(0);
+  // Playback state is independent of the automatically running session clock.
   const [startedAtMs, setStartedAtMs] = useState<number | null>(null);
   const [nowMs, setNowMs] = useState(() => performance.now());
   // Independent wall-clock practice timer: starts when the player opens,
@@ -212,8 +209,6 @@ export function PracticePage() {
   useEffect(() => {
     setStepIndex(0);
     setPanel(routine ? 'instructions' : 'chart');
-    setPriorMs(0);
-    setStepMs(0);
     setStartedAtMs(null);
     setSessionAccumulatedMs(0);
     const sessionStart = performance.now();
@@ -555,10 +550,7 @@ export function PracticePage() {
       };
     });
     if (playing) setStartedAtMs(now);
-    else {
-      setStepMs(value => elapsedMilliseconds(value, startedAtMs, now));
-      setStartedAtMs(null);
-    }
+    else setStartedAtMs(null);
     setNowMs(now);
   }
 
@@ -567,8 +559,6 @@ export function PracticePage() {
     const next = Math.max(0, Math.min(routine.steps.length - 1, stepIndex + delta));
     if (next === stepIndex) return;
     const now = performance.now();
-    setPriorMs(value => value + elapsedMilliseconds(stepMs, startedAtMs, now));
-    setStepMs(0);
     setStartedAtMs(null);
     setNowMs(now);
     setStepIndex(next);
@@ -582,11 +572,9 @@ export function PracticePage() {
     audioRef.current?.pause();
     const now = performance.now();
     const finishedStamp = Date.now();
-    const finalStepMs = elapsedMilliseconds(stepMs, startedAtMs, now);
     const durationSeconds = Math.floor((sessionAccumulatedMs + elapsedMilliseconds(0, sessionStartedAtMs, now)) / 1000);
     setSessionAccumulatedMs(previous => previous + elapsedMilliseconds(0, sessionStartedAtMs, now));
     setSessionStartedAtMs(null);
-    setStepMs(finalStepMs);
     setStartedAtMs(null);
     setMusicalClock(current => ({ chartBeat: rawChartBeat(current, now, tempo, chart), startedAtMs: null }));
     setNowMs(now);
@@ -661,8 +649,6 @@ export function PracticePage() {
     if (audioRef.current) audioRef.current.currentTime = 0;
     setRecordingPosition(0);
     setStepIndex(0);
-    setPriorMs(0);
-    setStepMs(0);
     setStartedAtMs(null);
     setSessionAccumulatedMs(0);
     const restartTime = performance.now();
