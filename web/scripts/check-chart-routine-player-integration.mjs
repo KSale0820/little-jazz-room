@@ -62,7 +62,9 @@ try {
     const freeCard = page.locator('.chart-library-card').filter({ hasText: freeChartTitle });
     await freeCard.getByRole('button', { name: 'Practice', exact: true }).click();
     await page.waitForURL(url => url.pathname === '/player' && url.searchParams.get('chart') === savedChart.id);
-    assert.equal(await page.locator('#player-chart').inputValue(), savedChart.id);
+    // The current shared player has no legacy #player-chart selector.
+    // Verify the actual rendered chart's measures, title, and annotation instead.
+    assert.equal(await page.locator('.practice-chart-scroll .measure').count(), savedChart.bars.length);
     await page.getByRole('heading', { name: freeChartTitle }).waitFor();
     await page.getByText('Swing feel', { exact: true }).waitFor();
     await page.getByText('Play gently throughout', { exact: true }).waitFor();
@@ -158,12 +160,14 @@ try {
     await page.waitForURL(url => url.pathname === '/player' && url.searchParams.get('routine') === savedRoutine.id);
     await page.getByRole('heading', { name: routineTitle }).waitFor();
     await page.getByRole('tab', { name: 'Chart' }).click();
-    assert.equal(await page.locator('#player-chart').inputValue(), linkedChartId);
+    assert.equal(await page.locator('.practice-chart-scroll .measure').count(), 4,
+      'Expected the four-measure custom chart in routine step');
     await page.screenshot({ path: path.join(out, size + '-08-routine-player.png'), fullPage: true });
     await page.reload({ waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: routineTitle }).waitFor();
     await page.getByRole('tab', { name: 'Chart' }).click();
-    assert.equal(await page.locator('#player-chart').inputValue(), linkedChartId);
+    assert.equal(await page.locator('.practice-chart-scroll .measure').count(), 4,
+      'Expected the four-measure custom chart in routine step');
     await checks(page, size);
 
     await page.goto(base + '/player?chart=chart-local-missing-' + size, { waitUntil: 'networkidle' });
