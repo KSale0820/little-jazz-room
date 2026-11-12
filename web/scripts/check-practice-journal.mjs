@@ -20,30 +20,45 @@ try {
       assert.ok(await page.locator('.pj-day[aria-label*="practice recorded"]').count() > 0, 'seeded sessions must show markers');
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/calendar-' + viewport.width + '.png', fullPage: true });
 
-      // Calendar date opens the day overview, not the consolidated journal sheet.
-      await page.locator('.pj-day.selected').click();
-      await page.getByRole('button', { name: 'Open daily practice sheet' }).waitFor();
-      assert.equal(await page.locator('.pj-detail').count(), 0, 'date should show overview first');
-      assert.ok(await page.locator('.pj-day-overview .pj-session').count() > 0);
-      assert.ok(await page.locator('.pj-day-overview .pj-row').count() > 0);
+      // Calendar date selection remains inline, with date-specific cards underneath.
+      const initialSelected = await page.locator('.pj-day.selected').getAttribute('aria-label');
+      assert.ok(initialSelected);
+      const otherDay = page.locator('.pj-day:not(.selected)').first();
+      await otherDay.click();
+      assert.equal(await page.locator('.pj-detail').count(), 0, 'date click must not open journal sheet');
+      assert.equal(await page.locator('.pj-day-overview').count(), 0, 'do not navigate to a separate overview');
+      assert.equal(await page.locator('.pj-calendar-panel').count(), 1);
+      await page.locator('.pj-day[aria-label="' + initialSelected + '"]').click();
+      await page.getByRole('button', { name: 'View practice sheet' }).waitFor();
+      assert.equal(await page.getByRole('button', { name: '+ Add journal entry' }).count(), 0, 'existing entry must not offer Add');
+      await page.getByRole('button', { name: 'Edit journal entry' }).last().waitFor();
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/overview-' + viewport.width + '.png', fullPage: true });
-      await page.getByRole('button', { name: 'Open daily practice sheet' }).click();
+      await page.getByRole('button', { name: 'View practice sheet' }).click();
       await page.getByRole('heading', { name: 'What I practiced' }).waitFor();
       assert.equal(await page.locator('.pj-detail').count(), 1);
       assert.ok(await page.locator('.pj-detail-practiced').count() > 0);
-      assert.ok(await page.locator('.pj-measure-link').count() > 0, 'dated chart notes must live within What I practiced');
+      assert.ok(await page.locator('.pj-measure-link').count() > 0, 'dated chart notes must be under What I practiced');
       assert.ok(await page.locator('.pj-session-reflection').count() > 0, 'reflection belongs under its session');
-      const isDateBeforeSheet = await page.evaluate(() => {
-        const meta = document.querySelector('.pj-detail-meta')?.getBoundingClientRect();
-        const panel = document.querySelector('.pj-detail-section')?.getBoundingClientRect();
-        return !!meta && !!panel && meta.top < panel.top;
-      });
-      assert.ok(isDateBeforeSheet, 'date/time should be above the colored sheet');
+      assert.ok(await page.locator('.pj-detail-section h2 svg').count() === 4, 'mockup section icons present');
+      assert.equal(await page.locator('.pj-observation-label').count(), 0, 'no duplicated note title');
+      assert.equal(await page.getByRole('button', { name: 'Edit note' }).count(), 0, 'only top pencil edits notes');
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/day-' + viewport.width + '.png', fullPage: true });
       await page.getByRole('button', { name: 'Back to Practice Journal' }).click();
-      await page.getByRole('button', { name: 'Back to Calendar' }).waitFor();
-      await page.getByRole('button', { name: 'Back to Calendar' }).click();
       assert.equal(await page.locator('.pj-tabs button.active').textContent(), 'Calendar');
+      assert.equal(await page.locator('.pj-calendar-panel').count(), 1);
+      const storedBefore = await page.evaluate(() => {
+        const key = Object.keys(localStorage).find(k => k.includes('practice-journals:v1:'));
+        return key ? { key, ids: JSON.parse(localStorage.getItem(key) || '[]').map(e => e.id) } : null;
+      });
+      assert.ok(storedBefore, 'demo stored journal entries');
+      await page.getByRole('button', { name: 'Edit journal entry' }).last().click();
+      await page.getByLabel('Title').fill('Updated daily entry');
+      await page.getByRole('button', { name: 'Save changes' }).click();
+      const storedAfter = await page.evaluate(key =>
+        JSON.parse(localStorage.getItem(key) || '[]').map(e => e.id), storedBefore.key);
+      assert.deepEqual([...storedAfter].sort(), [...storedBefore.ids].sort(), 'editing does not replace or duplicate records');
+      await page.getByRole('button', { name: 'Back to Practice Journal' }).click();
+      assert.equal(await page.getByRole('button', { name: '+ Add journal entry' }).count(), 0);
 
       await page.getByRole('button', { name: 'Journal', exact: true }).click();
       assert.equal(await page.locator('.pj-tabs button.active').textContent(), 'Journal');
@@ -56,6 +71,9 @@ try {
       await page.getByRole('button', { name: '+ Scales' }).click();
       await page.getByRole('button', { name: 'Change color for Scales' }).click();
       await page.getByRole('button', { name: 'Set Scales color to rose' }).click();
+      await page.locator('.pj-icon-picker summary').click();
+      await page.getByRole('button', { name: 'Select Rhythm icon' }).click();
+      assert.equal(await page.locator('.pj-icon-picker-grid button[aria-pressed="true"]').count(), 1);
       await page.getByLabel('Custom tag').fill('Bridge');
       await page.getByRole('button', { name: 'New tag color blue' }).click();
       await page.getByRole('button', { name: '+ Add', exact: true }).click();
@@ -77,11 +95,12 @@ try {
       await page.getByLabel('Notes & observations').fill('Practice the two-bar phrase over the bridge.');
       await page.getByRole('button', { name: '+ Bridge' }).click();
       await page.getByRole('button', { name: 'Save changes' }).click();
-      await page.getByText('QA: rhythmic phrase idea').waitFor();
+      await page.getByText('Practice the two-bar phrase over the bridge.').waitFor();
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/notes-' + viewport.width + '.png', fullPage: true });
       await page.reload();
-      await page.getByText('QA: rhythmic phrase idea').waitFor();
-      await page.getByRole('button', { name: 'Edit note' }).click();
+      await page.getByText('Practice the two-bar phrase over the bridge.').waitFor();
+      assert.equal(await page.getByRole('button', { name: 'Edit note' }).count(), 0);
+      await page.getByRole('button', { name: 'Edit journal entry' }).click();
       assert.equal(await page.getByLabel('Notes & observations').inputValue(), 'Practice the two-bar phrase over the bridge.');
       await page.getByLabel('Notes & observations').fill('Updated phrase with more space.');
       await page.getByRole('button', { name: 'Save changes' }).click();
