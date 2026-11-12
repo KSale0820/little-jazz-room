@@ -1,6 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import { metronomeClickOptions, playbackClickTimes, secondsBetweenClicks } from './metronomeSync';
+import { metronomeClickOptions, metronomeClickSound, playbackClickTimes, secondsBetweenClicks } from './metronomeSync';
 describe('playback-aligned metronome',()=>{
+  it('plays the selected click 1 accent on beat index 0, including count-in', () => {
+    const accents = [true, false, false, false];
+    expect(metronomeClickSound(0, accents, false)).toEqual({
+      accent: true, frequency: 1420, volume: .16,
+    });
+    expect(metronomeClickSound(1, accents, false)).toEqual({
+      accent: false, frequency: 970, volume: .1,
+    });
+    expect(metronomeClickSound(0, accents, true)).toEqual({
+      accent: true, frequency: 1420, volume: .16,
+    });
+    expect(metronomeClickSound(1, accents, true)).toEqual({
+      accent: false, frequency: 760, volume: .085,
+    });
+  });
+  it('moves accents only when a different visible click is selected', () => {
+    expect(metronomeClickSound(0, [false, true, false, false], false).accent).toBe(false);
+    expect(metronomeClickSound(1, [false, true, false, false], false).accent).toBe(true);
+  });
   it('limits clicks to exact divisors and subdivisions of the piece',()=>{
     expect(metronomeClickOptions(4)).toEqual([1,2,4,8,16]);
     expect(metronomeClickOptions(3)).toEqual([1,3,6,12]);
