@@ -18,6 +18,7 @@ import { ProgressRedesignPage } from './pages/ProgressRedesignPage';
 import { SignInPage, SignUpRedirect } from './pages/SignInPage';
 import { ChartBuilderPage } from './pages/ChartBuilderPage';
 import { ChartLibraryPage } from './pages/ChartLibraryPage';
+import { AchievementsPage } from './pages/AchievementsPage';
 
 // Old free-mode links must never fall through to the chart player's first chart.
 function PracticePlayerEntry() {
@@ -51,6 +52,7 @@ export default function App() {
               <Route path="free-practice" element={<FreePracticePage />} />
               <Route path="player" element={<PracticePlayerEntry />} />
               <Route path="progress" element={<ProgressRedesignPage />} />
+              <Route path="achievements" element={<AchievementsPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
