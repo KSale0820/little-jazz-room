@@ -1,4 +1,4 @@
-import type { Exercise, LocalExercise, RoutinePlayerSettings, WrittenPitch } from '../types/content';
+import type { Exercise, LocalExercise, Routine, RoutinePlayerSettings, WrittenPitch } from '../types/content';
 import type { LoopSection } from './practiceChartClock';
 
 export type RoutineStepOutcome = 'complete' | 'needs-work' | 'skipped';
@@ -65,4 +65,18 @@ export function makeSavedExercise(
       repeat: settings.repeat,
     },
   };
+}
+
+/** Cloud routines currently omit per-step player presets. Keep a saved local
+ * preset attached only to the same step occurrence, never to a reordered one.
+ */
+export function overlayLocalRoutinePresets(cloud: Routine, local: Routine | undefined): Routine {
+  if (!local || local.steps.length !== cloud.steps.length) return cloud;
+  const steps = cloud.steps.map((remote, index) => {
+    const stored = local.steps[index];
+    if (!stored || stored.exercise_id !== remote.exercise_id ||
+        stored.duration_minutes !== remote.duration_minutes) return remote;
+    return stored.player_settings ? { ...remote, player_settings: stored.player_settings } : remote;
+  });
+  return { ...cloud, steps };
 }
