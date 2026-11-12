@@ -48,6 +48,8 @@ jobs:
         run: node scripts/check-class-demo-tracks.mjs
       - name: Practice Hub routes and quick tools
         run: node scripts/check-class-demo-p01.mjs
+      - name: Free Practice shared player, routine-only state and queue mobile QA
+        run: node scripts/check-free-practice-shared-player.mjs
       - name: Full session, feedback, progress persistence and custom routine walkthrough
         run: node scripts/check-class-demo-integration.mjs
       - name: Progress illustration, companion selection and session history
@@ -81,6 +83,7 @@ jobs:
             web/docs/screenshots/class-demo/
             web/docs/screenshots/class-demo-tracks/
             web/docs/screenshots/class-demo-p01/
+            web/docs/screenshots/free-practice-shared-player/
             web/docs/screenshots/class-demo-integration/
             web/docs/screenshots/class-demo-p02-chart-scale/
             web/docs/screenshots/class-demo-p02-overlays/

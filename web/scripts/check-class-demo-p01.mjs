@@ -105,7 +105,7 @@ try {
         await page.goto(base + '/practice');
         await page.getByRole('button', { name: /Free Practice/ }).click();
         await page.waitForURL(url => url.pathname === '/free-practice');
-        await page.locator('.fp-page').waitFor({ state: 'visible' });
+        await page.locator('.fp-redesign').waitFor({ state: 'visible' });
       }
       assert(errors.length === 0, 'Browser exceptions: ' + errors.join(' | '));
       console.log(`PASS Practice-first ${state} at ${width}x${height}: four tabs, routes, accurate progress, safe targets and screenshot`);

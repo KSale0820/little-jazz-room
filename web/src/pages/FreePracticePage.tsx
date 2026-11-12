@@ -1,314 +1,367 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
-import { ChordGrid } from '../components/ChordGrid';
-import { useApp } from '../context/AppContext';
-import { RECORDED_BACKING_TRACKS, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
-import type { PracticeSessionRecord } from '../types/content';
-import { formatPracticeTime } from './practicePlayerLogic';
-import { MetronomePage } from './MetronomePage';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { PracticePage, PracticeToolGlyph, type FreePracticePlayerSession } from './PracticePage';
+import { FreePracticeSessionBar } from '../components/FreePracticeSessionBar';
+import { SessionJournalSheet } from '../components/PracticePlayerSheets';
+import { PracticeMetronomeSheet } from '../components/PracticeMetronomeSheet';
+import { usePracticeMetronome } from '../lib/usePracticeMetronome';
+import { readLocalList, persistLocalList, journalKey } from '../lib/practicePlayerNotes';
+import type { PracticeJournalEntry } from '../lib/practicePlayerNotes';
 import { TunerPage } from './TunerPage';
+import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
+import { RECORDED_BACKING_TRACKS, hasChartSync, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
+import { readRoutineBookmarks, saveRoutineBookmarks } from '../lib/routineBookmarks';
+import { formatPracticeTime } from './practicePlayerLogic';
+import type { PracticeSessionRecord } from '../types/content';
 import './FreePracticePage.css';
 
-type Picker = 'exercise' | 'chart' | 'routine' | 'track' | null;
-type QueueKind = 'technique' | 'exercise' | 'chart' | 'routine';
-type PracticeTool = 'metronome' | 'tuner';
-type QueueItem = { key: string; kind: QueueKind; sourceId: string; title: string; done: boolean };
+type PracticeKind = 'chart' | 'track' | 'routine';
+type SessionItem = { id: string; kind: PracticeKind; sourceId: string; title: string };
+type FreeSessionState = {
+  items: SessionItem[];
+  activeIndex: number;
+  id: string;
+  elapsedMs: number;
+  runningSince: number | null;
+};
+type PickerTab = 'music' | 'routine';
 
-const TECHNIQUES = ['Scales', 'Improvisation', 'Ear training', 'Rhythm', 'Articulation'];
-const AVAILABLE_RECORDINGS = RECORDED_BACKING_TRACKS.filter(isUsableRecordedTrack);
+const recordings = RECORDED_BACKING_TRACKS.filter(recording =>
+  isUsableRecordedTrack(recording) && hasChartSync(recording));
+const catalogChartIds: Record<string, string> = {
+  'blues-f-12': 'after-hours',
+  'rhythm-bb-32': 'moonlit',
+  'ballad-eb-16': 'staircase',
+  'minor-bossa-cm-16': 'sunday',
+};
+const newSession = (): FreeSessionState => ({
+  items: [], activeIndex: 0, id: crypto.randomUUID(), elapsedMs: 0, runningSince: null,
+});
+
+function readSession(key: string): FreeSessionState {
+  try {
+    const saved = sessionStorage.getItem(key);
+    // Carry forward an old queue without inheriting the earlier auto-started clock.
+    const parsed: unknown = JSON.parse(saved ?? sessionStorage.getItem(key.replace(':v3:', ':v2:')) ?? 'null');
+    if (!parsed || typeof parsed !== 'object') return newSession();
+    const record = parsed as Partial<FreeSessionState>;
+    if (!Array.isArray(record.items) || typeof record.id !== 'string' ||
+      typeof record.elapsedMs !== 'number' || !Number.isFinite(record.elapsedMs)) return newSession();
+    const items = record.items.filter((entry): entry is SessionItem =>
+      Boolean(entry) && typeof entry.id === 'string' && typeof entry.title === 'string' &&
+      typeof entry.sourceId === 'string' && ['chart', 'track', 'routine'].includes(entry.kind));
+    return {
+      id: record.id,
+      items,
+      activeIndex: Math.max(0, Math.min(items.length - 1, Number(record.activeIndex) || 0)),
+      elapsedMs: Math.max(0, record.elapsedMs),
+      runningSince: saved !== null && typeof record.runningSince === 'number' ? record.runningSince : null,
+    };
+  } catch { return newSession(); }
+}
+
+function elapsed(state: FreeSessionState, now: number): number {
+  return state.elapsedMs + (state.runningSince === null ? 0 : Math.max(0, now - state.runningSince));
+}
 
 /**
- * Free Practice is an independent, timer-first session. Selecting a chart,
- * exercise, routine, or recording never silently substitutes a random chart
- * or changes the session clock.
+ * This is a session/queue shell, NOT a second music player. Chart and routine
+ * content is rendered by PracticePage, so its real playback and guided lesson
+ * code stays authoritative for all three entry points.
  */
 export function FreePracticePage() {
   const navigate = useNavigate();
-  const { addSession, showToast, exercises, charts, routines } = useApp();
-  const clock = useRef({ accumulatedMs: 0, startedAt: null as number | null });
-  const saveInFlight = useRef(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const lastToolTrigger = useRef<HTMLButtonElement | null>(null);
-  const toolDialogRef = useRef<HTMLDivElement | null>(null);
-  const [seconds, setSeconds] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [queue, setQueue] = useState<QueueItem[]>([]);
-  const [picker, setPicker] = useState<Picker>(null);
+  const [params] = useSearchParams();
+  const { user } = useAuth();
+  const { repo, charts, routines, addSession, showToast } = useApp();
+  const storageKey = 'little-jazz-room:free-session:v3:' + repo.scope;
+  const [session, setSession] = useState<FreeSessionState>(() => readSession(storageKey));
+  const [now, setNow] = useState(() => Date.now());
+  const [picker, setPicker] = useState(false);
+  const [pickerTab, setPickerTab] = useState<PickerTab>('music');
   const [search, setSearch] = useState('');
-  const [customTechnique, setCustomTechnique] = useState('');
-  const [expandedKey, setExpandedKey] = useState<string | null>(null);
-  const [selectedMeasure, setSelectedMeasure] = useState(0);
-  const [recordingId, setRecordingId] = useState<string | null>(null);
-  const [audioError, setAudioError] = useState('');
-  const [tool, setTool] = useState<PracticeTool | null>(null);
+  const [activeTool, setActiveTool] = useState<'tuner' | 'metronome' | null>(null);
+  const [journalOpen, setJournalOpen] = useState(false);
+  const [journalEntries, setJournalEntries] = useState<PracticeJournalEntry[]>(() =>
+    readLocalList<PracticeJournalEntry>(journalKey(repo.scope)));
   const [finished, setFinished] = useState<PracticeSessionRecord | null>(null);
-  const [saved, setSaved] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState(false);
-
-  const elapsedMs = () => clock.current.accumulatedMs +
-    (clock.current.startedAt === null ? 0 : Math.max(0, Date.now() - clock.current.startedAt));
+  const [saveStatus, setSaveStatus] = useState<'saving' | 'saved' | 'error'>('saving');
+  const saveInFlight = useRef(false);
+  const returnedCreation = useRef('');
+  const metronome = usePracticeMetronome();
 
   useEffect(() => {
-    if (!running) return;
-    const interval = window.setInterval(() => setSeconds(Math.floor(elapsedMs() / 1000)), 250);
+    const interval = window.setInterval(() => setNow(Date.now()), 250);
     return () => window.clearInterval(interval);
-  }, [running]);
-
+  }, []);
   useEffect(() => {
-    if (!tool) return;
-    const frame = requestAnimationFrame(() => toolDialogRef.current?.querySelector<HTMLElement>('button:not(:disabled)')?.focus());
-    return () => cancelAnimationFrame(frame);
-  }, [tool]);
-
-  // An in-page tool does not unmount this timer; navigation elsewhere is still
-  // a deliberate departure. Playback stops when the page actually unmounts.
-  useEffect(() => () => { audioRef.current?.pause(); }, []);
-
-  const toggleClock = () => {
     if (finished) return;
-    if (clock.current.startedAt !== null) {
-      clock.current.accumulatedMs = elapsedMs();
-      clock.current.startedAt = null;
-      setRunning(false);
-    } else {
-      clock.current.startedAt = Date.now();
-      setRunning(true);
-    }
-    setSeconds(Math.floor(elapsedMs() / 1000));
+    try { sessionStorage.setItem(storageKey, JSON.stringify(session)); } catch { /* Optional browser storage. */ }
+  }, [session, storageKey, finished]);
+
+  const seconds = Math.floor(elapsed(session, now) / 1000);
+  const active = session.items[session.activeIndex] ?? null;
+  const goTo = (index: number) => {
+    if (index < 0 || index >= session.items.length) return;
+    setSession(previous => ({ ...previous, activeIndex: index }));
+  };
+  const pauseClock = () => {
+    const instant = Date.now();
+    setSession(previous => previous.runningSince === null
+      ? { ...previous, runningSince: instant }
+      : { ...previous, elapsedMs: elapsed(previous, instant), runningSince: null });
+    setNow(instant);
   };
 
-  const openPicker = (next: Exclude<Picker, null>) => {
-    setPicker(current => current === next ? null : next);
-    setSearch('');
+  // Leaving practice is different from temporarily visiting a creator:
+  // freeze the elapsed clock and store it before the route unmounts.
+  const leave = () => {
+    const paused = { ...session, elapsedMs: elapsed(session, Date.now()), runningSince: null };
+    try { sessionStorage.setItem(storageKey, JSON.stringify(paused)); } catch { /* Optional. */ }
+    setSession(paused);
+    navigate('/practice');
   };
 
-  const addItem = (kind: QueueKind, sourceId: string, title: string) => {
-    setQueue(current => [...current, { key: crypto.randomUUID(), kind, sourceId, title, done: false }]);
-    setPicker(null);
-    setSearch('');
-    setCustomTechnique('');
-  };
-
-  const addTechnique = (value: string) => {
-    const title = value.trim();
-    if (title) addItem('technique', title, title);
-  };
-
-  const activeItem = queue.find(item => item.key === expandedKey);
-  const activeChart = activeItem?.kind === 'chart' ? charts.find(chart => chart.id === activeItem.sourceId) : null;
-  const activeExercise = activeItem?.kind === 'exercise' ? exercises.find(item => item.id === activeItem.sourceId) : null;
-  const activeRoutine = activeItem?.kind === 'routine' ? routines.find(item => item.id === activeItem.sourceId) : null;
-  const recording = AVAILABLE_RECORDINGS.find(item => item.id === recordingId) ?? null;
-  const pickerOptions = picker === 'exercise' ? exercises.map(item => ({ id: item.id, title: item.title, description: item.description ?? item.category }))
-    : picker === 'chart' ? charts.map(item => ({ id: item.id, title: item.title, description: item.concert_key + ' · ' + item.feel }))
-    : picker === 'routine' ? routines.map(item => ({ id: item.id, title: item.title, description: item.duration_minutes + ' min' }))
-    : picker === 'track' ? AVAILABLE_RECORDINGS.map(item => ({ id: item.id, title: item.title, description: item.subtitle }))
-    : [];
-  const visibleOptions = pickerOptions.filter(item => (item.title + ' ' + item.description).toLocaleLowerCase().includes(search.toLocaleLowerCase()));
-  const selectOption = (id: string, title: string) => {
-    if (!picker) return;
-    if (picker === 'track') {
-      audioRef.current?.pause();
-      setRecordingId(id);
-      setAudioError('');
-      setPicker(null);
-    } else {
-      addItem(picker, id, title);
-    }
-  };
-
-  const saveSession = async (record: PracticeSessionRecord) => {
-    if (saved || saveInFlight.current) return;
-    saveInFlight.current = true;
-    setSaving(true);
-    setSaveError(false);
-    try {
-      await addSession(record);
-      // Optional detail is local-only; the existing session schema remains intact.
-      try {
-        localStorage.setItem('little-jazz-room:practice-feedback:v1:' + record.id, JSON.stringify({
-          items: queue.map(item => ({ kind: item.kind, title: item.title, completed: item.done })),
-          recordingId,
-        }));
-      } catch { /* storage may be unavailable */ }
-      setSaved(true);
-      showToast('Practice session saved.');
-    } catch {
-      setSaveError(true);
-      showToast('Could not save your session. Try again.');
-    } finally {
-      saveInFlight.current = false;
-      setSaving(false);
-    }
-  };
-
-  const finishSession = () => {
-    if (finished) return;
-    const durationSeconds = Math.floor(elapsedMs() / 1000);
-    if (durationSeconds === 0) {
-      showToast('Start the practice timer first.');
+  function bookmark(kind: PracticeKind, id: string) {
+    if (kind === 'routine') {
+      const bookmarks = readRoutineBookmarks(repo.scope);
+      if (!bookmarks.includes(id)) saveRoutineBookmarks(repo.scope, [...bookmarks, id]);
       return;
     }
-    clock.current.accumulatedMs = durationSeconds * 1000;
-    clock.current.startedAt = null;
-    setSeconds(durationSeconds);
-    setRunning(false);
-    audioRef.current?.pause();
+    const recording = recordings.find(row => row.id === id || row.chartId === id);
+    const catalogId = kind === 'track' ? id : recording?.id ?? catalogChartIds[id] ?? 'chart:' + id;
+    // Use the exact saved-items key used by the class-demo Tracks & Charts library.
+    const key = 'little-jazz-room:track-favorites:v1:' + (user?.id ?? 'local');
+    try {
+      const raw: unknown = JSON.parse(localStorage.getItem(key) ?? '["after-hours"]');
+      const current = Array.isArray(raw) ? raw.filter((v): v is string => typeof v === 'string') : [];
+      if (!current.includes(catalogId)) localStorage.setItem(key, JSON.stringify([...current, catalogId]));
+    } catch { showToast('Could not save this item to your library on this device.'); }
+  }
+
+  function addItem(kind: PracticeKind, id: string, title: string) {
+    metronome.stop();
+    bookmark(kind, id);
+    setSession(previous => ({
+      ...previous,
+      items: [...previous.items, { id: crypto.randomUUID(), kind, sourceId: id, title }],
+      activeIndex: previous.items.length,
+    }));
+    setPicker(false);
+    setSearch('');
+  }
+
+  // Builders can return to the same session without resetting the running
+  // clock. Their existing save paths append the newly created item here.
+  const createdChart = params.get('createdChartId');
+  const createdRoutine = params.get('createdRoutineId');
+  useEffect(() => {
+    const kind: PracticeKind | null = createdChart ? 'chart' : createdRoutine ? 'routine' : null;
+    const id = createdChart ?? createdRoutine;
+    if (!kind || !id || returnedCreation.current === kind + id) return;
+    const item = kind === 'chart'
+      ? charts.find(chart => chart.id === id)
+      : routines.find(routine => routine.id === id);
+    if (!item) return;
+    returnedCreation.current = kind + id;
+    addItem(kind, id, item.title);
+    navigate('/free-practice', { replace: true });
+  }, [createdChart, createdRoutine, charts, routines, navigate]);
+
+  const openBuilder = (kind: 'chart' | 'routine') => {
+    // Persist synchronously before unmounting the queue for a builder.
+    try { sessionStorage.setItem(storageKey, JSON.stringify(session)); }
+    catch { showToast('This browser could not preserve your session.'); return; }
+    setPicker(false);
+    navigate(kind === 'chart'
+      ? '/charts/new?returnTo=' + encodeURIComponent('/free-practice')
+      : '/create?returnTo=' + encodeURIComponent('/free-practice'));
+  };
+
+  const options = pickerTab === 'routine'
+    ? routines.map(routine => ({ id: routine.id, title: routine.title,
+        detail: routine.steps.length + ' steps · ' + routine.duration_minutes + ' min',
+        kind: 'routine' as const }))
+    : [
+        ...recordings.map(recording => ({ id: recording.id, title: recording.title,
+          detail: 'Recording · ' + recording.recordedBpm + ' BPM', kind: 'track' as const })),
+        ...charts.map(chart => ({ id: chart.id, title: chart.title,
+          detail: 'Chart · ' + chart.bars.length + ' measures', kind: 'chart' as const })),
+      ];
+  const filtered = options.filter(item =>
+    (item.title + ' ' + item.detail).toLowerCase().includes(search.trim().toLowerCase()));
+
+  async function saveSession(record: PracticeSessionRecord) {
+    if (saveInFlight.current) return;
+    saveInFlight.current = true;
+    setSaveStatus('saving');
+    try {
+      await addSession(record);
+      try {
+        localStorage.setItem('little-jazz-room:practice-feedback:v1:' + record.id,
+          JSON.stringify({ items: session.items.map(item => ({ kind: item.kind, title: item.title, sourceId: item.sourceId })) }));
+      } catch { /* Session record is still saved. */ }
+      try { sessionStorage.removeItem(storageKey); } catch { /* Optional. */ }
+      setSaveStatus('saved');
+      showToast('Free Practice session saved.');
+    } catch {
+      saveInFlight.current = false;
+      setSaveStatus('error');
+      showToast('Could not save your practice session. Please retry.');
+    }
+  }
+
+  const finish = () => {
+    if (finished) return;
+    const duration = Math.floor(elapsed(session, Date.now()) / 1000);
+    if (duration < 1) { showToast('Practice for at least one second before finishing.'); return; }
+    const routine = session.items.length === 1 && session.items[0]?.kind === 'routine'
+      ? session.items[0] : null;
     const record: PracticeSessionRecord = {
-      id: crypto.randomUUID(),
+      id: session.id,
       finishedAt: new Date().toISOString(),
-      durationSeconds,
+      durationSeconds: duration,
+      routineId: routine?.sourceId,
+      routineTitle: routine?.title,
     };
+    setSession(previous => ({ ...previous, elapsedMs: elapsed(previous, Date.now()), runningSince: null }));
+    metronome.stop();
     setFinished(record);
     void saveSession(record);
   };
 
-  const reset = () => {
-    clock.current = { accumulatedMs: 0, startedAt: null };
-    setSeconds(0);
-    setRunning(false);
-    setQueue(current => current.map(item => ({ ...item, done: false })));
-    setPicker(null);
-    setExpandedKey(null);
+  const restart = () => {
+    const fresh = newSession();
+    setSession(fresh);
     setFinished(null);
-    setSaved(false);
-    setSaveError(false);
-    audioRef.current?.pause();
+    setSaveStatus('saving');
+    saveInFlight.current = false;
+    setNow(Date.now());
   };
 
-  const openTool = (which: PracticeTool, trigger: HTMLButtonElement) => {
-    lastToolTrigger.current = trigger;
-    setTool(which);
-  };
-  const closeTool = () => {
-    setTool(null);
-    requestAnimationFrame(() => lastToolTrigger.current?.focus());
+  const saveJournal = (value: string) => {
+    const stamp = new Date().toISOString();
+    const existing = journalEntries.find(entry => entry.sessionId === session.id);
+    const entry: PracticeJournalEntry = {
+      id: existing?.id ?? crypto.randomUUID(), sessionId: session.id,
+      chartId: '', chartTitle: active?.title ?? 'Free Practice',
+      text: value, createdAt: existing?.createdAt ?? stamp, updatedAt: stamp,
+      durationSeconds: seconds,
+    };
+    const next = [...journalEntries.filter(row => row.sessionId !== session.id), entry];
+    if (!persistLocalList(journalKey(repo.scope), next)) {
+      showToast('Could not save the journal entry.'); return;
+    }
+    setJournalEntries(next);
+    setJournalOpen(false);
+    showToast('Journal entry saved.');
   };
 
-  if (finished) {
-    return <section className="fp-page fp-completed" aria-label="Free Practice complete">
-      <header className="fp-top"><button type="button" className="fp-back" onClick={() => navigate('/practice')}>‹ Practice</button></header>
-      <h1>Free Practice</h1>
-      <div className="fp-timer" role="status">
-        <h2>{saved ? 'Session Saved' : saveError ? 'Save Failed' : 'Saving Session'}</h2>
-        <strong className="fp-time">{formatPracticeTime(finished.durationSeconds)}</strong>
-      </div>
-      {saveError && <button type="button" className="fp-primary" disabled={saving} onClick={() => void saveSession(finished)}>Retry Save</button>}
-      {saved && <>
-        <button type="button" className="fp-primary" onClick={() => navigate('/progress')}>View Progress</button>
-        <button type="button" className="fp-secondary" onClick={reset}>Practice Again</button>
-      </>}
-    </section>;
-  }
+  if (finished) return <section className="fp-redesign-complete">
+    <header><button type="button" onClick={() => navigate('/practice')}>‹ Practice</button></header>
+    <h1>Free Practice complete</h1>
+    <p>{saveStatus === 'saved' ? 'Session saved' : saveStatus === 'error' ? 'Save failed' : 'Saving session'}</p>
+    <strong>{formatPracticeTime(finished.durationSeconds)}</strong>
+    <p>{session.items.length} practice {session.items.length === 1 ? 'item' : 'items'}</p>
+    {saveStatus === 'error' && <button type="button" onClick={() => void saveSession(finished)}>Retry save</button>}
+    {saveStatus === 'saved' && <>
+      <button type="button" onClick={() => navigate('/progress')}>View Progress</button>
+      <button type="button" onClick={restart}>Practice Again</button>
+    </>}
+  </section>;
+
+  const freePlayer: FreePracticePlayerSession | null = active ? {
+    kind: active.kind, sourceId: active.sourceId, sessionId: session.id,
+    seconds, clockRunning: session.runningSince !== null,
+    onPause: pauseClock, onFinish: finish, onAdd: () => setPicker(true),
+    canPrevious: session.activeIndex > 0,
+    canNext: session.activeIndex < session.items.length - 1,
+    onBack: leave, onPrevious: () => goTo(session.activeIndex - 1),
+    onNext: () => goTo(session.activeIndex + 1),
+  } : null;
 
   return <>
-    <section className="fp-page" aria-label="Free Practice">
-      <header className="fp-top">
-        <button type="button" className="fp-back" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹ Practice</button>
-        <h1>Free Practice</h1>
-      </header>
-
-      <section className="fp-timer" aria-label="Practice time recorder">
-        <h2>Practice Time</h2>
-        <strong className="fp-time" role="timer" aria-live="off">{formatPracticeTime(seconds)}</strong>
-        <button type="button" className="fp-play" aria-label={running ? 'Pause practice timer' : seconds ? 'Resume practice timer' : 'Start practice timer'} onClick={toggleClock}>
-          {running ? 'Ⅱ' : '▶'}
-        </button>
-      </section>
-
-      <section className="fp-add" aria-labelledby="fp-add-heading">
-        <h2 id="fp-add-heading">Add to Session</h2>
-        <div className="fp-choice-list">
-          {([
-            ['exercise', 'Exercise', '▤'],
-            ['chart', 'Chart', '♫'],
-            ['routine', 'Routine', '☷'],
-            ['track', 'Backing Track', '♪'],
-          ] as const).map(([kind, label, icon]) => (
-            <button type="button" key={kind} className="fp-choice" aria-expanded={picker === kind} onClick={() => openPicker(kind)}>
-              <span className="fp-choice-icon" aria-hidden="true">{icon}</span>
-              <span>{label}</span>
-              <span className="fp-chevron" aria-hidden="true">{picker === kind ? '⌄' : '›'}</span>
+    {freePlayer ? <PracticePage key={active!.id} freeSession={freePlayer} /> :
+      <section className="practice-player practice-demo-refresh fp-redesign" aria-label="Free Practice">
+        <header className="practice-player-head">
+          <button className="practice-back" type="button" onClick={leave} aria-label="Back to Practice">‹</button>
+          <div className="practice-title-group"><h1>Free Practice</h1></div>
+          <button className="fp-header-add" type="button" onClick={() => setPicker(true)}>+ Add...</button>
+        </header>
+        <section className="fp-blank-content" aria-label="Choose something to practice">
+          <h2>Choose something to practice</h2>
+          <p>Add a chart, recorded track, or guided routine. Start your practice timer when you're ready.</p>
+          <button type="button" className="fp-add-primary" onClick={() => { setPickerTab('music'); setPicker(true); }}>+ Chart / Track</button>
+          <button type="button" className="fp-add-secondary" onClick={() => { setPickerTab('routine'); setPicker(true); }}>+ Routine</button>
+        </section>
+        {session.runningSince === null && <button className="fp-start-timer" type="button" onClick={pauseClock}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M7.5 4.5 19 12 7.5 19.5z" /></svg>
+          {seconds > 0 ? 'Resume practice timer' : 'Start practice timer'}
+        </button>}
+        <div className="practice-utility-row practice-demo-tools fp-simple-tools" aria-label="Practice tools">
+          <div className="practice-demo-metronome-wrap">
+            <button className="practice-demo-tool-main" type="button" onClick={() => setActiveTool('metronome')}>
+              <PracticeToolGlyph name="metronome" /><span>Metronome</span>
             </button>
-          ))}
+            <button className={'practice-demo-metronome-switch' + (metronome.playing ? ' is-on' : '')}
+              type="button" onClick={metronome.toggle} aria-pressed={metronome.playing}>
+              {metronome.playing ? 'On' : 'Off'} <span className="practice-demo-switch-knob" />
+            </button>
+          </div>
+          <button type="button" onClick={() => setActiveTool('tuner')}>
+            <PracticeToolGlyph name="tuner" /><span>Tuner</span>
+          </button>
         </div>
+        <FreePracticeSessionBar seconds={seconds} running={session.runningSince !== null}
+          onToggleTimer={pauseClock} canPrevious={false} canNext={false}
+          onPrevious={() => {}} onNext={() => {}}
+          onFinish={finish} onJournal={() => setJournalOpen(true)} />
+      </section>}
 
-        {picker && <div className="fp-picker" aria-label={'Choose ' + picker}>
-          <div className="fp-picker-head"><strong>{picker === 'track' ? 'Backing Tracks' : picker === 'exercise' ? 'Exercises & Techniques' : picker === 'chart' ? 'Charts' : 'Routines'}</strong>
-            <button type="button" onClick={() => setPicker(null)} aria-label="Close choices">×</button>
-          </div>
-          {picker === 'exercise' && <div className="fp-techniques" aria-label="Quick techniques">
-            {TECHNIQUES.map(value => <button key={value} type="button" onClick={() => addTechnique(value)}>+ {value}</button>)}
-            <form onSubmit={event => { event.preventDefault(); addTechnique(customTechnique); }} className="fp-custom">
-              <input aria-label="Custom technique" value={customTechnique} onChange={event => setCustomTechnique(event.target.value)} placeholder="Custom technique" maxLength={80}/>
-              <button type="submit" disabled={!customTechnique.trim()}>Add</button>
-            </form>
-          </div>}
-          <input className="fp-search" aria-label="Search choices" type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={'Search ' + (picker === 'track' ? 'tracks' : picker === 'exercise' ? 'exercises' : picker + 's')}/>
-          <div className="fp-picker-results">
-            {visibleOptions.map(item => <button type="button" key={item.id} onClick={() => selectOption(item.id, item.title)}>
-              <span><strong>{item.title}</strong><small>{item.description}</small></span><span aria-hidden="true">+</span>
-            </button>)}
-            {visibleOptions.length === 0 && <p>{picker === 'track' ? 'No playable audio available.' : 'No matches.'}</p>}
-          </div>
-        </div>}
+    {picker && createPortal(<div className="fp-picker-backdrop" role="presentation" onMouseDown={event => {
+      if (event.target === event.currentTarget) setPicker(false);
+    }}>
+      <section className="fp-picker-modal" role="dialog" aria-modal="true" aria-labelledby="fp-picker-title"
+        onKeyDown={event => { if (event.key === 'Escape') setPicker(false); }}>
+        <div className="fp-picker-heading"><h2 id="fp-picker-title">Add to Session</h2>
+          <button type="button" aria-label="Close Add to Session" onClick={() => setPicker(false)}>×</button>
+        </div>
+        <div className="fp-picker-tabs" role="tablist" aria-label="Material type">
+          <button type="button" role="tab" aria-selected={pickerTab === 'music'} className={pickerTab === 'music' ? 'selected' : ''}
+            onClick={() => { setPickerTab('music'); setSearch(''); }}>Chart / Track</button>
+          <button type="button" role="tab" aria-selected={pickerTab === 'routine'} className={pickerTab === 'routine' ? 'selected' : ''}
+            onClick={() => { setPickerTab('routine'); setSearch(''); }}>Routine</button>
+        </div>
+        <input type="search" autoFocus aria-label="Search practice materials" value={search}
+          onChange={event => setSearch(event.target.value)}
+          placeholder={pickerTab === 'routine' ? 'Search routines' : 'Search charts and tracks'} />
+        <div className="fp-picker-list" aria-label="Search results">
+          {filtered.map(item => <button type="button" key={item.kind + item.id} onClick={() => addItem(item.kind, item.id, item.title)}>
+            <span><strong>{item.title}</strong><small>{item.detail}</small></span><span aria-hidden="true">+</span>
+          </button>)}
+          {!filtered.length && <p>No matching {pickerTab === 'routine' ? 'routines' : 'charts or recordings'}.</p>}
+        </div>
+        <button type="button" className="fp-create-choice" onClick={() => openBuilder(pickerTab === 'routine' ? 'routine' : 'chart')}>
+          + Create my own {pickerTab === 'routine' ? 'routine' : 'chart'}
+        </button>
+        {pickerTab === 'music' && <p className="fp-picker-help">Recordings are from the library. You can create your own chord charts, but not new audio tracks.</p>}
       </section>
+    </div>, document.body)}
 
-      {queue.length > 0 && <section className="fp-queue" aria-label="Practice queue">
-        <h2>My Session</h2>
-        {queue.map(item => <div className="fp-queue-item" key={item.key}>
-          <div className="fp-queue-row">
-            <input type="checkbox" aria-label={'Completed ' + item.title} checked={item.done}
-              onChange={event => setQueue(current => current.map(entry => entry.key === item.key ? { ...entry, done: event.target.checked } : entry))}/>
-            <button type="button" className="fp-queue-title" aria-expanded={expandedKey === item.key}
-              onClick={() => { setSelectedMeasure(0); setExpandedKey(current => current === item.key ? null : item.key); }}>
-              <span className={item.done ? 'fp-done' : ''}>{item.title}</span><small>{item.kind}</small>
-            </button>
-            <button type="button" className="fp-remove" aria-label={'Remove ' + item.title} onClick={() => {
-              setQueue(current => current.filter(entry => entry.key !== item.key));
-              if (expandedKey === item.key) setExpandedKey(null);
-            }}>×</button>
-          </div>
-          {expandedKey === item.key && <div className="fp-detail">
-            {activeChart && <div className="fp-chart">
-              <ChordGrid chart={activeChart} chartKey={activeChart.concert_key} writtenPitch="C"
-                selectedBar={selectedMeasure} loopRange={null} onSelectBar={setSelectedMeasure} practiceSheet />
-            </div>}
-            {activeExercise && <p>{activeExercise.instructions}</p>}
-            {activeRoutine && <ol>{activeRoutine.steps.map((step, index) => <li key={index}>{exercises.find(exercise => exercise.id === step.exercise_id)?.title ?? step.snapshot?.title ?? 'Exercise'} · {step.duration_minutes} min</li>)}</ol>}
-            {activeItem?.kind === 'technique' && <p>Practice at your own pace.</p>}
-          </div>}
-        </div>)}
-      </section>}
-
-      {recording && <section className="fp-audio" aria-label="Backing track">
-        <div className="fp-audio-head"><strong>{recording.title}</strong><button type="button" onClick={() => {
-          audioRef.current?.pause(); setRecordingId(null); setAudioError('');
-        }} aria-label="Remove backing track">×</button></div>
-        <audio key={recording.id} ref={audioRef} src={recording.src} controls preload="metadata"
-          aria-label={recording.title + ' backing track'} onError={() => setAudioError('Audio file unavailable.')} />
-        {audioError && <p role="alert">{audioError}</p>}
-      </section>}
-
-      <div className="fp-tools" aria-label="Practice tools">
-        <button type="button" onClick={event => openTool('metronome', event.currentTarget)}><span aria-hidden="true">♩</span>Metronome</button>
-        <button type="button" onClick={event => openTool('tuner', event.currentTarget)}><span aria-hidden="true">≋</span>Tuner</button>
-      </div>
-      <button type="button" className="fp-primary fp-finish" onClick={finishSession}>Finish Session</button>
-    </section>
-
-    {tool && createPortal(<div className="fp-tool-overlay" ref={toolDialogRef} role="dialog" aria-modal="true" aria-label={tool === 'tuner' ? 'Tuner' : 'Metronome'}
-      onKeyDown={event => {
-        if (event.key === 'Escape') { event.preventDefault(); closeTool(); }
-        if (event.key !== 'Tab') return;
-        const controls = [...(toolDialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled)') ?? [])];
-        if (!controls.length) return;
-        if (event.shiftKey && document.activeElement === controls[0]) { event.preventDefault(); controls[controls.length - 1]?.focus(); }
-        else if (!event.shiftKey && document.activeElement === controls[controls.length - 1]) { event.preventDefault(); controls[0]?.focus(); }
-      }}>
-      {tool === 'tuner' ? <TunerPage onClose={closeTool}/> : <MetronomePage onClose={closeTool}/>}
-    </div>, document.querySelector('.app-shell') ?? document.body)}
+    {!active && activeTool && (activeTool === 'metronome'
+      ? createPortal(<PracticeMetronomeSheet controller={metronome} onClose={() => setActiveTool(null)} />, document.body)
+      : createPortal(<div className="practice-tool-overlay" role="dialog" aria-modal="true" aria-label="Tuner within practice">
+          <TunerPage onClose={() => setActiveTool(null)} />
+        </div>, document.querySelector('.app-shell') ?? document.body))}
+    {!active && journalOpen && createPortal(
+      <SessionJournalSheet chartTitle="Free Practice" sessionId={session.id} seconds={seconds}
+        entries={journalEntries} onSave={saveJournal}
+        onDelete={id => {
+          const next = journalEntries.filter(entry => entry.id !== id);
+          if (persistLocalList(journalKey(repo.scope), next)) setJournalEntries(next);
+        }}
+        onClose={() => setJournalOpen(false)} />, document.body)}
   </>;
 }

@@ -21,17 +21,17 @@ try {
     const open = async path => { await page.goto(base + path, { waitUntil: 'networkidle' }); };
     const requireUrl = async expected => page.waitForURL(url => url.pathname === expected);
 
-    // Timer-first Free Practice is separate from the chart-based shared Player.
+    // Free Practice opens an empty state and reuses the shared player when material is selected.
     await open('/practice');
     await page.getByRole('button', { name: /^Free Practice/ }).click();
     await requireUrl('/free-practice');
-    await page.locator('.fp-page').waitFor({ state: 'visible' });
-    const freeTools = page.locator('.fp-tools');
+    await page.locator('.fp-redesign').waitFor({ state: 'visible' });
+    const freeTools = page.locator('.fp-simple-tools');
     await freeTools.getByRole('button', { name: 'Tuner' }).click();
-    await page.getByRole('dialog', { name: 'Tuner', exact: true }).waitFor();
+    await page.getByRole('dialog', { name: 'Tuner within practice' }).waitFor();
     await page.keyboard.press('Escape');
     await freeTools.getByRole('button', { name: 'Metronome' }).click();
-    await page.getByRole('dialog', { name: 'Metronome', exact: true }).waitFor();
+    await page.getByRole('dialog', { name: 'Metronome within practice' }).waitFor();
     await page.keyboard.press('Escape');
     await open('/player?chart=blues-f-12');
     const utilities = page.locator('.practice-utility-row');

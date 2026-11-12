@@ -57,7 +57,9 @@ export function CreatePage() {
   const location = useLocation();
   const { repo, exercises, charts, routines, publicRoutines, refreshLocal, showToast, teamSignedIn, saveRoutineToCloud, saveExerciseToCloud } = useApp();
   const locationEditId = (location.state as { editExerciseId?: string } | null)?.editExerciseId;
-  const createdChartId = new URLSearchParams(location.search).get('createdChartId');
+  const query = new URLSearchParams(location.search);
+  const createdChartId = query.get('createdChartId');
+  const returnToFreePractice = query.get('returnTo') === '/free-practice';
   const chartReturnKey = CHART_RETURN_KEY + repo.scope;
   const [chartReturnDraft, setChartReturnDraft] = useState<ChartReturnDraft | null>(() => {
     if (!createdChartId) return null;
@@ -198,9 +200,10 @@ export function CreatePage() {
     };
     try { sessionStorage.setItem(chartReturnKey, JSON.stringify(formDraft)); }
     catch { showToast('Could not preserve your unfinished exercise. Check browser storage.'); return; }
+    const returnTo = returnToFreePractice ? '/create?returnTo=%2Ffree-practice' : '/create';
     navigate(existingId
-      ? '/charts/' + encodeURIComponent(existingId) + '/edit?returnTo=%2Fcreate'
-      : '/charts/new?returnTo=%2Fcreate');
+      ? '/charts/' + encodeURIComponent(existingId) + '/edit?returnTo=' + encodeURIComponent(returnTo)
+      : '/charts/new?returnTo=' + encodeURIComponent(returnTo));
   };
 
   const addExistingExercise = (exercise: Exercise) => {
@@ -275,7 +278,7 @@ export function CreatePage() {
       setExTitle(''); setExInstructions(''); setExChartId('');
       try { sessionStorage.removeItem(chartReturnKey); } catch { /* optional */ }
       setChartReturnDraft(null);
-      if (createdChartId) navigate('/create', { replace: true });
+      if (createdChartId) navigate(returnToFreePractice ? '/create?returnTo=%2Ffree-practice' : '/create', { replace: true });
       showToast('Exercise added to this routine.');
     } finally {
       setSaving(false);
@@ -311,7 +314,9 @@ export function CreatePage() {
       // Keep the editable step durations intact in the local repository regardless of cloud snapshots.
       repo.saveLocalRoutine(saved);
       refreshLocal();
-      navigate('/routines?tab=my');
+      navigate(returnToFreePractice
+        ? '/free-practice?createdRoutineId=' + encodeURIComponent(saved.id)
+        : '/routines?tab=my');
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'Could not save routine.');
     } finally {
@@ -324,9 +329,9 @@ export function CreatePage() {
   return (
     <section className="routine-builder" aria-label="Routine builder">
       <header className="builder-topbar">
-        <button type="button" className="builder-back" onClick={() => navigate('/routines')}>‹ <span>Back</span></button>
+        <button type="button" className="builder-back" onClick={() => navigate(returnToFreePractice ? '/free-practice' : '/routines')}>‹ <span>Back</span></button>
         <span>Practice routines</span>
-        <button type="button" className="builder-close" aria-label="Close builder" onClick={() => navigate('/routines')}>×</button>
+        <button type="button" className="builder-close" aria-label="Close builder" onClick={() => navigate(returnToFreePractice ? '/free-practice' : '/routines')}>×</button>
       </header>
 
       <div className="builder-heading">
@@ -553,7 +558,7 @@ export function CreatePage() {
           <button type="button" className="builder-save" disabled={saving} onClick={() => void saveRoutine()}>✓ {saving ? 'Saving...' : 'Save routine'}</button>
         </div>
         <div className="builder-secondary-actions">
-          <button type="button" onClick={() => navigate('/routines')}>× Cancel</button>
+          <button type="button" onClick={() => navigate(returnToFreePractice ? '/free-practice' : '/routines')}>× Cancel</button>
           <button type="button" onClick={() => showToast('Community sharing is Preview. Your routine saves locally.')}>Share · Preview</button>
         </div>
       </div>

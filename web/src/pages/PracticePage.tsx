@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { PracticeTimeBadge, SkipTenIcon, RepeatIcon, PauseIcon } from '../components/PracticeMediaControls';
+import { FreePracticeSessionBar } from '../components/FreePracticeSessionBar';
 import { ChordGrid } from '../components/ChordGrid';
 import { LoopPlanSettings } from '../components/LoopPlanSettings';
 import { GuidedCatCoach, GuidedLesson } from '../components/GuidedLesson';
@@ -56,7 +57,7 @@ type Completion = {
  * audio time, while session time remains a separate elapsed-time record.
  */
 type PracticeToolIcon = 'mixer' | 'tempo' | 'loop' | 'tuner' | 'metronome';
-function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
+export function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
   // Approved P02: thin rounded evergreen outlines, matching five tool tiles.
   const paths: Record<PracticeToolIcon, React.ReactNode> = {
     mixer: <>
@@ -87,18 +88,36 @@ function PracticeToolGlyph({ name }: { name: PracticeToolIcon }) {
     {paths[name]}
   </svg>;
 }
-export function PracticePage() {
+export type FreePracticePlayerSession = {
+  kind: 'chart' | 'track' | 'routine';
+  sourceId: string;
+  sessionId: string;
+  seconds: number;
+  clockRunning: boolean;
+  onPause: () => void;
+  onFinish: () => void;
+  onAdd: () => void;
+  onBack: () => void;
+  canPrevious: boolean;
+  canNext: boolean;
+  onPrevious: () => void;
+  onNext: () => void;
+};
+
+export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayerSession }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
     charts, exercises, routines, activeRoutineId, addSession, showToast, catId,
   } = useApp();
-  const requestedChart = searchParams.get('chart');
-  const requestedRecording = searchParams.get('recording');
-  const requestedRoutine = searchParams.get('routine');
-  const freeMode = searchParams.get('mode') === 'free';
-  // Explicit chart deep links open Free Practice even if the last routine is active.
-  const routineId = !requestedChart && !requestedRecording && !freeMode ? (requestedRoutine ?? activeRoutineId) : null;
+  const requestedChart = freeSession?.kind === 'chart' ? freeSession.sourceId : searchParams.get('chart');
+  const requestedRecording = freeSession?.kind === 'track' ? freeSession.sourceId : searchParams.get('recording');
+  const requestedRoutine = freeSession?.kind === 'routine' ? freeSession.sourceId : searchParams.get('routine');
+  const freeMode = Boolean(freeSession) || searchParams.get('mode') === 'free';
+  // An explicit free-session queue item overrides any remembered routine.
+  const routineId = freeSession
+    ? requestedRoutine
+    : !requestedChart && !requestedRecording && !freeMode ? (requestedRoutine ?? activeRoutineId) : null;
   const routine = routineId ? routines.find(item => item.id === routineId) ?? null : null;
   const missingRoutine = Boolean(requestedRoutine && !routine);
   const [stepIndex, setStepIndex] = useState(0);
@@ -135,7 +154,7 @@ export function PracticePage() {
   // Independent wall-clock practice timer: starts when the player opens,
   // even if recorded audio or the chart-following playhead is not playing.
   const [sessionAccumulatedMs, setSessionAccumulatedMs] = useState(0);
-  const [sessionStartedAtMs, setSessionStartedAtMs] = useState<number | null>(() => performance.now());
+  const [sessionStartedAtMs, setSessionStartedAtMs] = useState<number | null>(() => freeSession ? null : performance.now());
   const [completion, setCompletion] = useState<Completion | null>(null);
   const [notes, setNotes] = useState('');
   const [rating, setRating] = useState(0);
@@ -149,7 +168,7 @@ export function PracticePage() {
   const [recordingError, setRecordingError] = useState<string | null>(null);
   const { user } = useAuth();
   const userScope = localStorageScopeForUser(user?.id);
-  const sessionDraftId = useRef(crypto.randomUUID());
+  const sessionDraftId = useRef(freeSession?.sessionId ?? crypto.randomUUID());
   const [chartNotes, setChartNotes] = useState<ChartNote[]>([]);
   const [journalEntries, setJournalEntries] = useState<PracticeJournalEntry[]>([]);
   const [annotationOpen, setAnnotationOpen] = useState(false);
@@ -200,9 +219,12 @@ export function PracticePage() {
   const lesson = useMemo(() => playableStep
     ? normalizeGuidedLesson(playableStep, chosenExercise, currentStep?.snapshot)
     : null, [playableStep, chosenExercise, currentStep?.snapshot]);
+  // A routine exercise without a chart only shows its guided instructions.
+  const hasMusicContent = !freeSession || !routine || Boolean(playableStep?.chart_id);
 
   const isRunning = startedAtMs !== null;
-  const elapsedSeconds = Math.floor((sessionAccumulatedMs + elapsedMilliseconds(0, sessionStartedAtMs, nowMs)) / 1000);
+  const elapsedSeconds = freeSession?.seconds ??
+    Math.floor((sessionAccumulatedMs + elapsedMilliseconds(0, sessionStartedAtMs, nowMs)) / 1000);
 
   const formProgress = routine ? Math.round(((stepIndex + 1) / routine.steps.length) * 100) : 0;
 
@@ -212,7 +234,7 @@ export function PracticePage() {
     setStartedAtMs(null);
     setSessionAccumulatedMs(0);
     const sessionStart = performance.now();
-    setSessionStartedAtMs(sessionStart);
+    setSessionStartedAtMs(freeSession ? null : sessionStart);
     setNowMs(sessionStart);
     setMusicalClock({ chartBeat: 0, startedAtMs: null });
     setCompletion(null);
@@ -288,7 +310,7 @@ export function PracticePage() {
   }, [chosenExercise?.id, chosenExercise?.suggested_bpm]);
 
   useEffect(() => {
-    if ((!isRunning && sessionStartedAtMs === null) || completion) return;
+    if (freeSession || ((!isRunning && sessionStartedAtMs === null) || completion)) return;
     const timerId = window.setInterval(() => setNowMs(performance.now()), 100);
     return () => window.clearInterval(timerId);
   }, [isRunning, sessionStartedAtMs, completion]);
@@ -432,7 +454,7 @@ export function PracticePage() {
     const existing = journalEntries.find(entry => entry.sessionId === sessionDraftId.current);
     const entry: PracticeJournalEntry = {
       id: existing?.id ?? crypto.randomUUID(), sessionId: sessionDraftId.current,
-      chartId: chart.id, chartTitle: chart.title, text,
+      chartId: hasMusicContent ? chart.id : '', chartTitle: hasMusicContent ? chart.title : routine?.title ?? 'Free Practice', text,
       createdAt: existing?.createdAt ?? now, updatedAt: now, durationSeconds: elapsedSeconds,
     };
     const updated = [...journalEntries.filter(item => item.sessionId !== sessionDraftId.current), entry];
@@ -771,17 +793,17 @@ export function PracticePage() {
 
   return (
     <>
-    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${activeRecording ? 'practice-has-recording' : ''} ${routine && panel === 'instructions' ? 'practice-instructions' : ''} practice-unified practice-demo-refresh`} aria-label="Shared practice player">
+    <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${activeRecording ? 'practice-has-recording' : ''} ${routine && (panel === 'instructions' || !hasMusicContent) ? 'practice-instructions' : ''} ${!hasMusicContent ? 'practice-no-chart' : ''} ${freeSession ? 'practice-free-session' : ''} practice-unified practice-demo-refresh`} aria-label="Shared practice player">
       <header className="practice-player-head">
-        <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
+        <button className="practice-back" type="button" onClick={freeSession ? freeSession.onBack : () => navigate('/practice')} aria-label="Back to Practice">‹</button>
         <div className="practice-title-group">
           <h1 ref={titleRef} title={routine?.title ?? chart.title}>{routine?.title ?? chart.title}</h1>
           <p>{routine
             ? 'Step ' + (stepIndex + 1) + ' of ' + routine.steps.length + ' · ' + (playableStep?.title ?? 'Exercise')
             : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
-          {chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
+          {hasMusicContent && chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
         </div>
-
+        {freeSession && <button type="button" className="fp-header-add" onClick={freeSession.onAdd}>+ Add...</button>}
       </header>
 
       {activeRecording && <audio
@@ -801,7 +823,7 @@ export function PracticePage() {
         onEnded={() => setRecordingPlaying(false)}
         onError={() => setRecordingError('Recording could not be loaded. Check the audio file and format.')}
         aria-label={activeRecording.title + ' backing track'} />}
-      <div className="practice-demo-status-row">
+      {hasMusicContent && <div className="practice-demo-status-row">
         <p className="practice-audio-state" data-testid="chart-playhead" title={planStatus}>
           <strong>{activeRecording ? 'Recorded Track' : 'Chart Only'}</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · {activeRecording ? activeRecording.recordedBpm + ' BPM audio' : 'No recording'}
         </p>
@@ -819,7 +841,7 @@ export function PracticePage() {
             </svg>
           </button>
         </div>}
-      </div>
+      </div>}
       {activeRecording && recordingError && <p role="alert" className="practice-recording-error">{recordingError}</p>}
 
       {routine && (
@@ -829,12 +851,12 @@ export function PracticePage() {
         </div>
       )}
 
-      {routine && <div className="practice-segments" role="tablist" aria-label={routine ? 'Guided practice views' : 'Player view'}>
+      {routine && hasMusicContent && <div className="practice-segments" role="tablist" aria-label={routine ? 'Guided practice views' : 'Player view'}>
         {routine && <button type="button" role="tab" aria-controls="practice-instructions-panel" aria-selected={panel === 'instructions'} onClick={() => setPanel('instructions')} className={panel === 'instructions' ? 'selected' : undefined}>Instructions</button>}
         <button type="button" role="tab" aria-selected={panel === 'chart'} onClick={() => setPanel('chart')} className={panel === 'chart' ? 'selected' : undefined}>Chart</button>
       </div>}
 
-      {routine && lesson && panel === 'instructions' ? (
+      {routine && lesson && (panel === 'instructions' || !hasMusicContent) ? (
         <div id="practice-instructions-panel" className="practice-lesson-panel" role="tabpanel" aria-label="Instructions">
           <GuidedLesson key={stepIndex} lesson={lesson} stepIndex={stepIndex} totalSteps={routine.steps.length} />
         </div>
@@ -842,7 +864,7 @@ export function PracticePage() {
         <div className="practice-notation-panel" role="tabpanel" aria-label="Jazz chord chart">
           <div className="practice-chart-toolbar">
             <label htmlFor="player-chart">{routine && !playableStep?.chart_id ? "Reference chart" : "Study chart"}</label>
-            <select id="player-chart" value={chartId} disabled={Boolean(activeRecording)} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
+            <select id="player-chart" value={chartId} disabled={Boolean(activeRecording || freeSession)} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
               {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
             </select>
           </div>
@@ -867,7 +889,7 @@ export function PracticePage() {
         </div>
       )}
 
-      {routine && panel === 'chart' && (
+      {routine && hasMusicContent && panel === 'chart' && (
         <aside className="practice-guided-head" aria-label="Current guided exercise">
           <strong>{lesson?.title ?? playableStep?.title ?? 'Exercise'}</strong>
           <p>{lesson?.goal ?? 'Follow the exercise and practice at your own pace.'}</p>
@@ -877,12 +899,13 @@ export function PracticePage() {
         <div className="practice-step-controls">
           <button type="button" onClick={() => goStep(-1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
           <div><strong>Step {stepIndex + 1} of {routine.steps.length}</strong><span>{playableStep?.title ?? 'Exercise'} · {currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0} min goal</span></div>
-          <button type="button" className="practice-chart-shortcut" onClick={() => setPanel(current => current === 'chart' ? 'instructions' : 'chart')} aria-label={panel === 'chart' ? 'Show instructions' : 'Show chart'}>{panel === 'chart' ? 'Instructions' : 'Chart'}</button>
-          <button type="button" className="practice-next" onClick={() => stepIndex === routine.steps.length - 1 ? finishSession() : goStep(1)}>{stepIndex === routine.steps.length - 1 ? 'Finish' : 'Next Step ›'}</button>
+          {hasMusicContent && <button type="button" className="practice-chart-shortcut" onClick={() => setPanel(current => current === 'chart' ? 'instructions' : 'chart')} aria-label={panel === 'chart' ? 'Show instructions' : 'Show chart'}>{panel === 'chart' ? 'Instructions' : 'Chart'}</button>}
+          <button type="button" className="practice-next" disabled={Boolean(freeSession && stepIndex === routine.steps.length - 1 && !freeSession.canNext)}
+            onClick={() => stepIndex === routine.steps.length - 1 ? (freeSession ? freeSession.onNext() : finishSession()) : goStep(1)}>{stepIndex === routine.steps.length - 1 ? (freeSession ? 'End of routine' : 'Finish') : 'Next Step ›'}</button>
         </div>
       )}
 
-      <div className="practice-transport">
+      {hasMusicContent && <div className="practice-transport">
         <div className="practice-recording-seek">
           {activeRecording ? <>
             <input id="recording-scrubber" type="range" min={0} max={recordingDuration || 1}
@@ -960,6 +983,7 @@ export function PracticePage() {
               onWhole={count => updateInlineLoop(loopCounts, count, true)}
               onAdd={() => setAddSectionOpen(true)} onAdvanced={openLoop}
               disabled={!activeRecording} />
+      </div>}
             <div className="practice-utility-row practice-demo-tools" aria-label="Practice tools">
               <div className="practice-demo-metronome-wrap">
                 <button className="practice-demo-tool-main" type="button" onClick={event => openTool('metronome', event.currentTarget)}>
@@ -974,24 +998,30 @@ export function PracticePage() {
               <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>
                 <PracticeToolGlyph name="tuner" /><span>Tuner</span>
               </button>
-              <button type="button" disabled title="Mixer is Preview only">
+              {hasMusicContent && <button type="button" disabled title="Mixer is Preview only">
                 <PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small>
-              </button>
+              </button>}
             </div>
-            <div className="practice-session-row practice-demo-session-row">
-              <PracticeTimeBadge seconds={elapsedSeconds} running={sessionStartedAtMs !== null} onTogglePause={toggleSessionTime} />
-              <div className="practice-demo-session-actions">
-                <button className="practice-finish-action" type="button" onClick={finishSession}><span aria-hidden="true">✓</span> Finish Session</button>
-                <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
-                  onClick={() => setJournalOpen(true)}>
-                  <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-      </div>
-      {routine && panel === 'instructions' && lesson && (
+            {freeSession
+              ? <FreePracticeSessionBar seconds={elapsedSeconds} running={freeSession.clockRunning}
+                  onToggleTimer={freeSession.onPause} canPrevious={freeSession.canPrevious}
+                  canNext={freeSession.canNext} onPrevious={freeSession.onPrevious}
+                  onNext={freeSession.onNext} onFinish={freeSession.onFinish}
+                  onJournal={() => setJournalOpen(true)} />
+              : <div className="practice-session-row practice-demo-session-row">
+                  <PracticeTimeBadge seconds={elapsedSeconds} running={sessionStartedAtMs !== null}
+                    onTogglePause={toggleSessionTime} />
+                  <div className="practice-demo-session-actions">
+                    <button className="practice-finish-action" type="button" onClick={finishSession}><span aria-hidden="true">✓</span> Finish Session</button>
+                    <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
+                      onClick={() => setJournalOpen(true)}>
+                      <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>}
+      {routine && !freeSession && panel === 'instructions' && lesson && (
         <div className="practice-coach-dock"><GuidedCatCoach key={stepIndex} lesson={lesson} catId={catId} /></div>
       )}
 
@@ -1001,7 +1031,7 @@ export function PracticePage() {
         notes={chartNotes} onSave={saveChartAnnotation} onDelete={deleteChartAnnotation}
         onClose={() => setAnnotationOpen(false)} />, document.body)}
     {journalOpen && createPortal(
-      <SessionJournalSheet chartTitle={chart.title} sessionId={sessionDraftId.current}
+      <SessionJournalSheet chartTitle={hasMusicContent ? chart.title : routine?.title ?? 'Free Practice'} sessionId={sessionDraftId.current}
         seconds={elapsedSeconds} entries={journalEntries} onSave={saveJournalEntry}
         onDelete={deleteJournalEntry} onClose={() => setJournalOpen(false)} />, document.body)}
     {addSectionOpen && createPortal(
