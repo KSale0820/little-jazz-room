@@ -224,8 +224,13 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           setMicSignal('interrupted');
           void context!.resume().catch(() => setMicSignal('interrupted'));
         } else if (performance.now() - lastCaptureAtRef.current > 3000) {
-          setReading(null);
-          setMicSignal('interrupted');
+          // If requestAnimationFrame or the worklet stalls, the watchdog
+          // directly samples the existing analyser on the audio clock.
+          // Never manufacture a reading when these PCM samples are silent.
+          const now = performance.now();
+          analyser.getFloatTimeDomainData(samples);
+          processSamples(samples, context!.sampleRate, now);
+          setCapturePath('analyser');
         }
       }, 1000);
       context.onstatechange = () => {
@@ -298,7 +303,10 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
 
   const resumeMicrophoneAudio = () => {
     const context = contextRef.current;
-    if (!context || context.state === 'closed') { void startMicrophone(); return; }
+    if (!context || context.state === 'closed' ||
+      (context.state === 'running' && performance.now() - lastCaptureAtRef.current > 3000)) {
+      void startMicrophone(); return;
+    }
     void context.resume().then(() => {
       setMicSignal(context.state === 'running' ? 'starting' : 'interrupted');
     }).catch(() => {
