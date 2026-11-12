@@ -63,6 +63,15 @@ try {
     await page.screenshot({ path: join(folder, size + '-02-chart.png'), fullPage: true });
 
     const tempo = page.locator('#practice-bpm-value');
+    // Changes made inside the reused metronome tool must be reflected in the routine settings.
+    await page.getByRole('button', { name: 'Metronome', exact: true }).click();
+    const chartMetronome = page.getByRole('dialog', { name: 'Metronome within practice' });
+    await chartMetronome.getByText('Tempo: 80 beats per minute').waitFor();
+    await chartMetronome.getByRole('button', { name: 'Increase tempo by 1 BPM' }).click();
+    await chartMetronome.getByRole('button', { name: 'Close tool and return to session' }).click();
+    assert.equal(await tempo.inputValue(), '81', 'Metronome edit did not update the routine tempo');
+    await page.getByRole('button', { name: 'Reset to routine preset' }).click();
+    assert.equal(await tempo.inputValue(), '80', 'Routine reset did not restore the preset tempo');
     await tempo.fill('110');
     await tempo.blur();
     await page.getByRole('button', { name: 'Next Step' }).click();
