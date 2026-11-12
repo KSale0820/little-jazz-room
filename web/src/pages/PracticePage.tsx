@@ -1100,7 +1100,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
                       : [{ startBar: 1, endBar: Math.min(chart.bars.length, 4), plays: 2 }]);
                     setRepeatWholePlan(stepDefaults.repeat);
                   } else changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100);
-                }>{routine ? 'Preset' : 'Original'}</button>
+                }}>{routine ? 'Preset' : 'Original'}</button>
             </div>
             <p className="practice-reference-note practice-demo-audio-note">{activeRecording
               ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.'
