@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { PracticeTimeBadge, SkipTenIcon, RepeatIcon } from '../components/PracticeMediaControls';
+import { PracticeTimeBadge, SkipTenIcon, RepeatIcon, PauseIcon } from '../components/PracticeMediaControls';
 import { ChordGrid } from '../components/ChordGrid';
 import { LoopPlanSettings } from '../components/LoopPlanSettings';
 import { GuidedCatCoach, GuidedLesson } from '../components/GuidedLesson';
@@ -295,13 +295,25 @@ export function PracticePage() {
 
   useEffect(() => {
     metronome.changeBpm(activeRecording?.recordedBpm ?? tempo);
-    const meter = chart.time_signature.join('/');
-    if (meter === '2/4' || meter === '3/4' || meter === '4/4' || meter === '6/8') {
-      metronome.changeSignature(meter);
-    }
-  // Set defaults on piece/tempo changes, not on independent metronome edits.
-  }, [chart.id, activeRecording?.recordedBpm, activeRecording ? null : tempo,
-    metronome.changeBpm, metronome.changeSignature]);
+    metronome.setPieceMeter([chart.time_signature[0], chart.time_signature[1]]);
+  }, [chart.id, chart.time_signature[0], chart.time_signature[1], activeRecording?.recordedBpm,
+    activeRecording ? null : tempo, metronome.changeBpm, metronome.setPieceMeter]);
+
+  useEffect(() => {
+    // The metronome polls the actual transport position. The recording's chart
+    // starts after its intro; never equate audio 0:00 with bar one's downbeat.
+    metronome.connectPlayback(() => {
+      if (activeRecording) {
+        const audio = audioRef.current;
+        return { playing: Boolean(audio && !audio.paused && !audio.ended && audio.readyState >= 2),
+          positionSeconds: (audio?.currentTime ?? 0) - activeRecording.chartStartSeconds };
+      }
+      return { playing: isRunning,
+        positionSeconds: rawChartBeat(musicalClock, performance.now(), tempo, chart) *
+          60 * 4 / (tempo * chart.time_signature[1]) };
+    });
+  }, [metronome.connectPlayback, activeRecording?.id, activeRecording?.chartStartSeconds,
+    isRunning, musicalClock, tempo, chart.id, chart.time_signature[1]]);
 
   const activeSections = loopEnabled && loopSections.length ? loopSections : null;
   // The media element is the master clock. Honor the original video's exact
@@ -787,7 +799,25 @@ export function PracticePage() {
         onEnded={() => setRecordingPlaying(false)}
         onError={() => setRecordingError('Recording could not be loaded. Check the audio file and format.')}
         aria-label={activeRecording.title + ' backing track'} />}
-      <p className="practice-audio-state" data-testid="chart-playhead" title={planStatus}><strong>{activeRecording ? 'Recorded Track' : 'Chart Only'}</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · {activeRecording ? activeRecording.recordedBpm + ' BPM audio' : 'No recording'}</p>
+      <div className="practice-demo-status-row">
+        <p className="practice-audio-state" data-testid="chart-playhead" title={planStatus}>
+          <strong>{activeRecording ? 'Recorded Track' : 'Chart Only'}</strong> · Bar {playhead.barIndex + 1} · Beat {Math.floor(playhead.beatInBar) + 1} · {activeRecording ? activeRecording.recordedBpm + ' BPM audio' : 'No recording'}
+        </p>
+        {(!routine || panel === 'chart') && <div className="practice-demo-header-actions">
+          <button type="button" className="practice-demo-measure-toggle" onClick={toggleMeasureNumbers}
+            aria-pressed={showMeasureNumbers} aria-label="Number measures">
+            <span>Number measures</span><span className="practice-demo-measure-switch" aria-hidden="true" />
+          </button>
+          <button type="button" className="practice-demo-chart-pencil"
+            aria-label="Add or edit chart annotations" title="Chart annotations"
+            onClick={() => setAnnotationOpen(true)}>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor"
+              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m4 16 11-11 4 4-11 11-5 1 1-5Z"/><path d="m13.5 6.5 4 4"/>
+            </svg>
+          </button>
+        </div>}
+      </div>
       {activeRecording && recordingError && <p role="alert" className="practice-recording-error">{recordingError}</p>}
 
       {routine && (
@@ -813,22 +843,6 @@ export function PracticePage() {
             <select id="player-chart" value={chartId} disabled={Boolean(activeRecording)} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
               {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
             </select>
-          </div>
-          <div className="practice-demo-chart-header-actions">
-        <div className="practice-demo-header-actions">
-          <button type="button" className="practice-demo-measure-toggle" onClick={toggleMeasureNumbers}
-            aria-pressed={showMeasureNumbers} aria-label="Number measures">
-            <span>Number measures</span><span className="practice-demo-measure-switch" aria-hidden="true" />
-          </button>
-          <button type="button" className="practice-demo-chart-pencil"
-            aria-label="Add or edit chart annotations" title="Chart annotations"
-            onClick={() => setAnnotationOpen(true)}>
-            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor"
-              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m4 16 11-11 4 4-11 11-5 1 1-5Z"/><path d="m13.5 6.5 4 4"/>
-            </svg>
-          </button>
-        </div>
           </div>
           <div className={`practice-chart-scroll practice-chart-all ${chart.bars.length > 16 ? 'chart-dense' : 'chart-standard'} ${showMeasureNumbers ? 'practice-show-measure-numbers' : ''}`}
             aria-label={`Complete chord chart, all ${chart.bars.length} measures visible`}>
@@ -888,7 +902,7 @@ export function PracticePage() {
           </button>
           <button className="practice-timer-button" type="button" onClick={toggleTimer}
             aria-label={activeRecording ? (recordingPlaying ? 'Pause recording' : 'Play recording') : (isRunning ? 'Pause chart follow-along' : 'Play chart follow-along')}>
-            {(activeRecording ? recordingPlaying : isRunning) ? 'Ⅱ' : '▶'}
+            {(activeRecording ? recordingPlaying : isRunning) ? <PauseIcon size={22} /> : '▶'}
           </button>
           <button className="practice-measure-btn" type="button"
             aria-label="Forward 10 seconds"
