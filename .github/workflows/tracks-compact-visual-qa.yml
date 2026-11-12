@@ -1,0 +1,40 @@
+name: Tracks compact card browser QA
+
+on:
+  pull_request:
+    paths:
+      - web/src/pages/TracksPage.tsx
+      - web/src/pages/TracksPage.css
+      - web/src/pages/tracksShelves.browser.test.ts
+      - .github/workflows/tracks-compact-visual-qa.yml
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install web dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Check compact Tracks page on 375px and 390px mobile
+        run: RUN_TRACKS_BROWSER_QA=1 npx vitest run src/pages/tracksShelves.browser.test.ts
+      - name: Save rendered snapshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tracks-compact-browser-screenshots
+          path: web/docs/screenshots/tracks-shelves-qa/
+          if-no-files-found: ignore
