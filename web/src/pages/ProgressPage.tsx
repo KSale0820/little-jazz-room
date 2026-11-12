@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { computeGentleStreak, minutesToday } from '../lib/practiceStats';
+import { computeGentleStreak, computeScheduledStreak, minutesToday } from '../lib/practiceStats';
 import { readPracticeGoal, savePracticeGoal, readPracticeOffDays, savePracticeOffDays } from '../lib/practiceHomePreferences';
 import { cumulativePracticeMinutes, readPreviouslySelectedCat, readSavedUnlocks, unlockedCompanions } from '../lib/companionUnlocks';
 import { isVisibleCatId } from '../features/cats/CatCompanion';
@@ -112,6 +112,7 @@ export function ProgressPage() {
   const now = new Date();
   const summary = useMemo(() => summarizeProgress(sessions), [sessions]);
   const chart = chartData(sessions, period, now);
+  const scheduledStreak = computeScheduledStreak(sessions, offDays, now);
   const ceilingBase = Math.max(1, ...chart.map(b => b.minutes), period === 'W' ? dailyGoal : 0);
   const chartCeiling = Math.max(15, Math.ceil(ceilingBase / 15) * 15);
   const chartTotal = period === 'W' ? summary.weekMinutes : chart.reduce((sum, day) => sum + day.minutes, 0);
@@ -130,7 +131,7 @@ export function ProgressPage() {
   const previouslySelected = readPreviouslySelectedCat(repo.scope);
   const unlocked = unlockedCompanions(totalMinutes, readSavedUnlocks(repo.scope), isVisibleCatId(catId) ? catId : previouslySelected);
   const achievementsCount = [
-    sessions.length > 0, summary.streak >= 3, summary.streak >= 7,
+    sessions.length > 0, scheduledStreak >= 3, scheduledStreak >= 7,
     unlocked.includes('milo'), unlocked.includes('maple'), sessions.some(s => Boolean(s.routineId)),
   ].filter(Boolean).length;
   const journals = readLocalList<PracticeJournalEntry>(journalKey(repo.scope));
@@ -165,7 +166,7 @@ export function ProgressPage() {
     <div className="pr-milestones">
       <button type="button" className="pr-milestone pr-streak" onClick={() => navigate('/free-practice')}>
         <span className="pr-milestone-icon" aria-hidden="true">🔥</span>
-        <span className="pr-milestone-text"><strong>{summary.streak}-day streak</strong><small>{summary.streak > 0 ? 'Keep it going!' : 'Start your streak!'}</small></span><span aria-hidden="true" className="pr-chevron">›</span>
+        <span className="pr-milestone-text"><strong>{scheduledStreak}-day streak</strong><small>{scheduledStreak > 0 ? 'Keep it going!' : 'Start your streak!'}</small></span><span aria-hidden="true" className="pr-chevron">›</span>
       </button>
       <button type="button" className="pr-milestone pr-achievement" onClick={() => navigate('/progress/achievements')}>
         <span className="pr-milestone-icon" aria-hidden="true">🏆</span>
