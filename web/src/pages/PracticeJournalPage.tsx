@@ -6,7 +6,7 @@ import type { PracticeSessionRecord } from '../types/content';
 import { DailyJournalSheet } from './DailyJournalSheet';
 import { JournalTagPicker } from '../components/JournalTagPicker';
 import { JournalRoutineIcon, journalIconKey, journalIconLabel } from '../components/JournalRoutineIcon';
-import { ROUTINE_ICON_KEYS, routineIconFor } from '../lib/routinePixelIcons';
+import { ROUTINE_ICON_KEYS } from '../lib/routinePixelIcons';
 import { colorForTag, readJournalTags, saveJournalTag, uniqueJournalTags, type JournalTagColor, type JournalTagDefinition } from '../lib/journalTagPalette';
 import './PracticeJournalPage.css';
 
