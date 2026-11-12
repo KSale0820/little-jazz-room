@@ -8,6 +8,8 @@ import { isVisibleCatId } from '../features/cats/CatCompanion';
 import { readLocalList, journalKey, type PracticeJournalEntry } from '../lib/practicePlayerNotes';
 import type { PracticeSessionRecord, Routine } from '../types/content';
 import { ProgressIcon } from '../components/ProgressIcon';
+import { deriveEarned, summarizeEvidence } from '../features/achievements/achievementModel';
+import { readEarned } from '../features/achievements/roomStore';
 import './ProgressPage.css';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
@@ -132,10 +134,7 @@ export function ProgressPage() {
   const totalMinutes = cumulativePracticeMinutes(sessions);
   const previouslySelected = readPreviouslySelectedCat(repo.scope);
   const unlocked = unlockedCompanions(totalMinutes, readSavedUnlocks(repo.scope), isVisibleCatId(catId) ? catId : previouslySelected);
-  const achievementsCount = [
-    sessions.length > 0, scheduledStreak >= 3, scheduledStreak >= 7,
-    unlocked.includes('milo'), unlocked.includes('maple'), sessions.some(s => Boolean(s.routineId)),
-  ].filter(Boolean).length;
+  const achievementsCount = deriveEarned(summarizeEvidence(sessions), readEarned(repo.scope), unlocked).length;
   const journals = readLocalList<PracticeJournalEntry>(journalKey(repo.scope));
   const sessionName = (session: PracticeSessionRecord) => routines.find(r => r.id === session.routineId)?.title
     ?? session.routineTitle ?? exercises.find(e => e.id === session.exerciseId)?.title

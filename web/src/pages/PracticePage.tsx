@@ -1,3 +1,4 @@
+import { GreatPracticeCompletion, type RecapActivity } from '../components/GreatPracticeCompletion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
@@ -22,7 +23,6 @@ import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
 import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
-import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { TunerPage } from './TunerPage';
 import { ChartAnnotationSheet, SessionJournalSheet, AddPracticeSectionSheet } from '../components/PracticePlayerSheets';
 import { PracticeMetronomeSheet } from '../components/PracticeMetronomeSheet';
@@ -115,7 +115,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    charts, exercises, routines, activeRoutineId, addSession, showToast, catId, repo, refreshLocal,
+    charts, exercises, routines, activeRoutineId, addSession, showToast, repo, refreshLocal,
   } = useApp();
   const requestedChart = freeSession?.kind === 'chart' ? freeSession.sourceId : searchParams.get('chart');
   const requestedRecording = freeSession?.kind === 'track' ? freeSession.sourceId : searchParams.get('recording');
@@ -169,7 +169,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const [completion, setCompletion] = useState<Completion | null>(null);
   const [notes, setNotes] = useState('');
   const [rating, setRating] = useState(0);
-  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const savePromiseRef = useRef<Promise<boolean> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const suppressAudioPauseRef = useRef(false);
@@ -754,17 +754,22 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
         // Notes and rating belong to the local class demo, not the session or
         // Supabase schema. Failures here must never cause a duplicate session.
         try {
-          localStorage.setItem(
-            'little-jazz-room:practice-feedback:v1:' + record.id,
-            JSON.stringify({ notes: savedNotes, rating: savedRating,
-              routineStepOutcomes: routine ? stepOutcomes : undefined }),
-          );
+          const key = 'little-jazz-room:practice-feedback:v1:' + record.id;
+          const previous: unknown = JSON.parse(localStorage.getItem(key) ?? '{}');
+          const existing = previous && typeof previous === 'object' && !Array.isArray(previous)
+            ? previous as Record<string, unknown> : {};
+          localStorage.setItem(key, JSON.stringify({
+            ...existing,
+            notes: existing.notes ?? savedNotes,
+            rating: existing.rating ?? savedRating,
+            routineStepOutcomes: routine ? stepOutcomes : undefined,
+          }));
         } catch { /* optional local feedback */ }
+        // Completion itself confirms the saved state; avoid a toast obscuring Done.
         setSaveState('saved');
-        showToast('Practice session saved.');
         return true;
       } catch {
-        setSaveState('idle');
+        setSaveState('error');
         savePromiseRef.current = null;
         showToast('Could not save your session. Please try again.');
         return false;
@@ -802,6 +807,9 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     savePromiseRef.current = null;
   }
 
+  // Finish saves immediately; retries are explicit if storage fails.
+  useEffect(() => { if (completion) void saveSession(); }, [completion?.id]);
+
   if (standaloneRecording) {
     return <RecordingOnlyPractice recording={standaloneRecording} />;
   }
@@ -830,71 +838,36 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     </section>;
   }
 
+  const recapActivities: RecapActivity[] = routine ? routine.steps.map((step, index) => {
+    const exercise = exercises.find(item => item.id === step.exercise_id) ?? exercisesById[step.exercise_id];
+    const stepBpm = step.player_settings?.reference_bpm ?? exercise?.suggested_bpm;
+    const stepKey = step.player_settings?.chart_key;
+    return {
+      id: String(index),
+      title: step.snapshot?.title ?? exercise?.title ?? 'Exercise ' + (index + 1),
+      detail: [stepKey, stepBpm ? stepBpm + ' BPM' : null].filter(Boolean).join(' · '),
+      status: stepOutcomes[index] === 'complete' ? 'complete'
+        : stepOutcomes[index] === 'partial' ? 'partial' : 'unmarked',
+    };
+  }) : [{
+    id: chart.id,
+    title: activeRecording?.title ?? chart.title,
+    detail: chartKey + ' · ' + tempo + ' BPM',
+    status: 'practiced',
+  }];
+
   if (completion) {
-    return (
-      <section className="practice-complete" aria-label="Practice session complete">
-        <button className="practice-complete-close" type="button" aria-label="Go home and save session" onClick={() => void leaveAfterSave('/')}>×</button>
-        <div className="practice-complete-hero">
-          <div className="practice-confetti" aria-hidden="true">
-            {Array.from({ length: 24 }, (_, index) => <i key={index} />)}
-          </div>
-          <div className="practice-celebrate" aria-hidden="true">
-            <svg width="65" height="65" viewBox="0 0 80 80" fill="none">
-              <g stroke="#eab051" strokeWidth="3" strokeLinecap="round">
-                <path d="M40 5v7M10 38h8M62 38h8M17 17l6 6M57 17l-6 6M17 59l6-6M57 59l-6-6" />
-              </g>
-              <rect x="35" y="7" width="10" height="8" rx="2" fill="#285143" transform="rotate(8 40 11)" />
-              <path d="M57 16l6-6" stroke="#285143" strokeWidth="4" strokeLinecap="round"/>
-              <circle cx="40" cy="43" r="24" stroke="#285143" strokeWidth="5" fill="#fff9ed"/>
-              <path d="M40 24v19l-9 9" stroke="#285143" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="40" cy="43" r="3" fill="#285143"/>
-            </svg>
-          </div>
-          <h1>Great practice!</h1>
-          <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
-          <p className="practice-complete-date">{new Date(completion.finishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-        </div>
-        <div className="practice-complete-summary">
-          <img src={VISUAL_ASSETS.room.approved.twilight} alt="" />
-          <div>
-            <strong>{completion.title}</strong>
-            <span>{completion.routineId ? 'Guided Practice' : 'Free Practice'}</span>
-            {completion.routineOutcomes
-              ? <small>{completion.routineOutcomes.completed} of {completion.routineOutcomes.total} exercises completed
-                  {completion.routineOutcomes.partial ? ` · ${completion.routineOutcomes.partial} partially completed` : ''}
-                  {completion.routineOutcomes.unmarked ? ` · ${completion.routineOutcomes.unmarked} not marked` : ''}</small>
-              : <small>{completion.chartTitle} · {completion.recordingTitle ? 'Recorded backing track' : 'Chart only'}</small>}
-          </div>
-        </div>
-        <div className="practice-complete-notes">
-          <label className="practice-notes-label" htmlFor="practice-notes">Notes <span>Optional</span></label>
-          <textarea id="practice-notes" value={notes} maxLength={500} rows={2} disabled={saveState !== 'idle'} onChange={event => setNotes(event.target.value)} placeholder="What went well? What to work on?" />
-        </div>
-        <div className="practice-rating">
-          <span>Rating <small>Optional · on this device</small></span>
-          <div role="group" aria-label="Rate this practice session">
-            {[1, 2, 3, 4, 5].map(star => (
-              <button key={star} type="button" disabled={saveState !== 'idle'} aria-label={star + ' stars'} aria-pressed={rating === star} onClick={() => setRating(value => value === star ? 0 : star)}>
-                {star <= rating ? '★' : '☆'}
-              </button>
-            ))}
-          </div>
-        </div>
-        <button className="practice-primary practice-save" type="button" disabled={saveState !== 'idle'} onClick={() => void saveSession()}>
-          {saveState === 'saved' ? 'Session Saved ✓' : saveState === 'saving' ? 'Saving…' : 'Save Session'}
-        </button>
-        <button className="practice-secondary" type="button" onClick={() => void practiceAgain()}>Practice Again</button>
-        <div className="practice-complete-links">
-          <button className="practice-secondary" type="button" onClick={() => void leaveAfterSave('/progress')}>View Progress</button>
-          <button className="practice-secondary" type="button" onClick={() => void leaveAfterSave('/')}>Home</button>
-        </div>
-        <p className="practice-local-hint">Notes and ratings are stored locally for this demo.</p>
-        <div className="practice-complete-footer" aria-label="Your jazz companion is celebrating your practice">
-          <CatSprite catId={catId} variant="floor" size={170} className="practice-playing-cat" decorative />
-          <span>{JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'Your companion'} · great work!</span>
-        </div>
-      </section>
-    );
+    return <GreatPracticeCompletion key={completion.id}
+      record={completion}
+      title={completion.title}
+      subtitle={routine ? 'Guided Practice · ' + routine.steps.length + ' exercises'
+        : activeRecording ? 'Chart & recorded backing track' : 'Chart practice'}
+      summaryArt={VISUAL_ASSETS.room.approved.twilight}
+      activities={recapActivities}
+      status={saveState}
+      onRetry={() => void saveSession()}
+      onDone={() => void leaveAfterSave('/practice')}
+      onPracticeAgain={() => void practiceAgain()} />;
   }
 
   return (
