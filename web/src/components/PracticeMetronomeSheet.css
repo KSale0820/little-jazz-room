@@ -81,3 +81,62 @@
   padding: 0;
   margin-bottom: 4px;
 }
+
+/* The same transport actions now appear in all metronome contexts.
+   The upper status area is informational only, with no duplicate On/Off. */
+.practice-metronome-sheet .practice-metronome-status.is-player-status {
+  justify-content: center;
+  min-height: 42px;
+  text-align: center;
+}
+.practice-metronome-sheet .practice-metronome-status.is-player-status p {
+  width: 100%;
+  line-height: 1.4;
+}
+.practice-metronome-sheet .practice-metronome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding-top: 12px;
+}
+.practice-metronome-sheet .practice-metronome-page-start,
+.practice-metronome-sheet .practice-metronome-page-return {
+  box-sizing: border-box;
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  padding: 10px 15px;
+  border-radius: 12px;
+  text-align: center;
+}
+.practice-metronome-sheet .practice-metronome-page-start {
+  border: 1px solid #20583f;
+  background: #20583f;
+  color: #fffdf6;
+  font: 700 17px/1.2 Georgia, serif;
+}
+.practice-metronome-sheet .practice-metronome-page-return {
+  border: 1px solid #bed4be;
+  background: #eaf2e5;
+  color: #245540;
+  font: 700 15px/1.2 Georgia, serif;
+}
+.practice-metronome-sheet .practice-metronome-page-start:focus-visible,
+.practice-metronome-sheet .practice-metronome-page-return:focus-visible {
+  outline: 2px solid #ad994e;
+  outline-offset: 2px;
+}
+/* Keep controls accessible above mobile browser chrome even in long chart-player
+   sheets. Closing the sheet never stops a playing session metronome. */
+.practice-metronome-sheet:not(.practice-metronome-page-surface) .practice-metronome-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin-top: 6px;
+  padding: 9px 0 max(3px, env(safe-area-inset-bottom));
+  background: #fffcf4;
+  border-top: 1px solid #e2e8de;
+}
