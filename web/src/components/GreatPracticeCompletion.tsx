@@ -70,7 +70,6 @@ export function GreatPracticeCompletion({
   const goal = readGoal(repo.scope);
   const today = minutesToday(effectiveSessions);
   const streak = computeScheduledStreak(effectiveSessions, readPracticeOffDays(repo.scope));
-  const progress = Math.min(100, Math.max(0, today / goal * 100));
   const summaryImage = summaryArt ?? '/visuals/room/home-hero-twilight.png';
   const completed = activities.filter(item => item.status === 'complete').length;
   const hasChecks = activities.some(item => item.status !== 'practiced');
@@ -189,10 +188,7 @@ export function GreatPracticeCompletion({
     <div className="gj-progress" aria-label="Today's progress">
       <div className="gj-goal"><svg className="gj-progress-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="15" width="5" height="7" rx="1" /><rect x="10" y="9" width="5" height="13" rx="1" /><rect x="18" y="3" width="5" height="19" rx="1" /></svg>
         <span>Daily goal: <strong>{today} / {goal} min</strong></span>
-        <div className="gj-goal-bar" role="progressbar" aria-label="Daily practice goal"
-          aria-valuemin={0} aria-valuemax={goal} aria-valuenow={Math.min(today, goal)}>
-          <span style={{ width: progress + '%' }} />
-        </div>
+
       </div>
       <div className="gj-streak"><img src="/visuals/pixel-motifs/streak-fire.png" alt="" aria-hidden="true" /> <strong>{streak}-day streak</strong></div>
     </div>
@@ -206,6 +202,8 @@ export function GreatPracticeCompletion({
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10a8 8 0 1 0 1 5M20 4v6h-6" /></svg> Practice Again
       </button>
       <button type="button" className="gj-done" onClick={onDone} disabled={status !== 'saved'}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8"
+          strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 9-7 9 7M5.5 9.5V21h13V9.5M9.5 21v-8h5v8" /></svg>
         Done
       </button>
     </div>
