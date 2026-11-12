@@ -69,6 +69,12 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     requestRef.current++;
     permissionPendingRef.current = false;
     recentPitchRef.current = null;
+    if (microphoneRef.current) {
+      // Mark a real break between successive takes, not a fake continuous note.
+      setPitchTrail(previous => previous.length
+        ? [...previous, { timestamp: performance.now(), frequency: null }].slice(-3600)
+        : previous);
+    }
     window.clearInterval(watchdogRef.current);
     cancelAnimationFrame(rafRef.current);
     workletRef.current?.port.close();
