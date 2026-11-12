@@ -40,7 +40,7 @@ type CollectionCategory = typeof CATEGORIES[number];
 
 function RoomSprite({ item, plantStage }: { item: RoomItem; plantStage: number }) {
   const imagePath = item.id === 'plant'
-    ? '/visuals/new-assets/2026-11-07-sharp-pixel/plant-growth-stages/plant-stage-' + plantStage + '.png'
+    ? '/achievements/plant-stage-' + plantStage + '.png'
     : item.sprite ?? '';
   const [src, setSrc] = useState(imagePath);
   useEffect(() => { setSrc(imagePath); }, [imagePath]);
