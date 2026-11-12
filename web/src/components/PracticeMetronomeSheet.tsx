@@ -1,100 +1,158 @@
 import { useEffect, useRef } from 'react';
-import type { PracticeMetronomeController } from '../lib/usePracticeMetronome';
+import type { PracticeMetronomeController, MetronomeMeter } from '../lib/usePracticeMetronome';
 import { metronomeClickOptions } from '../lib/metronomeSync';
 import './PracticeMetronomeSheet.css';
 
-export function PracticeMetronomeSheet({ controller, onClose }: {
-  controller: PracticeMetronomeController; onClose: () => void;
+type MetronomeDisplayMode = 'sheet' | 'page';
+
+/** Shared player-popup and standalone-page controls. The same visual design and
+ * audio engine now power both entry points without replacing the player clock. */
+export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet' }: {
+  controller: PracticeMetronomeController;
+  onClose: () => void;
+  mode?: MetronomeDisplayMode;
 }) {
-  const dialog = useRef<HTMLDivElement>(null);
+  const isPage = mode === 'page';
+  const panel = useRef<HTMLElement>(null);
+
   useEffect(() => {
+    if (isPage) return;
     const previous = document.activeElement as HTMLElement | null;
-    dialog.current?.querySelector<HTMLElement>('button')?.focus();
+    panel.current?.querySelector<HTMLElement>('button')?.focus();
     return () => previous?.focus?.();
-  }, []);
-  const trap = (event: React.KeyboardEvent) => {
+  }, [isPage]);
+
+  const trapModalFocus = (event: React.KeyboardEvent) => {
+    if (isPage) return;
     if (event.key === 'Escape') { event.preventDefault(); onClose(); return; }
     if (event.key !== 'Tab') return;
-    const controls = [...(dialog.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled)') ?? [])];
-    if (!controls.length) return;
-    if (event.shiftKey && document.activeElement === controls[0]) {
-      event.preventDefault(); controls[controls.length - 1].focus();
-    } else if (!event.shiftKey && document.activeElement === controls[controls.length - 1]) {
-      event.preventDefault(); controls[0].focus();
+    const items = [...(panel.current?.querySelectorAll<HTMLElement>(
+      'button:not(:disabled),input:not(:disabled)',
+    ) ?? [])];
+    if (!items.length) return;
+    if (event.shiftKey && document.activeElement === items[0]) {
+      event.preventDefault();
+      items[items.length - 1].focus();
+    } else if (!event.shiftKey && document.activeElement === items[items.length - 1]) {
+      event.preventDefault();
+      items[0].focus();
     }
   };
-  const options = metronomeClickOptions(controller.meter[0]);
-  return <div className="practice-metronome-backdrop" onMouseDown={event => {
-    if (event.target === event.currentTarget) onClose();
-  }}>
-    <section ref={dialog} className="practice-metronome-sheet" role="dialog" aria-modal="true"
-      aria-label="Metronome settings" onKeyDown={trap}>
-      <header><h2>Metronome</h2>
-        <button type="button" aria-label="Close Metronome settings" onClick={onClose}>×</button>
-      </header>
-      <div className="practice-metronome-status">
-        <button type="button" className={controller.playing ? 'on' : ''}
-          aria-pressed={controller.playing} onClick={controller.toggle}>
-          {controller.playing ? 'On' : 'Off'} <span aria-hidden="true" />
-        </button>
-        <p role="status">{controller.synced
+
+  const clickOptions = metronomeClickOptions(controller.meter[0]);
+  const signatures: { label: string; meter: MetronomeMeter }[] = [
+    { label: '2/4', meter: [2, 4] },
+    { label: '3/4', meter: [3, 4] },
+    { label: '4/4', meter: [4, 4] },
+    { label: '6/8', meter: [6, 8] },
+  ];
+
+  return <section ref={panel}
+    className={'practice-metronome-sheet' + (isPage ? ' practice-metronome-page-surface' : '')}
+    role={isPage ? 'region' : 'dialog'} aria-modal={isPage ? undefined : true}
+    aria-label={isPage ? 'Metronome controls' : 'Metronome settings'}
+    onKeyDown={isPage ? undefined : trapModalFocus}>
+    <header className={isPage ? 'practice-metronome-page-header' : undefined}>
+      {isPage && <button type="button" className="practice-metronome-page-back"
+        aria-label="Back to Practice" onClick={onClose}>‹</button>}
+      <h2>Metronome</h2>
+      {isPage
+        ? <span className="practice-metronome-page-spacer" aria-hidden="true" />
+        : <button type="button" aria-label="Close Metronome settings" onClick={onClose}>×</button>}
+    </header>
+
+    <div className="practice-metronome-status">
+      <button type="button" className={controller.playing ? 'on' : ''}
+        aria-pressed={controller.playing} onClick={controller.toggle}>
+        {controller.playing ? 'On' : 'Off'} <span aria-hidden="true" />
+      </button>
+      <p role="status">{isPage
+        ? controller.playing
+          ? 'Metronome running. Tap Off to stop.'
+          : 'Set your tempo, then switch On to start.'
+        : controller.synced
           ? 'Synced to playback, including seeks and repeats.'
           : controller.playing
             ? 'Running independently. Playing the track will synchronize the clicks.'
             : 'Start here or use the switch beside the chart.'}</p>
+    </div>
+
+    <div className="practice-metronome-tempo">
+      <span>{controller.synced && !isPage ? 'Playback tempo' : 'Tempo'}</span>
+      <div>
+        <button type="button" disabled={controller.synced && !isPage}
+          aria-label="Decrease metronome BPM" onClick={() => controller.changeBpm(controller.bpm - 1)}>−</button>
+        <strong>{controller.bpm}<small>BPM</small></strong>
+        <button type="button" disabled={controller.synced && !isPage}
+          aria-label="Increase metronome BPM" onClick={() => controller.changeBpm(controller.bpm + 1)}>+</button>
       </div>
-      <div className="practice-metronome-tempo">
-        <span>{controller.synced ? 'Playback tempo' : 'Tempo'}</span>
-        <div><button type="button" disabled={controller.synced} aria-label="Decrease metronome BPM"
-          onClick={() => controller.changeBpm(controller.bpm - 1)}>−</button>
-          <strong>{controller.bpm}<small>BPM</small></strong>
-          <button type="button" disabled={controller.synced} aria-label="Increase metronome BPM"
-            onClick={() => controller.changeBpm(controller.bpm + 1)}>+</button>
+      <input type="range" min={40} max={240} value={controller.bpm}
+        disabled={controller.synced && !isPage} aria-label="Metronome BPM"
+        onChange={event => controller.changeBpm(Number(event.target.value))} />
+      <button type="button" className="practice-metronome-tap"
+        disabled={controller.synced && !isPage}
+        onClick={controller.tapTempo}>Tap Tempo</button>
+    </div>
+
+    <div className="practice-metronome-field">
+      <h3>Time signature</h3>
+      {isPage
+        ? <div className="practice-metronome-pills" role="group" aria-label="Metronome time signature">
+          {signatures.map(({ label, meter }) => <button key={label} type="button"
+            aria-pressed={controller.meter[0] === meter[0] && controller.meter[1] === meter[1]}
+            onClick={() => controller.setPieceMeter(meter)}>{label}</button>)}
         </div>
-        <input type="range" min={40} max={240} value={controller.bpm}
-          disabled={controller.synced} aria-label="Metronome BPM"
-          onChange={event => controller.changeBpm(Number(event.target.value))} />
-        <button type="button" className="practice-metronome-tap" disabled={controller.synced}
-          onClick={controller.tapTempo}>Tap Tempo</button>
-      </div>
-      <div className="practice-metronome-field">
-        <h3>Time signature</h3>
-        <p className="practice-metronome-piece-meter">
+        : <p className="practice-metronome-piece-meter">
           {controller.meter.join('/')} <span>from the chart</span>
-        </p>
+        </p>}
+    </div>
+
+    <div className="practice-metronome-field">
+      <h3>Clicks per measure</h3>
+      <div className="practice-metronome-pills" role="group" aria-label="Metronome clicks per measure">
+        {clickOptions.map(value => <button key={value} type="button"
+          aria-label={value + ' clicks per measure'}
+          aria-pressed={controller.clicksPerBar === value}
+          onClick={() => controller.changeClicksPerBar(value)}>{value}</button>)}
       </div>
-      <div className="practice-metronome-field">
-        <h3>Clicks per measure</h3>
-        <div className="practice-metronome-pills" role="group" aria-label="Metronome clicks per measure">
-          {options.map(value => <button key={value} type="button"
-            aria-label={value + ' clicks per measure'}
-            aria-pressed={controller.clicksPerBar === value}
-            onClick={() => controller.changeClicksPerBar(value)}>{value}</button>)}
-        </div>
+    </div>
+
+    <div className="practice-metronome-field">
+      <h3>Accent clicks</h3>
+      <div className="practice-metronome-pills" role="group" aria-label="Accent metronome clicks">
+        {controller.accents.map((accent, index) => <button key={index} type="button"
+          aria-pressed={accent}
+          className={controller.playing && controller.activeBeat === index ? 'active-beat' : ''}
+          aria-label={'Click ' + (index + 1) + (accent ? ', accented' : '')}
+          onClick={() => controller.toggleAccent(index)}>
+          {index + 1} {accent ? '◆' : '○'}
+        </button>)}
       </div>
-      <div className="practice-metronome-field">
-        <h3>Accent clicks</h3>
-        <div className="practice-metronome-pills" role="group" aria-label="Accent metronome clicks">
-          {controller.accents.map((accent, index) =>
-            <button key={index} type="button" aria-pressed={accent}
-              className={controller.playing && controller.activeBeat === index ? 'active-beat' : ''}
-              aria-label={'Click ' + (index + 1) + (accent ? ', accented' : '')}
-              onClick={() => controller.toggleAccent(index)}>
-              {index + 1} {accent ? '◆' : '○'}
-            </button>)}
-        </div>
-      </div>
-      <div className="practice-metronome-count">
-        <label><input type="checkbox" checked={controller.countIn}
-          onChange={event => controller.setCountIn(event.target.checked)} /> Count-in</label>
-        <button type="button" disabled={!controller.countIn}
-          onClick={() => controller.setCountInBars(value => value === 1 ? 2 : 1)}>
-          {controller.countInBars} bar{controller.countInBars === 1 ? '' : 's'}
-        </button>
-      </div>
-      {controller.synced && <p className="practice-metronome-help">Count-in is skipped when the track is already playing, so beats stay synchronized.</p>}
-      {controller.error && <p role="alert" className="practice-metronome-error">{controller.error}</p>}
-      <button type="button" className="practice-metronome-done" onClick={onClose}>Done</button>
-    </section>
+    </div>
+
+    <div className="practice-metronome-count">
+      <label><input type="checkbox" checked={controller.countIn}
+        onChange={event => controller.setCountIn(event.target.checked)} /> Count-in</label>
+      <button type="button" disabled={!controller.countIn}
+        onClick={() => controller.setCountInBars(value => value === 1 ? 2 : 1)}>
+        {controller.countInBars} bar{controller.countInBars === 1 ? '' : 's'}
+      </button>
+    </div>
+    {!isPage && controller.synced &&
+      <p className="practice-metronome-help">Count-in is skipped when the track is already playing, so beats stay synchronized.</p>}
+    {controller.error && <p role="alert" className="practice-metronome-error">{controller.error}</p>}
+    <button type="button" className="practice-metronome-done" onClick={onClose}>
+      {isPage ? 'Back to Practice' : 'Done'}
+    </button>
+  </section>;
+}
+
+/** The player keeps its modal and its own playback-synchronized controller. */
+export function PracticeMetronomeSheet({ controller, onClose }: {
+  controller: PracticeMetronomeController; onClose: () => void;
+}) {
+  return <div className="practice-metronome-backdrop"
+    onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
+    <PracticeMetronomeControls controller={controller} onClose={onClose} />
   </div>;
 }
