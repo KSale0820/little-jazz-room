@@ -193,3 +193,14 @@
 .profile-name-form input { min-height: 44px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--paper); color: var(--ink); }
 .profile-account-actions button { min-height: 40px; }
 .profile-export-button { width: fit-content; max-width: 100%; }
+
+.profile-sample-preview {
+  margin: 0 0 14px;
+  padding: 12px;
+  border: 1px solid var(--border, #cad5ca);
+  border-radius: 10px;
+  background: var(--surface, transparent);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.profile-sample-preview p { margin: 0 0 10px; }
