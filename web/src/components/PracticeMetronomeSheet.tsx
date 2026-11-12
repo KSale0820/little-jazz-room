@@ -68,8 +68,8 @@ export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet' 
       </button>}
       <p role="status">{isPage
         ? controller.playing
-          ? 'Metronome running. Tap Off to stop.'
-          : 'Set your tempo, then switch On to start.'
+          ? 'Metronome running. Tap Stop to finish.'
+          : 'Set your tempo, then tap Start Metronome.'
         : controller.synced
           ? 'Synced to playback, including seeks and repeats.'
           : controller.playing
