@@ -79,7 +79,8 @@ export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes,
           onClick={() => selectBar(bar - 1)}>−</button>
         <input id="chart-note-bar" type="text" inputMode="numeric" pattern="[0-9]*"
           aria-label={`Measure number, 1 through ${totalBars}`} autoComplete="off"
-          value={barInput} onChange={event => setBarInput(event.target.value.replace(/\D/g, '').slice(0, 3))}
+          value={barInput} onFocus={event => event.currentTarget.select()}
+          onChange={event => setBarInput(event.target.value.replace(/\D/g, '').slice(0, 3))}
           onBlur={commitTypedBar}
           onKeyDown={event => { if (event.key === 'Enter') event.currentTarget.blur(); }} />
         <button type="button" aria-label="Next measure" disabled={bar >= totalBars}
