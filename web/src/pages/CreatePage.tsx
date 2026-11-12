@@ -9,11 +9,13 @@ import {
   type CreateDraft,
   type LocalRepository,
 } from '../repository/localRepository';
-import type { Exercise, LocalExercise, LocalRoutine, Visibility } from '../types/content';
+import type { Exercise, LocalExercise, LocalRoutine, RoutinePlayerSettings, Visibility } from '../types/content';
+import { defaultPlayerSettings } from '../lib/routinePlayerSettings';
 import {
   appendBuilderExercise, exerciseSummary, previewRoutineImport, searchCatalogExercises, searchCatalogRoutines
 } from './routinePickerLogic';
 import './CreatePage.css';
+import './RoutineStepPresets.css';
 
 interface BuilderStep { exerciseId: string; minutes: number; }
 interface ChartReturnDraft {
@@ -34,20 +36,28 @@ interface ChartReturnDraft {
 const CHART_RETURN_KEY = 'little-jazz-room:create-chart-return:v1:';
 const DEMO_STEPS = ['swing-2-4', 'thirds-sevenths', 'blues-form'];
 const STEP_DURATION_KEY = 'little-jazz-room:create-step-durations:v1:';
+const STEP_SETTINGS_KEY = 'little-jazz-room:create-step-settings:v1:';
+const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
 function loadBuilderSteps(repo: LocalRepository, exercises: Exercise[]): BuilderStep[] {
   const draft = repo.readCreateDraft();
   const ids = draft?.stepExerciseIds?.length ? draft.stepExerciseIds : DEMO_STEPS;
   let durations: number[] = [];
+  let settings: (RoutinePlayerSettings | null)[] = [];
   try {
     const parsed: unknown = JSON.parse(localStorage.getItem(STEP_DURATION_KEY + repo.scope) ?? '[]');
     if (Array.isArray(parsed)) durations = parsed.filter((n): n is number => typeof n === 'number');
+  } catch { /* optional browser storage */ }
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(STEP_SETTINGS_KEY + repo.scope) ?? '[]');
+    if (Array.isArray(parsed)) settings = parsed;
   } catch { /* optional browser storage */ }
   return ids.map((exerciseId, index) => {
     const exercise = exercises.find(ex => ex.id === exerciseId) ?? exercisesById[exerciseId];
     return {
       exerciseId,
       minutes: durations[index] && Number.isFinite(durations[index]) ? durations[index]! : (exercise?.duration_minutes ?? 5),
+      playerSettings: settings[index] ?? undefined,
     };
   });
 }
@@ -79,6 +89,7 @@ export function CreatePage() {
   const [instrument, setInstrument] = useState(chartReturnDraft?.instrument ?? 'Piano');
   const [goal, setGoal] = useState(chartReturnDraft?.goal ?? 'Jazz standards');
   const [steps, setSteps] = useState<BuilderStep[]>(() => chartReturnDraft?.steps ?? loadBuilderSteps(repo, exercises));
+  const [expandedSettingsStep, setExpandedSettingsStep] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const pickerTriggerRef = useRef<HTMLButtonElement>(null);
@@ -137,6 +148,7 @@ export function CreatePage() {
     repo.writeCreateDraft(draft);
     try {
       localStorage.setItem(STEP_DURATION_KEY + repo.scope, JSON.stringify(steps.map(step => step.minutes)));
+      localStorage.setItem(STEP_SETTINGS_KEY + repo.scope, JSON.stringify(steps.map(step => step.playerSettings ?? null)));
     } catch { /* optional browser storage */ }
   };
 
@@ -191,6 +203,18 @@ export function CreatePage() {
   const setStepMinutes = (index: number, minutes: number) =>
     setSteps(previous => previous.map((step, i) => i === index ? { ...step, minutes } : step));
 
+  const stepOptions = (step: BuilderStep) => {
+    const exercise = exerciseFor(step.exerciseId);
+    const chart = charts.find(item => item.id === exercise?.chart_id);
+    return defaultPlayerSettings(chart?.concert_key ?? 'C', exercise?.suggested_bpm, step.playerSettings ?? exercise?.player_settings);
+  };
+  const updateStepOptions = (index: number, change: Partial<RoutinePlayerSettings>) =>
+    setSteps(previous => previous.map((step, i) => i === index
+      ? { ...step, playerSettings: { ...stepOptions(step), ...change } } : step));
+  const resetStepOptions = (index: number) =>
+    setSteps(previous => previous.map((step, i) => i === index
+      ? { ...step, playerSettings: undefined } : step));
+
   const openChartBuilder = (existingId?: string) => {
     persistDraft();
     const formDraft: ChartReturnDraft = {
@@ -223,13 +247,15 @@ export function CreatePage() {
         chart_id: snapshot.chart_id, category: 'Technique',
         level: selectedRoutine.level, duration_minutes: entry.minutes,
         suggested_material: 'Imported from ' + selectedRoutine.title,
-        suggested_bpm: null, audio_asset_id: null, visibility: 'private',
+        suggested_bpm: snapshot.player_settings?.reference_bpm ?? null, audio_asset_id: null, visibility: 'private',
+        player_settings: snapshot.player_settings,
         is_seed: false, applicable_instruments: ['All'],
       };
       repo.saveLocalExercise(localCopy);
     }
     setSteps(previous => [...previous, ...importPreview.additions.map(entry => ({
-      exerciseId: entry.exerciseId, minutes: entry.minutes
+      exerciseId: entry.exerciseId, minutes: entry.minutes,
+      playerSettings: entry.source.player_settings ?? entry.source.snapshot?.player_settings,
     }))]);
     refreshLocal();
     showToast(importPreview.additions.length + ' steps added from ' + selectedRoutine.title + '.');
@@ -258,6 +284,7 @@ export function CreatePage() {
       visibility: existing?.is_seed === false ? existing.visibility : 'private',
       is_seed: false, chart_id: exChartId || null,
       applicable_instruments: existing?.applicable_instruments ?? ['All'],
+      player_settings: existing?.player_settings,
     };
     setSaving(true);
     try {
@@ -292,7 +319,8 @@ export function CreatePage() {
       showToast('Every step needs an existing exercise and a positive duration.');
       return;
     }
-    const routineSteps = steps.map(step => ({ exercise_id: step.exerciseId, duration_minutes: step.minutes }));
+    const routineSteps = steps.map(step => ({ exercise_id: step.exerciseId, duration_minutes: step.minutes,
+      ...(step.playerSettings ? { player_settings: step.playerSettings } : {}) }));
     const routine: LocalRoutine & { goal: string } = {
       id: newLocalRoutineId(), title: title.trim(), description: description.trim(),
       goal,
@@ -396,6 +424,83 @@ export function CreatePage() {
                     aria-label={'Duration for ' + label + ' in minutes'}
                     onChange={e => setStepMinutes(index, Number(e.target.value))} />
                 </label>
+                <button type="button" className="builder-step-settings-toggle"
+                  aria-expanded={expandedSettingsStep === index}
+                  aria-controls={'builder-step-preset-' + index}
+                  onClick={() => setExpandedSettingsStep(current => current === index ? null : index)}>
+                  ⚙ {step.playerSettings ? 'Edit player preset' : 'Configure player preset'}
+                </button>
+                {expandedSettingsStep === index && (() => {
+                  const preset = stepOptions(step);
+                  const section = preset.loop_sections[0] ?? { startBar: 1, endBar: Math.min(chart?.bars.length ?? 4, 4), plays: 2 };
+                  const maxBars = chart?.bars.length ?? 1;
+                  return <fieldset className="builder-step-preset" id={'builder-step-preset-' + index}>
+                    <legend>Step {index + 1} player settings</legend>
+                    <div className="builder-step-preset-fields">
+                      <label>Reference / metronome BPM
+                        <input aria-label={'Preset BPM for ' + label} type="number" min="40" max="240" step="1"
+                          value={preset.reference_bpm}
+                          onChange={event => updateStepOptions(index, { reference_bpm: Math.max(40, Math.min(240, Number(event.target.value) || 40)) })} />
+                      </label>
+                      {chart && <>
+                        <label>Concert key
+                          <select aria-label={'Preset key for ' + label} value={preset.chart_key}
+                            onChange={event => updateStepOptions(index, { chart_key: event.target.value })}>
+                            {CHROMA.map(key => <option key={key} value={key}>{key.replace('b', '♭')}</option>)}
+                          </select>
+                        </label>
+                        <label>Transposing instrument
+                          <select aria-label={'Preset instrument for ' + label} value={preset.written_pitch}
+                            onChange={event => updateStepOptions(index, { written_pitch: event.target.value as 'C' | 'Bb' | 'Eb' })}>
+                            <option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option>
+                          </select>
+                        </label>
+                        <label className="builder-step-preset-check">
+                          <input type="checkbox" checked={preset.loop_enabled}
+                            aria-label={'Loop a section for ' + label}
+                            onChange={event => updateStepOptions(index, {
+                              loop_enabled: event.target.checked,
+                              loop_sections: event.target.checked ? [section] : preset.loop_sections,
+                            })} />
+                          Loop a section
+                        </label>
+                        {preset.loop_enabled && <div className="builder-step-loop-fields">
+                          <label>Start bar
+                            <input type="number" min="1" max={maxBars}
+                              aria-label={'Preset loop start for ' + label} value={section.startBar}
+                              onChange={event => {
+                                const startBar = Math.max(1, Math.min(maxBars, Number(event.target.value) || 1));
+                                updateStepOptions(index, { loop_sections: [{ ...section, startBar, endBar: Math.max(startBar, section.endBar) }] });
+                              }} />
+                          </label>
+                          <label>End bar
+                            <input type="number" min={section.startBar} max={maxBars}
+                              aria-label={'Preset loop end for ' + label} value={section.endBar}
+                              onChange={event => updateStepOptions(index, {
+                                loop_sections: [{ ...section, endBar: Math.max(section.startBar, Math.min(maxBars, Number(event.target.value) || section.startBar)) }],
+                              })} />
+                          </label>
+                          <label>Plays
+                            <input type="number" min="1" max="24" value={section.plays}
+                              aria-label={'Preset loop plays for ' + label}
+                              onChange={event => updateStepOptions(index, {
+                                loop_sections: [{ ...section, plays: Math.max(1, Math.min(24, Number(event.target.value) || 1)) }],
+                              })} />
+                          </label>
+                        </div>}
+                        <label className="builder-step-preset-check">
+                          <input type="checkbox" checked={preset.repeat}
+                            aria-label={'Repeat playback for ' + label}
+                            onChange={event => updateStepOptions(index, { repeat: event.target.checked })} />
+                          Repeat {preset.loop_enabled ? 'the loop plan' : 'the whole chart'}
+                        </label>
+                      </>}
+                    </div>
+                    <button type="button" className="builder-step-preset-reset"
+                      onClick={() => resetStepOptions(index)}>Restore exercise defaults</button>
+                    <p>Applied automatically in the routine player. Player presets are stored on this device; cross-device sync is not available yet.</p>
+                  </fieldset>;
+                })()}
               </div>
               <div className="builder-step-move">
                 <button type="button" aria-label={'Move ' + label + ' up'} disabled={index === 0}
