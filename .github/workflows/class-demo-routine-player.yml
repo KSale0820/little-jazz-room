@@ -1,0 +1,54 @@
+name: Class Demo Routine Player QA
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/src/pages/PracticePage.tsx'
+      - 'web/src/pages/CreatePage.tsx'
+      - 'web/src/pages/RoutineClassDemo.css'
+      - 'web/src/pages/RoutineStepPresets.css'
+      - 'web/src/lib/routinePlayerSettings*'
+      - 'web/src/lib/routinePlayback.ts'
+      - 'web/src/types/content.ts'
+      - 'web/scripts/check-class-demo-routine-player.mjs'
+      - '.github/workflows/class-demo-routine-player.yml'
+  workflow_dispatch:
+jobs:
+  routine-player:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Build the class-demo player
+        run: npm run build
+      - name: Routine presets unit tests
+        run: npx vitest run src/lib/routinePlayerSettings.test.ts
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: Start preview app
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/class-routine-vite.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5174/ > /dev/null
+      - name: Routine player and builder mobile flows
+        run: node scripts/check-class-demo-routine-player.mjs
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: class-demo-routine-player-screenshots-${{ github.run_number }}
+          path: web/docs/screenshots/class-demo-routine-player/
+          if-no-files-found: warn

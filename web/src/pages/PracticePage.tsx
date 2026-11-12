@@ -16,6 +16,7 @@ import { formatChartMeta } from '../lib/chords';
 import { beatsPerMeasure, locateSequencePlayhead, rawChartBeat, sequenceBeatForBar, sequenceDuration } from '../lib/practiceChartClock';
 import type { LoopSection } from '../lib/practiceChartClock';
 import { resolvePlayableStep } from '../lib/routinePlayback';
+import { defaultPlayerSettings, makeSavedExercise, settingsChanged, type RoutineStepOutcome, type RoutineStepOutcomes } from '../lib/routinePlayerSettings';
 import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
 import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
@@ -35,6 +36,7 @@ import type { CustomPracticeSection } from '../lib/practiceLoopProgram';
 import './PracticePage.css';
 import './PracticePlayerApproved.css';
 import './PracticePlayerDemoRefresh.css';
+import './RoutineClassDemo.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'instructions' | 'chart';
@@ -46,8 +48,9 @@ type Completion = {
   routineId?: string;
   exerciseId?: string;
   title: string;
-  chartTitle: string;
+  chartTitle?: string;
   recordingTitle?: string;
+  routineOutcomes?: { completed: number; needsWork: number; skipped: number; unmarked: number; total: number };
 };
 
 /**
@@ -108,7 +111,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    charts, exercises, routines, activeRoutineId, addSession, showToast, catId,
+    charts, exercises, routines, activeRoutineId, addSession, showToast, catId, repo, refreshLocal,
   } = useApp();
   const requestedChart = freeSession?.kind === 'chart' ? freeSession.sourceId : searchParams.get('chart');
   const requestedRecording = freeSession?.kind === 'track' ? freeSession.sourceId : searchParams.get('recording');
@@ -121,6 +124,10 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const routine = routineId ? routines.find(item => item.id === routineId) ?? null : null;
   const missingRoutine = Boolean(requestedRoutine && !routine);
   const [stepIndex, setStepIndex] = useState(0);
+  const [stepOutcomes, setStepOutcomes] = useState<RoutineStepOutcomes>({});
+  const [stepsOpen, setStepsOpen] = useState(false);
+  const [pendingStep, setPendingStep] = useState<number | 'finish' | null>(null);
+  const [customExerciseTitle, setCustomExerciseTitle] = useState('');
   const currentStep = routine?.steps[stepIndex] ?? null;
   const playableStep = useMemo(
     () => currentStep ? resolvePlayableStep(currentStep, exercises, exercisesById) : null,
@@ -136,7 +143,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const [loopOpen, setLoopOpen] = useState(false);
   const loopTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [musicalClock, setMusicalClock] = useState({ chartBeat: 0, startedAtMs: null as number | null });
-  const [panel, setPanel] = useState<Panel>(routine ? 'instructions' : 'chart');
+  const [panel, setPanel] = useState<Panel>(routine && !playableStep?.chart_id ? 'instructions' : 'chart');
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
   const toolTriggerRef = useRef<HTMLButtonElement | null>(null);
   const toolOverlayRef = useRef<HTMLDivElement | null>(null);
@@ -219,18 +226,33 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const lesson = useMemo(() => playableStep
     ? normalizeGuidedLesson(playableStep, chosenExercise, currentStep?.snapshot)
     : null, [playableStep, chosenExercise, currentStep?.snapshot]);
-  // A routine exercise without a chart only shows its guided instructions.
-  const hasMusicContent = !freeSession || !routine || Boolean(playableStep?.chart_id);
+  // A routine step without a chart must not display an unrelated fallback chart.
+  const stepChart = playableStep?.chart_id ? getChartById(playableStep.chart_id, charts) : null;
+  const hasMusicContent = !routine || Boolean(stepChart);
+  const stepDefaults = useMemo(
+    () => defaultPlayerSettings(stepChart?.concert_key ?? chart.concert_key,
+      chosenExercise?.suggested_bpm, playableStep?.player_settings),
+    [stepChart?.concert_key, chart.concert_key, chosenExercise?.suggested_bpm, playableStep?.player_settings],
+  );
+  const currentSettings = {
+    reference_bpm: tempo, chart_key: chartKey, written_pitch: writtenPitch,
+    loop_enabled: loopEnabled, loop_sections: loopSections, repeat: repeatWholePlan,
+  };
+  const editedStepSettings = Boolean(routine && settingsChanged(currentSettings, stepDefaults));
+  const completeCount = Object.values(stepOutcomes).filter(outcome => outcome === 'complete').length;
 
   const isRunning = startedAtMs !== null;
   const elapsedSeconds = freeSession?.seconds ??
     Math.floor((sessionAccumulatedMs + elapsedMilliseconds(0, sessionStartedAtMs, nowMs)) / 1000);
 
-  const formProgress = routine ? Math.round(((stepIndex + 1) / routine.steps.length) * 100) : 0;
+  const formProgress = routine?.steps.length ? Math.round(completeCount / routine.steps.length * 100) : 0;
 
   useEffect(() => {
     setStepIndex(0);
-    setPanel(routine ? 'instructions' : 'chart');
+    setStepOutcomes({});
+    setStepsOpen(false);
+    setPendingStep(null);
+    setPanel(routine && !playableStep?.chart_id ? 'instructions' : 'chart');
     setStartedAtMs(null);
     setSessionAccumulatedMs(0);
     const sessionStart = performance.now();
@@ -302,12 +324,24 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   }, [playableStep?.chart_id, playableStep?.exercise_id, charts, requestedChart, requestedRecording]);
 
   useEffect(() => {
-    if (chosenExercise?.suggested_bpm != null) {
-      const bpm = Math.max(40, Math.min(240, chosenExercise.suggested_bpm));
-      setTempo(bpm);
-      setTempoInput(String(bpm));
+    if (!routine) {
+      if (chosenExercise?.suggested_bpm != null) {
+        const bpm = Math.max(40, Math.min(240, chosenExercise.suggested_bpm));
+        setTempo(bpm);
+        setTempoInput(String(bpm));
+      }
+      return;
     }
-  }, [chosenExercise?.id, chosenExercise?.suggested_bpm]);
+    setTempo(stepDefaults.reference_bpm);
+    setTempoInput(String(stepDefaults.reference_bpm));
+    setChartKey(stepDefaults.chart_key);
+    setWrittenPitch(stepDefaults.written_pitch);
+    setLoopEnabled(stepDefaults.loop_enabled);
+    setLoopSections(stepDefaults.loop_sections.length ? stepDefaults.loop_sections.map(section => ({ ...section }))
+      : [{ startBar: 1, endBar: Math.min(stepChart?.bars.length ?? chart.bars.length, 4), plays: 2 }]);
+    setRepeatWholePlan(stepDefaults.repeat);
+    setPanel(hasMusicContent ? 'chart' : 'instructions');
+  }, [routine?.id, stepIndex, stepDefaults, hasMusicContent]);
 
   useEffect(() => {
     if (freeSession || ((!isRunning && sessionStartedAtMs === null) || completion)) return;
@@ -320,6 +354,13 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     if (hasMusicContent) metronome.setPieceMeter([chart.time_signature[0], chart.time_signature[1]]);
   }, [chart.id, chart.time_signature[0], chart.time_signature[1], activeRecording?.recordedBpm,
     activeRecording ? null : tempo, hasMusicContent, metronome.changeBpm, metronome.setPieceMeter]);
+
+  // Changes made in the reusable metronome sheet become an editable routine tempo.
+  // The existing tempo-to-metronome effect above keeps both controls in sync.
+  useEffect(() => {
+    if (!routine || activeTool !== 'metronome' || metronome.synced || metronome.bpm === tempo) return;
+    changeTempo(metronome.bpm);
+  }, [routine?.id, activeTool, metronome.synced, metronome.bpm, tempo]);
 
   useEffect(() => {
     // The metronome polls the actual transport position. The recording's chart
@@ -590,16 +631,60 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     setNowMs(now);
   }
 
-  function goStep(delta: number) {
+  function goStep(next: number | 'finish') {
     if (!routine) return;
-    const next = Math.max(0, Math.min(routine.steps.length - 1, stepIndex + delta));
-    if (next === stepIndex) return;
+    setStepsOpen(false);
+    setPendingStep(null);
+    if (next === 'finish') {
+      if (freeSession) freeSession.onNext();
+      else finishSession();
+      return;
+    }
+    if (next === stepIndex || next < 0 || next >= routine.steps.length) return;
+    suppressAudioPauseRef.current = true;
+    audioRef.current?.pause();
+    metronome.stop();
     const now = performance.now();
     setStartedAtMs(null);
     setNowMs(now);
     setStepIndex(next);
-    setPanel('instructions');
     setMusicalClock({ chartBeat: 0, startedAtMs: null });
+    suppressAudioPauseRef.current = false;
+  }
+
+  function requestStep(next: number | 'finish') {
+    if (!routine || next === stepIndex) return;
+    if (editedStepSettings) {
+      setCustomExerciseTitle((playableStep?.title ?? 'Exercise') + ' (custom)');
+      setPendingStep(next);
+      setStepsOpen(false);
+      return;
+    }
+    goStep(next);
+  }
+
+  function saveEditedExerciseAndContinue() {
+    if (pendingStep === null || !customExerciseTitle.trim()) return;
+    try {
+      const exercise = makeSavedExercise(chosenExercise, customExerciseTitle,
+        playableStep?.instructions ?? '', playableStep?.chart_id ?? null,
+        currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 5, currentSettings);
+      repo.saveLocalExercise(exercise);
+      refreshLocal();
+      showToast('Saved as a new exercise in My Exercises on this device.');
+      goStep(pendingStep);
+    } catch {
+      showToast('Could not save your exercise. Your changes are still available.');
+    }
+  }
+
+  function setOutcome(status: RoutineStepOutcome | '') {
+    setStepOutcomes(previous => {
+      const next = { ...previous };
+      if (status) next[stepIndex] = status;
+      else delete next[stepIndex];
+      return next;
+    });
   }
 
   function finishSession() {
@@ -622,8 +707,13 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
       routineId: routine?.id,
       exerciseId: playableStep?.exercise_id,
       title: routine?.title ?? chart.title,
-      chartTitle: chart.title,
+      chartTitle: routine ? undefined : chart.title,
       recordingTitle: activeRecording?.title,
+      routineOutcomes: routine ? { completed: Object.values(stepOutcomes).filter(x => x === 'complete').length,
+        needsWork: Object.values(stepOutcomes).filter(x => x === 'needs-work').length,
+        skipped: Object.values(stepOutcomes).filter(x => x === 'skipped').length,
+        unmarked: Math.max(0, routine.steps.length - Object.keys(stepOutcomes).length),
+        total: routine.steps.length } : undefined,
     });
     setSaveState('idle');
     savePromiseRef.current = null;
@@ -658,7 +748,8 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
         try {
           localStorage.setItem(
             'little-jazz-room:practice-feedback:v1:' + record.id,
-            JSON.stringify({ notes: savedNotes, rating: savedRating }),
+            JSON.stringify({ notes: savedNotes, rating: savedRating,
+              routineStepOutcomes: routine ? stepOutcomes : undefined }),
           );
         } catch { /* optional local feedback */ }
         setSaveState('saved');
@@ -685,6 +776,9 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     if (audioRef.current) audioRef.current.currentTime = 0;
     setRecordingPosition(0);
     setStepIndex(0);
+    setStepOutcomes({});
+    setStepsOpen(false);
+    setPendingStep(null);
     setStartedAtMs(null);
     setSessionAccumulatedMs(0);
     const restartTime = performance.now();
@@ -696,7 +790,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     sessionDraftId.current = crypto.randomUUID();
     setRating(0);
     setSaveState('idle');
-    setPanel(routine ? 'instructions' : 'chart');
+    setPanel(routine && !playableStep?.chart_id ? 'instructions' : 'chart');
     savePromiseRef.current = null;
   }
 
@@ -757,7 +851,12 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
           <div>
             <strong>{completion.title}</strong>
             <span>{completion.routineId ? 'Guided Practice' : 'Free Practice'}</span>
-            <small>{completion.chartTitle} · {completion.recordingTitle ? 'Recorded backing track' : 'Chart only'}</small>
+            {completion.routineOutcomes
+              ? <small>{completion.routineOutcomes.completed} of {completion.routineOutcomes.total} exercises completed
+                  {completion.routineOutcomes.needsWork ? ` · ${completion.routineOutcomes.needsWork} need work` : ''}
+                  {completion.routineOutcomes.skipped ? ` · ${completion.routineOutcomes.skipped} skipped` : ''}
+                  {completion.routineOutcomes.unmarked ? ` · ${completion.routineOutcomes.unmarked} not marked` : ''}</small>
+              : <small>{completion.chartTitle} · {completion.recordingTitle ? 'Recorded backing track' : 'Chart only'}</small>}
           </div>
         </div>
         <div className="practice-complete-notes">
@@ -844,12 +943,16 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
       </div>}
       {activeRecording && recordingError && <p role="alert" className="practice-recording-error">{recordingError}</p>}
 
-      {routine && (
-        <div className="practice-guided-progress" role="progressbar" aria-label="Routine steps completed"
-          aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={stepIndex}>
+      {routine && <>
+        <div className="practice-routine-overview-bar">
+          <span>{completeCount} of {routine.steps.length} exercises completed</span>
+          <button type="button" onClick={() => setStepsOpen(true)} aria-label="View all routine exercises">All Steps ☷</button>
+        </div>
+        <div className="practice-guided-progress" role="progressbar" aria-label="Completed routine exercises"
+          aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={completeCount}>
           <span style={{ width: formProgress + '%' }} />
         </div>
-      )}
+      </>}
 
       {routine && hasMusicContent && <div className="practice-segments" role="tablist" aria-label={routine ? 'Guided practice views' : 'Player view'}>
         {routine && <button type="button" role="tab" aria-controls="practice-instructions-panel" aria-selected={panel === 'instructions'} onClick={() => setPanel('instructions')} className={panel === 'instructions' ? 'selected' : undefined}>Instructions</button>}
@@ -895,15 +998,32 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
           <p>{lesson?.goal ?? 'Follow the exercise and practice at your own pace.'}</p>
         </aside>
       )}
-      {routine && (
+      {routine && <>
         <div className="practice-step-controls">
-          <button type="button" onClick={() => goStep(-1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
+          <button type="button" onClick={() => requestStep(stepIndex - 1)} disabled={stepIndex === 0} aria-label="Previous routine step">‹</button>
           <div><strong>Step {stepIndex + 1} of {routine.steps.length}</strong><span>{playableStep?.title ?? 'Exercise'} · {currentStep?.duration_minutes ?? playableStep?.duration_minutes ?? 0} min goal</span></div>
           {hasMusicContent && <button type="button" className="practice-chart-shortcut" onClick={() => setPanel(current => current === 'chart' ? 'instructions' : 'chart')} aria-label={panel === 'chart' ? 'Show instructions' : 'Show chart'}>{panel === 'chart' ? 'Instructions' : 'Chart'}</button>}
           <button type="button" className="practice-next" disabled={Boolean(freeSession && stepIndex === routine.steps.length - 1 && !freeSession.canNext)}
-            onClick={() => stepIndex === routine.steps.length - 1 ? (freeSession ? freeSession.onNext() : finishSession()) : goStep(1)}>{stepIndex === routine.steps.length - 1 ? (freeSession ? 'End of routine' : 'Finish') : 'Next Step ›'}</button>
+            onClick={() => requestStep(stepIndex === routine.steps.length - 1 ? 'finish' : stepIndex + 1)}>{stepIndex === routine.steps.length - 1 ? (freeSession ? 'End of routine' : 'Finish Routine') : 'Next Step ›'}</button>
         </div>
-      )}
+        <div className="practice-routine-outcome" aria-label="Exercise completion">
+          <button type="button" className={stepOutcomes[stepIndex] === 'complete' ? 'selected' : ''}
+            aria-pressed={stepOutcomes[stepIndex] === 'complete'}
+            onClick={() => setOutcome(stepOutcomes[stepIndex] === 'complete' ? '' : 'complete')}>
+            ✓ {stepOutcomes[stepIndex] === 'complete' ? 'Completed' : 'Mark Complete'}
+          </button>
+          <label>
+            <span className="sr-only">Exercise outcome</span>
+            <select aria-label="Exercise outcome" value={stepOutcomes[stepIndex] ?? ''}
+              onChange={event => setOutcome(event.target.value as RoutineStepOutcome | '')}>
+              <option value="">Not marked</option>
+              <option value="complete">Complete</option>
+              <option value="needs-work">Needs work</option>
+              <option value="skipped">Skipped</option>
+            </select>
+          </label>
+        </div>
+      </>}
 
       {hasMusicContent && <div className="practice-transport">
         <div className="practice-recording-seek">
@@ -971,8 +1091,18 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
                   aria-label="Transposing instrument"><option value="C">Concert</option><option value="Bb">B♭</option><option value="Eb">E♭</option></select>
               </label>
               <button type="button" className="practice-demo-original"
-                aria-label={activeRecording ? 'Reset BPM to recorded tempo' : 'Reset BPM to original chart tempo'}
-                onClick={() => changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100)}>Original</button>
+                aria-label={routine ? 'Reset to routine preset' : activeRecording ? 'Reset BPM to recorded tempo' : 'Reset BPM to original chart tempo'}
+                onClick={() => {
+                  if (routine) {
+                    changeTempo(stepDefaults.reference_bpm);
+                    setChartKey(stepDefaults.chart_key);
+                    setWrittenPitch(stepDefaults.written_pitch);
+                    setLoopEnabled(stepDefaults.loop_enabled);
+                    setLoopSections(stepDefaults.loop_sections.length ? stepDefaults.loop_sections.map(section => ({ ...section }))
+                      : [{ startBar: 1, endBar: Math.min(chart.bars.length, 4), plays: 2 }]);
+                    setRepeatWholePlan(stepDefaults.repeat);
+                  } else changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100);
+                }}>{routine ? 'Routine Preset' : 'Original'}</button>
             </div>
             <p className="practice-reference-note practice-demo-audio-note">{activeRecording
               ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.'
@@ -1026,6 +1156,58 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
       )}
 
     </section>
+    {stepsOpen && routine && createPortal(
+      <div className="routine-class-dialog-backdrop" onClick={() => setStepsOpen(false)}>
+        <section className="routine-class-dialog" role="dialog" aria-modal="true" aria-label="Routine exercise overview"
+          onClick={event => event.stopPropagation()}
+          onKeyDown={event => { if (event.key === 'Escape') setStepsOpen(false); }}>
+          <header><h2>{routine.title}</h2><button type="button" aria-label="Close routine overview"
+            onClick={() => setStepsOpen(false)} autoFocus>×</button></header>
+          <p>{completeCount} of {routine.steps.length} completed. Select any exercise to jump to it.</p>
+          <div className="routine-class-list">
+            {routine.steps.map((step, index) => {
+              const target = resolvePlayableStep(step, exercises, exercisesById);
+              const status = stepOutcomes[index];
+              return <button type="button" key={index}
+                className={index === stepIndex ? 'is-current' : undefined}
+                aria-current={index === stepIndex ? 'step' : undefined}
+                onClick={() => { setStepsOpen(false); requestStep(index); }}>
+                <span className="routine-class-step-number">{index + 1}</span>
+                <span className="routine-class-step-name"><strong>{target.title}</strong>
+                  <small>{step.duration_minutes} min · {target.chart_id ? 'Chart' : 'Instructions'}</small></span>
+                <span className="routine-class-step-status">{status === 'complete' ? '✓ Complete' :
+                  status === 'needs-work' ? 'Needs work' : status === 'skipped' ? 'Skipped' :
+                  index === stepIndex ? 'Current' : 'Not marked'}</span>
+              </button>;
+            })}
+          </div>
+        </section>
+      </div>, document.body
+    )}
+    {pendingStep !== null && createPortal(
+      <div className="routine-class-dialog-backdrop">
+        <section className="routine-class-dialog" role="dialog" aria-modal="true" aria-label="Save modified exercise settings"
+          onKeyDown={event => { if (event.key === 'Escape') setPendingStep(null); }}>
+          <header><h2>Save your exercise changes?</h2>
+            <button type="button" aria-label="Keep practicing" onClick={() => setPendingStep(null)}>×</button></header>
+          <p>You changed this step's settings. Save a new exercise without changing the original routine?</p>
+          <div className="routine-class-change-summary">
+            <span>Tempo: {stepDefaults.reference_bpm} → {tempo} BPM</span>
+            <span>Key: {stepDefaults.chart_key.replace('b', '♭')} → {chartKey.replace('b', '♭')}</span>
+            <span>Instrument, loop and repeat changes will also be included.</span>
+          </div>
+          <label className="routine-class-label">New exercise name
+            <input autoFocus type="text" maxLength={100}
+              value={customExerciseTitle} onChange={event => setCustomExerciseTitle(event.target.value)} />
+          </label>
+          <button type="button" className="routine-class-primary" disabled={!customExerciseTitle.trim()}
+            onClick={saveEditedExerciseAndContinue}>Save as New Exercise</button>
+          <button type="button" className="routine-class-secondary"
+            onClick={() => { const next = pendingStep; setPendingStep(null); if (next !== null) goStep(next); }}>Continue Without Saving</button>
+          <button type="button" className="routine-class-link" onClick={() => setPendingStep(null)}>Keep practicing</button>
+        </section>
+      </div>, document.body
+    )}
     {annotationOpen && createPortal(
       <ChartAnnotationSheet chartTitle={chart.title} totalBars={chart.bars.length} initialBar={bubbleBar ?? playhead.barIndex + 1}
         notes={chartNotes} onSave={saveChartAnnotation} onDelete={deleteChartAnnotation}
