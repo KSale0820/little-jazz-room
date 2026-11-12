@@ -2,20 +2,34 @@ import { useEffect, useState } from 'react';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import type { CatId } from '../features/cats/CatCompanion';
 import type { GuidedLesson as Lesson } from '../lib/guidedLesson';
+import type { Chart, WrittenPitch } from '../types/content';
+import { ChordGrid } from './ChordGrid';
+import { lessonChordRange } from '../lib/routineStepChords';
 
 interface Props {
   lesson: Lesson;
   stepIndex: number;
   totalSteps: number;
   hideTitle?: boolean;
+  stepChart?: Chart;
+  chartKey?: string;
+  writtenPitch?: WrittenPitch;
+  onSelectBar?: (barIndex: number) => void;
+  onSeeChart?: () => void;
 }
 
 /** Compact, scrollable instructional content, independent of the shared timer. */
-export function GuidedLesson({ lesson, stepIndex, totalSteps, hideTitle = false }: Props) {
+export function GuidedLesson({
+  lesson, stepIndex, totalSteps, hideTitle = false,
+  stepChart, chartKey, writtenPitch = 'C', onSelectBar, onSeeChart,
+}: Props) {
 
   return (
     <section className="practice-lesson-scroll" aria-label="Guided lesson instructions" tabIndex={0}>
       <div className="practice-lesson-card">
+        {onSeeChart && <div className="routine-lesson-chart-link">
+          <button type="button" onClick={onSeeChart} aria-label="See chart">See Chart <span aria-hidden="true">›</span></button>
+        </div>}
         {!hideTitle && <header className="practice-lesson-heading">
           <span className="practice-lesson-eyebrow">LESSON {stepIndex + 1} OF {totalSteps}</span>
           <h2>{lesson.title}</h2>
@@ -29,7 +43,18 @@ export function GuidedLesson({ lesson, stepIndex, totalSteps, hideTitle = false 
         <section className="practice-lesson-section practice-lesson-steps" aria-labelledby="practice-lesson-steps">
           <h3 id="practice-lesson-steps">Try it step by step</h3>
           <ol>
-            {lesson.steps.map((step, index) => <li key={index}><span>{step}</span></li>)}
+            {lesson.steps.map((step, index) => {
+              const range = stepChart ? lessonChordRange(lesson, stepChart, index) : null;
+              return <li key={index}>
+                <span>{step}</span>
+                {stepChart && range && <div className="routine-lesson-inline-chords" aria-label={`Chords for instruction ${index + 1}`}>
+                  <ChordGrid chart={stepChart} chartKey={chartKey ?? stepChart.concert_key}
+                    writtenPitch={writtenPitch} selectedBar={-1} loopRange={null}
+                    onSelectBar={onSelectBar ?? (() => {})} displayRange={[range[0] - 1, range[1]]}
+                    showSectionLabels={false} showMeasureNumbers={false} />
+                </div>}
+              </li>;
+            })}
           </ol>
         </section>
 
