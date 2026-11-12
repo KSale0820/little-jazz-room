@@ -13,7 +13,8 @@
   box-sizing: border-box;
   gap: clamp(13px, 2.15dvh, 19px);
   min-width: 0;
-  min-height: calc(100dvh - 14px);
+  /* Fill the app's phone viewport, not the outer desktop browser viewport. */
+  min-height: calc(100% - 14px);
   margin: 7px;
   padding: clamp(40px, 6dvh, 53px) 18px max(26px, env(safe-area-inset-bottom));
   background: #fffaf3;
