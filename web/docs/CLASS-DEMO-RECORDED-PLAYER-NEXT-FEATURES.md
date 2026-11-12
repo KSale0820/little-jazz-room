@@ -19,3 +19,12 @@ Updated November 11, 2026 on `class-demo-2026-10-31`.
 - Recorded audio uses existing arrangements, with chart BPM/key as visual/reference controls only. Loop changes seek the recording to the selected range's start.
 - The new in-player metronome shares its state within the Practice Player, while the standalone Metronome page still has its original screen and independent instance.
 - The full test suite and an interactive mobile screenshot pass should be run before class presentation; the Vercel TypeScript/build check alone is insufficient for browser-verified behavior.
+
+## November 11 mobile and timing refinements
+
+- **Chart controls share the status line:** Number measures and the red pencil are placed beside the Recorded Track / Chart Only status, not in a separate row. The text truncates rather than forcing additional layout height on narrow phones.
+- **Annotations stay in the top margin:** Measure numbers, Tag/End/5× source marks and user annotations are kept close to the top-right within each dense measure. The extra annotation preview panel has been removed from the editor; its overlength-to-bubble warning remains.
+- **Practice time and pause:** The small pause button precedes the elapsed digits, uses an SVG with two straight bars, and remains independent of the recorded audio transport.
+- **Synced metronome:** When both the chart/recording transport and metronome play, the metronome derives timing from the transport's live position. Recorded tracks account for `chartStartSeconds` so the first printed downbeat aligns after the audio introduction; backward/forward seeking and repeats cause resynchronization. If playback stops, the metronome continues independently until switched off. Audio latency varies between devices, so real-device verification is still needed.
+- **Meter-aligned clicks:** The source chart's time signature is read-only in the practice metronome. Available click counts are exact divisors or 2×/4× subdivisions of the meter's notated beat count. For 4/4: 1, 2, 4, 8, 16 clicks/bar; for 3/4: 1, 3, 6, 12; for 6/8: 1, 2, 3, 6, 12, 24. The source playback BPM wins whenever both are running.
+- **Responsive parity:** Additional width-based styles avoid the prior viewport-height-dependent difference between phone and desktop mobile emulation. Mobile Safari/Chrome visual and audio tests remain to be run.
