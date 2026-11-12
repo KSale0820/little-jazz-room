@@ -95,10 +95,10 @@ try {
       await page.getByLabel('Notes & observations').fill('Practice the two-bar phrase over the bridge.');
       await page.getByRole('button', { name: '+ Bridge' }).click();
       await page.getByRole('button', { name: 'Save changes' }).click();
-      await page.getByText('QA: rhythmic phrase idea').waitFor();
+      await page.getByText('Practice the two-bar phrase over the bridge.').waitFor();
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/notes-' + viewport.width + '.png', fullPage: true });
       await page.reload();
-      await page.getByText('QA: rhythmic phrase idea').waitFor();
+      await page.getByText('Practice the two-bar phrase over the bridge.').waitFor();
       assert.equal(await page.getByRole('button', { name: 'Edit note' }).count(), 0);
       await page.getByRole('button', { name: 'Edit journal entry' }).click();
       assert.equal(await page.getByLabel('Notes & observations').inputValue(), 'Practice the two-bar phrase over the bridge.');
