@@ -92,11 +92,13 @@ try {
     assert.ok(dockLayout.lowerLefts.every(x => x >= dockLayout.outer.left - 2) &&
       dockLayout.lowerRights.every(x => x <= dockLayout.outer.right + 2), 'Controls must not overflow the connected dock');
     assert.ok(dockLayout.green !== 'rgba(0, 0, 0, 0)', 'Upper status row should have the light green background');
-    const positions = await page.locator('.routine-session-dock').evaluate(dock => {
-      const tools = document.querySelector('.practice-demo-tools')?.getBoundingClientRect();
-      return { dockTop: dock.getBoundingClientRect().top, toolsBottom: tools?.bottom };
-    });
-    assert.ok(positions.dockTop >= positions.toolsBottom - 4, 'Combined footer should follow the tool row');
+    const dockPosition = await page.locator('.routine-session-dock').evaluate(dock => ({
+      top: dock.getBoundingClientRect().top,
+      bottom: dock.getBoundingClientRect().bottom,
+      height: innerHeight,
+    }));
+    assert.ok(dockPosition.top >= -2 && dockPosition.bottom <= dockPosition.height + 2,
+      'The routine dock must stay reachable within a short mobile viewport');
     await page.screenshot({ path: join(dir, label + '-01-instructions.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Next routine step' }).click();
