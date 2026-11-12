@@ -55,6 +55,8 @@ try {
           titleWeight: getComputedStyle(document.querySelector('.routine-intro h1')).fontWeight,
           headingWeight: getComputedStyle(document.querySelector('.routine-shelf-heading h2')).fontWeight,
           titleFamily: getComputedStyle(document.querySelector('.routine-intro h1')).fontFamily,
+          titleSize: getComputedStyle(document.querySelector('.routine-intro h1')).fontSize,
+          cardWeight: getComputedStyle(document.querySelector('.routine-card-title')).fontWeight,
         },
         shelfCount: document.querySelectorAll('.routine-shelf').length,
         spriteSize: getComputedStyle(document.querySelector('.routine-card-icon-slot')).backgroundSize,
@@ -65,8 +67,11 @@ try {
     assert(result.filters.length === 4, 'all four filters must exist');
     assert(result.filters[3].right <= width - 8, 'last filter is clipped at ' + width);
     assert(result.firstCard.width <= 140 && result.firstCard.height <= 100, 'cards are still too large');
-    assert(result.type.titleWeight === '700' && result.type.headingWeight === '700', 'mockup serif font weight is wrong');
+    assert(result.type.titleWeight === '400' && result.type.headingWeight === '400', 'Routines must match the Tracks regular-weight Georgia serif');
+    assert(result.title.height <= 35, 'Routines title is too large');
     assert(result.type.titleFamily.includes('Georgia'), 'mockup serif typeface is wrong');
+    assert(result.type.cardWeight === '400', 'routine cards must match Tracks regular Georgia titles');
+    assert(parseFloat(result.type.titleSize) <= 30, 'Routines header must be no larger than 30px');
     assert(result.shelfInsets.every(shelf => shelf.firstCardLeft === null || (
       shelf.firstCardLeft >= shelf.left - 1 && shelf.firstCardLeft <= shelf.left + 3
     )), 'one or more shelves start flush against the screen edge or snap left');
