@@ -67,3 +67,21 @@
  .practice-sheet-backdrop { align-items: center; padding: 18px; }
  .practice-feature-sheet { max-height: min(90dvh,800px); border-radius: 19px; }
 }
+
+
+/* Pitch charts attached to same-day practice journals. */
+.practice-pitch-attach {
+  display: grid; gap: 7px; margin: 12px 0; padding: 10px 12px;
+  border: 1px solid #cbdacc; border-radius: 11px;
+}
+.practice-pitch-attach legend { padding: 0 5px; font-weight: 700; }
+.practice-pitch-attach label { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.practice-pitch-attach input { width: 18px; height: 18px; accent-color: #397456; }
+.practice-pitch-preview {
+  margin: 8px 0; padding: 9px; background: #f7f9f5;
+  border: 1px solid #dce5db; border-radius: 9px;
+  display: grid; gap: 5px;
+}
+.practice-pitch-preview strong { font-size: 12px; }
+.practice-pitch-preview svg { width: 100%; height: 92px; background: #fffdf8; }
+.practice-pitch-preview small { font-size: 11px; color: #49634f; }
