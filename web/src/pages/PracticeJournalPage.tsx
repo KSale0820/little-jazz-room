@@ -24,7 +24,7 @@ const tagTone = (tag: string) => {
   const index = TAGS.findIndex(t => t.toLowerCase() === tag.toLowerCase());
   return TAG_COLORS[index < 0 ? 0 : index % TAG_COLORS.length];
 };
-const uniqueTags = (values: string[]) => [...new Set(values.map(x => x.trim()).filter(Boolean))].slice(0, 12);
+const uniqueTags = (values: string[]) => [...new Set(values.map(x => x.trim()).filter(Boolean))];
 const noteLabel = (entry: PracticeJournalEntry) => entry.title?.trim() || entry.chartTitle?.trim() || (entry.kind === 'note' ? 'Practice note' : 'Practice reflection');
 
 function TagChips({ tags }: { tags: string[] }) {
