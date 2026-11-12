@@ -251,7 +251,7 @@ export function PracticeJournalPage() {
         <button type="button" className="pj-back" aria-label="Back to Calendar"
           onClick={() => navigate('/progress/practice-journal?tab=calendar&date=' + selectedDay)}>‹</button>
         <strong>Practice Journal</strong>
-        <button type="button" className="pj-pencil" aria-label="Open daily practice sheet"
+        <button type="button" className="pj-pencil" aria-label="View journal sheet"
           onClick={() => openDay(selectedDay)}>
           <img src="/visuals/progress/practice-journal.png" alt="" />
         </button>
