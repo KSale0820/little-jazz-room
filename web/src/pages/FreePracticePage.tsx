@@ -86,6 +86,11 @@ export function FreePracticePage() {
   const [journalOpen, setJournalOpen] = useState(false);
   const [journalEntries, setJournalEntries] = useState<PracticeJournalEntry[]>(() =>
     readLocalList<PracticeJournalEntry>(journalKey(repo.scope)));
+  useEffect(() => {
+    const refresh = () => setJournalEntries(readLocalList<PracticeJournalEntry>(journalKey(repo.scope)));
+    window.addEventListener('little-jazz-room:journal-updated', refresh);
+    return () => window.removeEventListener('little-jazz-room:journal-updated', refresh);
+  }, [repo.scope]);
   const [finished, setFinished] = useState<PracticeSessionRecord | null>(null);
   const [saveStatus, setSaveStatus] = useState<'saving' | 'saved' | 'error'>('saving');
   const saveInFlight = useRef(false);
