@@ -73,7 +73,7 @@ try {
     await page.getByRole('button', { name: 'Finish Session', exact: true }).click();
     await page.getByRole('heading', { name: 'Great practice!' }).waitFor();
     assert.equal(await page.locator('#practice-notes').inputValue(), 'Counted the swing beats.');
-    await page.getByRole('button', { name: 'Save Session' }).click();
+    await page.getByRole('button', { name: 'Save Session', exact: true }).click();
     await page.getByRole('button', { name: /Session Saved/ }).waitFor();
     const feedback = await page.evaluate(() => {
       const key = Object.keys(localStorage).find(key => key.startsWith('little-jazz-room:practice-feedback:v1:'));
