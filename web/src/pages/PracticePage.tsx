@@ -355,6 +355,13 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   }, [chart.id, chart.time_signature[0], chart.time_signature[1], activeRecording?.recordedBpm,
     activeRecording ? null : tempo, hasMusicContent, metronome.changeBpm, metronome.setPieceMeter]);
 
+  // Changes made in the reusable metronome sheet become an editable routine tempo.
+  // The existing tempo-to-metronome effect above keeps both controls in sync.
+  useEffect(() => {
+    if (!routine || activeTool !== 'metronome' || metronome.synced || metronome.bpm === tempo) return;
+    changeTempo(metronome.bpm);
+  }, [routine?.id, activeTool, metronome.synced, metronome.bpm, tempo]);
+
   useEffect(() => {
     // The metronome polls the actual transport position. The recording's chart
     // starts after its intro; never equate audio 0:00 with bar one's downbeat.
