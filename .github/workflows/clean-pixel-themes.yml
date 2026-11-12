@@ -45,6 +45,8 @@ jobs:
           curl -f http://127.0.0.1:5174/
       - name: Routine player instruction/chart and save-preset QA
         run: node scripts/check-routine-player-refresh.mjs
+      - name: Routine step preset builder and player QA
+        run: node scripts/check-routine-step-presets.mjs
       - name: Capture Progress redesign reference screenshots
         run: node scripts/check-progress-redesign.mjs
       - name: Clean pixel Light/Dark x Cat Mode mobile matrix
@@ -70,6 +72,7 @@ jobs:
             web/docs/screenshots/class-demo-integration/
             web/docs/screenshots/chart-routine-player-integration/
             web/docs/screenshots/routine-player-refresh/
+            web/docs/screenshots/routine-step-presets/
             web/docs/approved-ui/TRACKS-AND-CHARTS-APPROVED-UI.png
             web/public/visuals/tracks-approved/tracks-title.png
             web/public/visuals/tracks-approved/jazz-study-shelf.png
