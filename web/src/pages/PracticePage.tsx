@@ -193,7 +193,12 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   });
   const metronome = usePracticeMetronome();
   useEffect(() => { setChartNotes(readLocalList<ChartNote>(notesKey(userScope, chartId))); }, [userScope, chartId]);
-  useEffect(() => { setJournalEntries(readLocalList<PracticeJournalEntry>(journalKey(userScope))); }, [userScope]);
+  useEffect(() => {
+    const refresh = () => setJournalEntries(readLocalList<PracticeJournalEntry>(journalKey(userScope)));
+    refresh();
+    window.addEventListener('little-jazz-room:journal-updated', refresh);
+    return () => window.removeEventListener('little-jazz-room:journal-updated', refresh);
+  }, [userScope]);
 
   const openTool = (tool: PracticeTool, trigger: HTMLButtonElement) => {
     toolTriggerRef.current = trigger;
