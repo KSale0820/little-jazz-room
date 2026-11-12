@@ -96,6 +96,7 @@ export type FreePracticePlayerSession = {
   onPause: () => void;
   onFinish: () => void;
   onAdd: () => void;
+  onBack: () => void;
   canPrevious: boolean;
   canNext: boolean;
   onPrevious: () => void;
@@ -779,7 +780,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     <>
     <section className={`practice-player ${routine ? 'practice-guided' : 'practice-free'} ${activeRecording ? 'practice-has-recording' : ''} ${routine && (panel === 'instructions' || !hasMusicContent) ? 'practice-instructions' : ''} ${!hasMusicContent ? 'practice-no-chart' : ''} ${freeSession ? 'practice-free-session' : ''} practice-unified practice-demo-refresh`} aria-label="Shared practice player">
       <header className="practice-player-head">
-        <button className="practice-back" type="button" onClick={() => navigate('/practice')} aria-label="Back to Practice">‹</button>
+        <button className="practice-back" type="button" onClick={freeSession ? freeSession.onBack : () => navigate('/practice')} aria-label="Back to Practice">‹</button>
         <div className="practice-title-group">
           <h1>{routine?.title ?? chart.title}</h1>
           <p>{routine
