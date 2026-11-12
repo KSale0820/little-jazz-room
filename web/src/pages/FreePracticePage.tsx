@@ -351,7 +351,7 @@ export function FreePracticePage() {
     </div>, document.body)}
 
     {!active && activeTool && (activeTool === 'metronome'
-      ? createPortal(<PracticeMetronomeSheet controller={metronome} onClose={() => setActiveTool(null)} />, document.body)
+      ? createPortal(<PracticeMetronomeSheet controller={metronome} chartAvailable={false} onClose={() => setActiveTool(null)} />, document.body)
       : createPortal(<div className="practice-tool-overlay" role="dialog" aria-modal="true" aria-label="Tuner within practice">
           <TunerPage onClose={() => setActiveTool(null)} />
         </div>, document.querySelector('.app-shell') ?? document.body))}
