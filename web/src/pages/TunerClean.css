@@ -334,3 +334,37 @@
   .tool-tuner .tuner-reference { margin-top: 8px; }
   .tool-tuner .tuner-trail-plot { height: 75px; }
 }
+
+
+/* Optional tuner history: compact on mobile, with true measured data only. */
+.tool-tuner .tuner-history-range,
+.tool-tuner .tuner-history-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+.tool-tuner .tuner-history-range button,
+.tool-tuner .tuner-history-actions button {
+  flex: 1 1 auto; min-height: 38px; padding: 7px 10px;
+  border: 1px solid #cbdacc; border-radius: 9px; background: #f3f6ef;
+  color: #24533d; font: 700 12px/1.2 system-ui, sans-serif;
+}
+.tool-tuner .tuner-history-range button[aria-pressed="true"],
+.tool-tuner .tuner-history-actions button:first-child:not(:disabled) {
+  border-color: #275b40; background: #275b40; color: #fff;
+}
+.tool-tuner .tuner-history-actions button:disabled { opacity: .5; cursor: not-allowed; }
+.tool-tuner .tuner-history-message {
+  margin: 7px 0; color: #275b40; font-size: 12px;
+}
+.tool-tuner .tuner-saved-pitch {
+  margin-top: 10px; padding: 12px; border-radius: 12px;
+  background: #fffdf8; border: 1px solid #cedbcf;
+}
+.tool-tuner .tuner-saved-pitch .tuner-trail-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tool-tuner .tuner-saved-pitch .tuner-trail-heading button {
+  background: none; border: 0; color: #24533d; text-decoration: underline;
+}
+.tool-tuner .tuner-saved-pitch-row { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+.tool-tuner .tuner-saved-pitch-row button {
+  border: 1px solid #d8e0d4; border-radius: 8px; padding: 7px 9px;
+  min-height: 38px; color: #24533d; background: #f5f8f2; text-align: left;
+}
+.tool-tuner .tuner-saved-pitch-row button:first-child { flex: 1; min-width: 0; }
+.tool-tuner .tuner-saved-pitch-row button:last-child { min-width: 38px; text-align: center; font-size: 18px; }
