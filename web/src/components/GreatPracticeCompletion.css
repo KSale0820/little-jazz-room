@@ -47,7 +47,7 @@
   flex: none;
   margin: 0;
   color: var(--gj-green);
-  font: 700 clamp(28px, 7.7vw, 37px)/1.12 var(--gj-serif);
+  font: 700 clamp(35px, 10vw, 41px)/1.1 var(--gj-serif);
   letter-spacing: -.045em;
   white-space: nowrap;
 }
@@ -171,8 +171,6 @@
 .gj-screen .gj-goal { display: grid; grid-template-columns: 22px minmax(0,1fr); align-items: center; gap: 6px 9px; min-width: 0; }
 .gj-screen .gj-goal > span:nth-child(2) { white-space: nowrap; }
 .gj-screen .gj-progress-icon { display: block; width: 20px; height: 23px; fill: #245e45; }
-.gj-screen .gj-goal-bar { height: 5px; width: 100%; grid-column: 1 / -1; margin-top: 1px; background: #dee3d8; border-radius: 12px; overflow: hidden; }
-.gj-screen .gj-goal-bar > span { display: block; height: 100%; background: #438665; border-radius: inherit; }
 .gj-screen .gj-streak {
   display: flex;
   flex: none;
@@ -201,7 +199,7 @@
   white-space: nowrap;
 }
 .gj-screen .gj-again { background: transparent; color: var(--gj-green); border: 1.5px solid var(--gj-green); }
-.gj-screen .gj-again svg { display: block; width: 19px; height: 19px; flex: none; }
+.gj-screen .gj-again svg, .gj-screen .gj-done svg { display: block; width: 19px; height: 19px; flex: none; }
 .gj-screen .gj-done { border: 1.5px solid var(--gj-green); background: var(--gj-green); color: #fffaf0; }
 .gj-screen button:disabled { opacity: .54; cursor: not-allowed; }
 .gj-screen .gj-retry { background: var(--gj-green); color: white; border: 1px solid var(--gj-green); width: 100%; }
@@ -214,7 +212,7 @@
 .gj-screen.gj-empty .gj-actions { margin-top: 14px; }
 @media (max-width: 380px) {
   .practice-complete.gj-screen { padding: 42px 13px 18px; gap: 12px; }
-  .gj-screen .gj-title { font-size: 29px; }
+  .gj-screen .gj-title { font-size: 36px; }
   .gj-screen .gj-rays { flex-basis: 20px; width: 20px; }
   .gj-screen .gj-summary-art { width: 62px; height: 59px; flex-basis: 62px; }
   .gj-screen .gj-rating h2 { font-size: 16px; }
