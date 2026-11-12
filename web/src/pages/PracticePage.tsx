@@ -1090,10 +1090,23 @@ export function PracticePage() {
               </div>
             </div>
           </div>
-          <button type="button" className="practice-original-reset" onClick={() => {
-            changeTempo(chosenExercise?.suggested_bpm ?? 100);
-            setChartKey(chart.concert_key);
-          }}>Original</button>
+          <button type="button" className="practice-original-reset" 
+            aria-label={routine ? 'Reset to routine preset' : 'Reset to original chart settings'}
+            onClick={() => {
+              if (routine) {
+                changeTempo(stepDefaults.reference_bpm);
+                setChartKey(stepDefaults.chart_key);
+                setWrittenPitch(stepDefaults.written_pitch);
+                setLoopEnabled(stepDefaults.loop_enabled);
+                setLoopSections(stepDefaults.loop_sections.length
+                  ? stepDefaults.loop_sections.map(section => ({ ...section }))
+                  : [{ startBar: 1, endBar: Math.min(chart.bars.length, 4), plays: 2 }]);
+                setRepeatWholePlan(stepDefaults.repeat);
+              } else {
+                changeTempo(chosenExercise?.suggested_bpm ?? 100);
+                setChartKey(chart.concert_key);
+              }
+            }}>{routine ? 'Routine Preset' : 'Original'}</button>
 
         </div>
         <p className="practice-reference-note">{activeRecording
