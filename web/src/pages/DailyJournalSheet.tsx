@@ -35,12 +35,12 @@ export function DailyJournalSheet({ day, sessions, entries, annotations, routine
        exercises.find(e => e.id === datedSessions[0].exerciseId)?.title ?? primary?.chartTitle)
     : '') || (datedSessions.length ? 'Today’s practice' : primary?.chartTitle || 'Practice notes');
   const tags = unique(datedEntries.flatMap(e => e.tags ?? []).concat(datedNotes.flatMap(n => n.tags ?? [])));
-  const moment = datedSessions[0]?.finishedAt || primary?.createdAt || day + 'T12:00:00';
+  const moment = datedSessions.at(-1)?.finishedAt || primary?.createdAt || day + 'T12:00:00';
   const dateText = new Date(day + 'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
   const timeText = datedSessions.length ? new Date(moment).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}) + ' last session' : '';
   const chartIds = unique([...datedEntries.map(e => e.chartId), ...datedNotes.map(n => n.chartId)]).filter(id => charts.some(c => c.id === id));
   const routineIds = unique(datedSessions.map(s=>s.routineId??'')).filter(id => routines.some(r=>r.id===id));
-  const notesText = datedEntries.filter(e => e.text?.trim());
+  const notesText = datedEntries.filter(e => e.text?.trim() && !datedSessions.some(s => s.id === e.sessionId));
   const practicedText = datedEntries.filter(e => e.whatPracticed?.trim());
   const takeaways = datedEntries.filter(e => e.takeaways?.trim());
   const nextTimes = datedEntries.filter(e => e.nextTime?.trim());
@@ -66,9 +66,14 @@ export function DailyJournalSheet({ day, sessions, entries, annotations, routine
       {datedSessions.length === 0 && practicedText.length === 0 && datedNotes.length === 0 && <p className="pj-muted">No activities recorded for this date.</p>}
       {datedSessions.map(s => <div key={s.id} className="pj-detail-practiced">
         <span className="pj-completed" aria-label="Saved session">✓</span>
-        <div><strong>{fmtSession(s)}</strong><small>{mins(s.durationSeconds)} min · {s.routineId ? 'Routine' : s.exerciseId ? 'Exercise' : 'Free practice'}</small></div>
+        <div><strong>{fmtSession(s)}</strong><small>{mins(s.durationSeconds)} min · {s.routineId ? 'Routine' : s.exerciseId ? 'Exercise' : 'Free practice'}</small>
+          {datedEntries.filter(e => e.sessionId && e.sessionId === s.id && e.text?.trim()).map(e =>
+            <div className="pj-session-reflection" key={e.id}>{e.title?.trim() && <strong>{e.title}</strong>}<Paragraphs text={e.text} /></div>)}
+        </div>
       </div>)}
       {practicedText.map(e => <div key={e.id} className="pj-detail-note"><Paragraphs text={e.whatPracticed ?? ''} /></div>)}
+      {datedEntries.filter(e => e.sessionId && !datedSessions.some(s => s.id === e.sessionId) && e.text?.trim()).map(e =>
+        <div key={e.id} className="pj-detail-note"><strong>{e.title || e.chartTitle || 'Practice reflection'}</strong><Paragraphs text={e.text} /></div>)}
       {datedNotes.length > 0 && <div className="pj-measure-notes"><strong>Chart annotations</strong>
         {datedNotes.map(n => <button type="button" key={n.chartId + ':' + n.bar} className="pj-measure-link" onClick={() => onOpenChart(n.chartId)}>
           <span>{n.chartTitle} · bar {n.bar}</span><small>{n.text}</small>
@@ -77,8 +82,10 @@ export function DailyJournalSheet({ day, sessions, entries, annotations, routine
 
     <section className="pj-detail-section pj-tint-lilac" aria-label="Notes and observations">
       <h2><span aria-hidden="true">✎</span>Notes & observations</h2>
-      {notesText.length > 0 ? notesText.map(e => <div key={e.id} className="pj-observation"><Paragraphs text={e.text} /></div>) :
-        <p className="pj-muted">No reflections added yet.</p>}
+      {notesText.length > 0 ? notesText.map(e => <div key={e.id} className="pj-observation">
+        {e.title?.trim() && <strong className="pj-observation-label">{e.title}</strong>}
+        <Paragraphs text={e.text} /></div>) :
+        <p className="pj-muted">Practice reflections from saved sessions appear above with the activities they describe.</p>}
     </section>
     <section className="pj-detail-section pj-tint-gold" aria-label="Takeaways">
       <h2><span aria-hidden="true">☆</span>Takeaways</h2>
