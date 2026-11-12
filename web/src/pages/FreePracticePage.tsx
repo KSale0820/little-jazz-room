@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { PracticePage, type FreePracticePlayerSession } from './PracticePage';
-import { PracticeTimeBadge } from '../components/PracticeMediaControls';
+import { PracticePage, PracticeToolGlyph, type FreePracticePlayerSession } from './PracticePage';
+import { FreePracticeSessionBar } from '../components/FreePracticeSessionBar';
 import { SessionJournalSheet } from '../components/PracticePlayerSheets';
 import { PracticeMetronomeSheet } from '../components/PracticeMetronomeSheet';
 import { usePracticeMetronome } from '../lib/usePracticeMetronome';
@@ -37,12 +37,14 @@ const catalogChartIds: Record<string, string> = {
   'minor-bossa-cm-16': 'sunday',
 };
 const newSession = (): FreeSessionState => ({
-  items: [], activeIndex: 0, id: crypto.randomUUID(), elapsedMs: 0, runningSince: Date.now(),
+  items: [], activeIndex: 0, id: crypto.randomUUID(), elapsedMs: 0, runningSince: null,
 });
 
 function readSession(key: string): FreeSessionState {
   try {
-    const parsed: unknown = JSON.parse(sessionStorage.getItem(key) ?? 'null');
+    const saved = sessionStorage.getItem(key);
+    // Carry forward an old queue without inheriting the earlier auto-started clock.
+    const parsed: unknown = JSON.parse(saved ?? sessionStorage.getItem(key.replace(':v3:', ':v2:')) ?? 'null');
     if (!parsed || typeof parsed !== 'object') return newSession();
     const record = parsed as Partial<FreeSessionState>;
     if (!Array.isArray(record.items) || typeof record.id !== 'string' ||
@@ -55,7 +57,7 @@ function readSession(key: string): FreeSessionState {
       items,
       activeIndex: Math.max(0, Math.min(items.length - 1, Number(record.activeIndex) || 0)),
       elapsedMs: Math.max(0, record.elapsedMs),
-      runningSince: typeof record.runningSince === 'number' ? record.runningSince : null,
+      runningSince: saved !== null && typeof record.runningSince === 'number' ? record.runningSince : null,
     };
   } catch { return newSession(); }
 }
@@ -74,7 +76,7 @@ export function FreePracticePage() {
   const [params] = useSearchParams();
   const { user } = useAuth();
   const { repo, charts, routines, addSession, showToast } = useApp();
-  const storageKey = 'little-jazz-room:free-session:v2:' + repo.scope;
+  const storageKey = 'little-jazz-room:free-session:v3:' + repo.scope;
   const [session, setSession] = useState<FreeSessionState>(() => readSession(storageKey));
   const [now, setNow] = useState(() => Date.now());
   const [picker, setPicker] = useState(false);
@@ -290,28 +292,32 @@ export function FreePracticePage() {
         </header>
         <section className="fp-blank-content" aria-label="Choose something to practice">
           <h2>Choose something to practice</h2>
-          <p>Add a chart, recorded track, or guided routine. Your practice timer is already running.</p>
+          <p>Add a chart, recorded track, or guided routine. Start your practice timer when you're ready.</p>
           <button type="button" className="fp-add-primary" onClick={() => { setPickerTab('music'); setPicker(true); }}>+ Chart / Track</button>
           <button type="button" className="fp-add-secondary" onClick={() => { setPickerTab('routine'); setPicker(true); }}>+ Routine</button>
         </section>
+        {session.runningSince === null && <button className="fp-start-timer" type="button" onClick={pauseClock}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M7.5 4.5 19 12 7.5 19.5z" /></svg>
+          {seconds > 0 ? 'Resume practice timer' : 'Start practice timer'}
+        </button>}
         <div className="practice-utility-row practice-demo-tools fp-simple-tools" aria-label="Practice tools">
           <div className="practice-demo-metronome-wrap">
-            <button className="practice-demo-tool-main" type="button" onClick={() => setActiveTool('metronome')}>♩ <span>Metronome</span></button>
+            <button className="practice-demo-tool-main" type="button" onClick={() => setActiveTool('metronome')}>
+              <PracticeToolGlyph name="metronome" /><span>Metronome</span>
+            </button>
             <button className={'practice-demo-metronome-switch' + (metronome.playing ? ' is-on' : '')}
               type="button" onClick={metronome.toggle} aria-pressed={metronome.playing}>
               {metronome.playing ? 'On' : 'Off'} <span className="practice-demo-switch-knob" />
             </button>
           </div>
-          <button type="button" onClick={() => setActiveTool('tuner')}>♮ <span>Tuner</span></button>
+          <button type="button" onClick={() => setActiveTool('tuner')}>
+            <PracticeToolGlyph name="tuner" /><span>Tuner</span>
+          </button>
         </div>
-        <div className="practice-session-row practice-demo-session-row fp-session-footer">
-          <PracticeTimeBadge seconds={seconds} running={session.runningSince !== null} onTogglePause={pauseClock} />
-          <div className="practice-demo-session-actions">
-            <button type="button" className="practice-finish-action" onClick={finish}>✓ Finish Session</button>
-            <button type="button" className="practice-demo-journal" onClick={() => setJournalOpen(true)}
-              aria-label="Open session journal" title="Session journal">▤</button>
-          </div>
-        </div>
+        <FreePracticeSessionBar seconds={seconds} running={session.runningSince !== null}
+          onToggleTimer={pauseClock} canPrevious={false} canNext={false}
+          onPrevious={() => {}} onNext={() => {}}
+          onFinish={finish} onJournal={() => setJournalOpen(true)} />
       </section>}
 
     {picker && createPortal(<div className="fp-picker-backdrop" role="presentation" onMouseDown={event => {
