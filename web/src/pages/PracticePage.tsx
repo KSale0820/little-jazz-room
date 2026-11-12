@@ -24,8 +24,6 @@ import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
 import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { TunerPage } from './TunerPage';
-import { useAuth } from '../context/AuthContext';
-import { localStorageScopeForUser } from '../repository/localRepository';
 import { ChartAnnotationSheet, SessionJournalSheet, AddPracticeSectionSheet } from '../components/PracticePlayerSheets';
 import { PracticeMetronomeSheet } from '../components/PracticeMetronomeSheet';
 import { PracticeInlineLoop, ControlChevron } from '../components/PracticeInlineLoop';
@@ -179,8 +177,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [recordingPlaying, setRecordingPlaying] = useState(false);
   const [recordingError, setRecordingError] = useState<string | null>(null);
-  const { user } = useAuth();
-  const userScope = localStorageScopeForUser(user?.id);
+  const userScope = repo.scope;
   const sessionDraftId = useRef(freeSession?.sessionId ?? crypto.randomUUID());
   const [chartNotes, setChartNotes] = useState<ChartNote[]>([]);
   const [journalEntries, setJournalEntries] = useState<PracticeJournalEntry[]>([]);
