@@ -17,6 +17,7 @@ import { ProgressDetailsPage } from './pages/ProgressDetailsPage';
 import { SignInPage, SignUpRedirect } from './pages/SignInPage';
 import { ChartBuilderPage } from './pages/ChartBuilderPage';
 import { ChartLibraryPage } from './pages/ChartLibraryPage';
+import { DemoProfileEntryPage } from './pages/DemoProfileEntryPage';
 
 // Legacy free-mode links must open a timer, not an unrelated first chart.
 function PracticePlayerEntry() {
@@ -51,6 +52,7 @@ export default function App() {
               <Route path="progress" element={<ProgressPage />} />
               <Route path="progress/:view" element={<ProgressDetailsPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="demo" element={<DemoProfileEntryPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
