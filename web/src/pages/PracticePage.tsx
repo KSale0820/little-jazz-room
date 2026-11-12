@@ -991,7 +991,7 @@ export function PracticePage() {
             </div>
           </div>
           <button type="button" className="practice-original-reset" onClick={() => {
-            changeTempo(activeRecording?.recordedBpm ?? chosenExercise?.suggested_bpm ?? 100);
+            changeTempo(chosenExercise?.suggested_bpm ?? 100);
             setChartKey(chart.concert_key);
           }}>Original</button>
 
