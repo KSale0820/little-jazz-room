@@ -48,6 +48,14 @@ try {
     assert.equal(await page.locator('.practice-notation-panel .chord-grid').count(), 1, 'Step 2 must use shared chord grid');
     assert.ok(await page.locator('.practice-notation-panel .measure').count() > 0, 'Step 2 chart is empty');
     assert.equal(await page.getByRole('button', { name: 'Configure loop' }).count(), 1);
+    // Switching to the chart exercise's instructions must keep essential tools accessible.
+    await page.getByRole('tab', { name: 'Instructions' }).click();
+    assert.equal(await page.getByRole('button', { name: 'Metronome', exact: true }).isVisible(), true, 'Metronome hidden in chart instructions');
+    assert.equal(await page.getByRole('button', { name: 'Tuner', exact: true }).isVisible(), true, 'Tuner hidden in chart instructions');
+    assert.equal(await page.getByRole('button', { name: 'Session journal' }).isVisible(), true, 'Journal hidden in chart instructions');
+    assert.equal(await page.getByRole('button', { name: 'Finish Session', exact: true }).isVisible(), true, 'Finish hidden in chart instructions');
+    await page.screenshot({ path: join(folder, size + '-02-chart-instructions.png'), fullPage: true });
+    await page.getByRole('tab', { name: 'Chart' }).click();
     await page.getByRole('button', { name: 'View all routine exercises' }).click();
     await page.getByRole('dialog', { name: 'Routine exercise overview' }).waitFor();
     assert.equal(await page.locator('.practice-routine-step-list > button').count(), 3);
