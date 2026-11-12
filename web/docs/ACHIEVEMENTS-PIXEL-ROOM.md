@@ -4,8 +4,8 @@ Entry: Progress → My Little Jazz Room → `/achievements`.
 
 ## Source of truth
 - The submitted approved blank room reference is **not** a runtime-generated image.
-- The binary files `web/public/visuals/achievements/room-base.png` and `armchair.png` must be copied from the supplied asset ZIP before visual signoff. The code handles missing assets with a temporary art fallback.
-- `armchair.png` is an independent transparent overlay, not flattened into the room. Armchair first appears after the user's first valid completed practice session.
+- The binary files `web/public/achievements/room-base.png` and  `web/public/achievements/armchair.png` must be copied from the supplied asset ZIP before visual signoff. The code handles missing assets with a temporary art fallback.
+-  `web/public/achievements/armchair.png` is an independent transparent overlay, not flattened into the room. Armchair first appears after the user's first valid completed practice session.
 
 ## Implemented
 - Eight proposed achievements based on actual positive-duration saved practice sessions.
