@@ -32,3 +32,22 @@ export function longTermProgressPercent(sessions: PracticeSessionRecord[]): numb
     Math.round((totalPracticeMinutes(sessions) / PRACTICE_MILESTONE_MINUTES) * 100)
   );
 }
+
+/** A rest day never breaks or inflates a streak; the current day gets a grace period until midnight. */
+export function computeScheduledStreak(
+  sessions: PracticeSessionRecord[], offDays: readonly number[], now = new Date(),
+): number {
+  const practiced = new Set(sessions.filter(s => Number.isFinite(new Date(s.finishedAt).getTime()))
+    .map(s => new Date(s.finishedAt).toDateString()));
+  const date = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayIsScheduled = !offDays.includes((date.getDay() + 6) % 7);
+  if (todayIsScheduled && !practiced.has(date.toDateString())) date.setDate(date.getDate() - 1);
+  let streak = 0;
+  for (let i = 0; i < 366; i++) {
+    if (offDays.includes((date.getDay() + 6) % 7)) { date.setDate(date.getDate() - 1); continue; }
+    if (!practiced.has(date.toDateString())) break;
+    streak++;
+    date.setDate(date.getDate() - 1);
+  }
+  return streak;
+}
