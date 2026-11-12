@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { cumulativePracticeMinutes, readPreviouslySelectedCat, readSavedUnlocks, unlockedCompanions } from '../lib/companionUnlocks';
-import { computeGentleStreak } from '../lib/practiceStats';
+import { computeScheduledStreak } from '../lib/practiceStats';
+import { readPracticeOffDays } from '../lib/practiceHomePreferences';
 import { readLocalList, journalKey, notesKey, type ChartNote, type PracticeJournalEntry } from '../lib/practicePlayerNotes';
 import { isVisibleCatId } from '../features/cats/CatCompanion';
 import type { PracticeSessionRecord } from '../types/content';
@@ -54,7 +55,7 @@ export function ProgressDetailsPage() {
   const practiceMinutes = cumulativePracticeMinutes(sessions);
   const prevCat = readPreviouslySelectedCat(repo.scope);
   const unlocked = unlockedCompanions(practiceMinutes, readSavedUnlocks(repo.scope), isVisibleCatId(catId) ? catId : prevCat);
-  const streak = computeGentleStreak(sessions);
+  const streak = computeScheduledStreak(sessions, readPracticeOffDays(repo.scope));
   const milestones = [
     { title: 'First Practice', desc: 'Complete your first session', current: sessions.length, target: 1 },
     { title: 'Getting Consistent', desc: 'Practice on 3 consecutive days', current: streak, target: 3 },
