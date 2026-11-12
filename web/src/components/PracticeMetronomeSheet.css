@@ -72,3 +72,12 @@
 .practice-metronome-sheet .practice-metronome-status[aria-live] {
   line-height: 1.45;
 }
+
+/* In chartless Free Practice the switch remains, but no invented playback
+   synchronization message occupies the metronome panel. */
+.practice-metronome-status.is-toggle-only {
+  justify-content: flex-start;
+  background: transparent;
+  padding: 0;
+  margin-bottom: 4px;
+}

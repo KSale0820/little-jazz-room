@@ -86,6 +86,18 @@
 .practice-free-session .practice-utility-row.practice-demo-tools {
   margin-top: 10px;
 }
+
+/* The class-demo player's three-column rule is more specific than the old
+   Free Practice override. When no chart is loaded, both remaining tools use
+   the entire available row, with no empty Mixer column. */
+.practice-player.practice-demo-refresh.fp-redesign .practice-utility-row.practice-demo-tools,
+.practice-player.practice-demo-refresh.practice-free-session.practice-no-chart .practice-utility-row.practice-demo-tools {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.practice-player.practice-demo-refresh.fp-redesign .practice-demo-tools > button,
+.practice-player.practice-demo-refresh.practice-free-session.practice-no-chart .practice-demo-tools > button {
+  width: 100%;
+}
 /* One line in every Free Practice state: clock, start/pause, previous,
    next, finish and journal. Keep controls independent of audio playback. */
 .fp-session-footer {
@@ -215,18 +227,30 @@
 }
 .fp-picker-tabs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  flex: 0 0 46px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  min-height: 46px;
   margin-bottom: 12px;
   border: 1px solid #a9c2b0;
   border-radius: 10px;
   overflow: hidden;
 }
 .fp-picker-tabs button {
-  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0 8px;
   border: 0;
   background: #fffdf8;
   color: #164b37;
-  font: 700 13px system-ui,sans-serif;
+  font: 700 13px/1.2 system-ui,sans-serif;
+  text-align: center;
+  white-space: nowrap;
 }
 .fp-picker-tabs button.selected { background: #1b5840; color: #fff; }
 .fp-picker-modal input[type="search"] {

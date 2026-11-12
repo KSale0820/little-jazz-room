@@ -7,12 +7,15 @@ type MetronomeDisplayMode = 'sheet' | 'page';
 
 /** Shared player-popup and standalone-page controls. The same visual design and
  * audio engine now power both entry points without replacing the player clock. */
-export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet' }: {
+export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet', chartAvailable = true }: {
   controller: PracticeMetronomeController;
   onClose: () => void;
   mode?: MetronomeDisplayMode;
+  /** False for empty Free Practice and routine instructions without a chart. */
+  chartAvailable?: boolean;
 }) {
   const isPage = mode === 'page';
+  const canChooseMeter = isPage || !chartAvailable;
   const panel = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -61,12 +64,12 @@ export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet' 
         : <button type="button" aria-label="Close Metronome settings" onClick={onClose}>×</button>}
     </header>
 
-    <div className={'practice-metronome-status' + (isPage ? ' is-page-status' : '')}>
+    <div className={'practice-metronome-status' + (isPage ? ' is-page-status' : '') + (!isPage && !chartAvailable ? ' is-toggle-only' : '')}>
       {!isPage && <button type="button" className={controller.playing ? 'on' : ''}
         aria-pressed={controller.playing} onClick={controller.toggle}>
         {controller.playing ? 'On' : 'Off'} <span aria-hidden="true" />
       </button>}
-      <p role="status">{isPage
+      {(isPage || chartAvailable) && <p role="status">{isPage
         ? controller.playing
           ? 'Metronome running. Tap Stop to finish.'
           : 'Set your tempo, then tap Start Metronome.'
@@ -74,7 +77,7 @@ export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet' 
           ? 'Synced to playback, including seeks and repeats.'
           : controller.playing
             ? 'Running independently. Playing the track will synchronize the clicks.'
-            : 'Start here or use the switch beside the chart.'}</p>
+            : 'Start here or use the switch beside the chart.'}</p>}
     </div>
 
     <div className="practice-metronome-tempo">
@@ -96,7 +99,7 @@ export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet' 
 
     <div className="practice-metronome-field">
       <h3>Time signature</h3>
-      {isPage
+      {canChooseMeter
         ? <div className="practice-metronome-pills" role="group" aria-label="Metronome time signature">
           {signatures.map(({ label, meter }) => <button key={label} type="button"
             aria-pressed={controller.meter[0] === meter[0] && controller.meter[1] === meter[1]}
@@ -154,11 +157,12 @@ export function PracticeMetronomeControls({ controller, onClose, mode = 'sheet' 
 }
 
 /** The player keeps its modal and its own playback-synchronized controller. */
-export function PracticeMetronomeSheet({ controller, onClose }: {
+export function PracticeMetronomeSheet({ controller, onClose, chartAvailable = true }: {
   controller: PracticeMetronomeController; onClose: () => void;
+  chartAvailable?: boolean;
 }) {
   return <div className="practice-metronome-backdrop"
     onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
-    <PracticeMetronomeControls controller={controller} onClose={onClose} />
+    <PracticeMetronomeControls controller={controller} onClose={onClose} chartAvailable={chartAvailable} />
   </div>;
 }

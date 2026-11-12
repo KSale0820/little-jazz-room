@@ -317,9 +317,9 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
 
   useEffect(() => {
     metronome.changeBpm(activeRecording?.recordedBpm ?? tempo);
-    metronome.setPieceMeter([chart.time_signature[0], chart.time_signature[1]]);
+    if (hasMusicContent) metronome.setPieceMeter([chart.time_signature[0], chart.time_signature[1]]);
   }, [chart.id, chart.time_signature[0], chart.time_signature[1], activeRecording?.recordedBpm,
-    activeRecording ? null : tempo, metronome.changeBpm, metronome.setPieceMeter]);
+    activeRecording ? null : tempo, hasMusicContent, metronome.changeBpm, metronome.setPieceMeter]);
 
   useEffect(() => {
     // The metronome polls the actual transport position. The recording's chart
@@ -1043,7 +1043,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
       document.querySelector('.app-shell') ?? document.body
     )}
     {activeTool && (activeTool === 'metronome'
-      ? createPortal(<PracticeMetronomeSheet controller={metronome} onClose={closeTool} />, document.body)
+      ? createPortal(<PracticeMetronomeSheet controller={metronome} onClose={closeTool} chartAvailable={hasMusicContent} />, document.body)
       : createPortal(
       <div
         ref={toolOverlayRef}
