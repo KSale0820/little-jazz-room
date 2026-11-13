@@ -98,19 +98,6 @@
   display: block; height: auto !important; width: 100% !important;
   object-fit: contain; image-rendering: pixelated;
 }
-.ajr-decorate {
-  position: absolute; z-index: 9; right: 9px; top: 9px;
-  display: flex; align-items: center; justify-content: center; gap: 7px;
-  min-height: 37px; padding: 8px 12px;
-  border: 1px solid #f3e5da;
-  border-radius: 12px; background: #fff0e0f2;
-  color: #4b302a; box-shadow: 0 2px 6px #2b1b1720;
-  font-size: 12px; font-weight: 640;
-  line-height: 1;
-}
-.ajr-decorate svg { width: 18px; height: 18px; display: block; }
-.ajr-decorate[aria-pressed='true'] { background: #52342f; color: #fff7ee; border-color: #52342f; }
-
 /* Open only after tapping an individual room object; never cover the room art. */
 .ajr-item-detail {
   display: flex; align-items: center; gap: 8px;
@@ -479,18 +466,6 @@ html[data-theme='dark'] .ajr-cat-poses button[aria-pressed='true'] {
   position: relative; z-index: 2; border: 2px solid #8f7259;
   border-radius: 16px; background: #9e725f;
   box-shadow: 0 4px 0 #4e6d4f, 0 7px 13px #493f2f16;
-}
-.ajr-decorate {
-  border-radius: 9px;
-  min-height: 36px;
-  color: #275235;
-  background: linear-gradient(#fff6df,#f8e9cf);
-  border: 2px solid #406842;
-  box-shadow: inset 0 0 0 1px #fff9e8, 0 2px 0 #32603e;
-  font-weight: 760;
-}
-.ajr-decorate[aria-pressed="true"] {
-  color: #fff6df; background: #2c6d45; border-color: #1c5838;
 }
 .ajr-preview-controls { padding: 6px 2px 1px; justify-content: center; }
 .ajr-preview-toggle {
