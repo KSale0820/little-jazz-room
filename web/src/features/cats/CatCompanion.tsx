@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { catCloseupUrls, catFloorUrls, catPortraitUrls, catSleepingUrls } from '../../assets/visualManifest';
+import { catCloseupUrls, catFloorUrls, catPortraitUrls, catSleepingUrls, isRedesignedCat } from '../../assets/visualManifest';
 import { useImageFallback } from '../../lib/useImageFallback';
 import './cat-companion.css';
 
@@ -74,14 +74,14 @@ export function useCatSelection(repository?: CatPreferenceRepository, accountKey
 export function CatSprite({ catId, size = 96, className = '', decorative = false, animated = false, variant = 'portrait' }:
   { catId: CatId; size?: number; className?: string; decorative?: boolean; animated?: boolean; variant?: 'portrait' | 'floor' | 'closeup' | 'sleeping' }) {
   const cat = JAZZ_CATS.find(c => c.id === catId)!;
-  // floor = approved full-body; sleeping = PR #8 pose; portrait = approved profile; closeup = approved face. No legacy cat images.
+  // Luna/Milo/Maple share the new sitting pose for portrait/floor/closeup and use their new sleeping pose.
   const candidates = variant === 'sleeping' ? catSleepingUrls(catId)
     : variant === 'floor' ? catFloorUrls(catId)
     : variant === 'closeup' ? catCloseupUrls(catId)
     : catPortraitUrls(catId);
   const { src, onError } = useImageFallback(candidates, `${variant}:${catId}`);
 
-  return <img className={`jazz-cat-sprite ${animated ? 'jazz-cat-animated' : ''} ${className}`} src={src}
+  return <img className={`jazz-cat-sprite ${isRedesignedCat(catId) ? 'jazz-cat-sprite--pixel' : ''} ${animated ? 'jazz-cat-animated' : ''} ${className}`} src={src}
     onError={onError}
     alt={decorative ? '' : `${cat.name}, ${cat.personality.toLowerCase()} ${cat.coat.toLowerCase()} jazz cat`}
     aria-hidden={decorative} width={size} height={size} draggable={false} />;
@@ -89,7 +89,7 @@ export function CatSprite({ catId, size = 96, className = '', decorative = false
 
 function CatChooserArt({ catId }: { catId: CatId }) {
   const { src, onError } = useImageFallback(catFloorUrls(catId), `chooser:${catId}`);
-  return <img className="board-cat-art" src={src} onError={onError} alt="" aria-hidden draggable={false} />;
+  return <img className={`board-cat-art ${isRedesignedCat(catId) ? 'jazz-cat-sprite--pixel' : '' }`} src={src} onError={onError} alt="" aria-hidden draggable={false} />;
 }
 
 export function CatChooser({ catId, onSelect, unlockedIds, practiceMinutes = 0 }:

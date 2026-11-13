@@ -11,6 +11,7 @@ import {
   catFloorUrls,
   catPortraitUrls,
   catSleepingUrls,
+  isRedesignedCat,
   roomArtUrls,
 } from './visualManifest';
 
@@ -91,20 +92,37 @@ describe('approved visual library', () => {
     expect(roomArtUrls('sunshine').some(url => url.startsWith('/visuals/'))).toBe(false);
   });
 
-  it('uses only the eight newly approved companion variants with no fallbacks', () => {
+  it('uses the six replacement pixel sprites for Luna/Milo/Maple across all cat displays', () => {
+    const installed = new Set(walkFiles(publicVisuals));
     for (const id of CAT_IDS) {
-      const base = `/visuals/cats/approved-class-mvp`;
-      expect(catFloorUrls(id)).toEqual([`${base}/full-body/${id}.png`]);
-      expect(catPortraitUrls(id)).toEqual([`${base}/profiles/${id}.png`]);
-      expect(catCloseupUrls(id)).toEqual([`${base}/closeups/${id}.png`]);
-      expect(catSleepingUrls(id)).toEqual([`/visuals/cats/sleeping/${id}.png`]);
-
-      for (const variant of ['full-body', 'profiles', 'closeups', 'sitting']) {
-        const file = join(publicVisuals, 'cats', 'approved-class-mvp', variant, `${id}.png`);
-        const png = readPngInfo(readFileSync(file));
-        expect(png.width).toBeGreaterThan(500);
-        expect(png.height).toBeGreaterThan(500);
-        expect([4, 6]).toContain(png.colorType);
+      if (isRedesignedCat(id)) {
+        const sitting = `/visuals/cats/clean-pixel/${id}-sitting.png`;
+        const sleeping = `/visuals/cats/clean-pixel/${id}-sleeping.png`;
+        expect(catFloorUrls(id)).toEqual([sitting]);
+        expect(catPortraitUrls(id)).toEqual([sitting]);
+        expect(catCloseupUrls(id)).toEqual([sitting]);
+        expect(catSleepingUrls(id)).toEqual([sleeping]);
+        expect(VISUAL_ASSETS.cat.sittingFile(id)).toBe(sitting);
+        for (const pose of ['sitting', 'sleeping']) {
+          const png = readPngInfo(readFileSync(join(publicVisuals, `cats/clean-pixel/${id}-${pose}.png`)));
+          expect(png).toMatchObject({ width: 1254, height: 1254, colorType: 6 });
+        }
+        for (const old of ['full-body', 'profiles', 'closeups', 'sitting'])
+          expect(installed.has(`cats/approved-class-mvp/${old}/${id}.png`)).toBe(false);
+        expect(installed.has(`cats/sleeping/${id}.png`)).toBe(false);
+      } else {
+        const base = '/visuals/cats/approved-class-mvp';
+        expect(catFloorUrls(id)).toEqual([`${base}/full-body/${id}.png`]);
+        expect(catPortraitUrls(id)).toEqual([`${base}/profiles/${id}.png`]);
+        expect(catCloseupUrls(id)).toEqual([`${base}/closeups/${id}.png`]);
+        expect(catSleepingUrls(id)).toEqual([`/visuals/cats/sleeping/${id}.png`]);
+        for (const variant of ['full-body', 'profiles', 'closeups', 'sitting']) {
+          const file = join(publicVisuals, 'cats', 'approved-class-mvp', variant, `${id}.png`);
+          const png = readPngInfo(readFileSync(file));
+          expect(png.width).toBeGreaterThan(500);
+          expect(png.height).toBeGreaterThan(500);
+          expect([4, 6]).toContain(png.colorType);
+        }
       }
     }
   });
@@ -123,13 +141,13 @@ describe('approved visual library', () => {
       fromManifest.add(catCloseupUrls(id)[0]);
       // The eight owner-approved sitting PNGs are part of the installed library.
       fromManifest.add(VISUAL_ASSETS.cat.sittingFile(id));
-      // All eight sleeping sprites are indexed 128x128 PNGs with transparency.
       const sleeping = VISUAL_ASSETS.cat.sleepingFile(id);
       fromManifest.add(sleeping);
       const file = join(publicVisuals, sleeping.replace('/visuals/', ''));
       expect(installed.has(sleeping.replace('/visuals/', '')), `${id} sleeping art missing`).toBe(true);
       const png = readPngInfo(readFileSync(file));
-      expect(png).toMatchObject({ width: 128, height: 128, colorType: 3 });
+      if (isRedesignedCat(id)) expect(png).toMatchObject({ width: 1254, height: 1254, colorType: 6 });
+      else expect(png).toMatchObject({ width: 128, height: 128, colorType: 3 });
     }
 
     const roomFrames = [
