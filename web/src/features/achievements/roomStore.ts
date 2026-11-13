@@ -75,6 +75,9 @@ export function readRoomPreferences(scope: string, store: Pick<Storage, 'getItem
         visibility[newId] = rawVisibility[oldId] as boolean;
     }
     for (const id of allowed) if (typeof rawVisibility[id] === 'boolean') visibility[id] = rawVisibility[id] as boolean;
+    // Older versions saved Luna as hidden by default. The new starter policy
+    // grants Luna a visible sitting pose, without changing explicit v2 choices.
+    if (!c.catPoses && visibility.luna === false) visibility.luna = true;
     const candidatePoses = c.catPoses && typeof c.catPoses === 'object'
       ? c.catPoses as Record<string, unknown> : {};
     const catPoses: NonNullable<RoomPreferences['catPoses']> = { ...DEFAULTS.catPoses };

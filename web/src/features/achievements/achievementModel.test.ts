@@ -84,6 +84,16 @@ describe('room achievements', () => {
     expect(saveRoomPreferences('a', preferences, store)).toBe(true);
     expect(isItemVisible('bookshelf-plants', readRoomPreferences('a', store))).toBe(false);
     expect(isItemVisible('bookshelf-plants', readRoomPreferences('b', store))).toBe(true);
+    const oldLuna = memoryStore();
+    oldLuna.setItem('little-jazz-room:studio-layout:v1:migrated', JSON.stringify({
+      visibility: { luna: false, 'bookshelf-plants': false },
+    }));
+    expect(readRoomPreferences('migrated', oldLuna).visibility.luna).toBe(true);
+    expect(readRoomPreferences('migrated', oldLuna).visibility['bookshelf-plants']).toBe(false);
+    oldLuna.setItem('little-jazz-room:studio-layout:v1:new', JSON.stringify({
+      visibility: { luna: false }, catPoses: { luna: 'sleeping' },
+    }));
+    expect(readRoomPreferences('new', oldLuna).visibility.luna).toBe(false);
     preferences.placements = { milo: 1 };
     expect(saveRoomPreferences('a', preferences, store)).toBe(true);
     expect(readRoomPreferences('a', store).placements?.milo).toBe(1);
