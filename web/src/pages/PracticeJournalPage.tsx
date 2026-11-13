@@ -326,7 +326,7 @@ export function PracticeJournalPage() {
       <div className="pj-day-heading"><h2>{readDate(activeDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</h2>
         <span>{formatMinutes(secondsForDate)} min practiced</span></div>
       {(sessionsForDate.length > 0 || entriesForDate.length > 0 || annotationsForDate.length > 0)
-        ? <button type="button" className="pj-card pj-day-summary" onClick={() => openDay(activeDate)}>
+        ? <button type="button" className="pj-card pj-day-summary" aria-label={'Open daily practice sheet for ' + activeDate} onClick={() => openDay(activeDate)}>
           <JournalRoutineIcon
             iconKey={journalEntryForDate(activeDate)?.iconKey}
             title={journalEntryForDate(activeDate)?.title || journalEntryForDate(activeDate)?.chartTitle ||

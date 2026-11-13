@@ -32,11 +32,11 @@ try {
       assert.equal(await page.locator('.pj-day-overview').count(), 0, 'do not navigate to a separate overview');
       assert.equal(await page.locator('.pj-calendar-panel').count(), 1);
       await page.locator('.pj-day[aria-label="' + initialSelected + '"]').click();
-      await page.getByRole('button', { name: /Updated daily entry|My Evening Jazz Session|Practice activity/ }).first().waitFor();
+      await page.locator('.pj-day-summary').waitFor();
       assert.equal(await page.getByRole('button', { name: '+ Add journal entry' }).count(), 0, 'existing entry must not offer Add');
       await page.getByRole('button', { name: 'Edit journal entry' }).last().waitFor();
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/overview-' + viewport.width + '.png', fullPage: true });
-      await page.getByRole('button', { name: 'View practice sheet' }).click();
+      await page.locator('.pj-day-summary').click();
       await page.getByRole('heading', { name: 'What I practiced' }).waitFor();
       assert.equal(await page.locator('.pj-detail').count(), 1);
       assert.ok(await page.locator('.pj-detail-practiced').count() > 0);
