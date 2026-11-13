@@ -4,6 +4,16 @@ import { ACHIEVEMENTS, unlockedRoomItems } from './achievementModel';
 import { readRoomPreferences } from './roomStore';
 
 describe('approved achievements room layout', () => {
+  it('uses short display names and an unnamed structural shelf', () => {
+    expect(ROOM_ART.find(item => item.id === 'wall-shelves')?.label).toBe('');
+    expect(ROOM_ART.find(item => item.id === 'piano-lamp')?.spriteImage)
+      .toBe('/achievements/piano-lamp-no-halo.png');
+    for (const item of ROOM_ART.filter(item => item.id !== 'wall-shelves')) {
+      expect(item.label).toBeTruthy();
+      expect(item.label).not.toMatch(/^\\d|\\bshadow\\b|\\bexact location\\b|\\(clean pixel\\)/i);
+    }
+  });
+
   it('has 24 decorations plus all six unique Luna/Milo/Maple poses', () => {
     expect(ROOM_ART).toHaveLength(30);
     expect(new Set(ROOM_ART.map(item => item.id)).size).toBe(30);

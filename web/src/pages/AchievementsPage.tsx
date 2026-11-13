@@ -31,7 +31,8 @@ const ITEMS: readonly RoomItem[] = ROOM_ART.map((item, index) => ({
 }));
 /* The collection lists each cat once, while the room renders the selected pose only. */
 const COLLECTION_ITEMS = ITEMS.filter(item =>
-  item.id !== 'luna-sitting' && item.id !== 'milo-sleeping' && item.id !== 'maple-sleeping');
+  item.id !== 'wall-shelves' && item.id !== 'luna-sitting' &&
+  item.id !== 'milo-sleeping' && item.id !== 'maple-sleeping');
 const CAT_DISPLAY_NAMES: Record<RoomCatName, string> = { luna: 'Luna', milo: 'Milo', maple: 'Maple' };
 
 const CATEGORIES = ['All', 'Cats', 'Plants', 'Music', 'Furniture', 'Lighting'] as const;
@@ -78,8 +79,8 @@ function EmptyCatIcon() {
 
 /** CSS atlas uses relative background dimensions, so every sprite tracks room resizing exactly. */
 function RoomSprite({ item }: { item: RoomItem }) {
-  if (item.catImage) return <img className="ajr-item-image ajr-layer-image" draggable={false}
-    src={item.catImage} loading="lazy" alt="" aria-hidden="true" />;
+  if (item.catImage || item.spriteImage) return <img className="ajr-item-image ajr-layer-image" draggable={false}
+    src={item.catImage ?? item.spriteImage} loading="lazy" alt="" aria-hidden="true" />;
   const crop = item.atlas;
   if (!crop) return null;
   const x = ROOM_ATLAS.width === crop.width ? 0 : crop.x / (ROOM_ATLAS.width - crop.width) * 100;
@@ -212,8 +213,6 @@ export function AchievementsPage() {
       <div className="ajr-scene" role="group" aria-label="Your customizable jazz room">
         <img className="ajr-room-image" src="/achievements/empty-room-new.webp"
           alt="Cozy rainy jazz studio with an upright piano, window, rug and empty bookshelf" />
-        {(previewAll || (unlockedIds.includes('piano-lamp') && isItemVisible('piano-lamp', preferences))) &&
-          <span className="ajr-lamp-wall-glow" aria-hidden="true" />}
         {ITEMS.map(item => {
           if (!shouldRenderRoomItem(item.id, unlockedIds, preferences, previewAll)) return null;
           const index = preferences.placements?.[item.id] === 1 ? 1 : 0;
@@ -224,12 +223,15 @@ export function AchievementsPage() {
             transform: `rotate(${item.rotation}deg)`,
           };
           return <div key={item.id} className="ajr-room-layer" style={style}>
-            <button type="button"
-              className={'ajr-object has-fixed-box ' + (editing ? 'is-editing' : '')}
-              aria-label={'Inspect ' + item.label}
-              onClick={() => setSelectedItem(item.id)}>
-              <RoomSprite item={item} />
-            </button>
+            {item.id === 'wall-shelves'
+              ? <span className="ajr-structural-art" aria-hidden="true"><RoomSprite item={item} /></span>
+              : <button type="button"
+                className={'ajr-object has-fixed-box ' +
+                  (item.id === 'piano-lamp' ? 'is-lamp ' : '') + (editing ? 'is-editing' : '')}
+                aria-label={'Inspect ' + item.label}
+                onClick={() => setSelectedItem(item.id)}>
+                <RoomSprite item={item} />
+              </button>}
           </div>;
         })}
         <button type="button" className="ajr-decorate"

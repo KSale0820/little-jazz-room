@@ -334,14 +334,6 @@ html[data-theme='dark'] .ajr-page .ajr-count { background: #51403a; }
   image-rendering: pixelated;
 }
 .ajr-room-layer .ajr-layer-image { object-fit: fill; image-rendering: pixelated; }
-/* Same low-opacity, edge-free light falloff used by the offline nudge editor. */
-.ajr-lamp-soft-glow {
-  position: absolute; pointer-events: none;
-  left: -115%; top: -78%; width: 330%; height: 236%; z-index: 0;
-  background: radial-gradient(ellipse at center,
-    rgba(255,204,115,.21) 0%, rgba(255,191,102,.13) 30%,
-    rgba(250,167,83,.04) 70%, rgba(250,167,83,0) 100%);
-}
 .ajr-room-layer .ajr-object { z-index: 1; }
 .ajr-preview-controls {
   display: flex; gap: 9px; align-items: center; flex-wrap: wrap;
@@ -355,23 +347,6 @@ html[data-theme='dark'] .ajr-page .ajr-count { background: #51403a; }
 .ajr-preview-toggle[aria-pressed="true"] { background: #775447; color: #fff8f2; }
 .ajr-preview-controls small { font-size: 10px; color: var(--color-muted); }
 
-/* Light falls on the wall independently of the lamp sprite, not behind its image. */
-.ajr-lamp-wall-glow {
-  position: absolute;
-  z-index: 14;
-  pointer-events: none;
-  left: 48.1%;
-  top: 17.5%;
-  width: 30%;
-  height: 35%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at 55% 50%,
-    rgba(255, 230, 166, .52) 0%,
-    rgba(255, 217, 143, .34) 29%,
-    rgba(255, 193, 112, .15) 58%,
-    rgba(255, 179, 103, 0) 100%);
-  filter: blur(6px);
-}
 .ajr-cat-poses {
   display: flex; align-items: center; flex-wrap: wrap;
   gap: 5px; margin-top: 7px;
@@ -396,4 +371,17 @@ html[data-theme='dark'] .ajr-cat-poses button {
 }
 html[data-theme='dark'] .ajr-cat-poses button[aria-pressed='true'] {
   background: #ac7964; color: #fff;
+}
+
+/* Follow the transparent lampshade silhouette, never a rectangular wall halo. */
+.ajr-room-layer .ajr-object.is-lamp .ajr-layer-image {
+  filter: drop-shadow(0 0 3px rgba(255, 213, 139, .43))
+          drop-shadow(0 0 7px rgba(255, 184, 102, .20));
+}
+.ajr-room-layer .ajr-structural-art,
+.ajr-room-layer .ajr-structural-art > .ajr-item-image {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none;
 }
