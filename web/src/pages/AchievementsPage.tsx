@@ -131,9 +131,7 @@ function SectionTitle({ children, upcoming = false }: {
   children: React.ReactNode; upcoming?: boolean;
 }) {
   return <h2 className={'ajr-section-title' + (upcoming ? ' ajr-section-next' : '')}>
-    <span className="ajr-section-icon" aria-hidden="true">
-      {upcoming ? <img src="/achievements/ui/plant-pot.png" alt="" /> : '♫'}
-    </span>
+    {!upcoming && <span className="ajr-section-icon" aria-hidden="true">♫</span>}
     <span className="ajr-section-label">{children}</span>
     <span className="ajr-section-rule" aria-hidden="true" />
   </h2>;
