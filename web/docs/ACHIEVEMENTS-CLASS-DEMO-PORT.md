@@ -1,11 +1,9 @@
-# Achievements room: class-demo port
+# Achievements room: class-demo port (asset migration)
 
-Source: PR #125, `feature/achievements-pixel-room-2026-11-12`. Target: `class-demo-2026-10-31`.
+The original achievements port from PR #126 provided the baseline room system with eight durable achievements, cat thresholds (Luna 0 / Milo 60 / Maple 300 minutes), collection visibility and account-scoped persistence.
 
-The room implementation and approved PNGs are reused, while the feature is routed through the existing class-demo Progress → Achievements tile at `/progress/achievements`. `/achievements` is an alias. The existing Practice, Tracks, Routines, Progress, and practice journal flows remain unchanged.
+As of the new-assets migration, the page uses **only** the updated `/achievements/empty-room-new.webp` and the latest `/achievements/new-decor/` cropped transparent art for the illustrated room. Older `room-base.png`, `armchair.png`, and provisional SVG/plant sprites have been removed. The approved companion sprite library remains unchanged.
 
-The eight achievements use real positive-duration completed sessions, support durable earned state and independently toggled room decorations, preserve Luna/Milo/Maple unlock milestones (0/60/300 minutes), and keep account-scoped local preferences. Theme styling uses class-demo's warm cream/green palette, without importing the pixel integration shell, theme toggles, or new Progress page.
+See `web/docs/ACHIEVEMENTS-MOCKUP-ALIGNMENT.md` for the currently implemented sprite mapping, known pending assets, and source `placements.json`.
 
-Five plant-growth images and the PNG room/armchair artworks are copied as the exact Git blobs from the source branch. The room retains fixed-position decorations and does not implement drag-and-drop. Persistence is local/device scoped; signed-in history may be limited to recently synced sessions. The quiet celebrations toggle persists a preference but does not itself change global notifications.
-
-Verify with `cd web && npm ci && npm run build && npm test` and inspect 375×667 and 390×844 in the deployed preview.
+Achievement earning is based on valid saved practice sessions. Unlock states remain independent of decoration visibility. The app's journal, routine, player and Progress routes have not been changed by this asset migration.

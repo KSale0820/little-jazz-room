@@ -6,18 +6,24 @@ import type { VisibleCatId } from '../cats/CatCompanion';
  * Keep this separate from decorative visibility and current-cat selection.
  */
 export const ACHIEVEMENTS = [
-  { id: 'first-notes', name: 'First Notes', description: 'Complete your first practice session.', kind: 'sessions', target: 1, reward: 'armchair' },
-  { id: 'first-hour', name: 'First Hour', description: 'Practice for 60 total minutes.', kind: 'minutes', target: 60, reward: 'milo' },
-  { id: 'three-days', name: 'Finding Your Rhythm', description: 'Practice on three different days.', kind: 'days', target: 3, reward: 'plant' },
-  { id: 'routine-regular', name: 'Routine Regular', description: 'Complete three guided practice sessions.', kind: 'routines', target: 3, reward: 'music-stand' },
-  { id: 'groove', name: 'In the Groove', description: 'Practice on three consecutive days.', kind: 'streak', target: 3, reward: 'lamp' },
-  { id: 'five-hours', name: 'A Little Company', description: 'Practice for 300 total minutes.', kind: 'minutes', target: 300, reward: 'maple' },
-  { id: 'ten-sessions', name: 'Well Practiced', description: 'Complete ten practice sessions.', kind: 'sessions', target: 10, reward: 'books' },
-  { id: 'ten-hours', name: 'The Record Collection', description: 'Practice for 600 total minutes.', kind: 'minutes', target: 600, reward: 'records' },
+  { id: 'first-notes', name: 'First Notes', description: 'Complete your first practice session.', kind: 'sessions', target: 1, reward: 'piano-plant' },
+  { id: 'first-hour', name: 'First Hour', description: 'Reach 60 cumulative practice minutes.', kind: 'minutes', target: 60, reward: 'milo' },
+  { id: 'three-days', name: 'Finding Your Rhythm', description: 'Practice on three different days.', kind: 'days', target: 3, reward: 'bookshelf-plants' },
+  { id: 'routine-regular', name: 'Routine Regular', description: 'Complete three guided practice sessions.', kind: 'routines', target: 3, reward: 'piano-sheet-music' },
+  { id: 'groove', name: 'Finding Your Groove', description: 'Practice on three consecutive days.', kind: 'streak', target: 3, reward: 'piano-lamp' },
+  { id: 'five-hours', name: 'Practice Companion', description: 'Practice for 300 total minutes.', kind: 'minutes', target: 300, reward: 'maple' },
+  { id: 'ten-sessions', name: 'Building a Habit', description: 'Complete ten practice sessions.', kind: 'sessions', target: 10, reward: 'bookshelf-books' },
+  { id: 'ten-hours', name: 'Jazz Collector', description: 'Practice for 600 total minutes.', kind: 'minutes', target: 600, reward: 'bookshelf-trumpet' },
 ] as const;
 
 export type AchievementId = typeof ACHIEVEMENTS[number]['id'];
-export type RoomItemId = typeof ACHIEVEMENTS[number]['reward'] | 'luna';
+/** The 8 uploaded sprites are rewards for existing milestones; no new unlock criteria are introduced. */
+export const BONUS_ROOM_REWARDS = [
+  { after: 'first-hour', reward: 'bookshelf-cat' },
+  { after: 'five-hours', reward: 'piano-busts' },
+] as const;
+export type RoomItemId = typeof ACHIEVEMENTS[number]['reward'] | typeof BONUS_ROOM_REWARDS[number]['reward'] | 'luna';
+export const ROOM_ITEM_IDS: RoomItemId[] = ['luna', ...ACHIEVEMENTS.map(a => a.reward), ...BONUS_ROOM_REWARDS.map(a => a.reward)];
 export type AchievementKind = typeof ACHIEVEMENTS[number]['kind'];
 
 export interface PracticeEvidence {
@@ -94,5 +100,8 @@ export function deriveEarned(
 }
 
 export function unlockedRoomItems(earned: readonly AchievementId[]): RoomItemId[] {
-  return ['luna', ...ACHIEVEMENTS.filter(a => earned.includes(a.id)).map(a => a.reward)];
+  return ['luna',
+    ...ACHIEVEMENTS.filter(a => earned.includes(a.id)).map(a => a.reward),
+    ...BONUS_ROOM_REWARDS.filter(a => earned.includes(a.after)).map(a => a.reward),
+  ];
 }

@@ -20,6 +20,10 @@ describe('room achievements', () => {
     expect(evidence.sessions).toBe(0);
     expect(deriveEarned(evidence)).toEqual([]);
     expect(unlockedRoomItems([])).toEqual(['luna']);
+    const firstHour = unlockedRoomItems(['first-hour']);
+    expect(firstHour).toEqual(['luna', 'milo', 'bookshelf-cat']);
+    const fiveHours = unlockedRoomItems(['five-hours']);
+    expect(fiveHours).toEqual(['luna', 'maple', 'piano-busts']);
   });
 
   it('uses elapsed seconds, dedupes IDs, and ignores broken sessions', () => {
@@ -60,10 +64,17 @@ describe('room achievements', () => {
     expect(readEarned('b', store)).toEqual([]);
     const preferences = readRoomPreferences('a', store);
     expect(isItemVisible('luna', preferences)).toBe(false);
-    expect(isItemVisible('armchair', preferences)).toBe(true);
-    preferences.visibility.armchair = false;
+    expect(isItemVisible('bookshelf-plants', preferences)).toBe(true);
+    preferences.visibility['bookshelf-plants'] = false;
     expect(saveRoomPreferences('a', preferences, store)).toBe(true);
-    expect(isItemVisible('armchair', readRoomPreferences('a', store))).toBe(false);
-    expect(isItemVisible('armchair', readRoomPreferences('b', store))).toBe(true);
+    expect(isItemVisible('bookshelf-plants', readRoomPreferences('a', store))).toBe(false);
+    expect(isItemVisible('bookshelf-plants', readRoomPreferences('b', store))).toBe(true);
+    preferences.placements = { milo: 1 };
+    expect(saveRoomPreferences('a', preferences, store)).toBe(true);
+    expect(readRoomPreferences('a', store).placements?.milo).toBe(1);
+    expect(readRoomPreferences('b', store).placements?.milo).toBeUndefined();
+    const legacy = memoryStore();
+    legacy.setItem('little-jazz-room:studio-layout:v1:old', JSON.stringify({ visibility: { armchair: false } }));
+    expect(isItemVisible('bookshelf-plants', readRoomPreferences('old', legacy))).toBe(false);
   });
 });
