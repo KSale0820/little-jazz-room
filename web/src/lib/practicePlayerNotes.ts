@@ -1,3 +1,4 @@
+import type { RoutineIconKey } from './routinePixelIcons';
 /** Local first notes for class demo. User scope prevents cross-account leakage on a shared browser. */
 export interface ChartNote { bar: number; text: string; updatedAt: string; tags?: string[] }
 export interface PracticeJournalEntry {
@@ -10,6 +11,8 @@ export interface PracticeJournalEntry {
   whatPracticed?: string;
   takeaways?: string;
   nextTime?: string;
+  /** Optional chosen pixel icon for the journal entry. */
+  iconKey?: RoutineIconKey;
 }
 export const INLINE_ANNOTATION_LIMIT = 12;
 export function notesKey(scope: string, chartId: string) {

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { CatSprite, type VisibleCatId } from '../features/cats/CatCompanion';
 import { readPreviouslySelectedCat, readSavedUnlocks, unlockedCompanions } from '../lib/companionUnlocks';
-import { plantGrowth } from '../features/home-room/plantGrowth';
 import {
   ACHIEVEMENTS, achievementProgress, deriveEarned, summarizeEvidence, unlockedRoomItems,
   type AchievementId, type RoomItemId, type PracticeEvidence,
@@ -14,43 +13,49 @@ import {
 } from '../features/achievements/roomStore';
 import './AchievementsPage.css';
 
-type Placement = { x: number; y: number; w: number; z?: number };
+type Placement = { x: number; y: number; w: number; h?: number; z?: number };
 type Category = 'Cats' | 'Furniture' | 'Plants' | 'Music' | 'Lighting';
 type RoomItem = {
   id: RoomItemId;
   label: string;
   category: Category;
-  slots: readonly [Placement, Placement];
+  slots: readonly Placement[];
   sprite?: string;
-  fallback?: string;
   cat?: VisibleCatId;
   pose?: 'floor' | 'sleeping';
 };
 
-/** Two safe, fixed positions per item. Art is separate from the approved empty-room PNG. */
+/** Positions 01–08 are copied from new-decor/placements.json (1706×922).
+ * Use the supplied art at its approved location, never old unlockable PNGs.
+ * Cat positions remain independent of selected practice companion.
+ */
+const placed = (x: number, y: number, w: number, h: number, z = 3): Placement =>
+  ({ x: x / 1706 * 100, y: y / 922 * 100, w: w / 1706 * 100, h: h / 922 * 100, z });
+
 const ITEMS: readonly RoomItem[] = [
   { id: 'luna', label: 'Luna', category: 'Cats',
-    slots: [{ x: 19, y: 68, w: 12, z: 4 }, { x: 37, y: 70, w: 12, z: 4 }], cat: 'luna', pose: 'sleeping' },
-  { id: 'plant', label: 'First houseplant', category: 'Plants',
-    slots: [{ x: 12, y: 63, w: 9, z: 3 }, { x: 55, y: 63, w: 9, z: 3 }], sprite: '/visuals/decor/plant.png' },
+    slots: [{ x: 20, y: 70, w: 11, z: 4 }, { x: 33, y: 70, w: 11, z: 4 }], cat: 'luna', pose: 'sleeping' },
+  { id: 'piano-plant', label: 'Piano trailing plant', category: 'Plants',
+    slots: [placed(851, 306, 160, 210)], sprite: '/achievements/new-decor/05-piano-trailing-plant.png' },
   { id: 'milo', label: 'Milo', category: 'Cats',
-    slots: [{ x: 65, y: 35, w: 11, z: 5 }, { x: 76, y: 67, w: 11, z: 5 }], cat: 'milo', pose: 'floor' },
-  { id: 'armchair', label: 'Cozy armchair', category: 'Furniture',
-    slots: [{ x: 29, y: 49, w: 18, z: 2 }, { x: 43, y: 51, w: 18, z: 2 }],
-    sprite: '/achievements/armchair.png', fallback: '/achievements/armchair.svg' },
-  { id: 'music-stand', label: 'Music stand', category: 'Music',
-    slots: [{ x: 47, y: 49, w: 9, z: 3 }, { x: 22, y: 54, w: 9, z: 3 }], sprite: '/achievements/music-stand.svg' },
-  { id: 'lamp', label: 'Warm little lamp', category: 'Lighting',
-    slots: [{ x: 82, y: 29, w: 8, z: 3 }, { x: 58, y: 36, w: 8, z: 3 }], sprite: '/visuals/decor/brass-lamp.png' },
+    slots: [{ x: 37, y: 70, w: 11, z: 5 }, { x: 27, y: 75, w: 11, z: 5 }], cat: 'milo', pose: 'floor' },
+  { id: 'bookshelf-plants', label: 'Bookshelf plants', category: 'Plants',
+    slots: [placed(1372, 270, 249, 151)], sprite: '/achievements/new-decor/01-bookshelf-plants.png' },
+  { id: 'piano-sheet-music', label: 'Piano sheet music', category: 'Music',
+    slots: [placed(971, 430, 219, 98, 4)], sprite: '/achievements/new-decor/08-piano-sheet-music.png' },
+  { id: 'piano-lamp', label: 'Piano lamp', category: 'Lighting',
+    slots: [placed(1016, 295, 101, 117, 5)], sprite: '/achievements/new-decor/07-piano-lamp.png' },
   { id: 'maple', label: 'Maple', category: 'Cats',
-    slots: [{ x: 54, y: 72, w: 12, z: 5 }, { x: 78, y: 72, w: 12, z: 5 }], cat: 'maple', pose: 'sleeping' },
-  { id: 'books', label: 'Music books', category: 'Music',
-    slots: [{ x: 85, y: 38, w: 10, z: 3 }, { x: 85, y: 46, w: 10, z: 3 }], sprite: '/visuals/decor/books.png' },
-  { id: 'records', label: 'Record player', category: 'Music',
-    slots: [{ x: 76, y: 70, w: 12, z: 4 }, { x: 42, y: 70, w: 12, z: 4 }],
-    sprite: '/achievements/record-player.svg' },
+    slots: [{ x: 69, y: 75, w: 11, z: 5 }, { x: 47, y: 76, w: 11, z: 5 }], cat: 'maple', pose: 'sleeping' },
+  { id: 'bookshelf-books', label: 'Music books', category: 'Music',
+    slots: [placed(1398, 465, 225, 100)], sprite: '/achievements/new-decor/03-bookshelf-music-books.png' },
+  { id: 'bookshelf-trumpet', label: 'Trumpet', category: 'Music',
+    slots: [placed(1440, 391, 163, 61)], sprite: '/achievements/new-decor/02-bookshelf-trumpet.png' },
+  { id: 'bookshelf-cat', label: 'Sleeping bookshelf cat', category: 'Cats',
+    slots: [placed(1405, 604, 220, 110)], sprite: '/achievements/new-decor/04-bookshelf-sleeping-cat.png' },
+  { id: 'piano-busts', label: 'Jazz musician busts', category: 'Music',
+    slots: [placed(1142, 298, 166, 118)], sprite: '/achievements/new-decor/06-piano-jazz-busts.png' },
 ];
-
 const CATEGORIES = ['All', 'Cats', 'Plants', 'Music', 'Furniture', 'Lighting'] as const;
 type CollectionCategory = typeof CATEGORIES[number];
 type Achievement = typeof ACHIEVEMENTS[number];
@@ -93,24 +98,20 @@ function EmptyCatIcon() {
   </svg>;
 }
 
-function RoomSprite({ item, plantStage }: { item: RoomItem; plantStage: number }) {
-  const imagePath = item.id === 'plant'
-    ? '/achievements/plant-stage-' + plantStage + '.png'
-    : item.sprite ?? '';
-  const [src, setSrc] = useState(imagePath);
-  useEffect(() => { setSrc(imagePath); }, [imagePath]);
+function RoomSprite({ item }: { item: RoomItem }) {
   if (item.cat) {
     return <CatSprite catId={item.cat} variant={item.pose ?? 'floor'}
       size={128} decorative className="ajr-cat-sprite" />;
   }
-  return <img className="ajr-item-image" draggable={false} src={src} alt="" aria-hidden="true"
-    onError={() => { if (item.fallback && src !== item.fallback) setSrc(item.fallback); }} />;
+  return <img className="ajr-item-image" draggable={false}
+    src={item.sprite} alt="" aria-hidden="true" />;
 }
 
-function ItemThumbnail({ item, plantStage }: { item: RoomItem; plantStage: number }) {
+function ItemThumbnail({ item }: { item: RoomItem }) {
   return item.cat
-    ? <CatSprite catId={item.cat} variant="closeup" size={48} decorative className="ajr-cat-sprite" />
-    : <RoomSprite item={item} plantStage={plantStage} />;
+    ? <CatSprite catId={item.cat} variant="closeup" size={48}
+        decorative className="ajr-cat-sprite" />
+    : <RoomSprite item={item} />;
 }
 
 function AchievementCard({ achievement, evidence, cats, done }: {
@@ -123,7 +124,7 @@ function AchievementCard({ achievement, evidence, cats, done }: {
   const progress = achievementProgress(achievement.id as AchievementId, evidence, cats);
   return <article className={'ajr-achievement ' + (done ? 'is-earned' : '')} key={achievement.id}>
     <div className="ajr-achievement-icon" aria-hidden="true">
-      {item ? <ItemThumbnail item={item} plantStage={1} /> : <MedalIcon />}
+      {item ? <ItemThumbnail item={item} /> : <MedalIcon />}
     </div>
     <div className="ajr-achievement-info">
       <strong>{achievement.name}</strong>
@@ -140,7 +141,6 @@ export function AchievementsPage() {
   const { repo, sessions, catId } = useApp();
   const scope = repo.scope;
   const evidence = useMemo(() => summarizeEvidence(sessions), [sessions]);
-  const plantStage = evidence.minutes >= 600 ? 4 : plantGrowth(evidence.minutes).stage;
   const unlockedCats = unlockedCompanions(
     evidence.minutes, readSavedUnlocks(scope),
     readPreviouslySelectedCat(scope) ?? (catId === 'luna' || catId === 'milo' || catId === 'maple' ? catId : null),
@@ -154,7 +154,6 @@ export function AchievementsPage() {
   const [category, setCategory] = useState<CollectionCategory>('All');
   const [editing, setEditing] = useState(false);
   const [selectedItem, setSelectedItem] = useState<RoomItemId | null>(null);
-  const [imageSrc, setImageSrc] = useState('/achievements/room-base.png');
   const [saveError, setSaveError] = useState(false);
 
   useEffect(() => { saveEarned(scope, earned); }, [scope, earnedSignature]);
@@ -188,7 +187,9 @@ export function AchievementsPage() {
     setSelectedItem(null);
   };
   const selected = ITEMS.find(item => item.id === selectedItem);
-  const selectedAchievement = ACHIEVEMENTS.find(a => a.reward === selectedItem);
+  const selectedAchievement = ACHIEVEMENTS.find(a => a.reward === selectedItem
+    || (selectedItem === 'bookshelf-cat' && a.id === 'first-hour')
+    || (selectedItem === 'piano-busts' && a.id === 'five-hours'));
   const visibleCount = ITEMS.filter(item =>
     unlockedIds.includes(item.id) && isItemVisible(item.id, preferences)).length;
   const upcoming = ACHIEVEMENTS.filter(a => !earned.includes(a.id));
@@ -210,21 +211,21 @@ export function AchievementsPage() {
 
     <div className="ajr-room-frame">
       <div className="ajr-scene" role="group" aria-label="Your customizable jazz room">
-        <img className="ajr-room-image" src={imageSrc} onError={() => {
-          if (imageSrc !== '/visuals/room/h01-approved-room.jpeg') setImageSrc('/visuals/room/h01-approved-room.jpeg');
-        }} alt="Cozy rainy jazz studio with an upright piano, window, rug and empty bookshelf" />
+        <img className="ajr-room-image" src="/achievements/empty-room-new.webp"
+          alt="Cozy rainy jazz studio with an upright piano, window, rug and empty bookshelf" />
         {ITEMS.map(item => {
           if (!unlockedIds.includes(item.id) || !isItemVisible(item.id, preferences)) return null;
           const index = preferences.placements?.[item.id] === 1 ? 1 : 0;
-          const slot = item.slots[index];
+          const slot = item.slots[index] ?? item.slots[0];
           const style: CSSProperties = {
-            left: slot.x + '%', top: slot.y + '%', width: slot.w + '%', zIndex: slot.z ?? 2,
+            left: slot.x + '%', top: slot.y + '%', width: slot.w + '%',
+            ...(slot.h ? { height: slot.h + '%' } : {}), zIndex: slot.z ?? 2,
           };
           return <button key={item.id} type="button"
-            className={'ajr-object ' + (editing ? 'is-editing' : '')}
+            className={'ajr-object ' + (slot.h ? 'has-fixed-box ' : '') + (editing ? 'is-editing' : '')}
             style={style} aria-label={'Inspect ' + item.label}
             onClick={() => setSelectedItem(item.id)}>
-            <RoomSprite item={item} plantStage={plantStage} />
+            <RoomSprite item={item} />
           </button>;
         })}
         <button type="button" className="ajr-decorate"
@@ -295,13 +296,13 @@ export function AchievementsPage() {
         const chosen = preferences.placements?.[item.id] === 1 ? 1 : 0;
         return <div className={'ajr-collection-item ' + (!unlocked ? 'locked' : '')} key={item.id}>
           <span className="ajr-collection-icon" aria-hidden="true">
-            <ItemThumbnail item={item} plantStage={item.id === 'plant' ? plantStage : 1} />
+            <ItemThumbnail item={item} />
           </span>
           <div className="ajr-collection-content">
             <strong>{item.label}</strong>
             <small>{unlocked ? item.category : 'Locked · ' +
               (ACHIEVEMENTS.find(a => a.reward === item.id)?.name ?? 'Starter')}</small>
-            {editing && unlocked && visible && <div className="ajr-placement" role="group" aria-label={item.label + ' position'}>
+            {editing && unlocked && visible && item.slots.length > 1 && <div className="ajr-placement" role="group" aria-label={item.label + ' position'}>
               {item.slots.map((_, index) => <button key={index} type="button"
                 aria-pressed={chosen === index}
                 onClick={() => place(item.id, index)}>

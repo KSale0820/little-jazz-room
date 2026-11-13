@@ -1,6 +1,7 @@
 import type { PracticeJournalEntry, ChartNote } from '../lib/practicePlayerNotes';
 import type { PracticeSessionRecord, Routine, Exercise, Chart } from '../types/content';
 import { colorForTag, type JournalTagDefinition } from '../lib/journalTagPalette';
+import { JournalSectionIcon } from '../components/JournalSectionIcon';
 
 type Annotation = ChartNote & { chartId: string; chartTitle: string };
 interface Props {
@@ -56,14 +57,14 @@ export function DailyJournalSheet({ day, sessions, entries, annotations, routine
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M13 5l6 6M4 20l4.5-1L20 7.5 16.5 4 5 15.5z"/></svg>
       </button>
     </header>
-    <div className="pj-detail-meta"><span aria-hidden="true">▦</span><time dateTime={day}>{dateText}</time>
+    <div className="pj-detail-meta"><JournalSectionIcon name="calendar" /><time dateTime={day}>{dateText}</time>
       {timeText && <span>· {timeText}</span>}<span>· {loggedMinutes} min practiced</span></div>
     <h1 className="pj-detail-title">{title}</h1>
     {tags.length > 0 && <div className="pj-chips pj-detail-chips">{tags.map(tag =>
       <span key={tag} className={'pj-chip pj-' + colorForTag(palette,tag)}>{tag}</span>)}</div>}
 
     <section className="pj-detail-section pj-tint-sage" aria-label="What I practiced">
-      <h2><span aria-hidden="true">☷</span>What I practiced</h2>
+      <h2><JournalSectionIcon name="list" />What I practiced</h2>
       {datedSessions.length === 0 && practicedText.length === 0 && datedNotes.length === 0 && <p className="pj-muted">No activities recorded for this date.</p>}
       {datedSessions.map(s => <div key={s.id} className="pj-detail-practiced">
         <span className="pj-completed" aria-label="Saved session">✓</span>
@@ -86,20 +87,18 @@ export function DailyJournalSheet({ day, sessions, entries, annotations, routine
     </section>
 
     <section className="pj-detail-section pj-tint-lilac" aria-label="Notes and observations">
-      <h2><span aria-hidden="true">✎</span>Notes & observations</h2>
+      <h2><JournalSectionIcon name="pencil" />Notes & observations</h2>
       {notesText.length > 0 ? notesText.map(e => <div key={e.id} className="pj-observation">
-        {e.title?.trim() && <strong className="pj-observation-label">{e.title}</strong>}
-        <Paragraphs text={e.text} />
-        <button type="button" className="pj-inline-edit" onClick={() => onEditEntry(e)}>Edit note</button></div>) :
+        <Paragraphs text={e.text} /></div>) :
         <p className="pj-muted">Practice reflections from saved sessions appear above with the activities they describe.</p>}
     </section>
     <section className="pj-detail-section pj-tint-gold" aria-label="Takeaways">
-      <h2><span aria-hidden="true">☆</span>Takeaways</h2>
+      <h2><JournalSectionIcon name="lightbulb" />Takeaways</h2>
       {takeaways.length ? takeaways.map(e => <Paragraphs key={e.id} text={e.takeaways ?? ''} />) :
         <p className="pj-muted">What felt better or clicked today?</p>}
     </section>
     <section className="pj-detail-section pj-tint-blue" aria-label="Next time">
-      <h2><span aria-hidden="true">◎</span>Next time</h2>
+      <h2><JournalSectionIcon name="target" />Next time</h2>
       {nextTimes.length ? nextTimes.map(e => <Paragraphs key={e.id} text={e.nextTime ?? ''} />) :
         <p className="pj-muted">Add a focus for your next practice.</p>}
     </section>

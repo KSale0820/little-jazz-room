@@ -1,32 +1,34 @@
-# Achievements mockup alignment (class-demo)
+# Achievements redesign and new room assets (class-demo)
 
-Base: `class-demo-2026-10-31`. This is a visual/interaction revision to the current achievements room, not the pixel-branch theme.
+The approved mobile mockup determines the Achievements page styling and layout: warm background, centered header, large rainy-room scene, gentle empty state, segmented Achievements / My Collection tabs, reward previews and progress pills.
 
-## Visual decisions
-- Keep the approved blank rainy-room PNG as the main pixel-art image, with independently layered unlocked decorations.
-- Center the Achievements title and My Little Jazz Room intro; use a warm, muted cream/cocoa/terracotta palette within this page.
-- Add mockup-style empty-room message with unobtrusive cat-outline icon; display a small earned-count summary for returning users.
-- Put mockup-style Achievements/My Collection segmented tabs under the room, with upcoming milestones first, earned milestones second.
-- Show pixel-art reward previews and compact progress capsules instead of generic star emojis.
-- Keep the room prominent on 375 and 390px viewports, with no new global typography or navigation changes.
+## Current art source (class-demo)
+- Background: `web/public/achievements/empty-room-new.webp`, reference canvas **1706 × 922**.
+- Active decorative sprite batch: `web/public/achievements/new-decor/01-...png` through `08-...png`.
+- Source geometry: `web/public/achievements/new-decor/placements.json`. The page scales each x/y/width/height coordinate by 1706 × 922 to preserve pixel scale, position, alpha and supplied shadows. The room is not flattened.
+- Old `room-base.png`, `armchair.png`, provisional armchair/music-stand/record-player SVGs and the former plant-stage sprites are removed from the achievements asset folder.
+- Existing **approved** Luna, Milo and Maple cat artwork remains in the companion library. This removes obsolete *room decoration* artwork, not the companion system.
 
-## Behavior
-- First Notes now unlocks the first houseplant, consistent with the design brief and mockup. The existing three-distinct-days milestone unlocks the armchair; previously earned achievement IDs are retained.
-- Luna remains available from the start, and the blank initial mockup is preserved by the existing hidden-by-default Luna arrangement setting. Users can turn Luna on in My Collection.
-- Preserve existing 60-minute Milo, 300-minute Maple, and all other existing milestones, with real saved session evidence.
-- Decorate opens My Collection; each unlocked item can be toggled independently.
-- Two predetermined placements per item are saved per local account; Reset Arrangement resets display preferences, not earned rewards.
-- Keep the separate practice companion selection unchanged.
-- Dark mode styling is scoped to `html[data-theme='dark']`; reduced motion is respected.
+## Temporary reward presentation while the remaining sprites are being collected
+The existing eight practice milestones are unchanged (no fake activity, no new earning criteria). Existing per-account earned achievement IDs and former visibility preferences are preserved/migrated.
 
-## Still pending approved assets
-- Armchair and room base are the approved source PNGs already committed.
-- New accessory poses, an extended decorative object set, and any custom achievement badge icons are **not** assumed present. Current reward icons use existing approved cat/decor PNGs and available SVG fallbacks.
-- Do not introduce placeholder AI art or silently replace existing approved Luna, Milo, Maple sprites.
+- First Notes: piano trailing plant (#05)
+- First Hour: Milo (existing approved companion) and bookshelf sleeping cat (#04)
+- Finding Your Rhythm: bookshelf plants (#01)
+- Routine Regular: piano sheet music (#08)
+- Finding Your Groove: piano lamp (#07)
+- Practice Companion: Maple (existing approved companion) and piano jazz busts (#06)
+- Building a Habit: music books (#03)
+- Jazz Collector: trumpet (#02)
+- Luna: starter companion, optionally displayed
 
-## Review
-- Check /progress/achievements in the PR preview on 375x667 and 390x844.
-- Check guest empty room, logged practice history, fully decorated room, manual show/hide, placement, reset, and account switching.
-- Full CI may contain pre-existing `visualManifest.test.ts` inventory and `metronomeSync.test.ts` assertion failures. Check whether results match the base branch before attributing them to this PR.
+These visual associations can be revisited as future matching decoration sprites (including the record player and music stand) arrive. Original achievement IDs are **not** changed by this mapping. No missing asset is referenced as an image source.
 
-**Do not merge into class demo until user reviews the visual direction.**
+## Interaction
+- Tap an item to inspect its unlock; hide/show it in My Collection.
+- Decoration positions 01–08 are fixed at the artist-provided reference coordinates. Only companion sprites currently offer an alternate pre-defined location.
+- Display preferences remain local and account-scoped. Reset Arrangement does not remove achievements.
+- Plant growth-stage art from the old batch is removed; detailed growth-stage rendering can return once matching **new** plant stage sprites exist.
+
+## QA
+Preview branch build, no CSS changes outside Achievements. Check 375px and 390px phones, empty and well-furnished states, account switching and unlock persistence. Do not use old assets as fallbacks.

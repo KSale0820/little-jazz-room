@@ -1,4 +1,4 @@
-import { ACHIEVEMENTS, type AchievementId, type RoomItemId } from './achievementModel';
+import { ACHIEVEMENTS, ROOM_ITEM_IDS, type AchievementId, type RoomItemId } from './achievementModel';
 
 export interface RoomPreferences {
   /** An item can be earned but hidden. Hidden items are never revoked. */
@@ -35,6 +35,12 @@ export function saveEarned(scope: string, ids: readonly AchievementId[], store: 
 }
 
 const DEFAULTS: RoomPreferences = { visibility: { luna: false }, mutedCelebrations: true };
+/** Keep previously saved per-item visibility when the old sprites are replaced. */
+const LEGACY_ITEM_IDS: Record<string, RoomItemId> = {
+  plant: 'piano-plant', armchair: 'bookshelf-plants',
+  'music-stand': 'piano-sheet-music', lamp: 'piano-lamp',
+  books: 'bookshelf-books', records: 'bookshelf-trumpet',
+};
 
 export function readRoomPreferences(scope: string, store: Pick<Storage, 'getItem'> | null = typeof localStorage === 'undefined' ? null : localStorage): RoomPreferences {
   try {
@@ -44,13 +50,17 @@ export function readRoomPreferences(scope: string, store: Pick<Storage, 'getItem
     if (!candidate || typeof candidate !== 'object') return { ...DEFAULTS };
     const c = candidate as { visibility?: unknown; mutedCelebrations?: unknown; placements?: unknown };
     const rawVisibility = c.visibility && typeof c.visibility === 'object' ? c.visibility as Record<string, unknown> : {};
-    const allowed: RoomItemId[] = ['luna', ...ACHIEVEMENTS.map(a => a.reward)];
+    const allowed: RoomItemId[] = ROOM_ITEM_IDS;
     const visibility: RoomPreferences['visibility'] = {};
     const rawPlacements = c.placements && typeof c.placements === 'object' ? c.placements as Record<string, unknown> : {};
     const placements: NonNullable<RoomPreferences['placements']> = {};
     for (const id of allowed) {
       const n = rawPlacements[id];
       if (Number.isInteger(n) && (n === 0 || n === 1)) placements[id] = n as number;
+    }
+    for (const [oldId, newId] of Object.entries(LEGACY_ITEM_IDS)) {
+      if (typeof rawVisibility[oldId] === 'boolean' && rawVisibility[newId] === undefined)
+        visibility[newId] = rawVisibility[oldId] as boolean;
     }
     for (const id of allowed) if (typeof rawVisibility[id] === 'boolean') visibility[id] = rawVisibility[id] as boolean;
     return { visibility: { ...DEFAULTS.visibility, ...visibility }, mutedCelebrations: c.mutedCelebrations !== false, placements };
