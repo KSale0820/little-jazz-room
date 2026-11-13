@@ -1060,3 +1060,72 @@ html[data-theme="dark"] .ajr-room-toolbar .ajr-preview-notice { color: #d4e6c8; 
 @media (prefers-reduced-motion: reduce) {
   .ajr-progress-track > span { transition: none; }
 }
+
+
+/* Achievements iteration 5: reuse the earlier ornate pixel divider, not
+   the temporary straight rule/tiny leaf. No unrelated heading icon for Next Unlocks. */
+.ajr-page .ajr-section-title .ajr-section-rule {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 20px;
+  height: 20px;
+  background: url('/achievements/ui/ornate-divider.png') center center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+}
+.ajr-page .ajr-section-next .ajr-section-icon { display: none; }
+.ajr-page .ajr-next-heading > div { min-width: 0; flex: 1 1 auto; }
+.ajr-page .ajr-next-heading .ajr-section-title {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.ajr-page .ajr-next-heading .ajr-section-label { flex: 0 0 auto; }
+.ajr-page .ajr-next-heading .ajr-section-rule { min-width: 24px; }
+
+/* Preview and Show all use the same cream-and-green pixel button family.
+   Unlike the tab selector, neither state needs a saturated green fill. */
+.ajr-page .ajr-next-heading .ajr-more,
+.ajr-page .ajr-room-toolbar .ajr-preview-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 33px;
+  margin: 0;
+  padding: 5px 11px;
+  border: 2px solid #57774c;
+  border-radius: 8px;
+  color: #2d5c38;
+  background: linear-gradient(180deg, #fff9e9 0%, #f4edda 100%);
+  box-shadow: inset 0 0 0 2px #fff9ed, 0 2px 0 #a9ba91;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.15;
+  white-space: nowrap;
+  text-shadow: none;
+}
+.ajr-page .ajr-next-heading .ajr-more:hover,
+.ajr-page .ajr-room-toolbar .ajr-preview-toggle:hover {
+  color: #215030;
+  background: linear-gradient(180deg, #fffdf0 0%, #e9edcf 100%);
+}
+.ajr-page .ajr-next-heading .ajr-more[aria-expanded="true"],
+.ajr-page .ajr-room-toolbar .ajr-preview-toggle[aria-pressed="true"] {
+  color: #214f32;
+  background: linear-gradient(180deg, #eff3de 0%, #e2ebc8 100%);
+  border-color: #50764c;
+  box-shadow: inset 0 0 0 2px #f6fae9, 0 2px 0 #a2b889;
+}
+@media (max-width: 380px) {
+  .ajr-page .ajr-next-heading { gap: 5px; }
+  .ajr-page .ajr-next-heading .ajr-section-title { gap: 5px; }
+  .ajr-page .ajr-next-heading .ajr-section-label { font-size: 15px; }
+  .ajr-page .ajr-section-title .ajr-section-rule { height: 16px; }
+  .ajr-page .ajr-next-heading .ajr-more,
+  .ajr-page .ajr-room-toolbar .ajr-preview-toggle {
+    min-height: 30px;
+    padding: 4px 7px;
+    font-size: 10px;
+  }
+}
