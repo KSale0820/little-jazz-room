@@ -119,14 +119,16 @@ function AchievementCard({ achievement, evidence, cats, done }: {
     <div className="ajr-achievement-info">
       <strong>{achievement.name}</strong>
       <p>{achievement.description}</p>
+    </div>
+    <div className={'ajr-achievement-status' + (done ? ' is-earned' : '')}>
+      <span className={'ajr-count ' + (done ? 'is-earned' : '')}
+        aria-label={done ? 'Earned' : progress + ' out of ' + achievement.target + unit}>
+        {done ? '✓ Earned' : progress + ' / ' + achievement.target + unit}
+      </span>
       {!done && <progress className="ajr-progress-track"
         value={progress} max={achievement.target}
         aria-label={achievement.name + ' progress'} />}
     </div>
-    <span className={'ajr-count ' + (done ? 'is-earned' : '')}
-      aria-label={done ? 'Earned' : progress + ' out of ' + achievement.target + unit}>
-      {done ? '✓ Earned' : progress + ' / ' + achievement.target + unit}
-    </span>
   </article>;
 }
 
@@ -135,7 +137,7 @@ function SectionTitle({ children, upcoming = false }: {
 }) {
   return <h2 className={'ajr-section-title' + (upcoming ? ' ajr-section-next' : '')}>
     <span className="ajr-section-icon" aria-hidden="true">
-      {upcoming ? '♧' : '♫'}
+      {upcoming ? '♙' : '♫'}
     </span>
     <span className="ajr-section-label">{children}</span>
     <span className="ajr-section-rule" aria-hidden="true" />
@@ -260,6 +262,11 @@ export function AchievementsPage() {
               </button>}
           </div>;
         })}
+        <button type="button" className="ajr-preview-toggle" aria-pressed={previewAll}
+          aria-label={previewAll ? 'Show only earned room decorations' : 'Preview the fully furnished room'}
+          onClick={() => { setPreviewAll(value => !value); setSelectedItem(null); }}>
+          {previewAll ? '✦ My room' : '✧ Preview'}
+        </button>
         <button type="button" className="ajr-decorate"
           aria-pressed={editing}
           onClick={() => { setEditing(value => !value); setTab('collection'); setSelectedItem(null); }}>
@@ -269,13 +276,7 @@ export function AchievementsPage() {
       </div>
     </div>
 
-    <div className="ajr-preview-controls">
-      <button type="button" className="ajr-preview-toggle" aria-pressed={previewAll}
-        onClick={() => { setPreviewAll(value => !value); setSelectedItem(null); }}>
-        {previewAll ? 'View earned room' : 'Preview fully furnished room'}
-      </button>
-      {previewAll && <small>Preview only. Decorations are not unlocked until you earn them.</small>}
-    </div>
+    {previewAll && <small className="ajr-preview-notice">Preview only. Items unlock through practice.</small>}
 
     {selected && <div className="ajr-item-detail" role="region" aria-label={selected.label + ' details'}>
       <div>
@@ -296,6 +297,7 @@ export function AchievementsPage() {
       <button type="button" className="ajr-dismiss" aria-label="Close item details" onClick={() => setSelectedItem(null)}>×</button>
     </div>}
 
+    <div className="ajr-apartment-shelf">
     <section className="ajr-room-plaque" aria-label="Room progress" aria-live="polite">
       <span className="ajr-plaque-books" aria-hidden="true" />
       <div className="ajr-plaque-level">
@@ -327,6 +329,7 @@ export function AchievementsPage() {
         className={tab === 'collection' ? 'selected' : ''}
         onClick={() => setTab('collection')}><SofaIcon /> My Collection</button>
     </div>
+    </div>
 
     {tab === 'achievements' ? <div className="ajr-list">
       {completed.length > 0 && <section aria-labelledby="ajr-earned-heading">
@@ -340,10 +343,10 @@ export function AchievementsPage() {
         <div id="ajr-upcoming-heading">
           <SectionTitle upcoming>Next Unlocks</SectionTitle>
         </div>
-        {(showAllUpcoming ? upcoming : upcoming.slice(0, 3)).map(a =>
+        {(showAllUpcoming ? upcoming : upcoming.slice(0, 1)).map(a =>
           <AchievementCard key={a.id} achievement={a} evidence={evidence}
             cats={unlockedCats} done={false} />)}
-        {upcoming.length > 3 && <button type="button" className="ajr-more"
+        {upcoming.length > 1 && <button type="button" className="ajr-more"
           onClick={() => setShowAllUpcoming(value => !value)}>
           {showAllUpcoming ? 'Show fewer' : 'See all ' + upcoming.length + ' upcoming milestones'}
         </button>}
