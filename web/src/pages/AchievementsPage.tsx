@@ -110,18 +110,36 @@ function AchievementCard({ achievement, evidence, cats, done }: {
 }) {
   const item = ITEMS.find(i => i.id === achievement.reward);
   const progress = achievementProgress(achievement.id as AchievementId, evidence, cats);
-  return <article className={'ajr-achievement ' + (done ? 'is-earned' : '')} key={achievement.id}>
+  const unit = achievement.kind === 'minutes' ? ' min' : achievement.kind === 'days' || achievement.kind === 'streak' ? ' days' : '';
+  return <article className={'ajr-achievement ' + (done ? 'is-earned' : 'is-upcoming')}
+    data-category={item?.category ?? 'Music'}>
     <div className="ajr-achievement-icon" aria-hidden="true">
       {item ? <ItemThumbnail item={item} /> : <MedalIcon />}
     </div>
     <div className="ajr-achievement-info">
       <strong>{achievement.name}</strong>
       <p>{achievement.description}</p>
+      {!done && <progress className="ajr-progress-track"
+        value={progress} max={achievement.target}
+        aria-label={achievement.name + ' progress'} />}
     </div>
-    <span className={'ajr-count ' + (done ? 'is-earned' : '')} aria-label={done ? 'Earned' : progress + ' of ' + achievement.target}>
-      {done ? '✓ Earned' : progress + ' / ' + achievement.target + (achievement.kind === 'minutes' ? ' min' : '')}
+    <span className={'ajr-count ' + (done ? 'is-earned' : '')}
+      aria-label={done ? 'Earned' : progress + ' out of ' + achievement.target + unit}>
+      {done ? '✓ Earned' : progress + ' / ' + achievement.target + unit}
     </span>
   </article>;
+}
+
+function SectionTitle({ children, upcoming = false }: {
+  children: React.ReactNode; upcoming?: boolean;
+}) {
+  return <h2 className={'ajr-section-title' + (upcoming ? ' ajr-section-next' : '')}>
+    <span className="ajr-section-icon" aria-hidden="true">
+      {upcoming ? '♧' : '♫'}
+    </span>
+    <span className="ajr-section-label">{children}</span>
+    <span className="ajr-section-rule" aria-hidden="true" />
+  </h2>;
 }
 
 export function AchievementsPage() {
@@ -190,18 +208,26 @@ export function AchievementsPage() {
   const selectedPrimary = selectedCat ? ROOM_CAT_ITEMS[selectedCat].main : selectedItem;
   const selectedUnlocked = selectedPrimary != null && unlockedIds.includes(selectedPrimary);
   const selectedAchievement = selectedPrimary ? sourceAchievement(selectedPrimary) : undefined;
-  const visibleCount = ITEMS.filter(item =>
-    shouldRenderRoomItem(item.id, unlockedIds, preferences)).length;
+  const visibleCount = COLLECTION_ITEMS.filter(item => {
+    const cat = catNameForRoomItem(item.id);
+    const primary = cat ? ROOM_CAT_ITEMS[cat].main : item.id;
+    return unlockedIds.includes(primary) && isItemVisible(primary, preferences);
+  }).length;
   const upcoming = ACHIEVEMENTS.filter(a => !earned.includes(a.id));
   const completed = ACHIEVEMENTS.filter(a => earned.includes(a.id));
+  const roomLevel = earned.length >= ACHIEVEMENTS.length ? 'Jazz Room Keeper'
+    : earned.length >= 5 ? 'Cozy Regular'
+    : earned.length >= 2 ? 'Growing Studio' : 'Cozy Starter';
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
 
   return <section className="ajr-page" aria-label="My Little Jazz Room">
     <header className="ajr-top">
       <button type="button" className="ajr-back" onClick={() => navigate('/progress')} aria-label="Back to Progress">
         <BackIcon />
       </button>
+      <span className="ajr-header-decoration" aria-hidden="true">✦</span>
       <strong>Achievements</strong>
-      <span aria-hidden="true" />
+      <span className="ajr-header-decoration" aria-hidden="true">✦</span>
     </header>
 
     <div className="ajr-intro">
@@ -270,16 +296,30 @@ export function AchievementsPage() {
       <button type="button" className="ajr-dismiss" aria-label="Close item details" onClick={() => setSelectedItem(null)}>×</button>
     </div>}
 
-    {earned.length === 0 ? <div className="ajr-empty">
+    <section className="ajr-room-plaque" aria-label="Room progress" aria-live="polite">
+      <span className="ajr-plaque-books" aria-hidden="true" />
+      <div className="ajr-plaque-level">
+        <MedalIcon />
+        <span className="ajr-plaque-label">Room Level</span>
+        <strong className="ajr-level-badge">{roomLevel}</strong>
+      </div>
+      <div className="ajr-plaque-stat">
+        <span className="ajr-plaque-star" aria-hidden="true">✦</span>
+        <strong>{earned.length}</strong><span>achievements unlocked</span>
+      </div>
+      <div className="ajr-plaque-stat">
+        <SofaIcon />
+        <strong>{visibleCount}</strong><span>items displayed</span>
+      </div>
+      <span className="ajr-plaque-plant" aria-hidden="true" />
+    </section>
+    {earned.length === 0 && <div className="ajr-empty">
       <span className="ajr-empty-icon"><EmptyCatIcon /></span>
-      <strong>Your room is still in its beginning!</strong>
-      <p>Complete practice milestones to unlock cats, plants, decorations, and more.</p>
-    </div> : <div className="ajr-summary" aria-live="polite">
-      <MedalIcon />
-      <span><strong>{earned.length}</strong> achievements earned <span aria-hidden="true">·</span> {visibleCount} items displayed</span>
+      <strong>Your room is just beginning!</strong>
+      <p>Practice to earn treasures, make it cozy, and meet your jazz companions.</p>
     </div>}
 
-    <div className="ajr-tabs" role="group" aria-label="Achievements and room collection">
+    <div className="ajr-tabs" data-active={tab} role="group" aria-label="Achievements and room collection">
       <button type="button" aria-pressed={tab === 'achievements'}
         className={tab === 'achievements' ? 'selected' : ''}
         onClick={() => setTab('achievements')}><MedalIcon /> Achievements</button>
@@ -289,20 +329,30 @@ export function AchievementsPage() {
     </div>
 
     {tab === 'achievements' ? <div className="ajr-list">
-      {upcoming.length > 0 && <section aria-labelledby="ajr-upcoming-heading">
-        <h2 id="ajr-upcoming-heading">Upcoming Achievements</h2>
-        {upcoming.map(a => <AchievementCard key={a.id} achievement={a} evidence={evidence}
-          cats={unlockedCats} done={false} />)}
-      </section>}
       {completed.length > 0 && <section aria-labelledby="ajr-earned-heading">
-        <h2 id="ajr-earned-heading">Earned Achievements</h2>
+        <div id="ajr-earned-heading">
+          <SectionTitle>Unlocked Treasures</SectionTitle>
+        </div>
         {completed.map(a => <AchievementCard key={a.id} achievement={a} evidence={evidence}
           cats={unlockedCats} done />)}
       </section>}
+      {upcoming.length > 0 && <section aria-labelledby="ajr-upcoming-heading">
+        <div id="ajr-upcoming-heading">
+          <SectionTitle upcoming>Next Unlocks</SectionTitle>
+        </div>
+        {(showAllUpcoming ? upcoming : upcoming.slice(0, 3)).map(a =>
+          <AchievementCard key={a.id} achievement={a} evidence={evidence}
+            cats={unlockedCats} done={false} />)}
+        {upcoming.length > 3 && <button type="button" className="ajr-more"
+          onClick={() => setShowAllUpcoming(value => !value)}>
+          {showAllUpcoming ? 'Show fewer' : 'See all ' + upcoming.length + ' upcoming milestones'}
+        </button>}
+      </section>}
+      {upcoming.length === 0 && <p className="ajr-all-earned">✦ All current milestones unlocked. Keep making music!</p>}
     </div> : <section className="ajr-list" aria-labelledby="ajr-collection-heading">
       <div className="ajr-collection-heading">
-        <div><h2 id="ajr-collection-heading">My Collection</h2>
-          <p className="ajr-hint">Your unlocked treasures stay yours, even when hidden.</p>
+        <div><h2 id="ajr-collection-heading">Your Room Collection</h2>
+          <p className="ajr-hint">The little things that make your jazz room yours.</p>
         </div>
         {editing && <button type="button" className="ajr-reset" onClick={resetArrangement}>
           Reset arrangement
@@ -312,6 +362,7 @@ export function AchievementsPage() {
         {CATEGORIES.map(c => <button key={c} type="button" aria-pressed={category === c}
           onClick={() => setCategory(c)}>{c}</button>)}
       </div>
+      <div className="ajr-collection-grid">
       {COLLECTION_ITEMS.filter(i => category === 'All' || i.category === category).map(item => {
         const cat = catNameForRoomItem(item.id);
         const primary = cat ? ROOM_CAT_ITEMS[cat].main : item.id;
@@ -321,35 +372,35 @@ export function AchievementsPage() {
         const visible = unlocked && isItemVisible(primary, preferences);
         const chosen = preferences.placements?.[primary] === 1 ? 1 : 0;
         const label = cat ? CAT_DISPLAY_NAMES[cat] : item.label;
-        return <div className={'ajr-collection-item ' + (!unlocked ? 'locked' : '')} key={primary}>
-          <span className="ajr-collection-icon" aria-hidden="true">
-            <ItemThumbnail item={displayed} />
-          </span>
+        return <article className={'ajr-collection-item ' + (!unlocked ? 'locked' : '')}
+          data-category={item.category} key={primary}>
+          <div className="ajr-collection-icon" aria-hidden="true">
+            {unlocked ? <ItemThumbnail item={displayed} /> : <span className="ajr-locked-icon">♧</span>}
+          </div>
           <div className="ajr-collection-content">
             <strong>{label}</strong>
-            <small>{unlocked ? item.category : 'Locked · ' +
-              (sourceAchievement(primary)?.name ?? 'Starter')}</small>
-            {cat && unlocked && <div className="ajr-cat-poses" role="group" aria-label={'Choose ' + label + ' pose'}>
-              {(['sitting', 'sleeping'] as const).map(option => <button type="button" key={option}
-                aria-pressed={pose === option} onClick={() => setCatPose(cat, option)}>
-                {option === 'sitting' ? 'Sitting' : 'Sleeping'}
-              </button>)}
-            </div>}
-            {editing && unlocked && visible && item.slots.length > 1 && <div className="ajr-placement" role="group" aria-label={label + ' position'}>
-              {item.slots.map((_, index) => <button key={index} type="button"
-                aria-pressed={chosen === index}
-                onClick={() => place(primary, index)}>
-                Spot {index + 1}
-              </button>)}
-            </div>}
+            <small>{unlocked ? item.category : 'Unlock: ' + (sourceAchievement(primary)?.name ?? 'Practice')}</small>
           </div>
-          <button type="button" role="switch" aria-checked={visible}
-            disabled={!unlocked} aria-label={'Show ' + label + ' in your room'}
-            className={'ajr-toggle ' + (visible ? 'on' : '')} onClick={() => toggle(primary)}>
-            <span />
+          <button type="button" aria-pressed={visible}
+            disabled={!unlocked} aria-label={label + (visible ? ': displayed; hide from room' : ': hidden; display in room')}
+            className={'ajr-display-button ' + (visible ? 'on' : '')} onClick={() => toggle(primary)}>
+            {unlocked ? (visible ? '✓ Displayed' : '+ Display') : 'Locked'}
           </button>
-        </div>;
+          {cat && unlocked && <div className="ajr-cat-poses" role="group" aria-label={'Choose ' + label + ' pose'}>
+            {(['sitting', 'sleeping'] as const).map(option => <button type="button" key={option}
+              aria-pressed={pose === option} onClick={() => setCatPose(cat, option)}>
+              {option === 'sitting' ? 'Sitting' : 'Sleeping'}
+            </button>)}
+          </div>}
+          {editing && unlocked && visible && item.slots.length > 1 && <div className="ajr-placement" role="group" aria-label={label + ' position'}>
+            {item.slots.map((_, index) => <button key={index} type="button"
+              aria-pressed={chosen === index} onClick={() => place(primary, index)}>
+              Spot {index + 1}
+            </button>)}
+          </div>}
+        </article>;
       })}
+      </div>
       <label className="ajr-quiet">
         <input type="checkbox" checked={preferences.mutedCelebrations}
           onChange={event => updatePreferences({ ...preferences, mutedCelebrations: event.target.checked })} />
