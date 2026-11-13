@@ -42,7 +42,7 @@ export const ROOM_ART: readonly RoomArtItem[] = [
   { id: 'side-table', label: "Side Table", category: 'Furniture', x: 60, y: 622, width: 177, height: 249, rotation: 0, atlas: { x: 361, y: 1092, width: 177, height: 249 } },
   { id: 'luna-sitting', label: "Luna", category: 'Cats', x: 1141, y: 387, width: 135, height: 176, rotation: 0.04, catImage: '/visuals/cats/clean-pixel/luna-sitting.png' },
   { id: 'luna', label: "Luna", category: 'Cats', x: 316, y: 562, width: 233, height: 150, rotation: 0, catImage: '/visuals/cats/clean-pixel/luna-sleeping.png' },
-  { id: 'milo', label: "Milo", category: 'Cats', x: 1036, y: 97, width: 131, height: 164, rotation: 0, catImage: '/visuals/cats/clean-pixel/milo-sitting.png' },
+  { id: 'milo', label: "Milo", category: 'Cats', x: 1036, y: 109, width: 131, height: 164, rotation: 0, catImage: '/visuals/cats/clean-pixel/milo-sitting.png' },
   { id: 'milo-sleeping', label: "Milo", category: 'Cats', x: 968, y: 514, width: 217, height: 126, rotation: 0, catImage: '/visuals/cats/clean-pixel/milo-sleeping.png' },
   { id: 'maple', label: "Maple", category: 'Cats', x: 535, y: 540, width: 190, height: 236, rotation: 0, catImage: '/visuals/cats/clean-pixel/maple-sitting.png' },
   { id: 'maple-sleeping', label: "Maple", category: 'Cats', x: 1366, y: 150, width: 261, height: 155, rotation: 0, catImage: '/visuals/cats/clean-pixel/maple-sleeping.png' },

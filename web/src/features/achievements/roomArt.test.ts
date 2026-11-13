@@ -48,6 +48,7 @@ describe('approved achievements room layout', () => {
     expect(starter).toContain('luna-sitting');
     expect(starter).toContain('luna');
     expect(ROOM_ART.find(item => item.id === 'luna-sitting')?.y).toBe(387);
+    expect(ROOM_ART.find(item => item.id === 'milo')?.y).toBe(109);
     expect(starter).not.toContain('milo');
     expect(starter).not.toContain('maple');
     expect(unlockedRoomItems(['first-hour'])).toContain('milo-sleeping');
