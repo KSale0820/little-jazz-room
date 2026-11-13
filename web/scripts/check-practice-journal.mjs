@@ -14,6 +14,15 @@ try {
     try {
       await page.goto(base + '/demo');
       await page.getByRole('heading', { name: 'Progress', exact: true }).waitFor();
+      const recentIconKeys = await page.locator('.pr-recent .pr-session-skill').evaluateAll(
+        icons => icons.map(icon => icon.getAttribute('data-icon-key')));
+      assert.deepEqual(recentIconKeys, ['scales', 'chord-connections', 'call-and-response'],
+        'Recent Practice must use icons matching their saved routine or exercise');
+      assert.equal(await page.locator('.pr-quick-links .pr-shortcut-icon svg').count(), 1,
+        'Practice Journal shortcut should share the green outline icon language');
+      assert.equal(await page.locator('.pr-quick-links .pr-shortcut-icon img').count(), 0,
+        'Practice Journal shortcut should not use the colorful illustration');
+      await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/progress-icons-' + viewport.width + '.png', fullPage: true });
       assert.equal(await page.locator('.pr-quick-links .pr-shortcut').count(), 1,
         'Progress offers exactly one Practice Journal shortcut');
       assert.equal((await page.locator('.pr-quick-links .pr-shortcut strong').textContent())?.trim(), 'Practice Journal');

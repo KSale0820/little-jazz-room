@@ -1,3 +1,5 @@
+import type { Routine } from '../types/content';
+
 /**
  * Pixel icon atlas built from the 24 practice-skill icons approved for Little Jazz Room.
  *
@@ -31,7 +33,7 @@ export function routineIconFor(title: string, shelf: string): RoutineIconKey {
   if (/rhythm changes|standards?|song forms?|ballads?|repertoire/.test(name)) return 'standards';
   if (/walking bass|steady tempo|metronome|keep time|without a backing track/.test(name)) return 'tempo';
   if (/comping|playing chords|leave space/.test(name)) return 'comping';
-  if (/chord connections?|chord movement|smooth chord/.test(name)) return 'chord-connections';
+  if (/guide.?tones?|chord connections?|chord movement|smooth chord/.test(name)) return 'chord-connections';
   if (/voicings?/.test(name)) return 'voicings';
   if (/chords?|harmony/.test(name)) return 'chords';
   if (/rhythm|swing|bossa/.test(name)) return 'rhythm';
@@ -59,3 +61,21 @@ export function routineIconFor(title: string, shelf: string): RoutineIconKey {
     default: return 'focused-practice';
   }
 }
+
+export function routineShelfFor(routine: Routine, categories: string[]): string {
+  const title = routine.title.toLowerCase();
+  const goal = ((routine as Routine & { goal?: string }).goal ?? '').trim().toLowerCase();
+  if (/warm.?up|scales|arpeggios|long tones/.test(title)) return 'Warm-Ups';
+  if (goal === 'repertoire' || goal === 'jazz standards' ||
+    /standard|song form|12.bar blues|rhythm changes|ballad/.test(title)) return 'Standards & Repertoire';
+  if (goal === 'improvisation' || /improv|solo|call.and.response/.test(title)) return 'Improvisation';
+  if (goal === 'ear training' || /ear training|transcri/.test(title)) return 'Ear Training';
+  if (goal === 'rhythm' || goal === 'rhythm & harmony' ||
+    /rhythm|swing|bossa|tempo|backing track/.test(title)) return 'Rhythm & Timing';
+  if (goal === 'harmony' || /chord|voicing|comping|ii.v.i/.test(title)) return 'Harmony & Chords';
+  if (goal === 'technique' || categories.includes('Technique')) return 'Technique';
+  if (categories.includes('Improvisation')) return 'Improvisation';
+  if (categories.includes('Repertoire')) return 'Standards & Repertoire';
+  return 'Other Practice';
+}
+
