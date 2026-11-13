@@ -1,0 +1,47 @@
+import type { RoomItemId } from './achievementModel';
+
+/** Editor-approved 1706×922 placements (November 12). Keep exact positions and layer order. */
+export const ROOM_CANVAS = { width: 1706, height: 922 } as const;
+export const ROOM_ATLAS = { width: 1536, height: 1581, url: '/achievements/room-decor-atlas.webp' } as const;
+export type RoomCategory = 'Cats' | 'Furniture' | 'Plants' | 'Music' | 'Lighting';
+export interface RoomArtItem {
+  id: RoomItemId;
+  label: string;
+  category: RoomCategory;
+  x: number; y: number; width: number; height: number;
+  rotation: number;
+  atlas?: { x: number; y: number; width: number; height: number };
+  catImage?: string;
+}
+export const ROOM_ART: readonly RoomArtItem[] = [
+  { id: 'curtain-left', label: "22a Left curtain", category: 'Furniture', x: 11, y: 13, width: 216, height: 611, rotation: 0, atlas: { x: 3, y: 3, width: 216, height: 611 } },
+  { id: 'curtain-right', label: "22b Right curtain", category: 'Furniture', x: 416, y: 126, width: 153, height: 472, rotation: 0, atlas: { x: 3, y: 617, width: 153, height: 472 } },
+  { id: 'wall-shelves', label: "13 Three wall shelves", category: 'Furniture', x: 446, y: 12, width: 1212, height: 506, rotation: 0, atlas: { x: 222, y: 3, width: 1212, height: 506 } },
+  { id: 'jazz-portraits', label: "14 Three framed jazz portraits", category: 'Music', x: 615, y: 157, width: 265, height: 125, rotation: 0, atlas: { x: 3, y: 1353, width: 265, height: 125 } },
+  { id: 'wall-shelf-plants', label: "15 Plants on middle wall shelf", category: 'Plants', x: 970, y: 119, width: 325, height: 185, rotation: 0, atlas: { x: 792, y: 1092, width: 325, height: 185 } },
+  { id: 'cat-toys', label: "16 Cat toys on right wall shelf", category: 'Cats', x: 1364, y: 95, width: 252, height: 100, rotation: -0.85, atlas: { x: 957, y: 1353, width: 252, height: 100 } },
+  { id: 'wall-guitar', label: "21 Wall-mounted guitar", category: 'Music', x: 676, y: 298, width: 85, height: 190, rotation: 0, atlas: { x: 704, y: 1092, width: 85, height: 190 } },
+  { id: 'bookshelf-plants', label: "01 Bookshelf plants", category: 'Plants', x: 1394, y: 278, width: 205, height: 125, rotation: -0.22, atlas: { x: 271, y: 1353, width: 205, height: 125 } },
+  { id: 'bookshelf-trumpet', label: "02 Trumpet", category: 'Music', x: 1438, y: 402, width: 165, height: 58, rotation: 0, atlas: { x: 622, y: 1481, width: 165, height: 58 } },
+  { id: 'bookshelf-books', label: "03 Music books", category: 'Music', x: 1393, y: 474, width: 224, height: 97, rotation: 0, atlas: { x: 1212, y: 1353, width: 224, height: 97 } },
+  { id: 'bookshelf-cat', label: "04 Sleeping bookshelf cat on cushion", category: 'Cats', x: 1410, y: 604, width: 198, height: 101, rotation: 1.94, atlas: { x: 756, y: 1353, width: 198, height: 101 } },
+  { id: 'piano-plant', label: "05 Piano trailing plant", category: 'Plants', x: 869, y: 268, width: 160, height: 211, rotation: 0, atlas: { x: 541, y: 1092, width: 160, height: 211 } },
+  { id: 'piano-lamp', label: "07 Piano stained-glass lamp", category: 'Lighting', x: 1032, y: 272, width: 103, height: 114, rotation: 0, atlas: { x: 650, y: 1353, width: 103, height: 114 } },
+  { id: 'piano-busts', label: "06 Two jazz musician busts", category: 'Music', x: 1146, y: 270, width: 168, height: 117, rotation: 0, atlas: { x: 479, y: 1353, width: 168, height: 117 } },
+  { id: 'piano-sheet-music', label: "08 Sheet music on piano", category: 'Music', x: 963, y: 401, width: 228, height: 97, rotation: 0, atlas: { x: 3, y: 1481, width: 228, height: 97 } },
+  { id: 'cat-tree', label: "11 Cat tree", category: 'Furniture', x: 505, y: 400, width: 172, height: 308, rotation: 0, atlas: { x: 1089, y: 617, width: 172, height: 308 } },
+  { id: 'couch', label: "10 Olive-green couch", category: 'Furniture', x: 68, y: 505, width: 545, height: 326, rotation: 0, atlas: { x: 359, y: 617, width: 545, height: 326 } },
+  { id: 'sofa-pillows', label: "18 Pillows + blanket (restored original)", category: 'Furniture', x: 116, y: 541, width: 355, height: 258, rotation: 1.98, atlas: { x: 3, y: 1092, width: 355, height: 258 } },
+  { id: 'cat-tree-sleeping-cat', label: "12 Sleeping cat atop cat tree", category: 'Cats', x: 516, y: 332, width: 142, height: 82, rotation: 0, atlas: { x: 234, y: 1481, width: 142, height: 82 } },
+  { id: 'upright-bass', label: "20 Upright bass with shadow", category: 'Music', x: 713, y: 309, width: 197, height: 432, rotation: 0, atlas: { x: 159, y: 617, width: 197, height: 432 } },
+  { id: 'bench-cushion', label: "09 Piano bench cushion, exact location", category: 'Furniture', x: 955, y: 582, width: 240, height: 81, rotation: 1.15, atlas: { x: 379, y: 1481, width: 240, height: 81 } },
+  { id: 'ottoman', label: "17 Red ottoman", category: 'Furniture', x: 528, y: 699, width: 273, height: 151, rotation: 0, atlas: { x: 1120, y: 1092, width: 273, height: 151 } },
+  { id: 'music-stand', label: "19 Music stand with sheet music", category: 'Music', x: 1284, y: 498, width: 179, height: 314, rotation: 0, atlas: { x: 907, y: 617, width: 179, height: 314 } },
+  { id: 'side-table', label: "23 Side table with steaming coffee and pencils", category: 'Furniture', x: 60, y: 622, width: 177, height: 249, rotation: 0, atlas: { x: 361, y: 1092, width: 177, height: 249 } },
+  { id: 'luna-sitting', label: "CAT Luna Sitting (clean pixel)", category: 'Cats', x: 1141, y: 375, width: 135, height: 176, rotation: 0.04, catImage: '/visuals/cats/clean-pixel/luna-sitting.png' },
+  { id: 'luna', label: "CAT Luna Sleeping (clean pixel)", category: 'Cats', x: 316, y: 562, width: 233, height: 150, rotation: 0, catImage: '/visuals/cats/clean-pixel/luna-sleeping.png' },
+  { id: 'milo', label: "CAT Milo Sitting (clean pixel)", category: 'Cats', x: 1036, y: 97, width: 131, height: 164, rotation: 0, catImage: '/visuals/cats/clean-pixel/milo-sitting.png' },
+  { id: 'milo-sleeping', label: "CAT Milo Sleeping (clean pixel)", category: 'Cats', x: 968, y: 514, width: 217, height: 126, rotation: 0, catImage: '/visuals/cats/clean-pixel/milo-sleeping.png' },
+  { id: 'maple', label: "CAT Maple Sitting (clean pixel)", category: 'Cats', x: 535, y: 540, width: 190, height: 236, rotation: 0, catImage: '/visuals/cats/clean-pixel/maple-sitting.png' },
+  { id: 'maple-sleeping', label: "CAT Maple Sleeping (clean pixel)", category: 'Cats', x: 1366, y: 150, width: 261, height: 155, rotation: 0, catImage: '/visuals/cats/clean-pixel/maple-sleeping.png' },
+] as const;

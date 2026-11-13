@@ -318,3 +318,39 @@ html[data-theme='dark'] .ajr-page :is(.ajr-achievement-info p, .ajr-count, .ajr-
   color: #d6c1b3;
 }
 html[data-theme='dark'] .ajr-page .ajr-count { background: #51403a; }
+
+
+/* Furnished-room atlas: object coordinates are sourced from the approved 1706x922 editor. */
+.ajr-room-layer { position: absolute; overflow: visible; transform-origin: 50% 50%; }
+.ajr-room-layer .ajr-object {
+  position: relative; display: block; width: 100%; height: 100%;
+  padding: 0; margin: 0; border: 0; background: transparent; line-height: 0;
+}
+.ajr-room-layer .ajr-object .ajr-item-image {
+  display: block; width: 100% !important; height: 100% !important;
+}
+.ajr-room-layer .ajr-atlas-sprite {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+.ajr-room-layer .ajr-layer-image { object-fit: fill; image-rendering: pixelated; }
+/* Same low-opacity, edge-free light falloff used by the offline nudge editor. */
+.ajr-lamp-soft-glow {
+  position: absolute; pointer-events: none;
+  left: -115%; top: -78%; width: 330%; height: 236%; z-index: 0;
+  background: radial-gradient(ellipse at center,
+    rgba(255,204,115,.21) 0%, rgba(255,191,102,.13) 30%,
+    rgba(250,167,83,.04) 70%, rgba(250,167,83,0) 100%);
+}
+.ajr-room-layer .ajr-object { z-index: 1; }
+.ajr-preview-controls {
+  display: flex; gap: 9px; align-items: center; flex-wrap: wrap;
+  padding: 9px 1px 0;
+}
+.ajr-preview-toggle {
+  border: 1px solid #d6b79e; border-radius: 9px;
+  background: #fff7ef; color: #694437;
+  min-height: 32px; padding: 6px 11px; font-size: 11px; font-weight: 700;
+}
+.ajr-preview-toggle[aria-pressed="true"] { background: #775447; color: #fff8f2; }
+.ajr-preview-controls small { font-size: 10px; color: var(--color-muted); }

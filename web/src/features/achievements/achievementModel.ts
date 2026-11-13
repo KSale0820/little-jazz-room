@@ -22,8 +22,38 @@ export const BONUS_ROOM_REWARDS = [
   { after: 'first-hour', reward: 'bookshelf-cat' },
   { after: 'five-hours', reward: 'piano-busts' },
 ] as const;
-export type RoomItemId = typeof ACHIEVEMENTS[number]['reward'] | typeof BONUS_ROOM_REWARDS[number]['reward'] | 'luna';
-export const ROOM_ITEM_IDS: RoomItemId[] = ['luna', ...ACHIEVEMENTS.map(a => a.reward), ...BONUS_ROOM_REWARDS.map(a => a.reward)];
+/** Baseline furniture is visible from day one; extra decorations use the existing milestones. */
+export const STARTER_ROOM_ITEMS = [
+  'curtain-left', 'curtain-right', 'wall-shelves', 'couch', 'luna-sitting',
+] as const;
+export const EXTRA_ROOM_REWARDS = [
+  { after: 'first-notes', reward: 'jazz-portraits' },
+  { after: 'groove', reward: 'wall-shelf-plants' },
+  { after: 'ten-hours', reward: 'cat-toys' },
+  { after: 'first-hour', reward: 'wall-guitar' },
+  { after: 'first-hour', reward: 'cat-tree' },
+  { after: 'first-hour', reward: 'cat-tree-sleeping-cat' },
+  { after: 'three-days', reward: 'sofa-pillows' },
+  { after: 'five-hours', reward: 'upright-bass' },
+  { after: 'routine-regular', reward: 'bench-cushion' },
+  { after: 'five-hours', reward: 'ottoman' },
+  { after: 'ten-sessions', reward: 'music-stand' },
+  { after: 'first-notes', reward: 'side-table' },
+  { after: 'first-hour', reward: 'milo-sleeping' },
+  { after: 'five-hours', reward: 'maple-sleeping' },
+] as const;
+export type RoomItemId =
+  | typeof ACHIEVEMENTS[number]['reward']
+  | typeof BONUS_ROOM_REWARDS[number]['reward']
+  | typeof STARTER_ROOM_ITEMS[number]
+  | typeof EXTRA_ROOM_REWARDS[number]['reward']
+  | 'luna';
+export const ROOM_ITEM_IDS: RoomItemId[] = [
+  'luna', ...STARTER_ROOM_ITEMS,
+  ...ACHIEVEMENTS.map(a => a.reward),
+  ...BONUS_ROOM_REWARDS.map(a => a.reward),
+  ...EXTRA_ROOM_REWARDS.map(a => a.reward),
+];
 export type AchievementKind = typeof ACHIEVEMENTS[number]['kind'];
 
 export interface PracticeEvidence {
@@ -100,8 +130,9 @@ export function deriveEarned(
 }
 
 export function unlockedRoomItems(earned: readonly AchievementId[]): RoomItemId[] {
-  return ['luna',
+  return ['luna', ...STARTER_ROOM_ITEMS,
     ...ACHIEVEMENTS.filter(a => earned.includes(a.id)).map(a => a.reward),
     ...BONUS_ROOM_REWARDS.filter(a => earned.includes(a.after)).map(a => a.reward),
+    ...EXTRA_ROOM_REWARDS.filter(a => earned.includes(a.after)).map(a => a.reward),
   ];
 }

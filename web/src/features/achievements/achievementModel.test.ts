@@ -19,11 +19,20 @@ describe('room achievements', () => {
     const evidence = summarizeEvidence([]);
     expect(evidence.sessions).toBe(0);
     expect(deriveEarned(evidence)).toEqual([]);
-    expect(unlockedRoomItems([])).toEqual(['luna']);
+    const starter = unlockedRoomItems([]);
+    expect(starter).toContain('luna');
+    expect(starter).toContain('curtain-left');
+    expect(starter).toContain('couch');
+    expect(starter).not.toContain('milo');
+    expect(starter).not.toContain('maple');
     const firstHour = unlockedRoomItems(['first-hour']);
-    expect(firstHour).toEqual(['luna', 'milo', 'bookshelf-cat']);
+    expect(firstHour).toContain('milo');
+    expect(firstHour).toContain('bookshelf-cat');
+    expect(firstHour).toContain('milo-sleeping');
     const fiveHours = unlockedRoomItems(['five-hours']);
-    expect(fiveHours).toEqual(['luna', 'maple', 'piano-busts']);
+    expect(fiveHours).toContain('maple');
+    expect(fiveHours).toContain('piano-busts');
+    expect(fiveHours).toContain('maple-sleeping');
   });
 
   it('uses elapsed seconds, dedupes IDs, and ignores broken sessions', () => {
