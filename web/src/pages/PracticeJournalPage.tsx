@@ -269,7 +269,7 @@ export function PracticeJournalPage() {
     <button type="button" className="pj-primary" onClick={editingAnnotation ? saveAnnotation : saveEntry}>Save changes</button>
   </section>;
 
-  if (detailDay) return <DailyJournalSheet day={detailDay} sessions={sessions} entries={entries} annotations={annotations}
+  if (detailDay) return <DailyJournalSheet day={detailDay} userScope={repo.scope} sessions={sessions} entries={entries} annotations={annotations}
     routines={routines} exercises={exercises} charts={charts} palette={tagDefinitions}
     onBack={backToJournal} onEdit={editDay} onEditEntry={editSourceEntry}
     onOpenChart={id => navigate('/player?chart=' + encodeURIComponent(id))}

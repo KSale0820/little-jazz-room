@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChartNote, PracticeJournalEntry } from '../lib/practicePlayerNotes';
+import { readPitchSnapshots, sameLocalDay, type TunerPitchSnapshot } from '../lib/tunerPitchHistory';
+import { TunerPitchGraph } from './TunerPitchGraph';
 import { INLINE_ANNOTATION_LIMIT, chartAnnotationDisplay } from '../lib/practicePlayerNotes';
 import './PracticePlayerSheets.css';
 
@@ -110,26 +112,58 @@ export function ChartAnnotationSheet({ chartTitle, totalBars, initialBar, notes,
   </Sheet>;
 }
 
-export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, onSave, onDelete, onClose }: {
+function PitchJournalPreview({ snapshot }: { snapshot: TunerPitchSnapshot }) {
+  return <div className="practice-pitch-preview">
+    <strong>Pitch graph · {new Date(snapshot.savedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</strong>
+    <TunerPitchGraph compact samples={snapshot.samples} savedAt={snapshot.savedAt} />
+  </div>;
+}
+
+export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, userScope, onSave, onDelete, onClose,
+  initialPitchCaptureIds = [], title = 'Session Journal' }: {
   chartTitle: string; sessionId: string; seconds: number; entries: PracticeJournalEntry[];
-  onSave: (text: string) => void; onDelete: (id: string) => void; onClose: () => void;
+  userScope: string; initialPitchCaptureIds?: string[]; title?: string;
+  onSave: (text: string, pitchCaptureIds: string[]) => void;
+  onDelete: (id: string) => void; onClose: () => void;
 }) {
   const existing = entries.find(e => e.sessionId === sessionId);
   const [text, setText] = useState(existing?.text ?? '');
+  const [linkedPitchIds, setLinkedPitchIds] = useState<string[]>(() =>
+    [...new Set([...(existing?.pitchCaptureIds ?? []), ...initialPitchCaptureIds])]);
+  const [savedPitch] = useState(() => readPitchSnapshots(userScope));
+  const todayPitch = savedPitch.filter(snapshot =>
+    sameLocalDay(snapshot.savedAt, existing?.createdAt ?? new Date().toISOString()));
   const [all, setAll] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const ordered = entries.slice().sort((a,b) => b.updatedAt.localeCompare(a.updatedAt));
   const recent = all ? ordered : ordered.slice(0, 4);
-  return <Sheet title="Session Journal" onClose={onClose}>
+  return <Sheet title={title} onClose={onClose}>
     <div className="practice-feature-session-summary">
-      <strong>{chartTitle}</strong><span>This session · {Math.floor(seconds / 60)}m {seconds % 60}s practiced</span>
+      <strong>{chartTitle}</strong>
+      <span>{title === 'Daily Journal'
+        ? new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })
+        : 'This session · ' + Math.floor(seconds / 60) + 'm ' + (seconds % 60) + 's practiced'}</span>
     </div>
-    <label className="practice-feature-label" htmlFor="journal-entry">What did you practice today?</label>
+    {linkedPitchIds.map(id => {
+      const snapshot = savedPitch.find(item => item.id === id);
+      return snapshot ? <PitchJournalPreview key={id} snapshot={snapshot} /> : null;
+    })}
+    <label className="practice-feature-label" htmlFor="journal-entry">Practice notes (optional)</label>
     <textarea id="journal-entry" rows={5} maxLength={4000} value={text} onChange={e => setText(e.target.value)}
       placeholder="What went well? What would you like to work on next?" />
+    {todayPitch.length ? <fieldset className="practice-pitch-attach">
+      <legend>Attach today's tuner pitch checks</legend>
+      {todayPitch.map(snapshot => <label key={snapshot.id}>
+        <input type="checkbox" checked={linkedPitchIds.includes(snapshot.id)}
+          onChange={event => setLinkedPitchIds(previous => event.target.checked
+            ? [...previous, snapshot.id] : previous.filter(id => id !== snapshot.id))} />
+        <span>{new Date(snapshot.savedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} · {snapshot.mode} · {Math.round(snapshot.durationMs / 1000)}s</span>
+      </label>)}
+    </fieldset> : <p className="practice-feature-local-note">Save a pitch check in the Tuner to attach its chart to today's journal.</p>}
     <div className="practice-feature-actions">
       <button type="button" onClick={onClose}>Cancel</button>
-      <button type="button" className="practice-feature-primary" disabled={!text.trim()} onClick={() => onSave(text.trim())}>Save Entry</button>
+      <button type="button" className="practice-feature-primary" disabled={!text.trim() && !linkedPitchIds.length}
+        onClick={() => onSave(text.trim(), linkedPitchIds)}>Save Entry</button>
     </div>
     <div className="practice-feature-history">
       <div className="practice-feature-history-heading"><h3>Past Journals</h3>
@@ -139,11 +173,16 @@ export function SessionJournalSheet({ chartTitle, sessionId, seconds, entries, o
         <button type="button" onClick={() => setExpanded(v => v === entry.id ? null : entry.id)} aria-expanded={expanded === entry.id}>
           <strong>{entry.chartTitle}</strong><small>{new Date(entry.updatedAt).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</small>
           <span>{expanded === entry.id ? entry.text : entry.text.slice(0, 100) + (entry.text.length > 100 ? '…' : '')}</span>
+          {entry.pitchCaptureIds?.length ? <small>{entry.pitchCaptureIds.length} pitch chart{entry.pitchCaptureIds.length === 1 ? '' : 's'} attached</small> : null}
         </button>
+        {expanded === entry.id && entry.pitchCaptureIds?.map(id => {
+          const snapshot = savedPitch.find(item => item.id === id);
+          return snapshot ? <PitchJournalPreview key={id} snapshot={snapshot} /> : null;
+        })}
         {expanded === entry.id && <button className="practice-feature-delete" type="button" onClick={() => onDelete(entry.id)}>Delete entry</button>}
       </div>)}
     </div>
-    <p className="practice-feature-local-note">Journals are saved on this device for your current account.</p>
+    <p className="practice-feature-local-note">Journals and attached pitch graphs are saved on this device for your current account.</p>
   </Sheet>;
 }
 

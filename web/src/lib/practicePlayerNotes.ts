@@ -13,6 +13,8 @@ export interface PracticeJournalEntry {
   nextTime?: string;
   /** Optional chosen pixel icon for the journal entry. */
   iconKey?: RoutineIconKey;
+  /** Saved tuner graphs linked to this journal entry. */
+  pitchCaptureIds?: string[];
 }
 export const INLINE_ANNOTATION_LIMIT = 12;
 export function notesKey(scope: string, chartId: string) {

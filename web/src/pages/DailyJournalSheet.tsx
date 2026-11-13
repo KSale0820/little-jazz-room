@@ -2,10 +2,13 @@ import type { PracticeJournalEntry, ChartNote } from '../lib/practicePlayerNotes
 import type { PracticeSessionRecord, Routine, Exercise, Chart } from '../types/content';
 import { colorForTag, type JournalTagDefinition } from '../lib/journalTagPalette';
 import { JournalSectionIcon } from '../components/JournalSectionIcon';
+import { TunerPitchGraph } from '../components/TunerPitchGraph';
+import { readPitchSnapshots, type TunerPitchSnapshot } from '../lib/tunerPitchHistory';
 
 type Annotation = ChartNote & { chartId: string; chartTitle: string };
 interface Props {
   day: string;
+  userScope: string;
   sessions: PracticeSessionRecord[];
   entries: PracticeJournalEntry[];
   annotations: Annotation[];
@@ -25,7 +28,7 @@ const mins = (seconds: number) => Math.round(Math.max(0, seconds || 0) / 60);
 function Paragraphs({ text }: { text: string }) {
   return <>{text.split(/\n+/).map((line, i) => line.trim() ? <p key={i}>{line}</p> : null)}</>;
 }
-export function DailyJournalSheet({ day, sessions, entries, annotations, routines, exercises, charts, palette, onBack, onEdit, onEditEntry, onOpenChart, onOpenRoutine }: Props) {
+export function DailyJournalSheet({ day, userScope, sessions, entries, annotations, routines, exercises, charts, palette, onBack, onEdit, onEditEntry, onOpenChart, onOpenRoutine }: Props) {
   const datedSessions = sessions.filter(s => dateOf(s.finishedAt) === day).sort((a,b) => a.finishedAt.localeCompare(b.finishedAt));
   const datedEntries = entries.filter(e => dateOf(e.createdAt) === day);
   const datedNotes = annotations.filter(n => dateOf(n.updatedAt) === day).sort((a,b) => a.bar - b.bar);
@@ -46,6 +49,10 @@ export function DailyJournalSheet({ day, sessions, entries, annotations, routine
   const practicedText = datedEntries.filter(e => e.whatPracticed?.trim());
   const takeaways = datedEntries.filter(e => e.takeaways?.trim());
   const nextTimes = datedEntries.filter(e => e.nextTime?.trim());
+  const pitchSnapshots = readPitchSnapshots(userScope);
+  const linkedPitchIds = unique(datedEntries.flatMap(e => e.pitchCaptureIds ?? []));
+  const linkedPitchGraphs = linkedPitchIds.map(id => pitchSnapshots.find(s => s.id === id))
+    .filter((snapshot): snapshot is TunerPitchSnapshot => Boolean(snapshot));
   const fmtSession = (s: PracticeSessionRecord) => routines.find(r=>r.id===s.routineId)?.title ?? s.routineTitle ??
     exercises.find(e=>e.id===s.exerciseId)?.title ?? 'Free practice';
 
@@ -92,6 +99,13 @@ export function DailyJournalSheet({ day, sessions, entries, annotations, routine
         <Paragraphs text={e.text} /></div>) :
         <p className="pj-muted">Practice reflections from saved sessions appear above with the activities they describe.</p>}
     </section>
+    {linkedPitchGraphs.length > 0 && <section className="practice-pitch-preview pj-detail-section pj-tint-lilac" aria-label="Tuner pitch history">
+      <h2>Tuner pitch history</h2>
+      {linkedPitchGraphs.map(snapshot => <div key={snapshot.id} className="pj-detail-note">
+        <strong>{new Date(snapshot.savedAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })} · recorded pitch</strong>
+        <TunerPitchGraph samples={snapshot.samples} savedAt={snapshot.savedAt} compact />
+      </div>)}
+    </section>}
     <section className="pj-detail-section pj-tint-gold" aria-label="Takeaways">
       <h2><JournalSectionIcon name="lightbulb" />Takeaways</h2>
       {takeaways.length ? takeaways.map(e => <Paragraphs key={e.id} text={e.takeaways ?? ''} />) :

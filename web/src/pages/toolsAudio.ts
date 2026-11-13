@@ -131,7 +131,7 @@ export function detectPitch(samples: Float32Array, sampleRate: number): number |
 /** A pitch trail measures detected fundamental frequency over time, not loudness.
  * A null pitch is silence/unpitched audio and deliberately breaks the line.
  */
-export type PitchTrailSample = { timestamp: number; frequency: number | null };
+export type PitchTrailSample = { timestamp: number; frequency: number | null; wallTime?: number };
 export type PitchTrailPoint = { x: number; y: number };
 export type PitchTrailGeometry = {
   segments: PitchTrailPoint[][];
@@ -178,6 +178,31 @@ export function pitchTrailGeometry(samples: PitchTrailSample[], now: number, dur
 /** Keep only the most recent *measured* pitch during a short drop-out.
  * Neither the reading nor the trail extrapolates a frequency.
  */
+/** Ignore one-frame octave/harmonic errors without obscuring real note changes.
+ * Jumps beyond a fifth must repeat consistently before they're accepted.
+ * After a clear pause, any note can start immediately.
+ */
+export type PitchGate = { frequency: number; at: number; candidate: number | null; candidateAt: number } | null;
+export function gatePitchFrequency(
+  prior: PitchGate, frequency: number | null, now: number,
+): { frequency: number | null; next: PitchGate } {
+  if (frequency === null || !Number.isFinite(frequency)) return { frequency: null, next: prior };
+  if (!prior || now - prior.at > 650 ||
+    Math.abs(12 * Math.log2(frequency / prior.frequency)) <= 7) {
+    return { frequency, next: { frequency, at: now, candidate: null, candidateAt: 0 } };
+  }
+  if (prior.candidate !== null &&
+    Math.abs(12 * Math.log2(frequency / prior.candidate)) < 0.7 &&
+    now - prior.candidateAt >= 100) {
+    return { frequency, next: { frequency, at: now, candidate: null, candidateAt: 0 } };
+  }
+  return { frequency: null, next: {
+    ...prior, candidate: frequency, candidateAt:
+      prior.candidate !== null &&
+      Math.abs(12 * Math.log2(frequency / prior.candidate)) < 0.7 ? prior.candidateAt : now,
+  } };
+}
+
 export const PITCH_DROPOUT_MS = 400;
 export type RecentPitch = { reading: PitchReading; at: number } | null;
 

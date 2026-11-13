@@ -7,7 +7,8 @@ class TunerCaptureProcessor extends AudioWorkletProcessor {
     this.position = 0;
     this.filled = 0;
     this.sinceFrame = 0;
-    this.hop = Math.max(128, Math.round(sampleRate / 12));
+    // 8 analysis frames/second reduces iOS main-thread pitch-detection load.
+    this.hop = Math.max(128, Math.round(sampleRate / 8));
   }
 
   process(inputs) {

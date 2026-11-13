@@ -1,9 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { localStorageScopeForUser } from '../repository/localRepository';
+import { buildPitchSnapshot, sameLocalDay, savePitchSnapshot } from '../lib/tunerPitchHistory';
+import { journalKey, readLocalList, persistLocalList, type PracticeJournalEntry } from '../lib/practicePlayerNotes';
+import { SessionJournalSheet } from '../components/PracticePlayerSheets';
+import { TunerPitchGraph } from '../components/TunerPitchGraph';
 import {
-  audioContextConstructor, detectPitch, inputRms, MIN_TUNER_RMS, pitchTrailGeometry,
+  audioContextConstructor, detectPitch, gatePitchFrequency, inputRms, MIN_TUNER_RMS,
   readingFromFrequency, retainMeasuredPitch,
-  type PitchReading, type PitchTrailSample, type TuningMode, type RecentPitch,
+  type PitchGate, type PitchReading, type PitchTrailSample, type TuningMode, type RecentPitch,
 } from './toolsAudio';
 import './ToolsPages.css';
 import './TunerClean.css';
@@ -13,18 +20,30 @@ type MicSignal = 'starting' | 'quiet' | 'unsteady' | 'active' | 'interrupted';
 
 export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userScope = localStorageScopeForUser(user?.id);
+  const [journalEntries, setJournalEntries] = useState<PracticeJournalEntry[]>(() =>
+    readLocalList<PracticeJournalEntry>(journalKey(userScope)));
+  const [journalOpen, setJournalOpen] = useState(false);
+  const [pendingPitchId, setPendingPitchId] = useState<string | null>(null);
+  const [journalTarget, setJournalTarget] = useState<{
+    sessionId: string; title: string; seconds: number;
+  } | null>(null);
+  const [historyMessage, setHistoryMessage] = useState('');
   const [mode, setMode] = useState<TuningMode>('chromatic');
   const [status, setStatus] = useState<MicStatus>('idle');
   const [reading, setReading] = useState<PitchReading | null>(null);
   const [micSignal, setMicSignal] = useState<MicSignal>('starting');
-  const [showPitchTrail, setShowPitchTrail] = useState(false);
   const [pitchTrail, setPitchTrail] = useState<PitchTrailSample[]>([]);
   const [message, setMessage] = useState('');
   const [referencePlaying, setReferencePlaying] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
   const modeRef = useRef(mode);
-  const showPitchTrailRef = useRef(false);
   const recentPitchRef = useRef<RecentPitch>(null);
+  const pitchGateRef = useRef<PitchGate>(null);
+  const lastAnalysisRef = useRef(0);
+  const graphProgressRef = useRef(0);
+  const graphHasSoundRef = useRef(false);
+  const graphNeedsGapRef = useRef(false);
   const requestRef = useRef(0);
   const permissionPendingRef = useRef(false);
   const microphoneRef = useRef<MediaStream | null>(null);
@@ -32,6 +51,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const workletRef = useRef<AudioWorkletNode | null>(null);
   const lastWorkletFrameRef = useRef(0);
+  const lastCaptureAtRef = useRef(0);
+  const lastHistoryAtRef = useRef(0);
+  const watchdogRef = useRef(0);
   const [capturePath, setCapturePath] = useState<'analyser' | 'worklet'>('analyser');
   const rafRef = useRef(0);
   const toneRef = useRef<{ context: AudioContext; oscillator: OscillatorNode } | null>(null);
@@ -40,23 +62,19 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     modeRef.current = mode;
     recentPitchRef.current = null;
     setReading(null);
-    setPitchTrail([]);
+    // Frequencies are concert-pitch measurements independent of tuning mode.
+    // Switching Guitar/Bass/Chromatic must not erase a musician's take.
   }, [mode]);
-
-  useEffect(() => {
-    showPitchTrailRef.current = showPitchTrail;
-  }, [showPitchTrail]);
-
-  const trail = useMemo(() => pitchTrailGeometry(
-    pitchTrail, pitchTrail[pitchTrail.length - 1]?.timestamp ?? 0,
-  ), [pitchTrail]);
-  const pitchTrailEnabled = showPitchTrail;
 
   const stopMicrophone = useCallback(() => {
     requestRef.current++;
     permissionPendingRef.current = false;
     recentPitchRef.current = null;
-    setPitchTrail([]);
+    pitchGateRef.current = null;
+    lastAnalysisRef.current = 0;
+    // A pause only breaks the line when a new actual pitch arrives.
+    graphNeedsGapRef.current = graphHasSoundRef.current;
+    window.clearInterval(watchdogRef.current);
     cancelAnimationFrame(rafRef.current);
     workletRef.current?.port.close();
     workletRef.current?.disconnect();
@@ -86,16 +104,22 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     const onHidden = () => {
       // Safari may report a transient visibility change during the permission
       // sheet. Do not cancel a pending getUserMedia() when that happens.
-      if (document.hidden && !permissionPendingRef.current) {
-        stopMicrophone();
-        stopReference();
+      if (document.hidden && !permissionPendingRef.current && microphoneRef.current) {
+        // Mobile browsers briefly suspend Web Audio when the page dims or
+        // switches apps. Preserve the microphone and pitch history for resume.
         setReading(null);
-        setStatus(current => current === 'listening' || current === 'requesting' ? 'idle' : current);
+        setMicSignal('interrupted');
+        stopReference();
+      } else if (!document.hidden && contextRef.current &&
+        contextRef.current.state !== 'running') {
+        void contextRef.current.resume().catch(() => setMicSignal('interrupted'));
       }
     };
     document.addEventListener('visibilitychange', onHidden);
+    window.addEventListener('focus', onHidden);
     return () => {
       document.removeEventListener('visibilitychange', onHidden);
+      window.removeEventListener('focus', onHidden);
       stopMicrophone();
       stopReference();
     };
@@ -111,8 +135,9 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     setReading(null);
     setStatus('requesting');
     setMicSignal('starting');
-    setPitchTrail([]);
+    // Starting again does not discard the last take. Clear explicitly if wanted.
     setMessage('');
+    setHistoryMessage('');
     permissionPendingRef.current = true;
     const request = requestRef.current;
     let stream: MediaStream | null = null;
@@ -157,16 +182,36 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       // backend. The worklet is fed by the audio clock, not the display clock.
       const processSamples = (frame: Float32Array, sampleRate: number, now: number) => {
         if (request !== requestRef.current) return;
-        const frequency = detectPitch(frame, sampleRate);
+        lastCaptureAtRef.current = now;
+        // Avoid overworking the phone's main thread during a sustained note.
+        if (now - lastAnalysisRef.current < 125) return;
+        lastAnalysisRef.current = now;
+        const detected = detectPitch(frame, sampleRate);
+        const gated = gatePitchFrequency(pitchGateRef.current, detected, now);
+        pitchGateRef.current = gated.next;
+        const frequency = gated.frequency;
         const measured = frequency === null ? null : readingFromFrequency(frequency, modeRef.current);
         const stable = retainMeasuredPitch(recentPitchRef.current, measured, now);
         recentPitchRef.current = stable.recent;
         setReading(stable.displayed);
-        if (showPitchTrailRef.current && (frequency !== null || stable.recent === null)) {
-          setPitchTrail(previous => [
-            ...previous.filter(point => point.timestamp > now - 8000),
-            { timestamp: now, frequency },
-          ].slice(-100));
+        // Time on the graph advances for *measured pitches only*. Silence
+        // marks a single break; there is no continuous blank recording.
+        if (frequency === null) {
+          if (graphHasSoundRef.current) graphNeedsGapRef.current = true;
+        } else if (now - lastHistoryAtRef.current >= 250) {
+          lastHistoryAtRef.current = now;
+          const additions: PitchTrailSample[] = [];
+          if (graphNeedsGapRef.current && graphHasSoundRef.current) {
+            graphProgressRef.current += 250;
+            additions.push({ timestamp: graphProgressRef.current, frequency: null });
+          }
+          graphProgressRef.current += 250;
+          additions.push({
+            timestamp: graphProgressRef.current, frequency, wallTime: Date.now(),
+          });
+          graphHasSoundRef.current = true;
+          graphNeedsGapRef.current = false;
+          setPitchTrail(previous => [...previous, ...additions]);
         }
         const level = inputRms(frame);
         setMicSignal(stable.displayed !== null ? 'active' : level >= MIN_TUNER_RMS
@@ -192,7 +237,35 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
         rafRef.current = requestAnimationFrame(analyseFallback);
       };
       setStatus('listening');
+      lastCaptureAtRef.current = performance.now();
       rafRef.current = requestAnimationFrame(analyseFallback);
+      // Detect suspended capture rather than silently leaving "Listening" on
+      // screen. The analyser is already an independent worklet fallback.
+      watchdogRef.current = window.setInterval(() => {
+        if (request !== requestRef.current || document.hidden) return;
+        if (context!.state !== 'running') {
+          setReading(null);
+          setMicSignal('interrupted');
+          void context!.resume().catch(() => setMicSignal('interrupted'));
+        } else if (performance.now() - lastCaptureAtRef.current > 3000) {
+          // If requestAnimationFrame or the worklet stalls, the watchdog
+          // directly samples the existing analyser on the audio clock.
+          // Never manufacture a reading when these PCM samples are silent.
+          const now = performance.now();
+          analyser.getFloatTimeDomainData(samples);
+          processSamples(samples, context!.sampleRate, now);
+          setCapturePath('analyser');
+        }
+      }, 1000);
+      context.onstatechange = () => {
+        if (request !== requestRef.current) return;
+        if (context!.state !== 'running') {
+          setReading(null);
+          setMicSignal('interrupted');
+        } else {
+          setMicSignal('starting');
+        }
+      };
 
       // AudioWorklet receives continuous microphone frames on the audio
       // rendering thread. iOS Safari's requestAnimationFrame may be uneven
@@ -202,6 +275,12 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           await context.audioWorklet.addModule('/worklets/tuner-capture.js');
           if (request !== requestRef.current) return;
           const worklet = new AudioWorkletNode(context, 'ljr-tuner-capture');
+          worklet.addEventListener('processorerror', () => {
+            if (request === requestRef.current) {
+              lastWorkletFrameRef.current = 0;
+              setCapturePath('analyser');
+            }
+          });
           worklet.port.onmessage = event => {
             if (request !== requestRef.current || event.data?.type !== 'frame') return;
             const now = performance.now();
@@ -216,6 +295,12 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
           // Older/limited Safari continues using the analyser, unchanged.
         }
       }
+      stream.getAudioTracks()[0]?.addEventListener('mute', () => {
+        if (request === requestRef.current) { setReading(null); setMicSignal('interrupted'); }
+      });
+      stream.getAudioTracks()[0]?.addEventListener('unmute', () => {
+        if (request === requestRef.current) setMicSignal('starting');
+      });
       stream.getAudioTracks()[0]?.addEventListener('ended', () => {
         if (request === requestRef.current) {
           stopMicrophone();
@@ -242,7 +327,10 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
 
   const resumeMicrophoneAudio = () => {
     const context = contextRef.current;
-    if (!context) return;
+    if (!context || context.state === 'closed' ||
+      (context.state === 'running' && performance.now() - lastCaptureAtRef.current > 3000)) {
+      void startMicrophone(); return;
+    }
     void context.resume().then(() => {
       setMicSignal(context.state === 'running' ? 'starting' : 'interrupted');
     }).catch(() => {
@@ -258,6 +346,66 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
     } else {
       void startMicrophone();
     }
+  };
+
+  const openDailyJournal = () => {
+    const snapshot = buildPitchSnapshot(mode, pitchTrail);
+    if (!snapshot) { setHistoryMessage('Play a note before adding a graph.'); return; }
+    if (!savePitchSnapshot(userScope, snapshot)) {
+      setHistoryMessage('Could not save your pitch graph on this device.'); return;
+    }
+    // Prefer the latest existing journal entry today. Never overwrite it
+    // silently: the editor opens with its existing notes and the graph shown.
+    const entries = readLocalList<PracticeJournalEntry>(journalKey(userScope));
+    const current = entries.filter(entry => sameLocalDay(entry.createdAt, snapshot.savedAt))
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
+    const date = new Date(snapshot.savedAt);
+    const day = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0')].join('-');
+    setJournalEntries(entries);
+    setJournalTarget({
+      sessionId: current?.sessionId ?? 'tuner-day:' + day,
+      title: current?.chartTitle ?? 'Daily Journal',
+      seconds: current?.durationSeconds ?? 0,
+    });
+    setPendingPitchId(snapshot.id);
+    setJournalOpen(true);
+    setHistoryMessage('');
+  };
+
+  const saveDailyJournal = (text: string, pitchCaptureIds: string[]) => {
+    if (!journalTarget) return;
+    const entries = readLocalList<PracticeJournalEntry>(journalKey(userScope));
+    const existing = entries.find(entry => entry.sessionId === journalTarget.sessionId);
+    const now = new Date().toISOString();
+    const entry: PracticeJournalEntry = {
+      id: existing?.id ?? crypto.randomUUID(),
+      sessionId: journalTarget.sessionId,
+      chartId: existing?.chartId ?? '',
+      chartTitle: existing?.chartTitle ?? journalTarget.title,
+      text, createdAt: existing?.createdAt ?? now, updatedAt: now,
+      durationSeconds: existing?.durationSeconds ?? journalTarget.seconds,
+      pitchCaptureIds,
+    };
+    const updated = [entry, ...entries.filter(item => item.sessionId !== journalTarget.sessionId)];
+    if (!persistLocalList(journalKey(userScope), updated)) {
+      setHistoryMessage('Could not save your journal entry on this device.');
+      return;
+    }
+    setJournalEntries(updated);
+    setJournalOpen(false);
+    setPendingPitchId(null);
+    setHistoryMessage('Graph added to your daily journal.');
+    window.dispatchEvent(new Event('little-jazz-room:journal-updated'));
+  };
+
+  const resetPitchHistory = () => {
+    setPitchTrail([]);
+    graphProgressRef.current = 0;
+    graphHasSoundRef.current = false;
+    graphNeedsGapRef.current = false;
+    lastHistoryAtRef.current = 0;
+    setHistoryMessage('');
   };
 
   const toggleReference = async () => {
@@ -307,11 +455,8 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
       <header className="tool-heading">
         <button className="tool-back" type="button" onClick={onClose ?? (() => navigate('/practice'))} aria-label={onClose ? 'Close tool and return to session' : 'Back to Practice'}>‹</button>
         <h1>Tuner</h1>
-        <button className="tool-settings" type="button" aria-label="Tuner help" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)}>?</button>
+        <span className="tuner-header-spacer" aria-hidden="true" />
       </header>
-      {showHelp ? (
-        <p className="tool-help">Play or sing one sustained note at a time. Chromatic recognizes any note and can show your pitch over time. Guitar and Bass compare against standard open strings.</p>
-      ) : null}
       <div className="tuner-modes" role="group" aria-label="Tuning mode">
         {(['chromatic', 'guitar', 'bass'] as const).map(option => (
           <button key={option} type="button" aria-pressed={mode === option} onClick={() => setMode(option)}>
@@ -382,32 +527,29 @@ export function TunerPage({ onClose }: { onClose?: () => void } = {}) {
             : <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="m8 4 12 8-12 8z" /></svg>}
         </button>
       </div>
-      <div className="tuner-trail-controls">
-        <button type="button" className="tuner-trail-toggle" aria-pressed={showPitchTrail}
-          onClick={() => setShowPitchTrail(value => !value)}>
-          {showPitchTrail ? 'Hide pitch graph' : 'Show pitch graph'}
-        </button>
+      <section className="tuner-trail-panel" aria-label="Live pitch graph">
+        <div className="tuner-trail-heading"><strong>Pitch history</strong></div>
+        <TunerPitchGraph samples={pitchTrail} />
+      </section>
+      <div className="tuner-history-actions">
+        <button type="button" disabled={pitchTrail.filter(p => p.frequency !== null).length < 2}
+          onClick={openDailyJournal}>Add graph to journal</button>
+        <button type="button" disabled={!pitchTrail.length}
+          onClick={resetPitchHistory}>Clear graph</button>
       </div>
-      {pitchTrailEnabled ? (
-        <section className="tuner-trail-panel" aria-label="Live pitch graph">
-          <div className="tuner-trail-heading"><strong>Pitch over time</strong></div>
-          <div className="tuner-trail-plot">
-            <span className="tuner-trail-high">{trail.highNote}</span>
-            <svg viewBox="0 0 320 102" preserveAspectRatio="none" role="img"
-              aria-label="Live graph of detected pitch over eight seconds. Higher notes appear higher. Breaks indicate silence.">
-              <line x1="0" x2="320" y1="27" y2="27" stroke="#dedecf" strokeDasharray="4 6" />
-              <line x1="0" x2="320" y1="69" y2="69" stroke="#dedecf" strokeDasharray="4 6" />
-              {trail.segments.map((segment, index) => (
-                <polyline key={index} points={segment.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ')}
-                  fill="none" stroke="#397456" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              ))}
-              {trail.current && <circle cx={trail.current.x} cy={trail.current.y} r="4.5" fill="#c69a52" />}
-            </svg>
-            <span className="tuner-trail-low">{trail.lowNote}</span>
-          </div>
-          <small>8 seconds ago <span>Now</span></small>
-        </section>
-      ) : null}
+      {historyMessage ? <p className="tuner-history-message" role="status">{historyMessage}</p> : null}
+      {journalOpen && journalTarget && pendingPitchId && createPortal(
+        <SessionJournalSheet title="Daily Journal" chartTitle={journalTarget.title}
+          sessionId={journalTarget.sessionId} seconds={journalTarget.seconds}
+          entries={journalEntries} userScope={userScope}
+          initialPitchCaptureIds={[pendingPitchId]}
+          onSave={saveDailyJournal}
+          onDelete={id => {
+            const next = journalEntries.filter(entry => entry.id !== id);
+            if (persistLocalList(journalKey(userScope), next)) setJournalEntries(next);
+          }}
+          onClose={() => { setJournalOpen(false); setPendingPitchId(null); }} />, document.body)}
+
 
     </section>
   );
