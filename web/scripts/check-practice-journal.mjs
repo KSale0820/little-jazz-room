@@ -14,7 +14,10 @@ try {
     try {
       await page.goto(base + '/demo');
       await page.getByRole('heading', { name: 'Progress', exact: true }).waitFor();
-      await page.getByRole('button', { name: 'Calendar', exact: true }).click();
+      assert.equal(await page.locator('.pr-quick-links .pr-shortcut').count(), 1,
+        'Progress offers exactly one Practice Journal shortcut');
+      assert.equal((await page.locator('.pr-quick-links .pr-shortcut strong').textContent())?.trim(), 'Practice Journal');
+      await page.locator('.pr-quick-links .pr-shortcut').click();
       await page.getByRole('heading', { name: 'Practice Journal' }).waitFor();
       assert.equal(await page.locator('.pj-tabs button.active').textContent(), 'Calendar');
       assert.ok(await page.locator('.pj-day[aria-label*="practice recorded"]').count() > 0, 'seeded sessions must show markers');
@@ -29,7 +32,7 @@ try {
       assert.equal(await page.locator('.pj-day-overview').count(), 0, 'do not navigate to a separate overview');
       assert.equal(await page.locator('.pj-calendar-panel').count(), 1);
       await page.locator('.pj-day[aria-label="' + initialSelected + '"]').click();
-      await page.getByRole('button', { name: 'View practice sheet' }).waitFor();
+      await page.getByRole('button', { name: /Updated daily entry|My Evening Jazz Session|Practice activity/ }).first().waitFor();
       assert.equal(await page.getByRole('button', { name: '+ Add journal entry' }).count(), 0, 'existing entry must not offer Add');
       await page.getByRole('button', { name: 'Edit journal entry' }).last().waitFor();
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/overview-' + viewport.width + '.png', fullPage: true });
