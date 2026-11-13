@@ -8,6 +8,8 @@ import { isVisibleCatId } from '../features/cats/CatCompanion';
 import { readLocalList, journalKey, type PracticeJournalEntry } from '../lib/practicePlayerNotes';
 import type { PracticeSessionRecord, Routine } from '../types/content';
 import { ProgressIcon } from '../components/ProgressIcon';
+import { progressSessionIcon } from '../lib/progressSessionIcons';
+import { routineIconPosition } from '../lib/routinePixelIcons';
 import { deriveEarned, summarizeEvidence } from '../features/achievements/achievementModel';
 import { readEarned } from '../features/achievements/roomStore';
 import './ProgressPage.css';
@@ -254,16 +256,27 @@ export function ProgressPage() {
 
     <section className="pr-card pr-recent" aria-labelledby="pr-recent-title">
       <div className="pr-section-head"><h2 id="pr-recent-title">Recent Practice</h2><button type="button" className="pr-view-all" onClick={() => navigate('/progress/activity')}>View All ›</button></div>
-      {recentSessions.length ? <div className="pr-session-list">{recentSessions.map(session => <button type="button" className="pr-session" key={session.id} onClick={() => navigate('/progress/activity?session=' + encodeURIComponent(session.id))}>
-        <span className="pr-session-icon" aria-hidden="true"><ProgressIcon name={session.routineId ? 'routine' : session.exerciseId ? 'exercise' : 'music'} /></span>
-        <span className="pr-session-detail"><strong>{sessionName(session)}</strong><small>{sessionType(session)} · {Math.round(Math.max(0, session.durationSeconds) / 60)} min · {dateLabel(session.finishedAt, now)}</small></span>
-        <span className="pr-chevron" aria-hidden="true">›</span>
-      </button>)}</div> : <p className="pr-empty">No sessions yet. Your completed practice will appear here.</p>}
+      {recentSessions.length ? <div className="pr-session-list">{recentSessions.map(session => {
+        const skillIcon = progressSessionIcon(session, routines, exercises);
+        return <button type="button" className="pr-session" key={session.id}
+          onClick={() => navigate('/progress/activity?session=' + encodeURIComponent(session.id))}>
+          <span className="pr-session-icon" aria-hidden="true">
+            {skillIcon
+              ? <span className="pr-session-skill" data-icon-key={skillIcon}
+                style={{ backgroundPosition: routineIconPosition(skillIcon) }} />
+              : <ProgressIcon name="music" />}
+          </span>
+          <span className="pr-session-detail"><strong>{sessionName(session)}</strong>
+            <small>{sessionType(session)} · {Math.round(Math.max(0, session.durationSeconds) / 60)} min · {dateLabel(session.finishedAt, now)}</small>
+          </span>
+          <span className="pr-chevron" aria-hidden="true">›</span>
+        </button>;
+      })}</div> : <p className="pr-empty">No sessions yet. Your completed practice will appear here.</p>}
     </section>
 
     <nav className="pr-quick-links" aria-label="Practice journal">
       <button type="button" className="pr-shortcut" onClick={() => navigate('/progress/practice-journal?tab=calendar')}>
-        <span className="pr-shortcut-icon" aria-hidden="true"><img src="/visuals/progress/practice-journal.png" alt="" /></span>
+        <span className="pr-shortcut-icon" aria-hidden="true"><ProgressIcon name="journal" /></span>
         <strong>Practice Journal</strong>
         <span className="pr-chevron" aria-hidden="true">›</span>
       </button>

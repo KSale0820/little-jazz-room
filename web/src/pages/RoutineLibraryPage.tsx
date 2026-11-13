@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Routine } from '../types/content';
-import { routineIconFor, routineIconPosition } from '../lib/routinePixelIcons';
+import { routineIconFor, routineIconPosition, routineShelfFor } from '../lib/routinePixelIcons';
 import { readRoutineBookmarks, saveRoutineBookmarks } from '../lib/routineBookmarks';
 import './RoutineLibraryPage.css';
 
@@ -76,23 +76,6 @@ function routineGoal(routine: Routine): string {
   return '';
 }
 
-function shelfForRoutine(routine: Routine, categories: string[]): string {
-  const title = routine.title.toLowerCase();
-  const goal = routineGoal(routine).toLowerCase();
-  if (/warm.?up|scales|arpeggios|long tones/.test(title)) return 'Warm-Ups';
-  if (goal === 'repertoire' || goal === 'jazz standards' ||
-    /standard|song form|12.bar blues|rhythm changes|ballad/.test(title)) return 'Standards & Repertoire';
-  if (goal === 'improvisation' || /improv|solo|call.and.response/.test(title)) return 'Improvisation';
-  if (goal === 'ear training' || /ear training|transcri/.test(title)) return 'Ear Training';
-  if (goal === 'rhythm' || goal === 'rhythm & harmony' ||
-    /rhythm|swing|bossa|tempo|backing track/.test(title)) return 'Rhythm & Timing';
-  if (goal === 'harmony' || /chord|voicing|comping|ii.v.i/.test(title)) return 'Harmony & Chords';
-  if (goal === 'technique' || categories.includes('Technique')) return 'Technique';
-  if (categories.includes('Improvisation')) return 'Improvisation';
-  if (categories.includes('Repertoire')) return 'Standards & Repertoire';
-  return 'Other Practice';
-}
-
 function matchesGoal(routine: Routine, section: string, filterGoal: string): boolean {
   if (!filterGoal) return true;
   const goal = routineGoal(routine);
@@ -144,7 +127,7 @@ export function RoutineLibraryPage() {
     const groups = new Map<string, Routine[]>(librarySections.map(title => [title, []]));
     source.forEach(routine => {
       const categories = routine.steps.map(step => exerciseMap.get(step.exercise_id)?.category ?? '');
-      const primary = shelfForRoutine(routine, categories);
+      const primary = routineShelfFor(routine, categories);
       groups.get(primary)?.push(routine);
       // Curate related Library shelves from real seeded content. No duplication within a shelf.
       if (tab === 'Library') {
@@ -174,7 +157,7 @@ export function RoutineLibraryPage() {
       items: shelf.items.filter(routine => {
         const linked = routine.steps.map(step => exerciseMap.get(step.exercise_id));
         const categories = linked.map(exercise => exercise?.category ?? '');
-        const section = shelfForRoutine(routine, categories);
+        const section = routineShelfFor(routine, categories);
         const text = [routine.title, routine.description ?? '', routineGoal(routine),
           ...linked.flatMap(exercise => exercise
             ? [exercise.title, exercise.category, exercise.instructions] : [])].join(' ').toLowerCase();
@@ -225,7 +208,7 @@ export function RoutineLibraryPage() {
   };
 
   const renderCard = (routine: Routine) => {
-    const section = shelfForRoutine(routine,
+    const section = routineShelfFor(routine,
       routine.steps.map(step => exerciseMap.get(step.exercise_id)?.category ?? ''));
     const saved = bookmarks.includes(routine.id);
     const icon = routineIconFor(routine.title, section);

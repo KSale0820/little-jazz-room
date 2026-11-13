@@ -102,6 +102,10 @@
 .pr-session { display: flex; align-items: center; width: 100%; min-height: 46px; gap: 9px; padding: 5px 7px; border: 0; border-radius: 9px; background: #edf0e8; color: var(--pr-ink); text-align: left; }
 .pr-session-icon { display: grid; place-items: center; width: 30px; height: 30px; flex: none; border-radius: 8px; background: #e3eadb; color: #376a50; }
 .pr-session-icon svg { width: 21px; height: 21px; }
+.pr-session-skill { display:block; flex:none; width:20px; height:20px;
+  background-image:url('/assets/routines/routine-icons-sprite.png');
+  background-size:120px 80px; background-repeat:no-repeat;
+  image-rendering:pixelated; transform:scale(1.25); }
 .pr-session-detail { display: flex; flex: 1; flex-direction: column; gap: 3px; min-width: 0; }
 .pr-session-detail strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #273d2f; font: 700 11.5px/1.2 var(--pr-sans); }
 .pr-session-detail small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #657267; font: 400 10px/1.2 var(--pr-sans); }
@@ -158,9 +162,11 @@
 .pr-quick-links { display:block; margin-top:4px; }
 .pr-quick-links .pr-shortcut { display:flex; flex-direction:row; align-items:center; justify-content:flex-start;
   width:100%; min-height:66px; padding:10px 15px; gap:12px; border-radius:16px;
-  background:#f0f0e8; border:1px solid #dfe6d9; text-align:left; }
+  background:#edf0e8; border:1px solid #dfe6d9; text-align:left; }
 .pr-quick-links .pr-shortcut-icon { width:42px; height:42px; flex:0 0 42px; }
-.pr-quick-links .pr-shortcut-icon img { width:42px; height:42px; }
+.pr-quick-links .pr-shortcut-icon { display:grid; place-items:center;
+  border-radius:10px; background:#e1eadd; color:#376a50; }
+.pr-quick-links .pr-shortcut-icon svg { width:27px; height:27px; }
 .pr-quick-links .pr-shortcut strong { flex:1; font:700 14px/1.2 var(--pr-sans); color:#243d2b; }
 .pr-quick-links .pr-shortcut .pr-chevron { color:#4a7654; font-size:24px; }
 .pr-quick-links .pr-shortcut:hover { background:#eaf1e3; border-color:#bad1b3; }
