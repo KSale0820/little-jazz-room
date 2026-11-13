@@ -154,11 +154,14 @@
 }
 @media (min-width: 900px) { .pr-page { padding-bottom: 20px; } }
 
-/* Three compact entry points open one unified journal with a different focus. */
-.pr-quick-links { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-.pr-quick-links .pr-shortcut { flex-direction:column; justify-content:center; gap:3px; min-width:0; min-height:84px; padding:8px 4px; background:#f3eee7; border-color:#e5ddd2; text-align:center; }
-.pr-quick-links .pr-shortcut:nth-child(2) { background:#eaf0e6; }
-.pr-quick-links .pr-shortcut:nth-child(3) { background:#eee8f0; }
-.pr-quick-links .pr-shortcut-icon { width:40px; height:40px; flex:none; color:#426c50; }
-.pr-quick-links .pr-shortcut-icon img { width:40px; height:40px; }
-.pr-quick-links .pr-shortcut strong { flex:none; font-size:12px; }
+/* One full-width destination. Tabs are inside Practice Journal, not on Progress. */
+.pr-quick-links { display:block; margin-top:4px; }
+.pr-quick-links .pr-shortcut { display:flex; flex-direction:row; align-items:center; justify-content:flex-start;
+  width:100%; min-height:66px; padding:10px 15px; gap:12px; border-radius:16px;
+  background:#f0f0e8; border:1px solid #dfe6d9; text-align:left; }
+.pr-quick-links .pr-shortcut-icon { width:42px; height:42px; flex:0 0 42px; }
+.pr-quick-links .pr-shortcut-icon img { width:42px; height:42px; }
+.pr-quick-links .pr-shortcut strong { flex:1; font:700 14px/1.2 var(--pr-sans); color:#243d2b; }
+.pr-quick-links .pr-shortcut .pr-chevron { color:#4a7654; font-size:24px; }
+.pr-quick-links .pr-shortcut:hover { background:#eaf1e3; border-color:#bad1b3; }
+.pr-quick-links .pr-shortcut:focus-visible { outline:2px solid #527d58; outline-offset:3px; }

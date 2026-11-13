@@ -275,6 +275,7 @@ export function PracticeJournalPage() {
     onOpenChart={id => navigate('/player?chart=' + encodeURIComponent(id))}
     onOpenRoutine={id => navigate('/player?routine=' + encodeURIComponent(id))} />;
 
+  const activeJournalEntry = journalEntryForDate(activeDate);
   return <section className="pj-page" aria-label="Practice Journal">
     <header className="pj-heading"><button type="button" className="pj-back" onClick={() => navigate('/progress')} aria-label="Back to Progress">‹</button>
       <div><small>Little Jazz Room</small><h1>Practice Journal</h1></div>
@@ -293,7 +294,7 @@ export function PracticeJournalPage() {
     </nav>
 
     {focus !== 'calendar' && <div className="pj-filters">
-      <label className="pj-search"><span aria-hidden="true">⌕</span><input value={query} onChange={e => setQuery(e.target.value)}
+      <label className="pj-search"><svg aria-hidden="true" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><input value={query} onChange={e => setQuery(e.target.value)}
         placeholder="Search notes, tags, tunes, or topics…" aria-label="Search practice journal" /></label>
       <div className="pj-filter-row">
         <button type="button" className={!tagFilter && !tuneFilter ? 'active' : ''} onClick={() => { setTagFilter(''); setTuneFilter(''); }}>All</button>
@@ -325,14 +326,18 @@ export function PracticeJournalPage() {
       <div className="pj-day-heading"><h2>{readDate(activeDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</h2>
         <span>{formatMinutes(secondsForDate)} min practiced</span></div>
       {(sessionsForDate.length > 0 || entriesForDate.length > 0 || annotationsForDate.length > 0)
-        ? <button type="button" className="pj-card pj-day-summary" onClick={() => openDay(activeDate)}>
+        ? <button type="button" className="pj-card pj-day-summary" aria-label={'Open daily practice sheet for ' + activeDate} onClick={() => openDay(activeDate)}>
           <JournalRoutineIcon
             iconKey={journalEntryForDate(activeDate)?.iconKey}
             title={journalEntryForDate(activeDate)?.title || journalEntryForDate(activeDate)?.chartTitle ||
               (sessionsForDate[0] ? sessionTitle(sessionsForDate[0]) : 'Practice')}
             tags={entriesForDate.flatMap(e => e.tags ?? [])} />
-          <span><strong>View practice sheet</strong><small>{sessionsForDate.length} sessions · {entriesForDate.length} reflections · {annotationsForDate.length} chart notes</small>
-            <TagChips palette={tagDefinitions} tags={uniqueTags([...entriesForDate.flatMap(e => e.tags ?? []), ...annotationsForDate.flatMap(n => n.tags ?? [])])} /></span>
+          <span className="pj-summary-content">
+            <small className="pj-summary-kicker">DAILY PRACTICE</small>
+            <strong>{activeJournalEntry ? noteLabel(activeJournalEntry) : 'Practice activity'}</strong>
+            <small>{sessionsForDate.length} {sessionsForDate.length === 1 ? 'session' : 'sessions'} · {entriesForDate.length} {entriesForDate.length === 1 ? 'reflection' : 'reflections'} · {annotationsForDate.length} chart {annotationsForDate.length === 1 ? 'note' : 'notes'}</small>
+            <TagChips palette={tagDefinitions} tags={uniqueTags([...entriesForDate.flatMap(e => e.tags ?? []), ...annotationsForDate.flatMap(n => n.tags ?? [])])} />
+          </span>
           <b aria-hidden="true">›</b>
         </button>
         : <p className="pj-empty">Nothing saved for this day. Add a note to remember what you practiced.</p>}
