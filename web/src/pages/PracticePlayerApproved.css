@@ -67,13 +67,8 @@
   border-radius: 17px; margin: 8px 0; padding: 9px 12px 11px;
   position: relative;
 }
-.practice-guided-head::after {
-  content: ""; position: absolute; right: 2px; bottom: 0; width: 62px; height: 72px;
-  background: url('/visuals/progress/g01-goal-leaves.png') right bottom / contain no-repeat;
-  opacity: .4; pointer-events: none;
-}
 .practice-guided-head strong { display: block; font: 700 14px Georgia,serif; color: #1c3e35; }
-.practice-guided-head p { padding-top: 4px; padding-right: 40px; color: #334c3f; font-size: 11px; line-height: 1.32; }
+.practice-guided-head p { padding-top: 4px; padding-right: 0; color: #334c3f; font-size: 11px; line-height: 1.32; }
 .practice-art-panel { border-radius: 18px; background: #dae2d5; }
 .practice-art-panel > img { height: clamp(185px,27dvh,242px); object-position: 50% 50%; }
 .practice-art-caption {

@@ -1,3 +1,4 @@
+import { GreatPracticeCompletion, type RecapActivity } from '../components/GreatPracticeCompletion';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -13,7 +14,6 @@ import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { RECORDED_BACKING_TRACKS, hasChartSync, isUsableRecordedTrack } from '../features/recordings/recordingCatalog';
 import { readRoutineBookmarks, saveRoutineBookmarks } from '../lib/routineBookmarks';
-import { formatPracticeTime } from './practicePlayerLogic';
 import type { PracticeSessionRecord } from '../types/content';
 import './FreePracticePage.css';
 
@@ -205,12 +205,18 @@ export function FreePracticePage() {
     try {
       await addSession(record);
       try {
-        localStorage.setItem('little-jazz-room:practice-feedback:v1:' + record.id,
-          JSON.stringify({ items: session.items.map(item => ({ kind: item.kind, title: item.title, sourceId: item.sourceId })) }));
+        const key = 'little-jazz-room:practice-feedback:v1:' + record.id;
+        const saved: unknown = JSON.parse(localStorage.getItem(key) ?? '{}');
+        const current = saved && typeof saved === 'object' && !Array.isArray(saved)
+          ? saved as Record<string, unknown> : {};
+        localStorage.setItem(key, JSON.stringify({
+          ...current, items: session.items.map(item =>
+            ({ kind: item.kind, title: item.title, sourceId: item.sourceId })),
+        }));
       } catch { /* Session record is still saved. */ }
       try { sessionStorage.removeItem(storageKey); } catch { /* Optional. */ }
+      // The completion recap is the save confirmation; keep its primary action visible.
       setSaveStatus('saved');
-      showToast('Free Practice session saved.');
     } catch {
       saveInFlight.current = false;
       setSaveStatus('error');
@@ -250,7 +256,7 @@ export function FreePracticePage() {
     const stamp = new Date().toISOString();
     const existing = journalEntries.find(entry => entry.sessionId === session.id);
     const entry: PracticeJournalEntry = {
-      id: existing?.id ?? crypto.randomUUID(), sessionId: session.id,
+      ...existing, id: existing?.id ?? crypto.randomUUID(), sessionId: session.id,
       chartId: '', chartTitle: active?.title ?? 'Free Practice',
       text: value, createdAt: existing?.createdAt ?? stamp, updatedAt: stamp,
       durationSeconds: seconds, pitchCaptureIds,
@@ -264,18 +270,20 @@ export function FreePracticePage() {
     showToast('Journal entry saved.');
   };
 
-  if (finished) return <section className="fp-redesign-complete">
-    <header><button type="button" onClick={() => navigate('/practice')}>‹ Practice</button></header>
-    <h1>Free Practice complete</h1>
-    <p>{saveStatus === 'saved' ? 'Session saved' : saveStatus === 'error' ? 'Save failed' : 'Saving session'}</p>
-    <strong>{formatPracticeTime(finished.durationSeconds)}</strong>
-    <p>{session.items.length} practice {session.items.length === 1 ? 'item' : 'items'}</p>
-    {saveStatus === 'error' && <button type="button" onClick={() => void saveSession(finished)}>Retry save</button>}
-    {saveStatus === 'saved' && <>
-      <button type="button" onClick={() => navigate('/progress')}>View Progress</button>
-      <button type="button" onClick={restart}>Practice Again</button>
-    </>}
-  </section>;
+  const recapActivities: RecapActivity[] = session.items.map(item => ({
+    id: item.id, title: item.title,
+    detail: item.kind === 'routine' ? 'Routine' : item.kind === 'chart' ? 'Chord chart' : 'Recorded track',
+    status: 'practiced',
+  }));
+  if (finished) return <GreatPracticeCompletion key={finished.id}
+    record={finished}
+    title={session.items.length === 1 ? session.items[0].title : 'Free Practice'}
+    subtitle={session.items.length ? 'Free Practice · ' + (session.items.length === 1 ? '1 item' : session.items.length + ' items') : 'Open practice · no materials added'}
+    activities={recapActivities}
+    status={saveStatus}
+    onRetry={() => void saveSession(finished)}
+    onDone={() => navigate('/practice')}
+    onPracticeAgain={restart} />;
 
   const freePlayer: FreePracticePlayerSession | null = active ? {
     kind: active.kind, sourceId: active.sourceId, sessionId: session.id,

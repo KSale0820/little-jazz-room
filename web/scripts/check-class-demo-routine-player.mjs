@@ -13,9 +13,12 @@ const readScoped = (prefix) => {
   return JSON.parse(localStorage.getItem(key ?? '') ?? '[]');
 };
 try {
-  for (const viewport of [{ width: 390, height: 844 }, { width: 375, height: 667 }]) {
+  for (const viewport of [
+    { width: 390, height: 844 }, { width: 375, height: 667 },
+    { width: 430, height: 844 }, { width: 1200, height: 900 },
+  ]) {
     const label = viewport.width + 'x' + viewport.height;
-    const ctx = await browser.newContext({ viewport, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+    const ctx = await browser.newContext({ viewport, isMobile: viewport.width < 900, hasTouch: viewport.width < 900, deviceScaleFactor: 1 });
     const page = await ctx.newPage();
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
@@ -23,8 +26,17 @@ try {
     await page.goto(base + '/player?routine=daily-warm-up', { waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'Daily Jazz Warm-Up' }).waitFor();
     assert.equal(await page.locator('.practice-no-chart').count(), 1, 'Opening routine step is instructions-only');
+    assert.equal(await page.locator('.practice-unavailable-tools-toggle').count(), 0,
+      'Show unavailable tools should no longer exist');
     assert.equal(await page.locator('.practice-notation-panel').count(), 0, 'Unrelated fallback chart visible');
     assert.equal(await page.locator('.practice-transport').count(), 0, 'Instructions-only playback visible');
+    assert.equal(await page.locator('.practice-lesson-heading').count(), 0, 'Repeated exercise heading visible inside lesson');
+    assert.equal(await page.locator('.routine-step-progress-label').innerText(), '1. Feel the Swing Beat');
+    assert.equal(await page.locator('.routine-step-segment').count(), 3, 'The progress bar must have one segment per exercise');
+    assert.equal(await page.locator('.routine-step-progress-chevron').count(), 1, 'Progress bar dropdown arrow missing');
+    assert.equal(await page.locator('.practice-title-group > p').count(), 0, 'Repeated step label present beneath routine title');
+    assert.equal(await page.locator('.practice-lesson-terms dt').filter({ hasText: 'Terminology' }).count(), 0,
+      'Generic Terminology subheading is redundant with Helpful terms');
     assert.equal(await page.getByRole('button', { name: 'Open session journal' }).count(), 1);
     assert.equal(await page.getByRole('button', { name: 'Finish Session', exact: true }).count(), 1);
     assert.equal(await page.locator('.practice-demo-metronome-wrap').count(), 1);
@@ -34,7 +46,7 @@ try {
     assert.equal(await started.isChecked(), false);
     assert.equal(await completed.isChecked(), false);
     await started.check();
-    await page.getByText('Partial', { exact: true }).waitFor();
+    assert.equal((await page.locator('.routine-compact-state').innerText()).trim(), 'Partial');
     assert.equal(await completed.isChecked(), false, 'Started must not imply Complete');
     await completed.check();
     assert.equal(await started.isChecked(), true, 'Complete must also check Started');
@@ -42,7 +54,7 @@ try {
     await completed.uncheck();
     assert.equal(await started.isChecked(), true, 'Unchecking Complete should leave Partial');
     await started.uncheck();
-    await page.getByText('Incomplete', { exact: true }).waitFor();
+    assert.equal((await page.locator('.routine-compact-state').innerText()).trim(), 'Incomplete');
     await completed.check();
     assert.equal(await page.locator('.practice-segments').count(), 0, 'Old chart/instructions tabs remain');
     assert.equal(await page.getByRole('button', { name: /All Steps/i }).count(), 0, 'Old separate All Steps button remains');
@@ -53,17 +65,131 @@ try {
     });
     assert.ok(Math.abs(toolWidths.first - toolWidths.second) < 12, 'Instruction tool widths should be equal');
     assert.ok(toolWidths.first + toolWidths.second > toolWidths.width - 25, 'Instruction tools should fill full row');
-    const footerOrder = await page.locator('.practice-demo-session-actions').locator('button').evaluateAll(buttons => buttons.map(b => b.getAttribute('aria-label') || b.textContent?.trim()));
-    assert.deepEqual(footerOrder.slice(0,4), ['Previous routine step', 'Next routine step', '✓ Finish Session', 'Open session journal']);
+    const navLabels = await page.locator('.routine-dock-top .routine-session-navigation button')
+      .evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
+    assert.deepEqual(navLabels, ['Previous routine step','Next routine step']);
+    const footerOrder = await page.locator('.routine-dock-bottom .practice-demo-session-actions button')
+      .evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label') || button.textContent?.trim()));
+    assert.deepEqual(footerOrder, ['✓ Finish Session', 'Open session journal']);
+    const dockLayout = await page.locator('.routine-session-dock').evaluate(dock => {
+      const bounds = selector => dock.querySelector(selector)?.getBoundingClientRect();
+      const top = bounds('.routine-dock-top'), bottom = bounds('.routine-dock-bottom');
+      const started = bounds('.routine-compact-checks'), nav = bounds('.routine-session-navigation');
+      const timer = bounds('.practice-time-badge'), finish = bounds('.practice-finish-action');
+      const journal = bounds('.practice-demo-journal'), outer = dock.getBoundingClientRect();
+      return {
+        outer: { left: outer.left, right: outer.right },
+        top: { top: top.top, bottom: top.bottom },
+        bottom: { top: bottom.top, bottom: bottom.bottom },
+        started: { top: started.top, bottom: started.bottom, right: started.right },
+        nav: { top: nav.top, bottom: nav.bottom, left: nav.left, right: nav.right },
+        lowerTops: [timer.top,finish.top,journal.top],
+        lowerRights: [timer.right,finish.right,journal.right],
+        lowerLefts: [timer.left,finish.left,journal.left],
+        green: getComputedStyle(dock.querySelector('.routine-dock-top')).backgroundColor,
+      };
+    });
+    assert.ok(dockLayout.top.bottom <= dockLayout.bottom.top + 2, 'Status and navigation must sit above Finish Session');
+    assert.ok(Math.abs(dockLayout.started.top - dockLayout.nav.top) < 9, 'Started/Complete and arrows must share one upper row');
+    assert.ok(dockLayout.started.right <= dockLayout.nav.left + 4, 'Status controls must not overlap navigation');
+    assert.ok(dockLayout.lowerTops.every(value => Math.abs(value - dockLayout.lowerTops[0]) < 6),
+      'Timer, Finish and journal must share the lower row: '+JSON.stringify(dockLayout));
+    assert.ok(dockLayout.lowerLefts.every(x => x >= dockLayout.outer.left - 2) &&
+      dockLayout.lowerRights.every(x => x <= dockLayout.outer.right + 2), 'Controls must not overflow the connected dock');
+    assert.ok(dockLayout.green !== 'rgba(0, 0, 0, 0)', 'Upper status row should have the light green background');
+    const dockPosition = await page.locator('.routine-session-dock').evaluate(dock => {
+      const shell = dock.closest('.app-shell');
+      const nav = shell.querySelector('.bottom-nav');
+      const footer = dock.querySelector('.routine-dock-bottom');
+      const finish = footer.querySelector('.practice-finish-action');
+      const dr = dock.getBoundingClientRect(), sr = shell.getBoundingClientRect();
+      const nr = nav.getBoundingClientRect(), fr = finish.getBoundingClientRect();
+      const hit = document.elementFromPoint(fr.x + fr.width / 2, fr.y + fr.height / 2);
+      return {
+        insideShell: dock.parentElement.classList.contains('routine-dock-host') &&
+          dock.parentElement.parentElement === shell,
+        shellTop: sr.top, shellBottom: sr.bottom,
+        navVisible: getComputedStyle(nav).display !== 'none',
+        navTop: nr.top,
+        top: dr.top, bottom: dr.bottom, finishBottom: fr.bottom,
+        finishHit: Boolean(hit?.closest('.practice-finish-action')),
+        position: getComputedStyle(dock.parentElement).position,
+      };
+    });
+    assert.equal(dockPosition.insideShell, true, 'Dock must render directly inside app shell, outside viewport scroll');
+    assert.equal(dockPosition.position, 'absolute', 'Dock must be app-shell anchored at all breakpoints');
+    assert.equal(dockPosition.navVisible, false, 'Active routine player should hide the normal bottom navigation');
+    assert.ok(dockPosition.top >= dockPosition.shellTop - 2 &&
+      dockPosition.bottom <= dockPosition.shellBottom + 2 &&
+      dockPosition.finishBottom <= dockPosition.shellBottom + 2,
+      'Entire dock must be visible within the phone app shell: ' + JSON.stringify(dockPosition));
+    assert.equal(dockPosition.finishHit, true, 'Finish Session must be tappable without scrolling');
+    await page.locator('.viewport').evaluate(viewport => { viewport.scrollTop = viewport.scrollHeight; });
+    const afterScroll = await page.locator('.routine-session-dock').evaluate(dock => dock.getBoundingClientRect().top);
+    assert.ok(Math.abs(afterScroll - dockPosition.top) < 2,
+      'Routine dock must remain fixed to app shell while reading long instructions');
+
+    // A visually overflowing lesson can still have NO actual scrolling when
+    // max-height:100% caps its parent. A swipe then rubber-bands to the top.
+    // Check genuine scrollable range AND scroll persistence after input ends.
+    const metrics = await page.locator('.viewport').evaluate(el => ({
+      clientHeight: el.clientHeight, scrollHeight: el.scrollHeight,
+      maxScroll: el.scrollHeight - el.clientHeight, scrollTop: el.scrollTop,
+      playerMaxHeight: getComputedStyle(el.querySelector('.practice-player')).maxHeight,
+    }));
+    assert.ok(metrics.maxScroll > 90,
+      'Lesson must generate genuine viewport scrolling, not rubber-band overflow: ' + JSON.stringify(metrics));
+    await page.locator('.viewport').evaluate(el => { el.scrollTop = 0; });
+    await page.locator('.practice-lesson-card').hover();
+    await page.mouse.wheel(0, 480);
+    await page.waitForTimeout(300);
+    const swiped = await page.locator('.viewport').evaluate(el => el.scrollTop);
+    assert.ok(swiped > 45, 'Swipe must move the scrollable lesson viewport: ' + swiped);
+    await page.waitForTimeout(400);
+    const settled = await page.locator('.viewport').evaluate(el => el.scrollTop);
+    assert.ok(settled > 45 && Math.abs(swiped - settled) < 60,
+      'Viewport bounced back after finger released: ' + JSON.stringify({swiped, settled, metrics}));
+    const finishInView = await page.getByRole('button', { name: 'Finish Session', exact: true }).evaluate(button => {
+      const rect = button.getBoundingClientRect();
+      return rect.top >= 0 && rect.bottom <= window.innerHeight;
+    });
+    assert.equal(finishInView, true, 'Footer must remain visible while content scrolls');
+    await page.locator('.viewport').evaluate(el => { el.scrollTop = 0; });
     await page.screenshot({ path: join(dir, label + '-01-instructions.png'), fullPage: true });
 
     await page.getByRole('button', { name: 'Next routine step' }).click();
-    await page.getByRole('group', { name: /Chord chart:/ }).waitFor();
-    assert.equal(await page.locator('#practice-demo-bpm').inputValue(), '80', 'Step BPM preset did not initialize');
+    assert.equal(await page.locator('.routine-step-progress-label').innerText(), '2. Play the Notes of Each Chord');
+    assert.equal(await page.locator('.practice-notation-panel').count(), 0, 'Routine should open instructions first');
+    assert.equal(await page.locator('.routine-lesson-inline-chords').count(), 3, 'Steps 1–3 should contain linked chord snippets');
+    const inline = await page.locator('.routine-lesson-inline-chords').allTextContents();
+    assert.match(inline[0], /Dm7/, 'First instruction must show Dm7');
+    assert.match(inline[1], /G7/, 'Second instruction must show G7');
+    assert.match(inline[2], /Cmaj7/, 'Third instruction must show Cmaj7');
+    const seeChart = page.getByRole('button', { name: 'See chart' });
+    const chartLinkPlacement = await seeChart.evaluate(el => {
+      const parent = el.closest('.practice-lesson-card').getBoundingClientRect();
+      const rect = el.getBoundingClientRect();
+      return { top: rect.top - parent.top, right: parent.right - rect.right };
+    });
+    assert.ok(chartLinkPlacement.top < 55 && chartLinkPlacement.right < 35, 'See Chart should sit at the lesson upper-right corner');
+    await seeChart.click();
+    await page.getByRole('group', { name: /Chord chart:/ }).first().waitFor();
+    assert.equal(await page.locator('.practice-demo-loop').count(), 0,
+      'Unavailable Loop should be hidden by default');
+    assert.equal(await page.getByRole('button', { name: 'Mixer' }).count(), 0,
+      'Unavailable Mixer should be hidden by default');
+    assert.equal(await page.locator('.practice-demo-tools > button').count(), 1,
+      'Only Tuner should appear beside Metronome until unavailable tools are enabled');
+    assert.equal(await page.getByRole('button', { name: /unavailable tools/i }).count(), 0,
+      'A routine must not offer to reveal disabled Loop or Mixer');
+    assert.equal(await page.locator('#player-chart').count(), 0, 'Routine users must not be able to choose a different chart');
+    assert.equal(await page.locator('.routine-chart-fixed-title').innerText(), 'ii–V–I in C');
+    assert.deepEqual(await page.locator('.routine-step-sheet-number').allTextContents(), ['1','2','3']);
+    assert.equal(await page.locator('.routine-step-sheet .measure').count(), 4, 'All four chart bars must remain in the full sheet');
     await page.getByRole('button', { name: 'View all routine exercises' }).click();
     assert.equal(await page.locator('.routine-class-list > button').count(), 3);
     await page.getByRole('button', { name: 'Close routine overview' }).click();
-    await page.getByRole('button', { name: 'View exercise instructions' }).click();
+    await page.getByRole('button', { name: 'Back to instructions' }).click();
     assert.equal(await page.locator('.practice-transport').count(), 0, 'Playback controls visible while reading instructions');
     assert.equal(await page.locator('#recording-scrubber').count(), 0, 'Chart scrubber visible in instructions');
     assert.equal(await page.locator('.practice-demo-settings').count(), 0, 'Tempo/key settings visible in instructions');
@@ -76,7 +202,7 @@ try {
     assert.notEqual(lesson.overflow, 'auto', 'Instructions must not be clipped within an inner scroll');
     assert.ok(lesson.height >= lesson.scrollHeight - 2, 'Full instructions must be viewable in the page scroll');
     await page.screenshot({ path: join(dir, label + '-02b-chart-instructions.png'), fullPage: true });
-    await page.getByRole('button', { name: 'Return to chart' }).click();
+    await page.getByRole('button', { name: 'See chart' }).click();
     await page.screenshot({ path: join(dir, label + '-02-chart.png'), fullPage: true });
 
     await page.locator('#practice-demo-bpm').fill('110');
@@ -114,6 +240,7 @@ try {
     assert.equal(routine.steps[1].player_settings?.loop_enabled, true);
     await page.goto(base + '/player?routine=' + encodeURIComponent(routine.id), { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Next routine step' }).click();
+    await page.getByRole('button', { name: 'See chart' }).click();
     assert.equal(await page.locator('#practice-demo-bpm').inputValue(), '95');
     assert.equal(await page.locator('#practice-demo-key').inputValue(), 'G');
     assert.equal(await page.locator('#practice-demo-instrument').inputValue(), 'Bb');

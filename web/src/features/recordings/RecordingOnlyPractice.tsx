@@ -1,3 +1,4 @@
+import { GreatPracticeCompletion } from '../../components/GreatPracticeCompletion';
 import { PracticeTimeBadge, SkipTenIcon, RepeatIcon } from '../../components/PracticeMediaControls';
 import { TunerPage } from '../../pages/TunerPage';
 import { PracticeMetronomeSheet } from '../../components/PracticeMetronomeSheet';
@@ -43,7 +44,7 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
   const [ended, setEnded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [completion, setCompletion] = useState<{ id: string; durationSeconds: number; finishedAt: string } | null>(null);
-  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   useEffect(() => {
     // An unlinked recording has no verified bar-one timestamp, so the click
@@ -115,7 +116,7 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
         setSaveState('saved');
         return true;
       } catch {
-        setSaveState('idle');
+        setSaveState('error');
         setError('Could not save the session. Please try again.');
         saveRef.current = null;
         return false;
@@ -125,27 +126,38 @@ export function RecordingOnlyPractice({ recording }: { recording: RecordedBackin
     return task;
   };
 
-  if (completion) {
-    return <section className="practice-complete" aria-label="Practice session complete">
-      <div className="practice-complete-hero">
-        <h1>Great practice!</h1>
-        <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
-      </div>
-      <div className="practice-complete-summary">
-        <img src={VISUAL_ASSETS.room.approved.twilight} alt="" />
-        <div><strong>{recording.title}</strong><span>Audio-only practice</span><small>Recorded backing track</small></div>
-      </div>
-      <button type="button" className="practice-primary practice-save" disabled={saveState !== 'idle'}
-        onClick={() => void save()}>
-        {saveState === 'saved' ? 'Session Saved ✓' : saveState === 'saving' ? 'Saving…' : 'Save Session'}
-      </button>
-      {error && <p role="alert" className="practice-recording-error">{error}</p>}
-      <button type="button" className="practice-secondary" onClick={() => void (async () => {
-        if (await save()) navigate('/progress');
-      })()}>View Progress</button>
-      <button type="button" className="practice-secondary" onClick={() => navigate('/tracks')}>Back to Tracks</button>
-    </section>;
-  }
+  // The recording-only flow also saves once on Finish, not on Done.
+  useEffect(() => { if (completion) void save(); }, [completion?.id]);
+
+  const restart = () => {
+    if (saveState !== 'saved') return;
+    audioRef.current?.pause();
+    if (audioRef.current) audioRef.current.currentTime = 0;
+    clockRef.current = { accumulatedMs: 0, startedAtMs: null };
+    setElapsedSeconds(0);
+    setPosition(0);
+    setEnded(false);
+    setPlaying(false);
+    setCompletion(null);
+    setSaveState('idle');
+    saveRef.current = null;
+    setError(null);
+  };
+
+  if (completion) return <GreatPracticeCompletion key={completion.id}
+    record={completion}
+    title={recording.title}
+    subtitle="Audio-only practice · Recorded backing track"
+    summaryArt={VISUAL_ASSETS.room.approved.twilight}
+    activities={[{
+      id: recording.id, title: recording.title,
+      detail: recording.key + (recording.recordedBpm ? ' · ' + recording.recordedBpm + ' BPM' : ''),
+      status: 'practiced',
+    }]}
+    status={saveState}
+    onRetry={() => void save()}
+    onDone={() => navigate('/practice')}
+    onPracticeAgain={restart} />;
 
   return <section className="practice-player practice-free practice-recording-p02 practice-unified" aria-label="Shared practice player">
     <header className="practice-player-head">

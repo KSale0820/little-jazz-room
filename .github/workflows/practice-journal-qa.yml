@@ -1,0 +1,48 @@
+name: Practice Journal focused mobile QA
+on:
+  pull_request:
+    branches: [class-demo-2026-10-31]
+    paths:
+      - 'web/src/pages/PracticeJournalPage.*'
+      - 'web/src/pages/ProgressPage.*'
+      - 'web/src/App.tsx'
+      - 'web/src/lib/practicePlayerNotes.ts'
+      - 'web/public/journal/**'
+      - 'web/scripts/check-practice-journal.mjs'
+      - '.github/workflows/practice-journal-qa.yml'
+  workflow_dispatch:
+jobs:
+  journal-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Start Vite
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5174 > /tmp/practice-journal-vite.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:5174/ > /dev/null && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5174/ > /dev/null
+      - name: Journal flows at both mobile sizes
+        run: node scripts/check-practice-journal.mjs
+      - name: Upload review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: practice-journal-390-and-375
+          path: web/docs/screenshots/practice-journal-qa/
+          if-no-files-found: warn

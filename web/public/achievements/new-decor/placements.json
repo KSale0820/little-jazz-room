@@ -1,0 +1,111 @@
+{
+  "referenceCanvas": {
+    "width": 1706,
+    "height": 922
+  },
+  "background": "/achievements/empty-room-new.webp",
+  "backgroundSize": [
+    1706,
+    922
+  ],
+  "items": [
+    {
+      "id": 1,
+      "label": "Bookshelf plants",
+      "src": "/achievements/new-decor/01-bookshelf-plants.png",
+      "box": {
+        "x": 1372,
+        "y": 270,
+        "width": 249,
+        "height": 151
+      }
+    },
+    {
+      "id": 2,
+      "label": "Trumpet",
+      "src": "/achievements/new-decor/02-bookshelf-trumpet.png",
+      "box": {
+        "x": 1440,
+        "y": 391,
+        "width": 163,
+        "height": 61
+      }
+    },
+    {
+      "id": 3,
+      "label": "Music books",
+      "src": "/achievements/new-decor/03-bookshelf-music-books.png",
+      "box": {
+        "x": 1398,
+        "y": 465,
+        "width": 225,
+        "height": 100
+      }
+    },
+    {
+      "id": 4,
+      "label": "Sleeping bookshelf cat",
+      "src": "/achievements/new-decor/04-bookshelf-sleeping-cat.png",
+      "box": {
+        "x": 1405,
+        "y": 604,
+        "width": 220,
+        "height": 110
+      }
+    },
+    {
+      "id": 5,
+      "label": "Piano trailing plant",
+      "src": "/achievements/new-decor/05-piano-trailing-plant.png",
+      "box": {
+        "x": 851,
+        "y": 306,
+        "width": 160,
+        "height": 210
+      }
+    },
+    {
+      "id": 6,
+      "label": "Two jazz musician busts",
+      "src": "/achievements/new-decor/06-piano-jazz-busts.png",
+      "box": {
+        "x": 1142,
+        "y": 298,
+        "width": 166,
+        "height": 118
+      }
+    },
+    {
+      "id": 7,
+      "label": "Piano lamp with glow",
+      "src": "/achievements/new-decor/07-piano-lamp.png",
+      "box": {
+        "x": 1016,
+        "y": 295,
+        "width": 101,
+        "height": 117
+      }
+    },
+    {
+      "id": 8,
+      "label": "Piano sheet music",
+      "src": "/achievements/new-decor/08-piano-sheet-music.png",
+      "box": {
+        "x": 971,
+        "y": 430,
+        "width": 219,
+        "height": 98
+      }
+    }
+  ],
+  "excluded": [
+    9,
+    10
+  ],
+  "notes": [
+    "All sprites are independent cropped transparent PNGs; shadows and glow are baked in.",
+    "Use source image proportions (object-fit:contain), not stretched to the bounding rectangles.",
+    "Bounds are approximate based on the filled 1706x922 room reference.",
+    "No reward IDs or unlock logic are added by this asset upload."
+  ]
+}

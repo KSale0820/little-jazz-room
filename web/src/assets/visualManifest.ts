@@ -14,6 +14,10 @@ export type RoomLightingAsset = ResolvedLighting;
 /** Shared frame for the approved portrait room and its overlays. Not the live stage. */
 export const APPROVED_ROOM_SIZE = { width: 941, height: 1672 } as const;
 
+/** The user replaced all previous Luna/Milo/Maple cat illustrations with six crisp pixel sprites. */
+export const isRedesignedCat = (id: CatId): boolean =>
+  id === 'luna' || id === 'milo' || id === 'maple';
+
 export const VISUAL_ASSETS = {
   decor: {
     plant: '/decor/plant.png',
@@ -54,19 +58,32 @@ export const VISUAL_ASSETS = {
     },
   },
   cat: {
-    /** The user's approved October 31 class-MVP art pack. Sole source of cat illustrations. */
-    sleepingFile: (id: CatId) => `/visuals/cats/sleeping/${id}.png`,
-    ...{ sittingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sitting/${id}.png` },
-    fullBodyFile: (id: CatId) => `/visuals/cats/approved-class-mvp/full-body/${id}.png`,
-    /** Approved sitting poses. Preserve the original full-resolution PNG binaries. */
-    sittingFile: (id: CatId) => `/visuals/cats/approved-class-mvp/sitting/${id}.png`,
-    profileFile: (id: CatId) => `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
-    closeupFile: (id: CatId) => `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
+    /** New Luna/Milo/Maple pixel artwork replaces every former visual variant. */
+    sleepingFile: (id: CatId) => isRedesignedCat(id)
+      ? `/visuals/cats/clean-pixel/${id}-sleeping.png`
+      : `/visuals/cats/sleeping/${id}.png`,
+    sittingFile: (id: CatId) => isRedesignedCat(id)
+      ? `/visuals/cats/clean-pixel/${id}-sitting.png`
+      : `/visuals/cats/approved-class-mvp/sitting/${id}.png`,
+    fullBodyFile: (id: CatId) => isRedesignedCat(id)
+      ? `/visuals/cats/clean-pixel/${id}-sitting.png`
+      : `/visuals/cats/approved-class-mvp/full-body/${id}.png`,
+    profileFile: (id: CatId) => isRedesignedCat(id)
+      ? `/visuals/cats/clean-pixel/${id}-sitting.png`
+      : `/visuals/cats/approved-class-mvp/profiles/${id}.png`,
+    closeupFile: (id: CatId) => isRedesignedCat(id)
+      ? `/visuals/cats/clean-pixel/${id}-sitting.png`
+      : `/visuals/cats/approved-class-mvp/closeups/${id}.png`,
   },
   progress: {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',
     sleepCushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
+    /** Existing class-demo Progress pixel art, now indexed with the other installed visual assets. */
+    pixelTrophy: '/visuals/progress/pixel-trophy-new.png',
+    pixelTrophySvg: '/visuals/progress/pixel-trophy.svg',
+    practiceJournal: '/visuals/progress/practice-journal.png',
+    streakFire: '/visuals/pixel-motifs/streak-fire.png',
   },
   garden: {
     stage0: '/visuals/garden/garden-stage-0.png',

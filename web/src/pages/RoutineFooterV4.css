@@ -1,0 +1,235 @@
+/* Routine-only two-tier session dock.
+   Top row replaces the old timer strip with status checks and step navigation.
+   Bottom row retains timer, prominent Finish Session and journal. */
+section.practice-player.practice-guided.practice-demo-refresh .routine-session-dock {
+  box-sizing: border-box;
+  display: grid;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  margin-top: 10px;
+  border: 1px solid #c9d9c5;
+  border-radius: 25px;
+  background: #eef4ea;
+  overflow: hidden;
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  box-shadow: 0 -5px 16px rgb(27 56 38 / 0.08);
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  gap: 6px;
+  padding: 5px 10px;
+  border-bottom: 1px solid #c9d9c5;
+  background: #eef4ea;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-compact-status {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-compact-checks {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 7px;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-compact-checks label {
+  box-sizing: border-box;
+  display: inline-flex;
+  min-height: 38px;
+  gap: 5px;
+  align-items: center;
+  padding: 4px 5px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #235a45;
+  font: 700 12px/1.1 system-ui,sans-serif;
+  cursor: pointer;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-compact-checks label:focus-within {
+  outline: 2px solid #7aa18c;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-compact-checks input {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: #235a45;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-session-navigation {
+  display: flex;
+  align-items: stretch;
+  flex: 0 0 auto;
+  min-width: 0;
+  border: 0;
+  border-left: 1px solid #c9d9c5;
+  margin-left: auto;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-session-navigation button {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  min-height: 42px;
+  flex: 0 0 40px;
+  border: 0;
+  border-right: 1px solid #c9d9c5;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  color: #235a45;
+  font: 700 24px/1 system-ui,sans-serif;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-session-navigation button:last-child {
+  border-right: 0;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom.practice-session-row.practice-demo-session-row {
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  min-height: 57px;
+  margin: 0;
+  gap: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: #eef4ea;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-time-badge {
+  box-sizing: border-box;
+  flex: 0 0 109px !important;
+  width: 109px !important;
+  min-width: 0;
+  max-width: none;
+  height: auto;
+  min-height: 56px;
+  border: 0;
+  border-right: 1px solid #c9d9c5;
+  border-radius: 0;
+  padding: 4px 6px;
+  background: transparent;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-demo-session-actions {
+  display: grid !important;
+  box-sizing: border-box;
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  grid-template-columns: minmax(0,1fr) 45px;
+  gap: 0;
+  overflow: hidden;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-demo-session-actions .practice-finish-action {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 56px;
+  padding: 7px 5px;
+  border-radius: 0;
+  border: 0;
+  background: #205a42;
+  color: white;
+  font: 700 16px/1.1 Georgia,serif;
+  white-space: nowrap;
+}
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-demo-session-actions .practice-demo-journal {
+  box-sizing: border-box;
+  width: 45px;
+  min-width: 45px;
+  min-height: 56px;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+}
+@media (max-width:390px) {
+  section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top {
+    gap: 2px;
+    padding-inline: 6px;
+  }
+  section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-compact-checks {
+    gap: 2px;
+  }
+  section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-compact-checks label {
+    font-size: 11px;
+    padding-inline: 3px;
+  }
+  section.practice-player.practice-guided.practice-demo-refresh .routine-dock-top .routine-session-navigation button {
+    width: 36px;
+    flex-basis: 36px;
+  }
+  section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-time-badge {
+    flex-basis: 101px !important;
+    width: 101px !important;
+    padding-inline: 3px;
+  }
+  section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-demo-session-actions {
+    grid-template-columns: minmax(0,1fr) 40px;
+  }
+  section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-demo-session-actions .practice-demo-journal {
+    width: 40px;
+    min-width: 40px;
+  }
+  section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-demo-session-actions .practice-finish-action {
+    font-size: 15px;
+  }
+}
+
+/* An unavailable tool is not interactive and is omitted in routine mode.
+   The remaining Metronome and Tuner use the full row. */
+section.practice-player.practice-demo-refresh .practice-utility-row.practice-demo-tools.hide-unavailable-tools {
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  width: 100%;
+}
+section.practice-player.practice-demo-refresh .practice-utility-row.practice-demo-tools.hide-unavailable-tools > * {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+/* Guided routines keep the compact dock in reach on short phone screens,
+   even when the full lesson is longer than the viewport. The lesson itself
+   remains scrollable and reserves space beneath its final content. */
+@media (max-width: 899px) {
+  section.practice-player.practice-guided.practice-demo-refresh {
+    padding-bottom: calc(132px + env(safe-area-inset-bottom)) !important;
+  }
+  section.practice-player.practice-guided.practice-demo-refresh .routine-session-dock {
+    position: fixed;
+    bottom: max(4px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(calc(100vw - 28px), 460px);
+    z-index: 90;
+    margin: 0;
+  }
+}
+/* Informational-only toasts must never block the primary Finish control. */
+body:has(.practice-player.practice-guided) .toast-message {
+  pointer-events: none;
+}
+
+section.practice-player.practice-guided.practice-demo-refresh .routine-dock-bottom .practice-time-badge > strong {
+  font-size: 12px;
+}

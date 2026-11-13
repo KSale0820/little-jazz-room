@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { PixelIcon, type NavRoute } from './PixelIcon';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
@@ -14,8 +14,10 @@ const NAV: { to: string; route: NavRoute; label: string }[] = [
 
 export function AppShell() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const isPracticeSession = pathname === '/free-practice' || pathname === '/player';
-  const { toast, showToast } = useApp();
+  const isProgressDetail = pathname.startsWith('/progress/');
+  const { toast, showToast, demoActive, exitDemo, resetDemo } = useApp();
   const { configured, user, signOut, authError } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const handleSignOut = async () => {
@@ -39,7 +41,7 @@ export function AppShell() {
           <strong>Little Jazz Room</strong>
           <span>Practice · Companion · A brighter you</span>
         </div>
-        {configured ? (
+        {configured && !demoActive ? (
           <div className="team-auth-panel">
             {user ? (
               <>
@@ -57,7 +59,7 @@ export function AppShell() {
         ) : null}
         <nav className="sidebar-nav">
           {NAV.map(({ to, route, label }) => (
-            <NavLink key={to} to={to} end className={({ isActive }) => (isActive || (route === 'practice' && isPracticeSession) ? 'current' : undefined)}>
+            <NavLink key={to} to={to} end className={({ isActive }) => (isActive || (route === 'practice' && isPracticeSession) || (route === 'progress' && isProgressDetail) ? 'current' : undefined)}>
               <PixelIcon route={route} />
               {label}
             </NavLink>
@@ -66,7 +68,7 @@ export function AppShell() {
       </aside>
       <div className="app-main">
         <main className="app-shell">
-          {configured ? (
+          {configured && !demoActive ? (
             <div className="mobile-auth-bar">
               {user ? (
                 <button type="button" className="btn tiny" disabled={signingOut} onClick={() => void handleSignOut()}>
@@ -80,11 +82,20 @@ export function AppShell() {
             </div>
           ) : null}
           <div className="viewport" id="main-viewport">
+            {/* The banner must live inside the scrolling viewport. A sibling above it
+                pushes a 100%-height viewport below the clipped app-shell bottom. */}
+            {demoActive && <div className="demo-user-banner" role="status">
+              <span><strong>Sample: Alex Rivera</strong> <small>Device-only test data</small></span>
+              <div className="demo-user-actions">
+                <button type="button" onClick={() => { if (!resetDemo()) showToast('Unable to reset sample data on this browser.'); }}>Reset</button>
+                <button type="button" onClick={() => { exitDemo(); navigate('/progress'); }}>Exit</button>
+              </div>
+            </div>}
             <Outlet />
           </div>
           <nav className="bottom-nav" aria-label="Main navigation">
             {NAV.map(({ to, route, label }) => (
-              <NavLink key={to} to={to} end className={({ isActive }) => (isActive || (route === 'practice' && isPracticeSession) ? 'current' : undefined)}>
+              <NavLink key={to} to={to} end className={({ isActive }) => (isActive || (route === 'practice' && isPracticeSession) || (route === 'progress' && isProgressDetail) ? 'current' : undefined)}>
                 <PixelIcon route={route} />
                 {label}
               </NavLink>

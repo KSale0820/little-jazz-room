@@ -79,7 +79,7 @@
   min-height: 48px;
 }
 .tool-heading h1 {
-  font: 700 32px/1.1 Georgia, 'Palatino Linotype', serif;
+  font: 700 32px/1.1 var(--font-ui-heading);
   color: var(--tool-ink);
   text-align: center;
   letter-spacing: -.03em;
@@ -360,7 +360,7 @@
 }
 .metronome-field { margin-top: 17px; }
 .metronome-field h2 {
-  font: 700 20px/1.2 Georgia, serif;
+  font: 700 20px/1.2 var(--font-ui-heading);
   color: var(--tool-ink);
   margin: 0 0 11px;
 }
@@ -582,7 +582,7 @@
   gap: 8px;
 }
 .tuner-trail-heading strong {
-  font: 700 15px/1.2 Georgia, serif;
+  font: 700 15px/1.2 var(--font-ui-heading);
   color: #173d33;
 }
 .tuner-trail-plot {

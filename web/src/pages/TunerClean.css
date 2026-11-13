@@ -23,7 +23,7 @@
   margin: 0;
   color: #123e31;
   text-align: left;
-  font: 700 clamp(28px, 7.7vw, 34px)/1.12 Georgia, 'Palatino Linotype', serif;
+  font: 700 clamp(28px, 7.7vw, 34px)/1.12 var(--font-ui-heading);
   letter-spacing: -.025em;
 }
 .tool-tuner .tool-back,

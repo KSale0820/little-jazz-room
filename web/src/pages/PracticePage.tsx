@@ -1,3 +1,4 @@
+import { GreatPracticeCompletion, type RecapActivity } from '../components/GreatPracticeCompletion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
@@ -7,6 +8,7 @@ import { ChordGrid } from '../components/ChordGrid';
 import { LoopPlanSettings } from '../components/LoopPlanSettings';
 import { GuidedLesson } from '../components/GuidedLesson';
 import { normalizeGuidedLesson } from '../lib/guidedLesson';
+import { routineStepChartSections } from '../lib/routineStepChords';
 import { exercisesById } from '../data/seed';
 import { getChartById } from '../features/charts/chartRepository';
 import { chartBeatAtRecordingTime, hasChartSync, isUsableRecordedTrack, recordingById, recordingTimeForSelectedBar } from '../features/recordings/recordingCatalog';
@@ -21,10 +23,7 @@ import { useApp } from '../context/AppContext';
 import type { WrittenPitch } from '../types/content';
 import { elapsedMilliseconds, formatPracticeTime } from './practicePlayerLogic';
 import { VISUAL_ASSETS } from '../assets/visualManifest';
-import { CatSprite, JAZZ_CATS } from '../features/cats/CatCompanion';
 import { TunerPage } from './TunerPage';
-import { useAuth } from '../context/AuthContext';
-import { localStorageScopeForUser } from '../repository/localRepository';
 import { ChartAnnotationSheet, SessionJournalSheet, AddPracticeSectionSheet } from '../components/PracticePlayerSheets';
 import { PracticeMetronomeSheet } from '../components/PracticeMetronomeSheet';
 import { PracticeInlineLoop, ControlChevron } from '../components/PracticeInlineLoop';
@@ -38,6 +37,10 @@ import './PracticePlayerApproved.css';
 import './PracticePlayerDemoRefresh.css';
 import './RoutineClassDemo.css';
 import './RoutineCompactV2.css';
+import './RoutineFooterV3.css';
+import './RoutineStepChords.css';
+import './RoutineFooterV4.css';
+import './RoutineFooterVisible.css';
 
 const CHROMA = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 type Panel = 'instructions' | 'chart';
@@ -112,7 +115,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    charts, exercises, routines, activeRoutineId, addSession, showToast, catId, repo, refreshLocal,
+    charts, exercises, routines, activeRoutineId, addSession, showToast, repo, refreshLocal,
   } = useApp();
   const requestedChart = freeSession?.kind === 'chart' ? freeSession.sourceId : searchParams.get('chart');
   const requestedRecording = freeSession?.kind === 'track' ? freeSession.sourceId : searchParams.get('recording');
@@ -144,7 +147,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const [loopOpen, setLoopOpen] = useState(false);
   const loopTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [musicalClock, setMusicalClock] = useState({ chartBeat: 0, startedAtMs: null as number | null });
-  const [panel, setPanel] = useState<Panel>(routine && !playableStep?.chart_id ? 'instructions' : 'chart');
+  const [panel, setPanel] = useState<Panel>(routine ? 'instructions' : 'chart');
   const [activeTool, setActiveTool] = useState<PracticeTool | null>(null);
   const toolTriggerRef = useRef<HTMLButtonElement | null>(null);
   const toolOverlayRef = useRef<HTMLDivElement | null>(null);
@@ -166,7 +169,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const [completion, setCompletion] = useState<Completion | null>(null);
   const [notes, setNotes] = useState('');
   const [rating, setRating] = useState(0);
-  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const savePromiseRef = useRef<Promise<boolean> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const suppressAudioPauseRef = useRef(false);
@@ -174,8 +177,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [recordingPlaying, setRecordingPlaying] = useState(false);
   const [recordingError, setRecordingError] = useState<string | null>(null);
-  const { user } = useAuth();
-  const userScope = localStorageScopeForUser(user?.id);
+  const userScope = repo.scope;
   const sessionDraftId = useRef(freeSession?.sessionId ?? crypto.randomUUID());
   const [chartNotes, setChartNotes] = useState<ChartNote[]>([]);
   const [journalEntries, setJournalEntries] = useState<PracticeJournalEntry[]>([]);
@@ -187,6 +189,9 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const [loopCounts, setLoopCounts] = useState<Record<string, number>>({});
   const [wholeCount, setWholeCount] = useState(1);
   const [wholeSelected, setWholeSelected] = useState(true);
+  // The routine player never displays disabled Loop or Mixer. Standalone
+  // chart practice and Free Practice retain their existing controls.
+  const displayUnavailableTools = !routine;
   const [showMeasureNumbers, setShowMeasureNumbers] = useState(() => {
     try { return localStorage.getItem('little-jazz-room:number-measures:v1:' + userScope) !== 'false'; }
     catch { return true; }
@@ -249,19 +254,19 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
   const partialCount = Object.values(stepOutcomes).filter(outcome => outcome === 'partial').length;
   const instructionsVisible = Boolean(routine && (panel === 'instructions' || !hasMusicContent));
   const showPlayerControls = !instructionsVisible;
+  const chartStepSections = routine && hasMusicContent && lesson && stepChart?.id === chart.id
+    ? routineStepChartSections(lesson, chart) : [];
 
   const isRunning = startedAtMs !== null;
   const elapsedSeconds = freeSession?.seconds ??
     Math.floor((sessionAccumulatedMs + elapsedMilliseconds(0, sessionStartedAtMs, nowMs)) / 1000);
-
-  const formProgress = routine?.steps.length ? Math.round(completeCount / routine.steps.length * 100) : 0;
 
   useEffect(() => {
     setStepIndex(0);
     setStepOutcomes({});
     setStepsOpen(false);
     setPendingStep(null);
-    setPanel(routine && !playableStep?.chart_id ? 'instructions' : 'chart');
+    setPanel(routine ? 'instructions' : 'chart');
     setStartedAtMs(null);
     setSessionAccumulatedMs(0);
     const sessionStart = performance.now();
@@ -349,7 +354,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     setLoopSections(stepDefaults.loop_sections.length ? stepDefaults.loop_sections.map(section => ({ ...section }))
       : [{ startBar: 1, endBar: Math.min(stepChart?.bars.length ?? chart.bars.length, 4), plays: 2 }]);
     setRepeatWholePlan(stepDefaults.repeat);
-    setPanel(hasMusicContent ? 'chart' : 'instructions');
+    setPanel('instructions');
   }, [routine?.id, stepIndex, stepDefaults, hasMusicContent]);
 
   useEffect(() => {
@@ -488,7 +493,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
 
   function saveChartAnnotation(bar: number, text: string) {
     const date = new Date().toISOString();
-    const updated = [...chartNotes.filter(item => item.bar !== bar), { bar, text, updatedAt: date }]
+    const updated = [...chartNotes.filter(item => item.bar !== bar), { ...chartNotes.find(item => item.bar === bar), bar, text, updatedAt: date }]
       .sort((a, b) => a.bar - b.bar);
     setChartNotes(updated);
     if (!persistLocalList(notesKey(userScope, chart.id), updated)) showToast('Could not save chart annotation on this device.');
@@ -503,7 +508,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     const now = new Date().toISOString();
     const existing = journalEntries.find(entry => entry.sessionId === sessionDraftId.current);
     const entry: PracticeJournalEntry = {
-      id: existing?.id ?? crypto.randomUUID(), sessionId: sessionDraftId.current,
+      ...existing, id: existing?.id ?? crypto.randomUUID(), sessionId: sessionDraftId.current,
       chartId: hasMusicContent ? chart.id : '', chartTitle: hasMusicContent ? chart.title : routine?.title ?? 'Free Practice', text,
       createdAt: existing?.createdAt ?? now, updatedAt: now, durationSeconds: elapsedSeconds,
       pitchCaptureIds,
@@ -755,17 +760,22 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
         // Notes and rating belong to the local class demo, not the session or
         // Supabase schema. Failures here must never cause a duplicate session.
         try {
-          localStorage.setItem(
-            'little-jazz-room:practice-feedback:v1:' + record.id,
-            JSON.stringify({ notes: savedNotes, rating: savedRating,
-              routineStepOutcomes: routine ? stepOutcomes : undefined }),
-          );
+          const key = 'little-jazz-room:practice-feedback:v1:' + record.id;
+          const previous: unknown = JSON.parse(localStorage.getItem(key) ?? '{}');
+          const existing = previous && typeof previous === 'object' && !Array.isArray(previous)
+            ? previous as Record<string, unknown> : {};
+          localStorage.setItem(key, JSON.stringify({
+            ...existing,
+            notes: existing.notes ?? savedNotes,
+            rating: existing.rating ?? savedRating,
+            routineStepOutcomes: routine ? stepOutcomes : undefined,
+          }));
         } catch { /* optional local feedback */ }
+        // Completion itself confirms the saved state; avoid a toast obscuring Done.
         setSaveState('saved');
-        showToast('Practice session saved.');
         return true;
       } catch {
-        setSaveState('idle');
+        setSaveState('error');
         savePromiseRef.current = null;
         showToast('Could not save your session. Please try again.');
         return false;
@@ -799,9 +809,12 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     sessionDraftId.current = crypto.randomUUID();
     setRating(0);
     setSaveState('idle');
-    setPanel(routine && !playableStep?.chart_id ? 'instructions' : 'chart');
+    setPanel(routine ? 'instructions' : 'chart');
     savePromiseRef.current = null;
   }
+
+  // Finish saves immediately; retries are explicit if storage fails.
+  useEffect(() => { if (completion) void saveSession(); }, [completion?.id]);
 
   if (standaloneRecording) {
     return <RecordingOnlyPractice recording={standaloneRecording} />;
@@ -831,71 +844,36 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
     </section>;
   }
 
+  const recapActivities: RecapActivity[] = routine ? routine.steps.map((step, index) => {
+    const exercise = exercises.find(item => item.id === step.exercise_id) ?? exercisesById[step.exercise_id];
+    const stepBpm = step.player_settings?.reference_bpm ?? exercise?.suggested_bpm;
+    const stepKey = step.player_settings?.chart_key;
+    return {
+      id: String(index),
+      title: step.snapshot?.title ?? exercise?.title ?? 'Exercise ' + (index + 1),
+      detail: [stepKey, stepBpm ? stepBpm + ' BPM' : null].filter(Boolean).join(' · '),
+      status: stepOutcomes[index] === 'complete' ? 'complete'
+        : stepOutcomes[index] === 'partial' ? 'partial' : 'unmarked',
+    };
+  }) : [{
+    id: chart.id,
+    title: activeRecording?.title ?? chart.title,
+    detail: chartKey + ' · ' + tempo + ' BPM',
+    status: 'practiced',
+  }];
+
   if (completion) {
-    return (
-      <section className="practice-complete" aria-label="Practice session complete">
-        <button className="practice-complete-close" type="button" aria-label="Go home and save session" onClick={() => void leaveAfterSave('/')}>×</button>
-        <div className="practice-complete-hero">
-          <div className="practice-confetti" aria-hidden="true">
-            {Array.from({ length: 24 }, (_, index) => <i key={index} />)}
-          </div>
-          <div className="practice-celebrate" aria-hidden="true">
-            <svg width="65" height="65" viewBox="0 0 80 80" fill="none">
-              <g stroke="#eab051" strokeWidth="3" strokeLinecap="round">
-                <path d="M40 5v7M10 38h8M62 38h8M17 17l6 6M57 17l-6 6M17 59l6-6M57 59l-6-6" />
-              </g>
-              <rect x="35" y="7" width="10" height="8" rx="2" fill="#285143" transform="rotate(8 40 11)" />
-              <path d="M57 16l6-6" stroke="#285143" strokeWidth="4" strokeLinecap="round"/>
-              <circle cx="40" cy="43" r="24" stroke="#285143" strokeWidth="5" fill="#fff9ed"/>
-              <path d="M40 24v19l-9 9" stroke="#285143" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="40" cy="43" r="3" fill="#285143"/>
-            </svg>
-          </div>
-          <h1>Great practice!</h1>
-          <p className="practice-complete-time">{formatPracticeTime(completion.durationSeconds, true)}</p>
-          <p className="practice-complete-date">{new Date(completion.finishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-        </div>
-        <div className="practice-complete-summary">
-          <img src={VISUAL_ASSETS.room.approved.twilight} alt="" />
-          <div>
-            <strong>{completion.title}</strong>
-            <span>{completion.routineId ? 'Guided Practice' : 'Free Practice'}</span>
-            {completion.routineOutcomes
-              ? <small>{completion.routineOutcomes.completed} of {completion.routineOutcomes.total} exercises completed
-                  {completion.routineOutcomes.partial ? ` · ${completion.routineOutcomes.partial} partially completed` : ''}
-                  {completion.routineOutcomes.unmarked ? ` · ${completion.routineOutcomes.unmarked} not marked` : ''}</small>
-              : <small>{completion.chartTitle} · {completion.recordingTitle ? 'Recorded backing track' : 'Chart only'}</small>}
-          </div>
-        </div>
-        <div className="practice-complete-notes">
-          <label className="practice-notes-label" htmlFor="practice-notes">Notes <span>Optional</span></label>
-          <textarea id="practice-notes" value={notes} maxLength={500} rows={2} disabled={saveState !== 'idle'} onChange={event => setNotes(event.target.value)} placeholder="What went well? What to work on?" />
-        </div>
-        <div className="practice-rating">
-          <span>Rating <small>Optional · on this device</small></span>
-          <div role="group" aria-label="Rate this practice session">
-            {[1, 2, 3, 4, 5].map(star => (
-              <button key={star} type="button" disabled={saveState !== 'idle'} aria-label={star + ' stars'} aria-pressed={rating === star} onClick={() => setRating(value => value === star ? 0 : star)}>
-                {star <= rating ? '★' : '☆'}
-              </button>
-            ))}
-          </div>
-        </div>
-        <button className="practice-primary practice-save" type="button" disabled={saveState !== 'idle'} onClick={() => void saveSession()}>
-          {saveState === 'saved' ? 'Session Saved ✓' : saveState === 'saving' ? 'Saving…' : 'Save Session'}
-        </button>
-        <button className="practice-secondary" type="button" onClick={() => void practiceAgain()}>Practice Again</button>
-        <div className="practice-complete-links">
-          <button className="practice-secondary" type="button" onClick={() => void leaveAfterSave('/progress')}>View Progress</button>
-          <button className="practice-secondary" type="button" onClick={() => void leaveAfterSave('/')}>Home</button>
-        </div>
-        <p className="practice-local-hint">Notes and ratings are stored locally for this demo.</p>
-        <div className="practice-complete-footer" aria-label="Your jazz companion is celebrating your practice">
-          <CatSprite catId={catId} variant="floor" size={170} className="practice-playing-cat" decorative />
-          <span>{JAZZ_CATS.find(cat => cat.id === catId)?.name ?? 'Your companion'} · great work!</span>
-        </div>
-      </section>
-    );
+    return <GreatPracticeCompletion key={completion.id}
+      record={completion}
+      title={completion.title}
+      subtitle={routine ? 'Guided Practice · ' + routine.steps.length + ' exercises'
+        : activeRecording ? 'Chart & recorded backing track' : 'Chart practice'}
+      summaryArt={VISUAL_ASSETS.room.approved.twilight}
+      activities={recapActivities}
+      status={saveState}
+      onRetry={() => void saveSession()}
+      onDone={() => void leaveAfterSave('/practice')}
+      onPracticeAgain={() => void practiceAgain()} />;
   }
 
   return (
@@ -905,13 +883,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
         <button className="practice-back" type="button" onClick={freeSession ? freeSession.onBack : () => navigate('/practice')} aria-label="Back to Practice">‹</button>
         <div className="practice-title-group">
           <h1 ref={titleRef} title={routine?.title ?? chart.title}>{routine?.title ?? chart.title}</h1>
-          <p>{routine
-            ? <button type="button" className="routine-step-trigger" onClick={() => setStepsOpen(true)}
-                aria-label="View all routine exercises" aria-haspopup="dialog">
-                <span>Step {stepIndex + 1} of {routine.steps.length} · {playableStep?.title ?? 'Exercise'}</span>
-                <span className="routine-step-trigger-icon" aria-hidden="true">⌄</span>
-              </button>
-            : formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>
+          {!routine && <p>{formatChartMeta(chart) + ' · Key ' + chart.concert_key.replace('b', '♭')}</p>}
           {showPlayerControls && chart.style_instruction && <p className="practice-chart-style">{chart.style_instruction}</p>}
         </div>
         {freeSession && <button type="button" className="fp-header-add" onClick={freeSession.onAdd}>+ Add...</button>}
@@ -955,43 +927,71 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
       </div>}
       {activeRecording && recordingError && <p role="alert" className="practice-recording-error">{recordingError}</p>}
 
-      {routine && <>
-        <div className="practice-routine-overview-bar">
-          <span>{completeCount} of {routine.steps.length} complete{partialCount ? ` · ${partialCount} partial` : ''}</span>
+      {routine && <div className="routine-step-progress">
+        <button type="button" className="routine-step-progress-trigger"
+          onClick={() => setStepsOpen(true)} aria-haspopup="dialog" aria-label="View all routine exercises"
+          title="View and select routine exercises">
+          <span className="routine-step-segments" role="progressbar" aria-label="Completed routine exercises"
+            aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={completeCount}>
+            {routine.steps.map((_, index) => <span key={index}
+              className={['routine-step-segment',
+                stepOutcomes[index] === 'complete' ? 'is-complete' :
+                stepOutcomes[index] === 'partial' ? 'is-partial' : 'is-incomplete',
+                index === stepIndex ? 'is-current' : ''].join(' ')}
+              aria-hidden="true" />)}
+          </span>
+          <svg className="routine-step-progress-chevron" width="18" height="18" viewBox="0 0 20 20"
+            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m5 7 5 5 5-5"/>
+          </svg>
+        </button>
+        <div className="routine-step-progress-label" aria-live="polite">
+          {stepIndex + 1}. {playableStep?.title ?? 'Exercise'}
         </div>
-        <div className="practice-guided-progress" role="progressbar" aria-label="Completed routine exercises"
-          aria-valuemin={0} aria-valuemax={routine.steps.length} aria-valuenow={completeCount}>
-          <span style={{ width: formProgress + '%' }} />
-        </div>
-      </>}
+      </div>}
 
       {routine && lesson && instructionsVisible ? (
         <div id="practice-instructions-panel" className="routine-instruction-area" aria-label="Exercise instructions">
-          {hasMusicContent && <div className="routine-context-action">
-            <button type="button" onClick={() => setPanel('chart')} aria-label="Return to chart">← Back to Chart</button>
-          </div>}
           <div className="practice-lesson-panel">
-            <GuidedLesson key={stepIndex} lesson={lesson} stepIndex={stepIndex} totalSteps={routine.steps.length} />
+            <GuidedLesson key={stepIndex} lesson={lesson} stepIndex={stepIndex}
+              totalSteps={routine.steps.length} hideTitle
+              stepChart={stepChart ?? undefined} chartKey={chartKey} writtenPitch={writtenPitch}
+              onSelectBar={moveToBar}
+              onSeeChart={hasMusicContent ? () => setPanel('chart') : undefined} />
           </div>
         </div>
       ) : (
         <div className="practice-notation-panel" role="tabpanel" aria-label="Jazz chord chart">
           <div className="practice-chart-toolbar">
-            <label htmlFor="player-chart">{routine && !playableStep?.chart_id ? "Reference chart" : "Study chart"}</label>
-            <select id="player-chart" value={chartId} disabled={Boolean(activeRecording || freeSession)} onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
-              {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
-            </select>
+            {routine ? <strong className="routine-chart-fixed-title">{chart.title}</strong> : <>
+              <label htmlFor="player-chart">Study chart</label>
+              <select id="player-chart" value={chartId} disabled={Boolean(activeRecording || freeSession)}
+                onChange={event => chooseChart(event.target.value)} aria-label="Choose practice chart">
+                {charts.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
+              </select>
+            </>}
             {routine && <button type="button" className="routine-context-link" onClick={() => setPanel('instructions')}
-              aria-label="View exercise instructions">Instructions <span aria-hidden="true">›</span></button>}
+              aria-label="Back to instructions">← Instructions</button>}
           </div>
           <div className={`practice-chart-scroll practice-chart-all ${chart.bars.length > 16 ? 'chart-dense' : 'chart-standard'} ${showMeasureNumbers ? 'practice-show-measure-numbers' : ''}`}
             aria-label={`Complete chord chart, all ${chart.bars.length} measures visible`}>
-            <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
+            {chartStepSections.length ? <div className="routine-step-sheet">
+              {chartStepSections.map(section => <div className="routine-step-sheet-row" key={section.stepNumber}
+                aria-label={`Instruction ${section.stepNumber}: bars ${section.startBar} through ${section.endBar}`}>
+                <span className="routine-step-sheet-number">{section.stepNumber}</span>
+                <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
+                  selectedBar={playhead.barIndex} activeBar={playhead.barIndex}
+                  activeEventIndex={playhead.eventIndex} loopRange={loopRange}
+                  displayRange={[section.startBar - 1, section.endBar]}
+                  onSelectBar={index => { moveToBar(index); setBubbleBar(index + 1); }}
+                  showSectionLabels={false} practiceSheet showMeasureNumbers={showMeasureNumbers}
+                  userAnnotations={userNoteMap} />
+              </div>)}
+            </div> : <ChordGrid chart={chart} chartKey={chartKey} writtenPitch={writtenPitch}
               selectedBar={playhead.barIndex} activeBar={playhead.barIndex}
               activeEventIndex={playhead.eventIndex} loopRange={loopRange}
               onSelectBar={index => { moveToBar(index); setBubbleBar(index + 1); }} showSectionLabels practiceSheet
-              showMeasureNumbers={showMeasureNumbers}
-              userAnnotations={userNoteMap} />
+              showMeasureNumbers={showMeasureNumbers} userAnnotations={userNoteMap} />}
           </div>
           {bubbleBar !== null &&
             chartNotes.some(note => note.bar === bubbleBar && chartAnnotationDisplay(note.text) === 'bubble') &&
@@ -1006,28 +1006,10 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
       )}
 
       {routine && hasMusicContent && panel === 'chart' && (
-        <aside className="practice-guided-head" aria-label="Current guided exercise">
-          <strong>{lesson?.title ?? playableStep?.title ?? 'Exercise'}</strong>
+        <aside className="practice-guided-head" aria-label="Exercise goal">
           <p>{lesson?.goal ?? 'Follow the exercise and practice at your own pace.'}</p>
         </aside>
       )}
-      {routine && <div className="routine-compact-status" role="group" aria-label="Exercise status">
-        <div className="routine-compact-checks">
-          <label>
-            <input type="checkbox" checked={Boolean(stepOutcomes[stepIndex])}
-              onChange={event => changeStepCheck('started', event.target.checked)} />
-            <span>Started</span>
-          </label>
-          <label>
-            <input type="checkbox" checked={stepOutcomes[stepIndex] === 'complete'}
-              onChange={event => changeStepCheck('complete', event.target.checked)} />
-            <span>Complete</span>
-          </label>
-        </div>
-        <span className="routine-compact-state" aria-live="polite">
-          {stepOutcomes[stepIndex] === 'complete' ? 'Complete' : stepOutcomes[stepIndex] === 'partial' ? 'Partial' : 'Incomplete'}
-        </span>
-      </div>}
 
       {showPlayerControls && <div className="practice-transport">
         <div className="practice-recording-seek">
@@ -1111,14 +1093,14 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
             <p className="practice-reference-note practice-demo-audio-note">{activeRecording
               ? 'Reference BPM and chart key only; audio stays at its original speed and pitch.'
               : 'Playback follows the chart visually at this BPM; no recorded audio is available.'}</p>
-            <PracticeInlineLoop options={demoOptions} counts={loopCounts} wholeCount={wholeCount}
+            {(activeRecording || displayUnavailableTools) && <PracticeInlineLoop options={demoOptions} counts={loopCounts} wholeCount={wholeCount}
               wholeSelected={wholeSelected} onCount={(id, count) =>
                 updateInlineLoop({ ...loopCounts, [id]: count }, wholeCount, false)}
               onWhole={count => updateInlineLoop(loopCounts, count, true)}
               onAdd={() => setAddSectionOpen(true)} onAdvanced={openLoop}
-              disabled={!activeRecording} />
+              disabled={!activeRecording} />}
       </div>}
-            <div className="practice-utility-row practice-demo-tools" aria-label="Practice tools">
+            <div className={`practice-utility-row practice-demo-tools ${showPlayerControls && displayUnavailableTools ? 'has-unavailable-tools' : 'hide-unavailable-tools'}`} aria-label="Practice tools">
               <div className="practice-demo-metronome-wrap">
                 <button className="practice-demo-tool-main" type="button" onClick={event => openTool('metronome', event.currentTarget)}>
                   <PracticeToolGlyph name="metronome" /><span>Metronome</span>
@@ -1132,37 +1114,78 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
               <button type="button" onClick={event => openTool('tuner', event.currentTarget)}>
                 <PracticeToolGlyph name="tuner" /><span>Tuner</span>
               </button>
-              {showPlayerControls && <button type="button" disabled title="Mixer is Preview only">
+              {showPlayerControls && displayUnavailableTools && <button type="button" disabled title="Mixer is Preview only">
                 <PracticeToolGlyph name="mixer" /><span>Mixer</span><small>Preview</small>
               </button>}
             </div>
-            {freeSession
-              ? <FreePracticeSessionBar seconds={elapsedSeconds} running={freeSession.clockRunning}
-                  onToggleTimer={freeSession.onPause} canPrevious={freeSession.canPrevious}
-                  canNext={freeSession.canNext} onPrevious={freeSession.onPrevious}
-                  onNext={freeSession.onNext} onFinish={freeSession.onFinish}
-                  onJournal={() => setJournalOpen(true)} />
-              : <div className="practice-session-row practice-demo-session-row">
-                  <PracticeTimeBadge seconds={elapsedSeconds} running={sessionStartedAtMs !== null}
-                    onTogglePause={toggleSessionTime} />
-                  <div className="practice-demo-session-actions">
-                    {routine && <div className="routine-session-navigation" aria-label="Routine step navigation">
-                      <button type="button" aria-label="Previous routine step" title="Previous step"
-                        disabled={stepIndex === 0} onClick={() => requestStep(stepIndex - 1)}>‹</button>
-                      <button type="button" aria-label="Next routine step" title="Next step"
-                        disabled={stepIndex === routine.steps.length - 1}
-                        onClick={() => requestStep(stepIndex + 1)}>›</button>
-                    </div>}
-                    <button className="practice-finish-action" type="button" onClick={finishSession}><span aria-hidden="true">✓</span> Finish Session</button>
-                    <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
-                      onClick={() => setJournalOpen(true)}>
-                      <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>}
-
+      {routine && !freeSession ? createPortal(
+        <section className="routine-dock-host practice-player practice-guided practice-demo-refresh"
+          aria-label="Routine session controls container">
+          <div className="routine-session-dock" aria-label="Routine session controls">
+          <div className="routine-dock-top">
+            <div className="routine-compact-status" role="group" aria-label="Exercise status">
+              <div className="routine-compact-checks">
+                <label>
+                  <input type="checkbox" checked={Boolean(stepOutcomes[stepIndex])}
+                    onChange={event => changeStepCheck('started', event.target.checked)} />
+                  <span>Started</span>
+                </label>
+                <label>
+                  <input type="checkbox" checked={stepOutcomes[stepIndex] === 'complete'}
+                    onChange={event => changeStepCheck('complete', event.target.checked)} />
+                  <span>Complete</span>
+                </label>
+              </div>
+              <span className="routine-compact-state" aria-live="polite">
+                {stepOutcomes[stepIndex] === 'complete' ? 'Complete' : stepOutcomes[stepIndex] === 'partial' ? 'Partial' : 'Incomplete'}
+              </span>
+            </div>
+            <div className="routine-session-navigation" aria-label="Routine step navigation">
+              <button type="button" aria-label="Previous routine step" title="Previous step"
+                disabled={stepIndex === 0} onClick={() => requestStep(stepIndex - 1)}>‹</button>
+              <button type="button" aria-label="Next routine step" title="Next step"
+                disabled={stepIndex === routine.steps.length - 1}
+                onClick={() => requestStep(stepIndex + 1)}>›</button>
+            </div>
+          </div>
+          <div className="practice-session-row practice-demo-session-row routine-dock-bottom">
+            <PracticeTimeBadge seconds={elapsedSeconds} running={sessionStartedAtMs !== null}
+              onTogglePause={toggleSessionTime} />
+            <div className="practice-demo-session-actions">
+              <button className="practice-finish-action" type="button" onClick={finishSession}>
+                <span aria-hidden="true">✓</span> Finish Session
+              </button>
+              <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
+                onClick={() => setJournalOpen(true)}>
+                <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        </section>, document.querySelector('.app-shell') ?? document.body
+      ) : freeSession
+        ? <FreePracticeSessionBar seconds={elapsedSeconds} running={freeSession.clockRunning}
+            onToggleTimer={freeSession.onPause} canPrevious={freeSession.canPrevious}
+            canNext={freeSession.canNext} onPrevious={freeSession.onPrevious}
+            onNext={freeSession.onNext} onFinish={freeSession.onFinish}
+            onJournal={() => setJournalOpen(true)} />
+        : <div className="practice-session-row practice-demo-session-row">
+            <PracticeTimeBadge seconds={elapsedSeconds} running={sessionStartedAtMs !== null}
+              onTogglePause={toggleSessionTime} />
+            <div className="practice-demo-session-actions">
+              <button className="practice-finish-action" type="button" onClick={finishSession}>
+                <span aria-hidden="true">✓</span> Finish Session
+              </button>
+              <button className="practice-demo-journal" type="button" aria-label="Open session journal" title="Session journal"
+                onClick={() => setJournalOpen(true)}>
+                <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5" y="3" width="15" height="18" rx="2"/><path d="M8 3v18M10.5 8h6M10.5 12h6M10.5 16h4"/>
+                </svg>
+              </button>
+            </div>
+          </div>}
 
     </section>
     {stepsOpen && routine && createPortal(
@@ -1172,7 +1195,7 @@ export function PracticePage({ freeSession }: { freeSession?: FreePracticePlayer
           onKeyDown={event => { if (event.key === 'Escape') setStepsOpen(false); }}>
           <header><h2>{routine.title}</h2><button type="button" aria-label="Close routine overview"
             onClick={() => setStepsOpen(false)} autoFocus>×</button></header>
-          <p>{completeCount} of {routine.steps.length} completed. Select any exercise to jump to it.</p>
+          <p>Choose an exercise to jump to it.</p>
           <div className="routine-class-list">
             {routine.steps.map((step, index) => {
               const target = resolvePlayableStep(step, exercises, exercisesById);
