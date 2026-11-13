@@ -117,9 +117,12 @@ function AchievementCard({ achievement, evidence, cats, done }: {
         aria-label={done ? 'Earned' : progress + ' out of ' + achievement.target + unit}>
         {done ? '✓ Earned' : progress + ' / ' + achievement.target + unit}
       </span>
-      {!done && <progress className="ajr-progress-track"
-        value={progress} max={achievement.target}
-        aria-label={achievement.name + ' progress'} />}
+      {!done && <div className="ajr-progress-track" role="progressbar"
+        aria-valuemin={0} aria-valuemax={achievement.target} aria-valuenow={progress}
+        aria-label={achievement.name + ' progress'}>
+        <span style={{ width: progress > 0
+          ? `max(4px, ${Math.min(100, progress / achievement.target * 100)}%)` : '0%' }} />
+      </div>}
     </div>
   </article>;
 }
@@ -129,7 +132,7 @@ function SectionTitle({ children, upcoming = false }: {
 }) {
   return <h2 className={'ajr-section-title' + (upcoming ? ' ajr-section-next' : '')}>
     <span className="ajr-section-icon" aria-hidden="true">
-      {upcoming ? '♙' : '♫'}
+      {upcoming ? <img src="/achievements/ui/plant-pot.png" alt="" /> : '♫'}
     </span>
     <span className="ajr-section-label">{children}</span>
     <span className="ajr-section-rule" aria-hidden="true" />
@@ -227,6 +230,15 @@ export function AchievementsPage() {
       <p>A little space that grows with your practice.</p>
     </div>
 
+    <div className="ajr-room-toolbar">
+      {previewAll && <small className="ajr-preview-notice">Preview only · Unlock with practice</small>}
+      <button type="button" className="ajr-preview-toggle" aria-pressed={previewAll}
+        aria-label={previewAll ? 'Show only earned room decorations' : 'Preview the fully furnished room'}
+        onClick={() => { setPreviewAll(value => !value); setSelectedItem(null); }}>
+        {previewAll ? '✦ Show my room' : '✧ Preview all decor'}
+      </button>
+    </div>
+
     <div className="ajr-room-frame">
       <div className="ajr-scene" role="group" aria-label="Your customizable jazz room">
         <img className="ajr-room-image" src="/achievements/empty-room-new.webp"
@@ -252,15 +264,8 @@ export function AchievementsPage() {
               </button>}
           </div>;
         })}
-        <button type="button" className="ajr-preview-toggle" aria-pressed={previewAll}
-          aria-label={previewAll ? 'Show only earned room decorations' : 'Preview the fully furnished room'}
-          onClick={() => { setPreviewAll(value => !value); setSelectedItem(null); }}>
-          {previewAll ? '✦ My room' : '✧ Preview'}
-        </button>
       </div>
     </div>
-
-    {previewAll && <small className="ajr-preview-notice">Preview only. Items unlock through practice.</small>}
 
     {selected && <div className="ajr-item-detail" role="region" aria-label={selected.label + ' details'}>
       <div>
@@ -324,16 +329,19 @@ export function AchievementsPage() {
           cats={unlockedCats} done />)}
       </section>}
       {upcoming.length > 0 && <section aria-labelledby="ajr-upcoming-heading">
-        <div id="ajr-upcoming-heading">
-          <SectionTitle upcoming>Next Unlocks</SectionTitle>
+        <div className="ajr-next-heading">
+          <div id="ajr-upcoming-heading">
+            <SectionTitle upcoming>Next Unlocks</SectionTitle>
+          </div>
+          {upcoming.length > 1 && <button type="button" className="ajr-more"
+            aria-expanded={showAllUpcoming}
+            onClick={() => setShowAllUpcoming(value => !value)}>
+            {showAllUpcoming ? 'Show fewer' : `See all ${upcoming.length}`}
+          </button>}
         </div>
         {(showAllUpcoming ? upcoming : upcoming.slice(0, 1)).map(a =>
           <AchievementCard key={a.id} achievement={a} evidence={evidence}
             cats={unlockedCats} done={false} />)}
-        {upcoming.length > 1 && <button type="button" className="ajr-more"
-          onClick={() => setShowAllUpcoming(value => !value)}>
-          {showAllUpcoming ? 'Show fewer' : 'See all ' + upcoming.length + ' upcoming milestones'}
-        </button>}
       </section>}
       {upcoming.length === 0 && <p className="ajr-all-earned">✦ All current milestones unlocked. Keep making music!</p>}
     </div> : <section className="ajr-list" aria-labelledby="ajr-collection-heading">

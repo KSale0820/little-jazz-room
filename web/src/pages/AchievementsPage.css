@@ -917,3 +917,146 @@ html[data-theme="dark"] .ajr-preview-notice { background: #e9e7cf; }
 @media (prefers-reduced-motion: reduce) {
   .ajr-achievement,.ajr-tabs,.ajr-room-plaque { animation: none !important; }
 }
+
+
+/* Mockup polish 3: unobstructed room and reachable unlock navigation.
+   Local overrides only; the shared four-button bottom nav remains unchanged. */
+.ajr-page {
+  padding-bottom: max(140px, calc(104px + env(safe-area-inset-bottom)));
+}
+.ajr-intro {
+  padding-top: 4px;
+  padding-bottom: 5px;
+}
+.ajr-room-toolbar {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  min-height: 28px;
+  margin: 0 2px 5px;
+}
+.ajr-room-toolbar .ajr-preview-toggle {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-height: 27px;
+  margin: 0;
+  padding: 4px 10px;
+  border: 1px solid #9fb489;
+  border-radius: 9px;
+  background: #edf1db;
+  color: #315e3c;
+  font-size: 11px;
+  font-weight: 740;
+  line-height: 1.1;
+  box-shadow: inset 0 1px #fffdf0;
+}
+.ajr-room-toolbar .ajr-preview-toggle[aria-pressed="true"] {
+  color: #fff9e7;
+  background: #356c47;
+  border-color: #285535;
+}
+.ajr-room-toolbar .ajr-preview-notice {
+  position: static;
+  padding: 0;
+  max-width: 58%;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #587456;
+  font-size: 10px;
+  line-height: 1.25;
+  text-align: right;
+}
+.ajr-next-heading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 1px 9px;
+}
+.ajr-next-heading > div {
+  min-width: 0;
+  flex: 1;
+}
+.ajr-next-heading .ajr-section-title {
+  margin: 0;
+}
+.ajr-next-heading .ajr-section-rule {
+  min-width: 8px;
+}
+.ajr-next-heading .ajr-more {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 29px;
+  margin: 0;
+  padding: 5px 9px;
+  border: 1px solid #7ca275;
+  border-radius: 9px;
+  background: #eef2df;
+  color: #246039;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.ajr-next-heading .ajr-more:hover {
+  background: #dfe9cc;
+}
+.ajr-next-heading .ajr-more[aria-expanded="true"] {
+  background: #356e47;
+  color: #fff9e9;
+}
+.ajr-section-next .ajr-section-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 21px;
+}
+.ajr-section-next .ajr-section-icon img {
+  display: block;
+  width: 19px;
+  height: 20px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.ajr-achievement-status { gap: 5px; }
+.ajr-progress-track {
+  display: block;
+  height: 10px;
+  padding: 1px;
+  overflow: hidden;
+  border: 1px solid #738e5b;
+  border-radius: 999px;
+  background: #e6e6d5;
+  box-shadow: inset 0 1px 2px #596c322b;
+}
+.ajr-progress-track > span {
+  display: block;
+  height: 100%;
+  max-width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(#b9d482 0%, #81ac5e 56%, #659447 100%);
+  box-shadow: inset 0 1px #f1ffb4;
+  transition: width .2s ease;
+}
+@media (max-width: 380px) {
+  .ajr-room-toolbar { min-height: 27px; }
+  .ajr-room-toolbar .ajr-preview-toggle { padding: 4px 8px; font-size: 10px; }
+  .ajr-room-toolbar .ajr-preview-notice { font-size: 9px; max-width: 54%; }
+  .ajr-next-heading { gap: 4px; }
+  .ajr-next-heading .ajr-more { min-height: 27px; font-size: 9px; padding-inline: 6px; }
+  .ajr-section-next .ajr-section-label { font-size: 15px; padding-left: 8px; padding-right: 13px; }
+  .ajr-section-next .ajr-section-icon { flex-basis: 16px; width: 16px; }
+  .ajr-section-next .ajr-section-icon img { width: 16px; height: 18px; }
+}
+html[data-theme="dark"] .ajr-room-toolbar .ajr-preview-notice { color: #d4e6c8; }
+@media (prefers-reduced-motion: reduce) {
+  .ajr-progress-track > span { transition: none; }
+}
