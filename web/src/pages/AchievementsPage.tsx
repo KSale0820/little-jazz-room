@@ -72,7 +72,7 @@ export function AchievementsPage() {
   const [category, setCategory] = useState<CollectionCategory>('All');
   const [editing, setEditing] = useState(false);
   const [selectedItem, setSelectedItem] = useState<RoomItemId | null>(null);
-  const [imageSrc, setImageSrc] = useState('/achievements/room-base.png');
+  const [imageSrc, setImageSrc] = useState('/achievements/empty-room-new.webp');
   const [saveError, setSaveError] = useState(false);
 
   useEffect(() => { saveEarned(scope, earned); }, [scope, earnedSignature]);
@@ -108,7 +108,8 @@ export function AchievementsPage() {
       <div className="ajr-room-frame">
         <div className="ajr-scene" role="group" aria-label="Your customizable jazz room">
           <img className="ajr-room-image" src={imageSrc} onError={() => {
-            if (imageSrc !== '/visuals/room/h01-approved-room.jpeg') setImageSrc('/visuals/room/h01-approved-room.jpeg');
+            if (imageSrc === '/achievements/empty-room-new.webp') setImageSrc('/achievements/room-base.png');
+            else if (imageSrc !== '/visuals/room/h01-approved-room.jpeg') setImageSrc('/visuals/room/h01-approved-room.jpeg');
           }} alt="Cozy empty jazz room with a rainy window, upright piano, bookshelf and rug" />
           {ITEMS.map(item => {
             if (!unlockedIds.includes(item.id) || !isItemVisible(item.id, preferences)) return null;
