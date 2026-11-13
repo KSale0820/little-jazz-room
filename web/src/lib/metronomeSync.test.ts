@@ -24,6 +24,14 @@ describe('playback-aligned metronome',()=>{
     expect(metronomeClickOptions(4)).toEqual([1,2,4,8,16]);
     expect(metronomeClickOptions(3)).toEqual([1,3,6,12]);
     expect(metronomeClickOptions(6)).toEqual([1,2,3,6,12,24]);
+    expect(metronomeClickOptions(1)).toEqual([1,2,4]);
+    expect(metronomeClickOptions(5)).toEqual([1,5,10,20]);
+    expect(metronomeClickOptions(7)).toEqual([1,7,14,28]);
+  });
+  it('falls back to a single click for invalid meter counts',()=>{
+    expect(metronomeClickOptions(0)).toEqual([1]);
+    expect(metronomeClickOptions(-3)).toEqual([1]);
+    expect(metronomeClickOptions(3.5)).toEqual([1]);
   });
   it('uses the actual notated meter with quarter-note BPM',()=>{
     expect(secondsBetweenClicks(120,[4,4],4)).toBeCloseTo(.5);

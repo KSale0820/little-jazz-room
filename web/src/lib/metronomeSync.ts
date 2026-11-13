@@ -1,9 +1,9 @@
-/** Subdivision values divide the notated measure evenly or subdivide it by 2/4. */
+/** Exact bar divisors plus 2x and 4x beat subdivisions (no unsupported triplets). */
 export function metronomeClickOptions(beatsPerBar: number): number[] {
   if (!Number.isInteger(beatsPerBar) || beatsPerBar < 1) return [1];
   const maximum = Math.min(32, beatsPerBar * 4);
   return Array.from({length: maximum}, (_, i) => i + 1)
-    .filter(n => beatsPerBar % n === 0 || (n % beatsPerBar === 0 && n / beatsPerBar <= 4));
+    .filter(n => beatsPerBar % n === 0 || n === beatsPerBar * 2 || n === beatsPerBar * 4);
 }
 /** Quarter-note BPM, expressed in the source meter (including e.g. 6/8). */
 export function secondsBetweenClicks(bpm: number, meter: readonly [number, number], clicksPerBar: number): number {
