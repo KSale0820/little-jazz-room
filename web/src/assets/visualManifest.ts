@@ -79,6 +79,11 @@ export const VISUAL_ASSETS = {
     roomBackground: '/visuals/progress/g01-room-background.png',
     goalLeaves: '/visuals/progress/g01-goal-leaves.png',
     sleepCushion: '/visuals/shared-mvp/companion-surfaces/evergreen-sleep-cushion.png',
+    /** Existing class-demo Progress pixel art, now indexed with the other installed visual assets. */
+    pixelTrophy: '/visuals/progress/pixel-trophy-new.png',
+    pixelTrophySvg: '/visuals/progress/pixel-trophy.svg',
+    practiceJournal: '/visuals/progress/practice-journal.png',
+    streakFire: '/visuals/pixel-motifs/streak-fire.png',
   },
   garden: {
     stage0: '/visuals/garden/garden-stage-0.png',
