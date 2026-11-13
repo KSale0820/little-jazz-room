@@ -44,14 +44,6 @@ function BackIcon() {
     strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 4-8 8 8 8" /></svg>;
 }
 
-function PencilIcon() {
-  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"
-    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="m5 15-1 5 5-1L20 8a2.3 2.3 0 0 0-4-4L5 15Z" />
-    <path d="m14 6 4 4" />
-  </svg>;
-}
-
 function MedalIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
     strokeLinejoin="round" aria-hidden="true">
@@ -160,7 +152,6 @@ export function AchievementsPage() {
   const [preferences, setPreferences] = useState<RoomPreferences>(() => readRoomPreferences(scope));
   const [tab, setTab] = useState<'achievements' | 'collection'>('achievements');
   const [category, setCategory] = useState<CollectionCategory>('All');
-  const [editing, setEditing] = useState(false);
   const [previewAll, setPreviewAll] = useState(false);
   const [selectedItem, setSelectedItem] = useState<RoomItemId | null>(null);
   const [saveError, setSaveError] = useState(false);
@@ -169,7 +160,6 @@ export function AchievementsPage() {
   useEffect(() => {
     setPreferences(readRoomPreferences(scope));
     setSelectedItem(null);
-    setEditing(false);
     setSaveError(false);
   }, [scope]);
 
@@ -255,7 +245,7 @@ export function AchievementsPage() {
               ? <span className="ajr-structural-art" aria-hidden="true"><RoomSprite item={item} /></span>
               : <button type="button"
                 className={'ajr-object has-fixed-box ' +
-                  (item.id === 'piano-lamp' ? 'is-lamp ' : '') + (editing ? 'is-editing' : '')}
+                  (item.id === 'piano-lamp' ? 'is-lamp' : '')}
                 aria-label={'Inspect ' + item.label}
                 onClick={() => setSelectedItem(item.id)}>
                 <RoomSprite item={item} />
@@ -266,12 +256,6 @@ export function AchievementsPage() {
           aria-label={previewAll ? 'Show only earned room decorations' : 'Preview the fully furnished room'}
           onClick={() => { setPreviewAll(value => !value); setSelectedItem(null); }}>
           {previewAll ? '✦ My room' : '✧ Preview'}
-        </button>
-        <button type="button" className="ajr-decorate"
-          aria-pressed={editing}
-          onClick={() => { setEditing(value => !value); setTab('collection'); setSelectedItem(null); }}>
-          {editing ? <span aria-hidden="true">✓</span> : <PencilIcon />}
-          {editing ? 'Done' : 'Decorate'}
         </button>
       </div>
     </div>
@@ -357,9 +341,9 @@ export function AchievementsPage() {
         <div><h2 id="ajr-collection-heading">Your Room Collection</h2>
           <p className="ajr-hint">The little things that make your jazz room yours.</p>
         </div>
-        {editing && <button type="button" className="ajr-reset" onClick={resetArrangement}>
+        <button type="button" className="ajr-reset" onClick={resetArrangement}>
           Reset arrangement
-        </button>}
+        </button>
       </div>
       <div className="ajr-filters" role="group" aria-label="Collection category">
         {CATEGORIES.map(c => <button key={c} type="button" aria-pressed={category === c}
@@ -395,7 +379,7 @@ export function AchievementsPage() {
               {option === 'sitting' ? 'Sitting' : 'Sleeping'}
             </button>)}
           </div>}
-          {editing && unlocked && visible && item.slots.length > 1 && <div className="ajr-placement" role="group" aria-label={label + ' position'}>
+          {unlocked && visible && item.slots.length > 1 && <div className="ajr-placement" role="group" aria-label={label + ' position'}>
             {item.slots.map((_, index) => <button key={index} type="button"
               aria-pressed={chosen === index} onClick={() => place(primary, index)}>
               Spot {index + 1}
