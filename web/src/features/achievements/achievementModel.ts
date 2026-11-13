@@ -22,11 +22,14 @@ export const BONUS_ROOM_REWARDS = [
   { after: 'first-hour', reward: 'bookshelf-cat' },
   { after: 'five-hours', reward: 'piano-busts' },
 ] as const;
-/** Baseline furniture is visible from day one; extra decorations use the existing milestones. */
+/** Only permanent wall shelves and Luna start unlocked. */
 export const STARTER_ROOM_ITEMS = [
-  'curtain-left', 'curtain-right', 'wall-shelves', 'couch', 'luna-sitting',
+  'wall-shelves', 'luna-sitting',
 ] as const;
 export const EXTRA_ROOM_REWARDS = [
+  { after: 'first-notes', reward: 'couch' },
+  { after: 'three-days', reward: 'curtain-left' },
+  { after: 'three-days', reward: 'curtain-right' },
   { after: 'first-notes', reward: 'jazz-portraits' },
   { after: 'groove', reward: 'wall-shelf-plants' },
   { after: 'ten-hours', reward: 'cat-toys' },

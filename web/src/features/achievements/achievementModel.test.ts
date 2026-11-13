@@ -21,8 +21,14 @@ describe('room achievements', () => {
     expect(deriveEarned(evidence)).toEqual([]);
     const starter = unlockedRoomItems([]);
     expect(starter).toContain('luna');
-    expect(starter).toContain('curtain-left');
-    expect(starter).toContain('couch');
+    expect(starter).toContain('luna-sitting');
+    expect(starter).toContain('wall-shelves');
+    expect(starter).not.toContain('curtain-left');
+    expect(starter).not.toContain('curtain-right');
+    expect(starter).not.toContain('couch');
+    expect(unlockedRoomItems(['first-notes'])).toContain('couch');
+    expect(unlockedRoomItems(['three-days'])).toContain('curtain-left');
+    expect(unlockedRoomItems(['three-days'])).toContain('curtain-right');
     expect(starter).not.toContain('milo');
     expect(starter).not.toContain('maple');
     const firstHour = unlockedRoomItems(['first-hour']);
@@ -72,7 +78,7 @@ describe('room achievements', () => {
     expect(readEarned('a', store)).toEqual(['first-notes']);
     expect(readEarned('b', store)).toEqual([]);
     const preferences = readRoomPreferences('a', store);
-    expect(isItemVisible('luna', preferences)).toBe(false);
+    expect(isItemVisible('luna', preferences)).toBe(true);
     expect(isItemVisible('bookshelf-plants', preferences)).toBe(true);
     preferences.visibility['bookshelf-plants'] = false;
     expect(saveRoomPreferences('a', preferences, store)).toBe(true);
@@ -82,6 +88,10 @@ describe('room achievements', () => {
     expect(saveRoomPreferences('a', preferences, store)).toBe(true);
     expect(readRoomPreferences('a', store).placements?.milo).toBe(1);
     expect(readRoomPreferences('b', store).placements?.milo).toBeUndefined();
+    preferences.catPoses = { luna: 'sleeping', milo: 'sitting', maple: 'sitting' };
+    expect(saveRoomPreferences('a', preferences, store)).toBe(true);
+    expect(readRoomPreferences('a', store).catPoses?.luna).toBe('sleeping');
+    expect(readRoomPreferences('b', store).catPoses?.luna).toBe('sitting');
     const legacy = memoryStore();
     legacy.setItem('little-jazz-room:studio-layout:v1:old', JSON.stringify({ visibility: { armchair: false } }));
     expect(isItemVisible('bookshelf-plants', readRoomPreferences('old', legacy))).toBe(false);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { ROOM_ART, ROOM_ATLAS, ROOM_CANVAS } from './roomArt';
+import { ROOM_ART, ROOM_ATLAS, ROOM_CANVAS, shouldRenderRoomItem, ROOM_CAT_ITEMS } from './roomArt';
 import { ACHIEVEMENTS, unlockedRoomItems } from './achievementModel';
+import { readRoomPreferences } from './roomStore';
 
 describe('approved achievements room layout', () => {
   it('has 24 decorations plus all six unique Luna/Milo/Maple poses', () => {
@@ -29,11 +30,37 @@ describe('approved achievements room layout', () => {
   it('keeps eight original practice milestones and lets starter art appear without earning rewards', () => {
     expect(ACHIEVEMENTS).toHaveLength(8);
     const starter = unlockedRoomItems([]);
-    expect(starter).toContain('curtain-left');
+    expect(starter).not.toContain('curtain-left');
+    expect(starter).not.toContain('curtain-right');
+    expect(starter).not.toContain('couch');
+    expect(unlockedRoomItems(['three-days'])).toContain('curtain-left');
+    expect(unlockedRoomItems(['first-notes'])).toContain('couch');
     expect(starter).toContain('luna-sitting');
+    expect(starter).toContain('luna');
+    expect(ROOM_ART.find(item => item.id === 'luna-sitting')?.y).toBe(387);
     expect(starter).not.toContain('milo');
     expect(starter).not.toContain('maple');
     expect(unlockedRoomItems(['first-hour'])).toContain('milo-sleeping');
     expect(unlockedRoomItems(['five-hours'])).toContain('maple-sleeping');
   });
+  it('shows no more than one cat pose per companion, including full preview', () => {
+    const preferences = readRoomPreferences('test', null);
+    const unlocked = unlockedRoomItems(['first-hour', 'five-hours']);
+    for (const cat of ['luna', 'milo', 'maple'] as const) {
+      const poses = ROOM_CAT_ITEMS[cat];
+      expect([poses.sitting, poses.sleeping]
+        .filter(id => shouldRenderRoomItem(id, unlocked, preferences))).toHaveLength(1);
+      expect([poses.sitting, poses.sleeping]
+        .filter(id => shouldRenderRoomItem(id, unlocked, preferences, true))).toHaveLength(1);
+    }
+    preferences.catPoses = { luna: 'sleeping', milo: 'sleeping', maple: 'sleeping' };
+    for (const cat of ['luna', 'milo', 'maple'] as const) {
+      const poses = ROOM_CAT_ITEMS[cat];
+      expect(shouldRenderRoomItem(poses.sitting, unlocked, preferences, true)).toBe(false);
+      expect(shouldRenderRoomItem(poses.sleeping, unlocked, preferences, true)).toBe(true);
+    }
+    expect(shouldRenderRoomItem('couch', unlockedRoomItems([]), preferences)).toBe(false);
+    expect(shouldRenderRoomItem('couch', unlockedRoomItems([]), preferences, true)).toBe(true);
+  });
+
 });

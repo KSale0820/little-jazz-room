@@ -10,9 +10,11 @@ import {
 } from '../features/achievements/achievementModel';
 import {
   isItemVisible, readEarned, readRoomPreferences, saveEarned, saveRoomPreferences,
-  type RoomPreferences,
+  type RoomCatName, type RoomCatPose, type RoomPreferences,
 } from '../features/achievements/roomStore';
-import { ROOM_ART, ROOM_ATLAS, ROOM_CANVAS, type RoomArtItem } from '../features/achievements/roomArt';
+import { ROOM_ART, ROOM_ATLAS, ROOM_CANVAS, ROOM_CAT_ITEMS,
+  catNameForRoomItem, catPoseItem, shouldRenderRoomItem, type RoomArtItem,
+} from '../features/achievements/roomArt';
 import './AchievementsPage.css';
 
 type Placement = { x: number; y: number; w: number; h?: number; z?: number };
@@ -27,6 +29,10 @@ const ITEMS: readonly RoomItem[] = ROOM_ART.map((item, index) => ({
     z: index + 2,
   }],
 }));
+/* The collection lists each cat once, while the room renders the selected pose only. */
+const COLLECTION_ITEMS = ITEMS.filter(item =>
+  item.id !== 'luna-sitting' && item.id !== 'milo-sleeping' && item.id !== 'maple-sleeping');
+const CAT_DISPLAY_NAMES: Record<RoomCatName, string> = { luna: 'Luna', milo: 'Milo', maple: 'Maple' };
 
 const CATEGORIES = ['All', 'Cats', 'Plants', 'Music', 'Furniture', 'Lighting'] as const;
 type CollectionCategory = typeof CATEGORIES[number];
@@ -151,11 +157,21 @@ export function AchievementsPage() {
     setSaveError(!saveRoomPreferences(scope, next));
   };
   const toggle = (id: RoomItemId) => {
-    if (!unlockedIds.includes(id)) return;
+    const cat = catNameForRoomItem(id);
+    const primary = cat ? ROOM_CAT_ITEMS[cat].main : id;
+    if (!unlockedIds.includes(primary)) return;
     updatePreferences({
       ...preferences,
-      visibility: { ...preferences.visibility, [id]: !isItemVisible(id, preferences) },
+      visibility: { ...preferences.visibility, [primary]: !isItemVisible(primary, preferences) },
     });
+  };
+  const setCatPose = (cat: RoomCatName, pose: RoomCatPose) => {
+    if (!unlockedIds.includes(ROOM_CAT_ITEMS[cat].main)) return;
+    updatePreferences({
+      ...preferences,
+      catPoses: { ...preferences.catPoses, [cat]: pose },
+    });
+    setSelectedItem(catPoseItem(cat, pose));
   };
   const place = (id: RoomItemId, index: number) => {
     if (!unlockedIds.includes(id)) return;
@@ -165,13 +181,16 @@ export function AchievementsPage() {
     });
   };
   const resetArrangement = () => {
-    updatePreferences({ ...preferences, visibility: { luna: false }, placements: {} });
+    updatePreferences({ ...preferences, visibility: {}, placements: {}, catPoses: {} });
     setSelectedItem(null);
   };
   const selected = ITEMS.find(item => item.id === selectedItem);
-  const selectedAchievement = selectedItem ? sourceAchievement(selectedItem) : undefined;
+  const selectedCat = selectedItem ? catNameForRoomItem(selectedItem) : null;
+  const selectedPrimary = selectedCat ? ROOM_CAT_ITEMS[selectedCat].main : selectedItem;
+  const selectedUnlocked = selectedPrimary != null && unlockedIds.includes(selectedPrimary);
+  const selectedAchievement = selectedPrimary ? sourceAchievement(selectedPrimary) : undefined;
   const visibleCount = ITEMS.filter(item =>
-    unlockedIds.includes(item.id) && isItemVisible(item.id, preferences)).length;
+    shouldRenderRoomItem(item.id, unlockedIds, preferences)).length;
   const upcoming = ACHIEVEMENTS.filter(a => !earned.includes(a.id));
   const completed = ACHIEVEMENTS.filter(a => earned.includes(a.id));
 
@@ -193,8 +212,10 @@ export function AchievementsPage() {
       <div className="ajr-scene" role="group" aria-label="Your customizable jazz room">
         <img className="ajr-room-image" src="/achievements/empty-room-new.webp"
           alt="Cozy rainy jazz studio with an upright piano, window, rug and empty bookshelf" />
+        {(previewAll || (unlockedIds.includes('piano-lamp') && isItemVisible('piano-lamp', preferences))) &&
+          <span className="ajr-lamp-wall-glow" aria-hidden="true" />}
         {ITEMS.map(item => {
-          if (!previewAll && (!unlockedIds.includes(item.id) || !isItemVisible(item.id, preferences))) return null;
+          if (!shouldRenderRoomItem(item.id, unlockedIds, preferences, previewAll)) return null;
           const index = preferences.placements?.[item.id] === 1 ? 1 : 0;
           const slot = item.slots[index] ?? item.slots[0];
           const style: CSSProperties = {
@@ -203,7 +224,6 @@ export function AchievementsPage() {
             transform: `rotate(${item.rotation}deg)`,
           };
           return <div key={item.id} className="ajr-room-layer" style={style}>
-            {item.id === 'piano-lamp' && <span className="ajr-lamp-soft-glow" aria-hidden="true" />}
             <button type="button"
               className={'ajr-object has-fixed-box ' + (editing ? 'is-editing' : '')}
               aria-label={'Inspect ' + item.label}
@@ -231,11 +251,19 @@ export function AchievementsPage() {
 
     {selected && <div className="ajr-item-detail" role="region" aria-label={selected.label + ' details'}>
       <div>
-        <strong>{selected.label}</strong>
+        <strong>{selectedCat ? CAT_DISPLAY_NAMES[selectedCat] : selected.label}</strong>
         <p>{selectedAchievement ? 'Unlocks with “' + selectedAchievement.name + '”' : 'Starter room decoration.'}</p>
+        {selectedCat && selectedUnlocked && <div className="ajr-cat-poses" role="group"
+          aria-label={'Choose ' + CAT_DISPLAY_NAMES[selectedCat] + ' pose'}>
+          {(['sitting', 'sleeping'] as const).map(pose => <button key={pose} type="button"
+            aria-pressed={(preferences.catPoses?.[selectedCat] ?? 'sitting') === pose}
+            onClick={() => setCatPose(selectedCat, pose)}>
+            {pose === 'sitting' ? 'Sitting' : 'Sleeping'}
+          </button>)}
+        </div>}
       </div>
-      {unlockedIds.includes(selected.id) && <button type="button" className="ajr-item-action" onClick={() => toggle(selected.id)}>
-        {isItemVisible(selected.id, preferences) ? 'Hide' : 'Show'}
+      {selectedUnlocked && selectedPrimary && <button type="button" className="ajr-item-action" onClick={() => toggle(selectedPrimary)}>
+        {isItemVisible(selectedPrimary, preferences) ? 'Hide' : 'Show'}
       </button>}
       <button type="button" className="ajr-dismiss" aria-label="Close item details" onClick={() => setSelectedItem(null)}>×</button>
     </div>}
@@ -282,29 +310,40 @@ export function AchievementsPage() {
         {CATEGORIES.map(c => <button key={c} type="button" aria-pressed={category === c}
           onClick={() => setCategory(c)}>{c}</button>)}
       </div>
-      {ITEMS.filter(i => category === 'All' || i.category === category).map(item => {
-        const unlocked = unlockedIds.includes(item.id);
-        const visible = unlocked && isItemVisible(item.id, preferences);
-        const chosen = preferences.placements?.[item.id] === 1 ? 1 : 0;
-        return <div className={'ajr-collection-item ' + (!unlocked ? 'locked' : '')} key={item.id}>
+      {COLLECTION_ITEMS.filter(i => category === 'All' || i.category === category).map(item => {
+        const cat = catNameForRoomItem(item.id);
+        const primary = cat ? ROOM_CAT_ITEMS[cat].main : item.id;
+        const pose = cat ? preferences.catPoses?.[cat] ?? 'sitting' : null;
+        const displayed = cat ? ITEMS.find(i => i.id === catPoseItem(cat, pose!)) ?? item : item;
+        const unlocked = unlockedIds.includes(primary);
+        const visible = unlocked && isItemVisible(primary, preferences);
+        const chosen = preferences.placements?.[primary] === 1 ? 1 : 0;
+        const label = cat ? CAT_DISPLAY_NAMES[cat] : item.label;
+        return <div className={'ajr-collection-item ' + (!unlocked ? 'locked' : '')} key={primary}>
           <span className="ajr-collection-icon" aria-hidden="true">
-            <ItemThumbnail item={item} />
+            <ItemThumbnail item={displayed} />
           </span>
           <div className="ajr-collection-content">
-            <strong>{item.label}</strong>
+            <strong>{label}</strong>
             <small>{unlocked ? item.category : 'Locked · ' +
-              (sourceAchievement(item.id)?.name ?? 'Starter')}</small>
-            {editing && unlocked && visible && item.slots.length > 1 && <div className="ajr-placement" role="group" aria-label={item.label + ' position'}>
+              (sourceAchievement(primary)?.name ?? 'Starter')}</small>
+            {cat && unlocked && <div className="ajr-cat-poses" role="group" aria-label={'Choose ' + label + ' pose'}>
+              {(['sitting', 'sleeping'] as const).map(option => <button type="button" key={option}
+                aria-pressed={pose === option} onClick={() => setCatPose(cat, option)}>
+                {option === 'sitting' ? 'Sitting' : 'Sleeping'}
+              </button>)}
+            </div>}
+            {editing && unlocked && visible && item.slots.length > 1 && <div className="ajr-placement" role="group" aria-label={label + ' position'}>
               {item.slots.map((_, index) => <button key={index} type="button"
                 aria-pressed={chosen === index}
-                onClick={() => place(item.id, index)}>
+                onClick={() => place(primary, index)}>
                 Spot {index + 1}
               </button>)}
             </div>}
           </div>
           <button type="button" role="switch" aria-checked={visible}
-            disabled={!unlocked} aria-label={'Show ' + item.label + ' in your room'}
-            className={'ajr-toggle ' + (visible ? 'on' : '')} onClick={() => toggle(item.id)}>
+            disabled={!unlocked} aria-label={'Show ' + label + ' in your room'}
+            className={'ajr-toggle ' + (visible ? 'on' : '')} onClick={() => toggle(primary)}>
             <span />
           </button>
         </div>;

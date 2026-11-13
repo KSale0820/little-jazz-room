@@ -354,3 +354,46 @@ html[data-theme='dark'] .ajr-page .ajr-count { background: #51403a; }
 }
 .ajr-preview-toggle[aria-pressed="true"] { background: #775447; color: #fff8f2; }
 .ajr-preview-controls small { font-size: 10px; color: var(--color-muted); }
+
+/* Light falls on the wall independently of the lamp sprite, not behind its image. */
+.ajr-lamp-wall-glow {
+  position: absolute;
+  z-index: 14;
+  pointer-events: none;
+  left: 48.1%;
+  top: 17.5%;
+  width: 30%;
+  height: 35%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 55% 50%,
+    rgba(255, 230, 166, .52) 0%,
+    rgba(255, 217, 143, .34) 29%,
+    rgba(255, 193, 112, .15) 58%,
+    rgba(255, 179, 103, 0) 100%);
+  filter: blur(6px);
+}
+.ajr-cat-poses {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: 5px; margin-top: 7px;
+}
+.ajr-cat-poses button {
+  border: 1px solid #ddc6b5;
+  border-radius: 8px;
+  background: #fffaf4;
+  color: #725045;
+  padding: 5px 9px;
+  min-height: 30px;
+  font-size: 11px;
+  font-weight: 650;
+}
+.ajr-cat-poses button[aria-pressed='true'] {
+  background: #ac7964; border-color: #ac7964; color: #fff;
+}
+.ajr-item-detail { flex-wrap: wrap; }
+.ajr-item-detail > div:first-child { min-width: 160px; }
+html[data-theme='dark'] .ajr-cat-poses button {
+  background: #45352f; color: #f4e4d7; border-color: #715043;
+}
+html[data-theme='dark'] .ajr-cat-poses button[aria-pressed='true'] {
+  background: #ac7964; color: #fff;
+}

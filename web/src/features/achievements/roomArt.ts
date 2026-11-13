@@ -1,4 +1,5 @@
 import type { RoomItemId } from './achievementModel';
+import { isItemVisible, type RoomCatName, type RoomCatPose, type RoomPreferences } from './roomStore';
 
 /** Editor-approved 1706×922 placements (November 12). Keep exact positions and layer order. */
 export const ROOM_CANVAS = { width: 1706, height: 922 } as const;
@@ -38,10 +39,44 @@ export const ROOM_ART: readonly RoomArtItem[] = [
   { id: 'ottoman', label: "17 Red ottoman", category: 'Furniture', x: 528, y: 699, width: 273, height: 151, rotation: 0, atlas: { x: 1120, y: 1092, width: 273, height: 151 } },
   { id: 'music-stand', label: "19 Music stand with sheet music", category: 'Music', x: 1284, y: 498, width: 179, height: 314, rotation: 0, atlas: { x: 907, y: 617, width: 179, height: 314 } },
   { id: 'side-table', label: "23 Side table with steaming coffee and pencils", category: 'Furniture', x: 60, y: 622, width: 177, height: 249, rotation: 0, atlas: { x: 361, y: 1092, width: 177, height: 249 } },
-  { id: 'luna-sitting', label: "CAT Luna Sitting (clean pixel)", category: 'Cats', x: 1141, y: 375, width: 135, height: 176, rotation: 0.04, catImage: '/visuals/cats/clean-pixel/luna-sitting.png' },
+  { id: 'luna-sitting', label: "CAT Luna Sitting (clean pixel)", category: 'Cats', x: 1141, y: 387, width: 135, height: 176, rotation: 0.04, catImage: '/visuals/cats/clean-pixel/luna-sitting.png' },
   { id: 'luna', label: "CAT Luna Sleeping (clean pixel)", category: 'Cats', x: 316, y: 562, width: 233, height: 150, rotation: 0, catImage: '/visuals/cats/clean-pixel/luna-sleeping.png' },
   { id: 'milo', label: "CAT Milo Sitting (clean pixel)", category: 'Cats', x: 1036, y: 97, width: 131, height: 164, rotation: 0, catImage: '/visuals/cats/clean-pixel/milo-sitting.png' },
   { id: 'milo-sleeping', label: "CAT Milo Sleeping (clean pixel)", category: 'Cats', x: 968, y: 514, width: 217, height: 126, rotation: 0, catImage: '/visuals/cats/clean-pixel/milo-sleeping.png' },
   { id: 'maple', label: "CAT Maple Sitting (clean pixel)", category: 'Cats', x: 535, y: 540, width: 190, height: 236, rotation: 0, catImage: '/visuals/cats/clean-pixel/maple-sitting.png' },
   { id: 'maple-sleeping', label: "CAT Maple Sleeping (clean pixel)", category: 'Cats', x: 1366, y: 150, width: 261, height: 155, rotation: 0, catImage: '/visuals/cats/clean-pixel/maple-sleeping.png' },
 ] as const;
+/** Pose variants share one per-cat visibility setting, so two poses can never render together. */
+export const ROOM_CAT_ITEMS = {
+  luna: { main: 'luna', sitting: 'luna-sitting', sleeping: 'luna' },
+  milo: { main: 'milo', sitting: 'milo', sleeping: 'milo-sleeping' },
+  maple: { main: 'maple', sitting: 'maple', sleeping: 'maple-sleeping' },
+} as const satisfies Record<RoomCatName, { main: RoomItemId; sitting: RoomItemId; sleeping: RoomItemId }>;
+
+export function catNameForRoomItem(id: RoomItemId): RoomCatName | null {
+  for (const name of ['luna', 'milo', 'maple'] as const) {
+    if (ROOM_CAT_ITEMS[name].sitting === id || ROOM_CAT_ITEMS[name].sleeping === id)
+      return name;
+  }
+  return null;
+}
+
+export function catPoseItem(name: RoomCatName, pose: RoomCatPose): RoomItemId {
+  return ROOM_CAT_ITEMS[name][pose];
+}
+
+export function shouldRenderRoomItem(
+  id: RoomItemId,
+  unlocked: readonly RoomItemId[],
+  preferences: RoomPreferences,
+  previewAll = false,
+): boolean {
+  const cat = catNameForRoomItem(id);
+  if (cat) {
+    const group = ROOM_CAT_ITEMS[cat];
+    const pose = preferences.catPoses?.[cat] ?? 'sitting';
+    if (id !== group[pose]) return false;
+    return previewAll || (unlocked.includes(group.main) && isItemVisible(group.main, preferences));
+  }
+  return previewAll || (unlocked.includes(id) && isItemVisible(id, preferences));
+}
