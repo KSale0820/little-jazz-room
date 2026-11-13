@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" shape-rendering="crispEdges" aria-hidden="true">
+  <!-- Crisp paired eighth notes: deliberately compact, no notation text. -->
+  <path fill="#000" d="M19 9h21v5H19z M19 14h5v22h-5z M35 14h5v17h-5z
+    M13 31h11v5H13z M9 35h15v6H9z M13 41h8v2h-8z
+    M29 26h11v5H29z M25 30h15v6H25z M29 36h8v2h-8z"/>
+  <path fill="#000" d="M5 10h3v3H5z M2 13h9v3H2z M5 16h3v3H5z M41 37h3v3h-3z M38 40h9v3h-9z M41 43h3v3h-3z" opacity=".65"/>
+</svg>
