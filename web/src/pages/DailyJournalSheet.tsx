@@ -61,7 +61,7 @@ export function DailyJournalSheet({ day, userScope, sessions, entries, annotatio
       <button type="button" className="pj-back" aria-label="Back to Practice Journal" onClick={onBack}>‹</button>
       <strong>Practice Journal</strong>
       <button type="button" className="pj-pencil" aria-label="Edit journal entry" onClick={onEdit}>
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M13 5l6 6M4 20l4.5-1L20 7.5 16.5 4 5 15.5z"/></svg>
+        <JournalSectionIcon name="pencil" size={22} />
       </button>
     </header>
     <div className="pj-detail-meta"><JournalSectionIcon name="calendar" /><time dateTime={day}>{dateText}</time>
@@ -74,7 +74,7 @@ export function DailyJournalSheet({ day, userScope, sessions, entries, annotatio
       <h2><JournalSectionIcon name="list" />What I practiced</h2>
       {datedSessions.length === 0 && practicedText.length === 0 && datedNotes.length === 0 && <p className="pj-muted">No activities recorded for this date.</p>}
       {datedSessions.map(s => <div key={s.id} className="pj-detail-practiced">
-        <span className="pj-completed" aria-label="Saved session">✓</span>
+        <span className="pj-completed" aria-label="Saved session"><JournalSectionIcon name="check" size={16} /></span>
         <div><strong>{fmtSession(s)}</strong><small>{mins(s.durationSeconds)} min · {s.routineId ? 'Routine' : s.exerciseId ? 'Exercise' : 'Free practice'}</small>
           {datedEntries.filter(e => e.sessionId && e.sessionId === s.id && e.text?.trim()).map(e =>
             <div className="pj-session-reflection" key={e.id}>{e.title?.trim() && <strong>{e.title}</strong>}
@@ -117,8 +117,14 @@ export function DailyJournalSheet({ day, userScope, sessions, entries, annotatio
         <p className="pj-muted">Add a focus for your next practice.</p>}
     </section>
     {(chartIds.length > 0 || routineIds.length > 0) && <div className="pj-detail-links">
-      {chartIds.map(id => <button type="button" key={id} onClick={() => onOpenChart(id)}>♫ {charts.find(c=>c.id===id)?.title} ↗</button>)}
-      {routineIds.map(id => <button type="button" key={id} onClick={() => onOpenRoutine(id)}>▤ {routines.find(r=>r.id===id)?.title} ↗</button>)}
+      {chartIds.map(id => <button type="button" key={id} onClick={() => onOpenChart(id)}>
+        <JournalSectionIcon name="music" size={18} />
+        {charts.find(c=>c.id===id)?.title}<span aria-hidden="true">↗</span>
+      </button>)}
+      {routineIds.map(id => <button type="button" key={id} onClick={() => onOpenRoutine(id)}>
+        <JournalSectionIcon name="layers" size={18} />
+        {routines.find(r=>r.id===id)?.title}<span aria-hidden="true">↗</span>
+      </button>)}
     </div>}
   </section>;
 }

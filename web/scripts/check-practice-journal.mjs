@@ -52,6 +52,14 @@ try {
       assert.ok(await page.locator('.pj-measure-link').count() > 0, 'dated chart notes must be under What I practiced');
       assert.ok(await page.locator('.pj-session-reflection').count() > 0, 'reflection belongs under its session');
       assert.ok(await page.locator('.pj-detail-section h2 svg').count() === 4, 'mockup section icons present');
+      assert.deepEqual(await page.locator('.pj-detail-section h2 svg[data-journal-icon]').evaluateAll(
+        elements => elements.map(el => el.getAttribute('data-journal-icon'))),
+        ['list', 'pencil', 'lightbulb', 'target'], 'use the four approved mockup section icons in order');
+      assert.equal(await page.locator('.pj-detail-meta svg[data-journal-icon="calendar"]').count(), 1);
+      assert.ok(await page.locator('.pj-completed svg[data-journal-icon="check"]').count() > 0,
+        'completed practice uses the mockup-style checkbox icon');
+      assert.equal(await page.locator('.pj-pencil svg[data-journal-icon="pencil"]').count(), 1,
+        'top edit button uses the same mockup pencil as the notes section');
       assert.equal(await page.locator('.pj-observation-label').count(), 0, 'no duplicated note title');
       assert.equal(await page.getByRole('button', { name: 'Edit note' }).count(), 0, 'only top pencil edits notes');
       await page.screenshot({ path: 'docs/screenshots/practice-journal-qa/day-' + viewport.width + '.png', fullPage: true });

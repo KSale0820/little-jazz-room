@@ -201,3 +201,12 @@
 .pj-tabs button:focus-visible { outline-offset:-1px; }
 .pj-row:focus-visible,.pj-day-summary:focus-visible { outline-offset:2px; }
 @media (prefers-reduced-motion:reduce) { .pj-day,.pj-card { transition:none; } }
+
+/* Use the exact mockup's outlined symbol family throughout daily journal sheets. */
+.pj-detail .pj-detail-meta > svg { display:block; flex:0 0 20px; width:20px; height:20px; }
+.pj-detail .pj-detail-section h2 > svg { flex:0 0 22px; width:22px; height:22px; color:#294c38; }
+.pj-detail .pj-completed { width:19px; height:19px; flex:0 0 19px; background:#5e9255; border-radius:4px; color:#fff; }
+.pj-detail .pj-completed svg { display:block; width:16px; height:16px; }
+.pj-detail .pj-pencil svg { display:block; width:22px; height:22px; }
+.pj-detail .pj-detail-links button { display:inline-flex; align-items:center; gap:7px; }
+.pj-detail .pj-detail-links button > svg { display:block; flex:0 0 18px; width:18px; height:18px; }
